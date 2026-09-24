@@ -102,16 +102,32 @@ The template is [`infra/bootstrap/github-oidc.yaml`](infra/bootstrap/github-oidc
 ## Layout
 
 ```
-apps/web/     Public Next.js site (SSR/ISR, multi-tenant routing, i18n shell)
-apps/cms/     Payload CMS — admin UI, REST/GraphQL, Local API, CV consumer
-packages/     shared-types, runtime-config, config
-infra/        SST app — every AWS resource is defined here
-scripts/      Ops scripts (tenant seeding, migrations, Cloudflare IP refresh)
+apps/web/               Public Next.js site (SSR/ISR, multi-tenant routing, i18n shell)
+apps/cms/               Payload CMS — admin UI, REST/GraphQL, Local API, CV consumer
+packages/shared-types/  Shared TS types, including the CV queue message contract
+packages/runtime-config/ Cached Secrets Manager / SSM loader shared by all Lambdas
+packages/config/        Shared tsconfig / eslint / tailwind base configs
+infra/                  SST app — every AWS resource is defined here
+scripts/                Ops scripts (tenant seeding, migrations, Cloudflare IP refresh)
 ```
 
-`apps/`, `packages/` and the shared configs are scaffolded by the next Track 1
-ticket; `infra/sst.config.ts` is currently an empty app with the stages and
-region wired up.
+Every workspace package is private and unpublished. `packages/shared-types` and
+`packages/runtime-config` are consumed straight from TypeScript source
+(`exports` points at `src/index.ts`), so there is no build step between them and
+the apps.
+
+`packages/config` is the single home for the shared base configs:
+
+| Config | Imported as | Consumed by |
+|---|---|---|
+| TypeScript | `@dilm/config/tsconfig/base.json` (via `extends`) | root, `apps/web`, `apps/cms` |
+| ESLint | `@dilm/config/eslint/base` (flat config) | `apps/web`, `apps/cms` |
+| Tailwind | `@dilm/config/tailwind/base.css` (Tailwind v4 `@theme`) | `apps/web`, `apps/cms` |
+
+`apps/web` and `apps/cms` are placeholders holding the wiring only — the real
+Next.js and Payload applications land in their own tickets, as does
+`infra/sst.config.ts`, currently an empty app with the stages and region wired
+up.
 
 ## CI/CD
 

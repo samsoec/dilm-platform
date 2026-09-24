@@ -1,0 +1,6 @@
+@theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+}
+
+/* TODO(DILM-26): add the per-tenant brand tokens once the design direction lands. */

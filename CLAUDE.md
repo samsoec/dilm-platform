@@ -9,10 +9,12 @@ serving three DIL Group tenants from one deployment — `indoacid.com`,
 `duniakimia.com`, `likutelaga.com`.
 
 The repo is early: `infra/` is a real SST app with only stages and region wired
-up; `apps/web`, `apps/cms` and `packages/*` are declared in
-[pnpm-workspace.yaml](pnpm-workspace.yaml) but not scaffolded yet. `TODO(DILM…)`
-markers in [infra/sst.config.ts](infra/sst.config.ts) and the workflows mark
-where that work lands.
+up. The workspace skeleton exists — `packages/config` (shared tsconfig/eslint/
+tailwind bases), `packages/shared-types` (CV queue message contract),
+`packages/runtime-config` and placeholder `apps/web` / `apps/cms` — but the
+Next.js and Payload applications themselves are not scaffolded yet. `TODO(DILM…)`
+markers in [infra/sst.config.ts](infra/sst.config.ts), the placeholder packages
+and the workflows mark where that work lands.
 
 ## Commands
 
@@ -20,13 +22,15 @@ where that work lands.
 nvm use && corepack enable && pnpm install   # first run
 
 pnpm typecheck                               # tsc --noEmit at the root
+pnpm --filter @dilm/web lint                 # eslint, per app (no root lint yet)
 pnpm --filter infra exec sst install --stage staging   # regenerate .sst/ types first — see below
 pnpm diff --stage staging                    # preview infra changes
 pnpm deploy:dev                              # sst deploy --stage dev
 pnpm --filter infra dev                      # sst dev
 ```
 
-No lint or test runner exists yet; they arrive with the apps that need them.
+ESLint is shared from `packages/config` and each app runs it; the root-level
+`lint`/`test` commands, Prettier and Vitest arrive with DILM-28.
 
 `.sst/` and `sst-env.d.ts` are gitignored, so `pnpm typecheck` fails on a fresh
 checkout until `sst install` has generated `platform/config.d.ts` — that is why

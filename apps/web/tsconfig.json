@@ -1,4 +1,4 @@
 {
   "extends": "@dilm/config/tsconfig/base.json",
-  "exclude": ["node_modules", "**/.sst/**"]
+  "include": ["src"]
 }

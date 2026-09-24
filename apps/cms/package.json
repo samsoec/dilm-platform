@@ -1,0 +1,20 @@
+{
+  "name": "@dilm/cms",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@dilm/runtime-config": "workspace:*",
+    "@dilm/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@dilm/config": "workspace:*",
+    "eslint": "^10.11.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3"
+  }
+}
