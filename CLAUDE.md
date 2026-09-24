@@ -21,16 +21,19 @@ and the workflows mark where that work lands.
 ```bash
 nvm use && corepack enable && pnpm install   # first run
 
+pnpm lint                                    # eslint across the whole workspace
 pnpm typecheck                               # tsc --noEmit at the root
-pnpm --filter @dilm/web lint                 # eslint, per app (no root lint yet)
+pnpm test                                    # vitest, one project per package
+pnpm format                                  # prettier --write .
 pnpm --filter infra exec sst install --stage staging   # regenerate .sst/ types first — see below
 pnpm diff --stage staging                    # preview infra changes
 pnpm deploy:dev                              # sst deploy --stage dev
 pnpm --filter infra dev                      # sst dev
 ```
 
-ESLint is shared from `packages/config` and each app runs it; the root-level
-`lint`/`test` commands, Prettier and Vitest arrive with DILM-28.
+ESLint and Prettier are shared from `packages/config`; the root `lint`,
+`typecheck` and `test` scripts cover every package and are what CI calls. A
+Husky `pre-commit` hook runs `lint-staged` over staged files.
 
 `.sst/` and `sst-env.d.ts` are gitignored, so `pnpm typecheck` fails on a fresh
 checkout until `sst install` has generated `platform/config.d.ts` — that is why
