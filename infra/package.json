@@ -1,0 +1,14 @@
+{
+  "name": "infra",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sst dev",
+    "deploy": "sst deploy",
+    "diff": "sst diff",
+    "remove": "sst remove"
+  },
+  "devDependencies": {
+    "sst": "^4.17.1"
+  }
+}

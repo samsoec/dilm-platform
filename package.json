@@ -1,0 +1,19 @@
+{
+  "name": "dilm-platform",
+  "private": true,
+  "packageManager": "pnpm@10.14.0",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "deploy:dev": "pnpm --filter infra deploy --stage dev",
+    "deploy:staging": "pnpm --filter infra deploy --stage staging",
+    "deploy:production": "pnpm --filter infra deploy --stage production",
+    "diff": "pnpm --filter infra diff",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "typescript": "^5.9.3"
+  }
+}

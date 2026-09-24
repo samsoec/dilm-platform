@@ -1,0 +1,14 @@
+node_modules/
+.sst/
+.next/
+.open-next/
+dist/
+*.tsbuildinfo
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+.idea/
+.vscode/

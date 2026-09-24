@@ -1,0 +1,155 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  DILM-27 — GitHub Actions OIDC identity provider and the SST deploy roles.
+  Applied once, by hand, with human AWS credentials. Everything after this
+  point authenticates through OIDC; no long-lived access keys exist.
+
+Parameters:
+  GitHubOrg:
+    Type: String
+    Default: samsoec
+  GitHubRepo:
+    Type: String
+    Default: dilm-platform
+  CreateOidcProvider:
+    Type: String
+    AllowedValues: ["true", "false"]
+    Default: "true"
+    Description: >-
+      Set to false if this AWS account already has a
+      token.actions.githubusercontent.com provider (only one is allowed).
+
+Conditions:
+  ShouldCreateOidcProvider: !Equals [!Ref CreateOidcProvider, "true"]
+
+Resources:
+  GitHubOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: ShouldCreateOidcProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      # AWS no longer verifies this thumbprint for GitHub's provider, but the
+      # API still requires the field.
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+
+  # dev + staging: any branch in the repo may assume this role.
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: dilm-github-deploy
+      Description: SST deploy role for the dev and staging stages.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${GitHubRepo}:*
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/PowerUserAccess
+      Policies:
+        - PolicyName: dilm-scoped-iam
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # SST creates the execution roles for the app's Lambdas. Scope
+              # that to dilm-* names so the deploy role can't mint itself
+              # broader access.
+              - Effect: Allow
+                Action:
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:GetRole
+                  - iam:UpdateRole
+                  - iam:TagRole
+                  - iam:UntagRole
+                  - iam:PassRole
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                  - iam:PutRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:ListRolePolicies
+                  - iam:ListAttachedRolePolicies
+                  - iam:CreatePolicy
+                  - iam:DeletePolicy
+                  - iam:GetPolicy
+                  - iam:CreatePolicyVersion
+                  - iam:DeletePolicyVersion
+                  - iam:ListPolicyVersions
+                  - iam:CreateServiceLinkedRole
+                Resource:
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/dilm-*
+                  - !Sub arn:aws:iam::${AWS::AccountId}:policy/dilm-*
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/*
+
+  # production: only workflow runs in the `production` GitHub Environment,
+  # which carries the manual approval gate (Backend Spec §13).
+  ProductionDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: dilm-github-deploy-production
+      Description: SST deploy role for the production stage, gated on the GitHub production Environment.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${GitHubRepo}:environment:production
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/PowerUserAccess
+      Policies:
+        - PolicyName: dilm-scoped-iam
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:GetRole
+                  - iam:UpdateRole
+                  - iam:TagRole
+                  - iam:UntagRole
+                  - iam:PassRole
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                  - iam:PutRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:ListRolePolicies
+                  - iam:ListAttachedRolePolicies
+                  - iam:CreatePolicy
+                  - iam:DeletePolicy
+                  - iam:GetPolicy
+                  - iam:CreatePolicyVersion
+                  - iam:DeletePolicyVersion
+                  - iam:ListPolicyVersions
+                  - iam:CreateServiceLinkedRole
+                Resource:
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/dilm-*
+                  - !Sub arn:aws:iam::${AWS::AccountId}:policy/dilm-*
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/*
+
+Outputs:
+  DeployRoleArn:
+    Description: Set as the AWS_DEPLOY_ROLE_ARN GitHub Actions secret.
+    Value: !GetAtt DeployRole.Arn
+  ProductionDeployRoleArn:
+    Description: Set as AWS_DEPLOY_ROLE_ARN inside the production GitHub Environment.
+    Value: !GetAtt ProductionDeployRole.Arn
