@@ -64,6 +64,73 @@ pnpm diff --stage staging  # preview changes without applying them
 purpose — a typo'd stage would otherwise create a stray set of resources in the
 shared account. **Always pass an explicit stage.**
 
+## Local development stack
+
+Payload and the web app run against local stand-ins for the AWS services, so
+work can start on a laptop before any AWS infrastructure exists. You only need
+Docker (Docker Desktop, OrbStack or Colima).
+
+| Service   | Stands in for               | Address                                             |
+| --------- | --------------------------- | --------------------------------------------------- |
+| Postgres  | Aurora PostgreSQL 16        | `localhost:5432`, database `dilm`                   |
+| MinIO     | S3 (both buckets)           | API `localhost:9000`, console http://localhost:9001 |
+| Mailpit   | SES                         | SMTP `localhost:1025`, inbox http://localhost:8025  |
+| ElasticMQ | SQS CV queue + DLQ (opt-in) | API `localhost:9324`, UI http://localhost:9325      |
+
+**Start** (from the repo root):
+
+```bash
+cp .env.example .env          # first time only
+docker compose up -d
+```
+
+Add `--profile queue` to also start ElasticMQ when you're working on the CV
+queue. Stop with `docker compose down`; your data is kept.
+
+**Reset** — wipe the database and every uploaded file, then start fresh:
+
+```bash
+docker compose --profile queue down -v
+docker compose up -d
+```
+
+**Seed tenants** once the stack is up. The seeding script lands with the
+multi-tenancy ticket (DILM-14); until then this command doesn't exist yet:
+
+```bash
+pnpm --filter cms seed:tenants
+```
+
+How it lines up with AWS:
+
+- **One `.env`, read by both sides.** Docker Compose reads `.env` for ports,
+  credentials and bucket names, and `@dilm/runtime-config` reads the same
+  file when `RUNTIME_CONFIG_SOURCE=env`. Application code calls
+  `getRuntimeConfig()` and gets the same typed object locally and on AWS —
+  only where the values come from changes. Every variable is explained in
+  [`.env.example`](.env.example).
+- **Same database shape.** Postgres runs major version 16 like Aurora, and the
+  app connects as a non-superuser `payload_app` that owns the database, just as
+  it will on AWS. The master `postgres` user is for admin work only.
+- **Same connection pool.** `databasePoolOptions("cms" | "cv-consumer" |
+"migrations")` returns the Backend Spec §8.2 pool sizes and timeouts, used
+  unchanged in both environments.
+- **Same bucket split.** `dilm-local-public` is anonymously readable (standing
+  in for the Cloudflare path); `dilm-local-cv-private` has no public access.
+- **Same CPU architecture.** Every container runs as `linux/arm64`, matching
+  the Lambda runtime, so a `sharp` build for the wrong architecture fails on
+  your laptop rather than in AWS. On an Intel/AMD machine without arm64
+  emulation, set `DOCKER_PLATFORM=linux/amd64` in `.env`.
+
+What the local stack **can't** reproduce, and is still verified on AWS
+(staging): Aurora's ~15s resume from auto-pause and the auto-pause itself, TLS
+against the RDS CA bundle, Lambda bundle size and cold start, and the SES
+permission scoped to the three verified sender identities.
+
+MinIO's official Docker images were discontinued in late 2025, so the stack
+uses [`pgsty/minio`](https://hub.docker.com/r/pgsty/minio), a
+community-maintained build of the same server, pinned to a fixed release.
+
 ## Code quality
 
 One command per check, run from the repo root over every package:
@@ -120,10 +187,11 @@ The template is [`infra/bootstrap/github-oidc.yaml`](infra/bootstrap/github-oidc
 apps/web/               Public Next.js site (SSR/ISR, multi-tenant routing, i18n shell)
 apps/cms/               Payload CMS — admin UI, REST/GraphQL, Local API, CV consumer
 packages/shared-types/  Shared TS types, including the CV queue message contract
-packages/runtime-config/ Cached Secrets Manager / SSM loader shared by all Lambdas
+packages/runtime-config/ Cached Secrets Manager / SSM loader shared by all Lambdas, env vars locally
 packages/config/        Shared tsconfig / eslint / tailwind base configs
 infra/                  SST app — every AWS resource is defined here
 scripts/                Ops scripts (tenant seeding, migrations, Cloudflare IP refresh)
+compose.yaml, docker/   Local development stack (Postgres, MinIO, Mailpit, ElasticMQ)
 ```
 
 Every workspace package is private and unpublished. `packages/shared-types` and
