@@ -28,6 +28,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Install SST providers
+        run: pnpm --filter infra exec sst install --stage staging
+
       - name: Typecheck
         run: pnpm typecheck
 
