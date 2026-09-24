@@ -29,13 +29,27 @@ corepack enable
 pnpm install
 ```
 
-Deploying needs AWS credentials in your shell (`AWS_PROFILE=...`, or SSO via
-`aws sso login`). Confirm you're on the right account and region first:
+Deploying needs AWS credentials in your shell. Confirm you're on the right
+account and region first:
 
 ```bash
 aws sts get-caller-identity
 aws configure get region   # must be ap-southeast-3
 ```
+
+> **Local credentials gotcha.** If you sign in with `aws login` (AWS Management
+> Console credentials), SST can't read those credentials directly. Use the
+> `dilm-spike` profile in `~/.aws/config`, which shims them through
+> `credential_process`, and export it before deploying:
+>
+> ```bash
+> aws login                    # browser sign-in, refreshes the session
+> export AWS_PROFILE=dilm-spike
+> ```
+>
+> The profile must pin `--profile default` inside its `credential_process`, or
+> it recurses on `AWS_PROFILE`. CI is unaffected — it gets credentials from
+> OIDC as environment variables.
 
 Then:
 
