@@ -11,6 +11,14 @@ Parameters:
   GitHubRepo:
     Type: String
     Default: dilm-platform
+  GitHubOrgId:
+    Type: String
+    Description: >-
+      Numeric GitHub account id. GitHub issues immutable subject claims of the
+      form repo:OWNER@OWNER_ID/REPO@REPO_ID:..., so the id is needed to match.
+  GitHubRepoId:
+    Type: String
+    Description: Numeric GitHub repository id, used in the immutable subject claim.
   CreateOidcProvider:
     Type: String
     AllowedValues: ["true", "false"]
@@ -50,7 +58,9 @@ Resources:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               StringLike:
-                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${GitHubRepo}:*
+                token.actions.githubusercontent.com:sub:
+                  - !Sub repo:${GitHubOrg}@${GitHubOrgId}/${GitHubRepo}@${GitHubRepoId}:*
+                  - !Sub repo:${GitHubOrg}/${GitHubRepo}:*
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/PowerUserAccess
       Policies:
@@ -102,7 +112,9 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${GitHubRepo}:environment:production
+                token.actions.githubusercontent.com:sub:
+                  - !Sub repo:${GitHubOrg}@${GitHubOrgId}/${GitHubRepo}@${GitHubRepoId}:environment:production
+                  - !Sub repo:${GitHubOrg}/${GitHubRepo}:environment:production
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/PowerUserAccess
       Policies:
