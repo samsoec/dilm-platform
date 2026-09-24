@@ -31,10 +31,14 @@ jobs:
       - name: Install SST providers
         run: pnpm --filter infra exec sst install --stage staging
 
+      - name: Lint
+        run: pnpm lint
+
       - name: Typecheck
         run: pnpm typecheck
 
-      # TODO(DILM): add lint and test steps once apps/web and apps/cms exist.
+      - name: Test
+        run: pnpm test
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

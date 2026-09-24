@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import prettier from "eslint-config-prettier";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
@@ -9,8 +10,10 @@ export default tseslint.config(
       "**/.sst/**",
       "**/dist/**",
       "**/node_modules/**",
+      "**/sst-env.d.ts",
     ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  prettier,
 );

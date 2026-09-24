@@ -10,11 +10,30 @@
     "deploy:staging": "pnpm --filter infra deploy --stage staging",
     "deploy:production": "pnpm --filter infra deploy --stage production",
     "diff": "pnpm --filter infra diff",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "prepare": "husky",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@dilm/config": "workspace:*",
     "@types/node": "^22.20.4",
-    "typescript": "^5.9.3"
+    "eslint": "^10.11.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,yml,yaml}": [
+      "prettier --write"
+    ]
   }
 }

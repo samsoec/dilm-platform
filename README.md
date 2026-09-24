@@ -13,12 +13,12 @@ commit messages cite them by section, e.g. "Backend Spec §3.7". The spec's §3
 
 ## Prerequisites
 
-| Tool | Version | Notes |
-|---|---|---|
-| Node.js | 20.11+ | `.nvmrc` pins 20 — `nvm use` |
-| pnpm | 10.14+ | `corepack enable` picks up the pinned version |
-| AWS CLI | v2 | Credentials for the DIL AWS account |
-| SST | 4.x (installed by pnpm) | This is the "SST v3 / ion" line the spec refers to |
+| Tool    | Version                 | Notes                                              |
+| ------- | ----------------------- | -------------------------------------------------- |
+| Node.js | 20.11+                  | `.nvmrc` pins 20 — `nvm use`                       |
+| pnpm    | 10.14+                  | `corepack enable` picks up the pinned version      |
+| AWS CLI | v2                      | Credentials for the DIL AWS account                |
+| SST     | 4.x (installed by pnpm) | This is the "SST v3 / ion" line the spec refers to |
 
 All AWS resources live in **`ap-southeast-3` (Jakarta)**, no exceptions — UU PDP
 data residency (Backend Spec §3.7).
@@ -64,17 +64,32 @@ pnpm diff --stage staging  # preview changes without applying them
 purpose — a typo'd stage would otherwise create a stray set of resources in the
 shared account. **Always pass an explicit stage.**
 
+## Code quality
+
+One command per check, run from the repo root over every package:
+
+```bash
+pnpm lint          # eslint across the whole workspace
+pnpm typecheck     # tsc --noEmit, strict
+pnpm test          # vitest, one project per package
+pnpm format        # prettier --write . (pnpm format:check in dry-run)
+```
+
+`pnpm install` installs a Husky `pre-commit` hook that runs `lint-staged`, so
+staged files are linted with `--fix` and formatted before a commit is created.
+CI runs the same `lint`, `typecheck` and `test` scripts on every PR.
+
 ## Stages
 
 One AWS account holds all three stages, isolated by SST stage-prefixing
 (`dilm-<stage>-<resource>`, e.g. `dilm-production-public`) rather than AWS
 Organizations — Backend Spec §3.7.
 
-| Stage | Purpose | Deploy trigger |
-|---|---|---|
-| `dev` | Personal/shared sandbox | Feature branch, or manual `sst dev` |
-| `staging` | Client review, pre-prod smoke tests | Merge to `main` (automatic) |
-| `production` | Live traffic on the three domains | Manual `workflow_dispatch` + approval on the `production` GitHub Environment |
+| Stage        | Purpose                             | Deploy trigger                                                               |
+| ------------ | ----------------------------------- | ---------------------------------------------------------------------------- |
+| `dev`        | Personal/shared sandbox             | Feature branch, or manual `sst dev`                                          |
+| `staging`    | Client review, pre-prod smoke tests | Merge to `main` (automatic)                                                  |
+| `production` | Live traffic on the three domains   | Manual `workflow_dispatch` + approval on the `production` GitHub Environment |
 
 `production` is deploy-protected and set to `retain` on removal; the other
 stages are disposable.
@@ -118,11 +133,12 @@ the apps.
 
 `packages/config` is the single home for the shared base configs:
 
-| Config | Imported as | Consumed by |
-|---|---|---|
-| TypeScript | `@dilm/config/tsconfig/base.json` (via `extends`) | root, `apps/web`, `apps/cms` |
-| ESLint | `@dilm/config/eslint/base` (flat config) | `apps/web`, `apps/cms` |
-| Tailwind | `@dilm/config/tailwind/base.css` (Tailwind v4 `@theme`) | `apps/web`, `apps/cms` |
+| Config     | Imported as                                             | Consumed by                  |
+| ---------- | ------------------------------------------------------- | ---------------------------- |
+| TypeScript | `@dilm/config/tsconfig/base.json` (via `extends`)       | root, `apps/web`, `apps/cms` |
+| ESLint     | `@dilm/config/eslint/base` (flat config)                | root, `apps/web`, `apps/cms` |
+| Prettier   | `@dilm/config/prettier/base` (flat config)              | root                         |
+| Tailwind   | `@dilm/config/tailwind/base.css` (Tailwind v4 `@theme`) | `apps/web`, `apps/cms`       |
 
 `apps/web` and `apps/cms` are placeholders holding the wiring only — the real
 Next.js and Payload applications land in their own tickets, as does
@@ -131,11 +147,11 @@ up.
 
 ## CI/CD
 
-| Workflow | Trigger | Does |
-|---|---|---|
-| `ci.yml` | PR → `main` | Typecheck, `sst diff --stage staging` |
-| `deploy-staging.yml` | Push to `main` | `sst deploy --stage staging` |
+| Workflow                | Trigger         | Does                                                             |
+| ----------------------- | --------------- | ---------------------------------------------------------------- |
+| `ci.yml`                | PR → `main`     | Lint, typecheck, test, `sst diff --stage staging`                |
+| `deploy-staging.yml`    | Push to `main`  | `sst deploy --stage staging`                                     |
 | `deploy-production.yml` | Manual dispatch | `sst deploy --stage production`, behind the environment approval |
 
-Lint, tests and the Payload migration step are added with the apps that need
-them (Backend Spec §13).
+The Payload migration step is added with the app that needs it (Backend Spec
+§13).
