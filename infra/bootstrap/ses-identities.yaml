@@ -1,0 +1,143 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  DILM-7 — SES sending identities for the three tenant domains (Backend Spec
+  §3.5, §7.6). Account-level, not per stage: an SES domain identity exists once
+  per account and region, and dev, staging and production share one account.
+  Applied once, by hand, with human AWS credentials. Every identity signs with
+  Easy DKIM (2048-bit), uses a mail.<domain> custom MAIL FROM so SPF aligns
+  without touching the root SPF record, and sends through the
+  dilm-transactional configuration set, which publishes the send, delivery,
+  bounce, complaint and reject metrics the sender-reputation alarm reads.
+
+Parameters:
+  IndoacidDomain:
+    Type: String
+    Default: indonesianacids.com
+    Description: Sender domain for the indoacid tenant (noreply@<domain>).
+  DuniakimiaDomain:
+    Type: String
+    Default: duniakimia.com
+    Description: Sender domain for the duniakimia tenant (noreply@<domain>).
+  LikutelagaDomain:
+    Type: String
+    Default: likutelaga.com
+    Description: Sender domain for the likutelaga tenant (noreply@<domain>).
+  MailFromSubdomain:
+    Type: String
+    Default: mail
+    Description: >-
+      Label of the custom MAIL FROM domain (<label>.<domain>). It carries the
+      SES MX and SPF records, leaving each root domain's own SPF untouched.
+
+Resources:
+  TransactionalConfigurationSet:
+    Type: AWS::SES::ConfigurationSet
+    Properties:
+      Name: dilm-transactional
+      ReputationOptions:
+        ReputationMetricsEnabled: true
+      SendingOptions:
+        SendingEnabled: true
+      SuppressionOptions:
+        SuppressedReasons:
+          - BOUNCE
+          - COMPLAINT
+
+  TransactionalMetrics:
+    Type: AWS::SES::ConfigurationSetEventDestination
+    Properties:
+      ConfigurationSetName: !Ref TransactionalConfigurationSet
+      EventDestination:
+        Name: dilm-transactional-cloudwatch
+        Enabled: true
+        MatchingEventTypes:
+          - send
+          - delivery
+          - bounce
+          - complaint
+          - reject
+        CloudWatchDestination:
+          DimensionConfigurations:
+            - DimensionName: ses:from-domain
+              DimensionValueSource: messageTag
+              DefaultDimensionValue: unknown
+
+  IndoacidIdentity:
+    Type: AWS::SES::EmailIdentity
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      EmailIdentity: !Ref IndoacidDomain
+      ConfigurationSetAttributes:
+        ConfigurationSetName: !Ref TransactionalConfigurationSet
+      DkimAttributes:
+        SigningEnabled: true
+      DkimSigningAttributes:
+        NextSigningKeyLength: RSA_2048_BIT
+      MailFromAttributes:
+        MailFromDomain: !Sub ${MailFromSubdomain}.${IndoacidDomain}
+        BehaviorOnMxFailure: USE_DEFAULT_VALUE
+
+  DuniakimiaIdentity:
+    Type: AWS::SES::EmailIdentity
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      EmailIdentity: !Ref DuniakimiaDomain
+      ConfigurationSetAttributes:
+        ConfigurationSetName: !Ref TransactionalConfigurationSet
+      DkimAttributes:
+        SigningEnabled: true
+      DkimSigningAttributes:
+        NextSigningKeyLength: RSA_2048_BIT
+      MailFromAttributes:
+        MailFromDomain: !Sub ${MailFromSubdomain}.${DuniakimiaDomain}
+        BehaviorOnMxFailure: USE_DEFAULT_VALUE
+
+  LikutelagaIdentity:
+    Type: AWS::SES::EmailIdentity
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      EmailIdentity: !Ref LikutelagaDomain
+      ConfigurationSetAttributes:
+        ConfigurationSetName: !Ref TransactionalConfigurationSet
+      DkimAttributes:
+        SigningEnabled: true
+      DkimSigningAttributes:
+        NextSigningKeyLength: RSA_2048_BIT
+      MailFromAttributes:
+        MailFromDomain: !Sub ${MailFromSubdomain}.${LikutelagaDomain}
+        BehaviorOnMxFailure: USE_DEFAULT_VALUE
+
+Outputs:
+  ConfigurationSetName:
+    Description: Default configuration set of every identity below.
+    Value: !Ref TransactionalConfigurationSet
+  IndoacidIdentityArn:
+    Description: Resource for Payload's ses:SendEmail / ses:SendRawEmail grant.
+    Value: !Sub arn:${AWS::Partition}:ses:${AWS::Region}:${AWS::AccountId}:identity/${IndoacidDomain}
+  DuniakimiaIdentityArn:
+    Description: Resource for Payload's ses:SendEmail / ses:SendRawEmail grant.
+    Value: !Sub arn:${AWS::Partition}:ses:${AWS::Region}:${AWS::AccountId}:identity/${DuniakimiaDomain}
+  LikutelagaIdentityArn:
+    Description: Resource for Payload's ses:SendEmail / ses:SendRawEmail grant.
+    Value: !Sub arn:${AWS::Partition}:ses:${AWS::Region}:${AWS::AccountId}:identity/${LikutelagaDomain}
+  IndoacidDkim1:
+    Value: !Sub ${IndoacidIdentity.DkimDNSTokenName1} CNAME ${IndoacidIdentity.DkimDNSTokenValue1}
+  IndoacidDkim2:
+    Value: !Sub ${IndoacidIdentity.DkimDNSTokenName2} CNAME ${IndoacidIdentity.DkimDNSTokenValue2}
+  IndoacidDkim3:
+    Value: !Sub ${IndoacidIdentity.DkimDNSTokenName3} CNAME ${IndoacidIdentity.DkimDNSTokenValue3}
+  DuniakimiaDkim1:
+    Value: !Sub ${DuniakimiaIdentity.DkimDNSTokenName1} CNAME ${DuniakimiaIdentity.DkimDNSTokenValue1}
+  DuniakimiaDkim2:
+    Value: !Sub ${DuniakimiaIdentity.DkimDNSTokenName2} CNAME ${DuniakimiaIdentity.DkimDNSTokenValue2}
+  DuniakimiaDkim3:
+    Value: !Sub ${DuniakimiaIdentity.DkimDNSTokenName3} CNAME ${DuniakimiaIdentity.DkimDNSTokenValue3}
+  LikutelagaDkim1:
+    Value: !Sub ${LikutelagaIdentity.DkimDNSTokenName1} CNAME ${LikutelagaIdentity.DkimDNSTokenValue1}
+  LikutelagaDkim2:
+    Value: !Sub ${LikutelagaIdentity.DkimDNSTokenName2} CNAME ${LikutelagaIdentity.DkimDNSTokenValue2}
+  LikutelagaDkim3:
+    Value: !Sub ${LikutelagaIdentity.DkimDNSTokenName3} CNAME ${LikutelagaIdentity.DkimDNSTokenValue3}

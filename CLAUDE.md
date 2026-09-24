@@ -65,6 +65,11 @@ CI runs the install step before typechecking.
   The script reads numeric GitHub org/repo ids because GitHub's `sub` claim is
   `repo:OWNER@ORG_ID/REPO@REPO_ID:…`, and it must never hand
   `CreateOidcProvider=false` to a stack that already owns the provider.
+- [infra/bootstrap/ses-identities.yaml](infra/bootstrap/ses-identities.yaml) +
+  [scripts/bootstrap-ses.sh](scripts/bootstrap-ses.sh) — the three SES sender
+  domains, created once per account (not per stage, since all stages share the
+  account). The `indoacid` tenant sends from `indonesianacids.com`. The script
+  prints the DNS records to add and the verification status.
 - [.github/workflows/](.github/workflows/) — `ci.yml` (PR: typecheck + diff),
   `deploy-staging.yml` (push to `main`), `deploy-production.yml` (manual
   dispatch behind the `production` environment approval).

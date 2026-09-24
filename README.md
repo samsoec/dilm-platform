@@ -181,6 +181,71 @@ It prints two role ARNs. Wire them up in GitHub:
 
 The template is [`infra/bootstrap/github-oidc.yaml`](infra/bootstrap/github-oidc.yaml).
 
+## SES sending identities
+
+Each tenant sends email from its own domain through SES (Backend Spec §3.5):
+
+| Tenant       | Sender                        |
+| ------------ | ----------------------------- |
+| `indoacid`   | `noreply@indonesianacids.com` |
+| `duniakimia` | `noreply@duniakimia.com`      |
+| `likutelaga` | `noreply@likutelaga.com`      |
+
+An SES domain identity exists once per AWS account and region, and all three
+stages share one account, so the identities are created once by a bootstrap
+stack rather than by `sst.config.ts`. Run it with human credentials:
+
+```bash
+AWS_PROFILE=<your-profile> ./scripts/bootstrap-ses.sh           # create, then print DNS records + status
+AWS_PROFILE=<your-profile> ./scripts/bootstrap-ses.sh --status  # re-check after DNS changes
+```
+
+The template is [`infra/bootstrap/ses-identities.yaml`](infra/bootstrap/ses-identities.yaml).
+It creates:
+
+- **Three domain identities**, each signing with Easy DKIM (2048-bit).
+- **A custom MAIL FROM domain, `mail.<domain>`**, so SPF passes and aligns
+  for DMARC without editing the root domain's SPF record — which may already
+  belong to the company's mailbox provider (`likutelaga.com` uses Microsoft
+  365, for example).
+- **The `dilm-transactional` configuration set**, the default for all three
+  identities. It turns on reputation metrics, suppresses addresses that
+  bounced or complained, and publishes send / delivery / bounce / complaint /
+  reject counts to CloudWatch per sender domain. The sender-reputation alarm
+  reads these metrics.
+
+The identities are kept (`Retain`) if the stack is ever deleted, because
+recreating them issues new DKIM keys and breaks the DNS records.
+
+### After running the script
+
+1. **Add the DNS records it prints** at each domain's DNS host — three DKIM
+   `CNAME`s, one `MX` and one SPF `TXT` on `mail.<domain>`, and a DMARC `TXT`
+   only where the domain has none yet (it starts at `p=none`; tighten it once
+   reports look clean). On Cloudflare, set every one of them to **DNS only**
+   (grey cloud). Verification usually takes minutes, and at most 72 hours;
+   re-run with `--status` until every domain shows `verified=True`,
+   `dkim=SUCCESS` and `mail-from=SUCCESS`.
+2. **Request production access.** A new account is in the SES sandbox: it can
+   only send to verified addresses, at most 200 a day. Request production
+   access once the domains verify, from the SES console (Account dashboard →
+   Request production access), or:
+
+   ```bash
+   aws sesv2 put-account-details --region ap-southeast-3 \
+     --production-access-enabled --mail-type TRANSACTIONAL \
+     --website-url https://indonesianacids.com \
+     --use-case-description "Password resets and job-application notifications for three corporate sites. Bounces and complaints are suppressed automatically." \
+     --contact-language EN
+   ```
+
+   AWS answers within about a day. `--status` shows `ProductionAccess: True`
+   once it is granted.
+
+3. **Confirm the pricing plan is à-la-carte** ($0.10 per 1,000 emails), not
+   Essentials ($0.16 per 1,000). There is no CLI for this: check the SES
+   console's Account dashboard.
+
 ## Layout
 
 ```
