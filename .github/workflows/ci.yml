@@ -31,7 +31,7 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      # Lint and test are added once apps/web and apps/cms exist.
+      # TODO(DILM): add lint and test steps once apps/web and apps/cms exist.
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

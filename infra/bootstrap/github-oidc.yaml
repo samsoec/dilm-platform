@@ -17,7 +17,7 @@ Parameters:
     Default: "true"
     Description: >-
       Set to false if this AWS account already has a
-      token.actions.githubusercontent.com provider (only one is allowed).
+      token.actions.githubusercontent.com provider. Only one is allowed per account.
 
 Conditions:
   ShouldCreateOidcProvider: !Equals [!Ref CreateOidcProvider, "true"]
@@ -30,17 +30,14 @@ Resources:
       Url: https://token.actions.githubusercontent.com
       ClientIdList:
         - sts.amazonaws.com
-      # AWS no longer verifies this thumbprint for GitHub's provider, but the
-      # API still requires the field.
       ThumbprintList:
         - 6938fd4d98bab03faadb97b34396831e3780aea1
 
-  # dev + staging: any branch in the repo may assume this role.
   DeployRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: dilm-github-deploy
-      Description: SST deploy role for the dev and staging stages.
+      Description: SST deploy role for the dev and staging stages, assumable from any branch in the repo.
       MaxSessionDuration: 3600
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
@@ -61,9 +58,6 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              # SST creates the execution roles for the app's Lambdas. Scope
-              # that to dilm-* names so the deploy role can't mint itself
-              # broader access.
               - Effect: Allow
                 Action:
                   - iam:CreateRole
@@ -92,8 +86,6 @@ Resources:
                   - !Sub arn:aws:iam::${AWS::AccountId}:policy/dilm-*
                   - !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/*
 
-  # production: only workflow runs in the `production` GitHub Environment,
-  # which carries the manual approval gate (Backend Spec §13).
   ProductionDeployRole:
     Type: AWS::IAM::Role
     Properties:

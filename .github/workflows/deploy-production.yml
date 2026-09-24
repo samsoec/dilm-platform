@@ -1,8 +1,5 @@
 name: Deploy production
 
-# Manual approval gate: the `production` GitHub Environment holds the required
-# reviewers, and the production deploy role only trusts that environment
-# (Backend Spec §13).
 on:
   workflow_dispatch:
 

@@ -1,22 +1,37 @@
 #!/usr/bin/env bash
-# DILM-27 — one-time AWS bootstrap: GitHub OIDC provider + SST deploy roles.
-# Run once per AWS account, with human credentials. Everything afterwards
-# authenticates through OIDC.
-#
-#   AWS_PROFILE=<profile> ./scripts/bootstrap-aws.sh [github-org] [github-repo]
 set -euo pipefail
 
 STACK_NAME="dilm-github-oidc"
 REGION="ap-southeast-3"
-GITHUB_ORG="${1:-samsoec}"
-GITHUB_REPO="${2:-dilm-platform}"
 TEMPLATE="$(dirname "$0")/../infra/bootstrap/github-oidc.yaml"
 
-# Only one token.actions.githubusercontent.com provider may exist per account.
-if aws iam list-open-id-connect-providers --region "$REGION" \
-  --query "OpenIDConnectProviderList[?contains(Arn, 'token.actions.githubusercontent.com')]" \
-  --output text | grep -q .; then
-  echo "Existing GitHub OIDC provider found — reusing it."
+usage() {
+  cat <<'USAGE'
+Creates the GitHub Actions OIDC provider and the SST deploy roles.
+Run once per AWS account, with human credentials.
+
+  AWS_PROFILE=<profile> ./scripts/bootstrap-aws.sh [github-org] [github-repo]
+
+Defaults: samsoec dilm-platform
+USAGE
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+GITHUB_ORG="${1:-samsoec}"
+GITHUB_REPO="${2:-dilm-platform}"
+
+existing_provider() {
+  aws iam list-open-id-connect-providers --region "$REGION" \
+    --query "OpenIDConnectProviderList[?contains(Arn, 'token.actions.githubusercontent.com')]" \
+    --output text | grep -q .
+}
+
+if existing_provider; then
+  echo "Existing GitHub OIDC provider found, reusing it."
   CREATE_PROVIDER="false"
 else
   CREATE_PROVIDER="true"
@@ -33,7 +48,7 @@ aws cloudformation deploy \
     "CreateOidcProvider=$CREATE_PROVIDER"
 
 echo
-echo "Role ARNs — set these as GitHub Actions secrets:"
+echo "Role ARNs, to set as GitHub Actions secrets:"
 aws cloudformation describe-stacks \
   --region "$REGION" \
   --stack-name "$STACK_NAME" \
