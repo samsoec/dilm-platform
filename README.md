@@ -5,9 +5,11 @@ platform for the three DIL Group tenants: `indoacid.com` (PT Indonesian Acids
 Industry), `duniakimia.com` (PT Dunia Kimia Utama) and `likutelaga.com`
 (PT Liku Telaga).
 
-The source-of-truth specs live in [`docs/`](docs/). Start with
-[`DIL-WEB-2026-Backend-Base-Setup-Spec.md`](docs/DIL-WEB-2026-Backend-Base-Setup-Spec.md);
-its §3 "Locked Decisions" are decided and shouldn't be reopened without James.
+The source-of-truth specs (Backend Base Setup Spec, CMS Development Phase TRD,
+Task Breakdown, Architecture Challenge Log) are client-confidential and are
+**not** kept in this repository — ask James for access. This README and the
+commit messages cite them by section, e.g. "Backend Spec §3.7". The spec's §3
+"Locked Decisions" are decided and shouldn't be reopened without James.
 
 ## Prerequisites
 
@@ -105,7 +107,6 @@ apps/cms/     Payload CMS — admin UI, REST/GraphQL, Local API, CV consumer
 packages/     shared-types, runtime-config, config
 infra/        SST app — every AWS resource is defined here
 scripts/      Ops scripts (tenant seeding, migrations, Cloudflare IP refresh)
-docs/         Source-of-truth project docs
 ```
 
 `apps/`, `packages/` and the shared configs are scaffolded by the next Track 1

@@ -9,6 +9,8 @@ dist/
 .env.*
 !.env.example
 
+docs/
+
 .DS_Store
 .idea/
 .vscode/
