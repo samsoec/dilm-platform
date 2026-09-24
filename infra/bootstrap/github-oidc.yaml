@@ -40,6 +40,9 @@ Resources:
         - sts.amazonaws.com
       ThumbprintList:
         - 6938fd4d98bab03faadb97b34396831e3780aea1
+        - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
+        - 2d74d6dfd96eea55ad7baafa0d3c6552b2dadc37
+        - ab9d0263244dd0326eb67015705a667e79cfe998
 
   DeployRole:
     Type: AWS::IAM::Role

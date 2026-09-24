@@ -39,8 +39,18 @@ existing_provider() {
     --output text | grep -q .
 }
 
-if existing_provider; then
-  echo "Existing GitHub OIDC provider found, reusing it."
+stack_owns_provider() {
+  aws cloudformation describe-stack-resource \
+    --region "$REGION" \
+    --stack-name "$STACK_NAME" \
+    --logical-resource-id GitHubOidcProvider >/dev/null 2>&1
+}
+
+if stack_owns_provider; then
+  echo "This stack already manages the GitHub OIDC provider."
+  CREATE_PROVIDER="true"
+elif existing_provider; then
+  echo "A GitHub OIDC provider exists outside this stack, reusing it."
   CREATE_PROVIDER="false"
 else
   CREATE_PROVIDER="true"
