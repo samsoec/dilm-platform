@@ -69,7 +69,11 @@ export interface Config {
   collections: {
     users: User;
     tenants: Tenant;
+    'tenant-settings': TenantSetting;
     media: Media;
+    'consent-logs': ConsentLog;
+    'ir-documents': IrDocument;
+    'cv-submissions': CvSubmission;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -79,7 +83,11 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
+    'tenant-settings': TenantSettingsSelect<false> | TenantSettingsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    'consent-logs': ConsentLogsSelect<false> | ConsentLogsSelect<true>;
+    'ir-documents': IrDocumentsSelect<false> | IrDocumentsSelect<true>;
+    'cv-submissions': CvSubmissionsSelect<false> | CvSubmissionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -167,10 +175,42 @@ export interface Tenant {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenant-settings".
+ */
+export interface TenantSetting {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  siteName: string;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  /**
+   * Receives a notification for every career application to this tenant.
+   */
+  recruiterEmail?: string | null;
+  socialLinks?:
+    | {
+        platform: 'facebook' | 'instagram' | 'linkedin' | 'x' | 'youtube' | 'tiktok';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  defaultSeo?: {
+    title?: string | null;
+    description?: string | null;
+    ogImage?: (number | null) | Media;
+  };
+  analyticsId?: string | null;
+  waLink?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
   id: number;
+  tenant?: (number | null) | Tenant;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -201,6 +241,76 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * UU PDP consent audit trail, written by the system. Holds no IP addresses.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-logs".
+ */
+export interface ConsentLog {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  timestamp: string;
+  policyVersion: string;
+  relatedRecordId: string;
+  consentType: 'career-application' | 'contact-form';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ir-documents".
+ */
+export interface IrDocument {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  title: string;
+  documentType:
+    | 'annual-report'
+    | 'financial-statement'
+    | 'sustainability-report'
+    | 'public-disclosure'
+    | 'shareholder-meeting'
+    | 'prospectus';
+  publishedDate: string;
+  locale: 'en' | 'id';
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cv-submissions".
+ */
+export interface CvSubmission {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  submissionId: string;
+  applicantName: string;
+  email: string;
+  phone: string;
+  position: string;
+  /**
+   * S3 key of the résumé in the private CV bucket.
+   */
+  resumeFileKey: string;
+  submittedAt: string;
+  status: 'received' | 'reviewed' | 'shortlisted' | 'rejected';
+  applicantNotifiedAt?: string | null;
+  recruiterNotifiedAt?: string | null;
+  externalSyncStatus: 'pending' | 'synced' | 'failed';
+  externalSyncAttempts: number;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -235,8 +345,24 @@ export interface PayloadLockedDocument {
         value: number | Tenant;
       } | null)
     | ({
+        relationTo: 'tenant-settings';
+        value: number | TenantSetting;
+      } | null)
+    | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'consent-logs';
+        value: number | ConsentLog;
+      } | null)
+    | ({
+        relationTo: 'ir-documents';
+        value: number | IrDocument;
+      } | null)
+    | ({
+        relationTo: 'cv-submissions';
+        value: number | CvSubmission;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -324,9 +450,39 @@ export interface TenantsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenant-settings_select".
+ */
+export interface TenantSettingsSelect<T extends boolean = true> {
+  tenant?: T;
+  siteName?: T;
+  contactEmail?: T;
+  contactPhone?: T;
+  recruiterEmail?: T;
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  defaultSeo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        ogImage?: T;
+      };
+  analyticsId?: T;
+  waLink?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  tenant?: T;
   alt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -363,6 +519,62 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-logs_select".
+ */
+export interface ConsentLogsSelect<T extends boolean = true> {
+  tenant?: T;
+  timestamp?: T;
+  policyVersion?: T;
+  relatedRecordId?: T;
+  consentType?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ir-documents_select".
+ */
+export interface IrDocumentsSelect<T extends boolean = true> {
+  tenant?: T;
+  title?: T;
+  documentType?: T;
+  publishedDate?: T;
+  locale?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cv-submissions_select".
+ */
+export interface CvSubmissionsSelect<T extends boolean = true> {
+  tenant?: T;
+  submissionId?: T;
+  applicantName?: T;
+  email?: T;
+  phone?: T;
+  position?: T;
+  resumeFileKey?: T;
+  submittedAt?: T;
+  status?: T;
+  applicantNotifiedAt?: T;
+  recruiterNotifiedAt?: T;
+  externalSyncStatus?: T;
+  externalSyncAttempts?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
