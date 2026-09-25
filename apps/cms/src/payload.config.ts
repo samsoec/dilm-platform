@@ -7,13 +7,17 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { Media } from "./collections/Media";
+import { Tenants } from "./collections/Tenants";
 import { Users } from "./collections/Users";
 import { cmsDatabasePool } from "./database";
 import { localization } from "./localization";
+import { multiTenant } from "./tenancy";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const runtimeConfig = await getRuntimeConfig();
+
+const collections = [Users, Tenants, Media];
 
 export default buildConfig({
   admin: {
@@ -22,7 +26,7 @@ export default buildConfig({
       baseDir: dirname,
     },
   },
-  collections: [Users, Media],
+  collections,
   localization,
   secret: runtimeConfig.payloadSecret,
   typescript: {
@@ -32,4 +36,5 @@ export default buildConfig({
     pool: cmsDatabasePool(runtimeConfig.database),
   }),
   sharp,
+  plugins: [multiTenant(collections)],
 });

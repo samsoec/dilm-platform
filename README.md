@@ -125,12 +125,37 @@ for it: a single `ALTER TYPE "_locales" ADD VALUE '<code>'` that leaves every
 table and existing translation untouched. No content exists yet for any
 language beyond the two.
 
-**Seed tenants** once the stack is up. The seeding script lands with the
-multi-tenancy ticket (DILM-14); until then this command doesn't exist yet:
+**Seed tenants** once Postgres is up:
 
 ```bash
 pnpm --filter cms seed:tenants
 ```
+
+The three tenants (Backend Spec §7.1) are always created by this script,
+never typed into the admin panel. Their slugs and domains come from
+`TENANT_DOMAINS` in `packages/shared-types`, the same map the web app uses
+to route a `Host` header to a tenant, so the two can't drift apart. The
+script is safe to re-run: it creates missing tenants, resets any whose name,
+domain or default language was edited by hand, and reports each one as
+`created`, `updated` or `unchanged`. If it finds a tenant it didn't seed it
+leaves it in place and exits non-zero, because deleting a tenant also
+deletes every document that belongs to it.
+
+**Tenant-scoped collections.** One Payload instance serves all three
+tenants through `@payloadcms/plugin-multi-tenant`. A collection whose
+documents belong to one tenant is wrapped when it is defined:
+
+```ts
+export const Posts = withTenantAccess({ slug: "posts", fields: [...] });
+```
+
+`withTenantAccess` (in `apps/cms/src/tenancy.ts`) marks the collection, and
+`payload.config.ts` hands every marked collection to the plugin, which adds a
+required `tenant` field, filters the admin list by the tenant picked in the
+sidebar, and limits reads and writes to the user's own tenants. Options the
+plugin accepts per collection, such as `{ isGlobal: true }` for one document
+per tenant, go in the second argument. Until roles arrive with DILM-15 every
+signed-in user can see every tenant.
 
 How it lines up with AWS:
 

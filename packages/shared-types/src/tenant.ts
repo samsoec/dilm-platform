@@ -1,4 +1,3 @@
-// TODO(DILM-14): keep these slugs identical to the seeded `tenants` documents.
 export const TENANT_SLUGS = ["indoacid", "duniakimia", "likutelaga"] as const;
 
 export type TenantSlug = (typeof TENANT_SLUGS)[number];
