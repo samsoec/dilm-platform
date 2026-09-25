@@ -8,6 +8,7 @@
     "dev": "next dev",
     "generate:importmap": "pnpm payload generate:importmap",
     "generate:types": "pnpm payload generate:types",
+    "grant:super-admin": "pnpm payload run src/seed/grant-super-admin.ts",
     "lint": "eslint .",
     "payload": "node --env-file-if-exists=../../.env node_modules/payload/bin.js",
     "seed:tenants": "pnpm payload run src/seed/seed-tenants.ts",

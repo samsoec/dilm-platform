@@ -2,6 +2,7 @@ import { multiTenantPlugin } from "@payloadcms/plugin-multi-tenant";
 import type { MultiTenantPluginConfig } from "@payloadcms/plugin-multi-tenant/types";
 import type { CollectionConfig, CollectionSlug, Plugin } from "payload";
 
+import { isSuperAdmin, tenantContentAccess } from "./access";
 import { Tenants } from "./collections/Tenants";
 
 export type TenantScope = NonNullable<
@@ -16,6 +17,7 @@ export function withTenantAccess(
 ): CollectionConfig {
   return {
     ...collection,
+    access: { ...tenantContentAccess, ...collection.access },
     custom: { ...collection.custom, [TENANT_SCOPE_KEY]: scope },
   };
 }
@@ -36,8 +38,6 @@ export function multiTenant(collections: CollectionConfig[]): Plugin {
   return multiTenantPlugin({
     tenantsSlug: Tenants.slug,
     collections: tenantScopedCollections(collections),
-    // TODO(DILM-15): only Super Admins see every tenant; editors and viewers
-    // see the tenants on their users.tenants array.
-    userHasAccessToAllTenants: () => true,
+    userHasAccessToAllTenants: isSuperAdmin,
   });
 }
