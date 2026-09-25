@@ -5,7 +5,7 @@ import {
   type JobPlatformConfig,
   type QueueConfig,
   type RuntimeConfig,
-} from "./config.js";
+} from "./config";
 
 type Env = Record<string, string | undefined>;
 

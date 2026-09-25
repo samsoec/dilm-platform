@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { TENANT_SLUGS } from "./tenant.js";
+import { TENANT_SLUGS } from "./tenant";
 
 describe("TENANT_SLUGS", () => {
   it("covers the three DIL Group tenants", () => {

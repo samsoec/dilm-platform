@@ -11,10 +11,11 @@ serving three DIL Group tenants from one deployment — `indonesianacids.com`,
 The repo is early: `infra/` is a real SST app with only stages and region wired
 up. The workspace skeleton exists — `packages/config` (shared tsconfig/eslint/
 tailwind bases), `packages/shared-types` (CV queue message contract),
-`packages/runtime-config` and placeholder `apps/web` / `apps/cms` — but the
-Next.js and Payload applications themselves are not scaffolded yet. `TODO(DILM…)`
-markers in [infra/sst.config.ts](infra/sst.config.ts), the placeholder packages
-and the workflows mark where that work lands.
+`packages/runtime-config` and a placeholder `apps/web`. `apps/cms` is a
+Payload 3 app on Next.js 16 that runs locally against the Docker Postgres, with
+only a minimal `users` and `media` collection so far; it is not deployed yet.
+`TODO(DILM…)` markers in [infra/sst.config.ts](infra/sst.config.ts), the
+placeholder packages and the workflows mark where the remaining work lands.
 
 ## Commands
 
@@ -29,6 +30,7 @@ pnpm --filter infra exec sst install --stage staging   # regenerate .sst/ types 
 pnpm diff --stage staging                    # preview infra changes
 pnpm deploy:dev                              # sst deploy --stage dev
 pnpm --filter infra dev                      # sst dev
+docker compose up -d && pnpm --filter cms dev   # Payload admin on :3000/admin
 ```
 
 ESLint and Prettier are shared from `packages/config`; the root `lint`,
@@ -38,6 +40,12 @@ Husky `pre-commit` hook runs `lint-staged` over staged files.
 `.sst/` and `sst-env.d.ts` are gitignored, so `pnpm typecheck` fails on a fresh
 checkout until `sst install` has generated `platform/config.d.ts` — that is why
 CI runs the install step before typechecking.
+
+`apps/cms` is excluded from the root `tsconfig.json` (it needs JSX, DOM libs
+and the `@payload-config` path alias), so the root `typecheck` script chains
+into `pnpm --filter @dilm/cms typecheck`. Workspace packages use
+extensionless relative imports because Turbopack can't resolve `./x.js` to
+`x.ts`.
 
 ## Hard constraints
 

@@ -1,2 +1,2 @@
-export * from "./cv-queue.js";
-export * from "./tenant.js";
+export * from "./cv-queue";
+export * from "./tenant";

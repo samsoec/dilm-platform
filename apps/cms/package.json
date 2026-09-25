@@ -4,15 +4,33 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "generate:importmap": "pnpm payload generate:importmap",
+    "generate:types": "pnpm payload generate:types",
     "lint": "eslint .",
+    "payload": "node --env-file-if-exists=../../.env node_modules/payload/bin.js",
+    "start": "next start",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@dilm/runtime-config": "workspace:*",
-    "@dilm/shared-types": "workspace:*"
+    "@dilm/shared-types": "workspace:*",
+    "@payloadcms/db-postgres": "3.90.2",
+    "@payloadcms/next": "3.90.2",
+    "@payloadcms/ui": "3.90.2",
+    "graphql": "^16.14.2",
+    "next": "16.3.6",
+    "payload": "3.90.2",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "sharp": "0.35.4"
   },
   "devDependencies": {
     "@dilm/config": "workspace:*",
+    "@types/node": "^22.20.4",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "eslint": "^10.11.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"
