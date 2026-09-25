@@ -7,7 +7,11 @@ import { s3Storage } from "@payloadcms/storage-s3";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
+import { ConsentLogs } from "./collections/ConsentLogs";
+import { CvSubmissions } from "./collections/CvSubmissions";
+import { IrDocuments } from "./collections/IrDocuments";
 import { Media } from "./collections/Media";
+import { TenantSettings } from "./collections/TenantSettings";
 import { Tenants } from "./collections/Tenants";
 import { Users } from "./collections/Users";
 import { cmsDatabaseAdapter } from "./database";
@@ -20,7 +24,15 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const runtimeConfig = await getRuntimeConfig();
 
-const collections = [Users, Tenants, Media];
+const collections = [
+  Users,
+  Tenants,
+  TenantSettings,
+  Media,
+  ConsentLogs,
+  IrDocuments,
+  CvSubmissions,
+];
 
 export default buildConfig({
   admin: {

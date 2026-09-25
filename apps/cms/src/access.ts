@@ -51,6 +51,8 @@ export function hasTenantAccess(user: RoleHolder, tenant: TenantRef): boolean {
 
 export const anyone: Access = () => true;
 
+export const nobody: Access = () => false;
+
 export const superAdmins: Access = ({ req }) => isSuperAdmin(req.user);
 
 export const tenantEditors: Access = ({ req }) =>
@@ -66,10 +68,17 @@ export const superAdminsOrSelf: Access = ({ req }) => {
 
 export const superAdminField: FieldAccess = ({ req }) => isSuperAdmin(req.user);
 
+type FieldAccessMap = { create: FieldAccess; update: FieldAccess };
+
 export const systemCriticalFieldAccess = {
   create: superAdminField,
   update: superAdminField,
-};
+} satisfies FieldAccessMap;
+
+export const systemManagedField = {
+  create: () => false,
+  update: () => false,
+} satisfies FieldAccessMap;
 
 export const tenantContentAccess = {
   read: tenantMembers,
