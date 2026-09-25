@@ -21,13 +21,18 @@ export const promoteFirstUserToSuperAdmin: CollectionBeforeChangeHook = async ({
   return { ...data, roles: ["super-admin"] satisfies Role[] };
 };
 
+export const LOGIN_LOCKOUT = {
+  maxLoginAttempts: 5,
+  lockTime: 10 * 60 * 1000,
+} as const;
+
 export const Users: CollectionConfig = {
   slug: "users",
   admin: {
     useAsTitle: "email",
     defaultColumns: ["email", "roles"],
   },
-  auth: true,
+  auth: { ...LOGIN_LOCKOUT },
   access: {
     admin: ({ req }) => hasAnyRole(req.user),
     read: superAdminsOrSelf,
