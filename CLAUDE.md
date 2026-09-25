@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 `dilm-platform` (DIL-WEB-2026): a pnpm monorepo for the corporate web platform
-serving three DIL Group tenants from one deployment — `indoacid.com`,
+serving three DIL Group tenants from one deployment — `indonesianacids.com`,
 `duniakimia.com`, `likutelaga.com`.
 
 The repo is early: `infra/` is a real SST app with only stages and region wired
@@ -68,7 +68,7 @@ CI runs the install step before typechecking.
 - [infra/bootstrap/ses-identities.yaml](infra/bootstrap/ses-identities.yaml) +
   [scripts/bootstrap-ses.sh](scripts/bootstrap-ses.sh) — the three SES sender
   domains, created once per account (not per stage, since all stages share the
-  account). The `indoacid` tenant sends from `indonesianacids.com`. The script
+  account). The script
   prints the DNS records to add and the verification status.
 - [.github/workflows/](.github/workflows/) — `ci.yml` (PR: typecheck + diff),
   `deploy-staging.yml` (push to `main`), `deploy-production.yml` (manual

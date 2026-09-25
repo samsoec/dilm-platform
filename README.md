@@ -1,7 +1,7 @@
 # dilm-platform
 
 Infrastructure and application monorepo for **DIL-WEB-2026** — the corporate web
-platform for the three DIL Group tenants: `indoacid.com` (PT Indonesian Acids
+platform for the three DIL Group tenants: `indonesianacids.com` (PT Indonesian Acids
 Industry), `duniakimia.com` (PT Dunia Kimia Utama) and `likutelaga.com`
 (PT Liku Telaga).
 
