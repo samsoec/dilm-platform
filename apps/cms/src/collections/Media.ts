@@ -1,14 +1,11 @@
-import type { CollectionConfig } from "payload";
-
-import { anyone, tenantContentAccess } from "../access";
+import { anyone } from "../access";
+import { withTenantAccess } from "../tenancy";
 
 // TODO(DILM-18): store on S3 via @payloadcms/storage-s3 and replace these
 // sizes with the adjustable thumbnail/card/social-share preset array.
-// TODO(DILM-17): wrap in withTenantAccess so every file belongs to a tenant.
-export const Media: CollectionConfig = {
+export const Media = withTenantAccess({
   slug: "media",
   access: {
-    ...tenantContentAccess,
     read: anyone,
   },
   fields: [
@@ -25,4 +22,4 @@ export const Media: CollectionConfig = {
       { name: "card", width: 768 },
     ],
   },
-};
+});

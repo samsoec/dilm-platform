@@ -1,4 +1,4 @@
-import type { CollectionConfig, Config } from "payload";
+import type { CollectionConfig, Config, Field } from "payload";
 
 import { multiTenant } from "./tenancy";
 
@@ -15,4 +15,11 @@ export async function applyMultiTenant(collections: CollectionConfig[]) {
   } as Config);
   return (slug: string) =>
     config.collections!.find((collection) => collection.slug === slug)!;
+}
+
+export function fieldNames(fields: Field[]): string[] {
+  return fields.flatMap((field) => [
+    ...("name" in field ? [field.name] : []),
+    ...("fields" in field ? fieldNames(field.fields) : []),
+  ]);
 }

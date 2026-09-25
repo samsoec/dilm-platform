@@ -1,20 +1,12 @@
 import { readFileSync } from "node:fs";
 
-import type { Field } from "payload";
 import { describe, expect, it } from "vitest";
 
 import { Tenants } from "./collections/Tenants";
 import { LOGIN_LOCKOUT, Users } from "./collections/Users";
-import { applyMultiTenant } from "./testing";
+import { applyMultiTenant, fieldNames } from "./testing";
 
 const MFA_PATTERN = /mfa|totp|otp|2fa|two.?factor/i;
-
-function fieldNames(fields: Field[]): string[] {
-  return fields.flatMap((field) => [
-    ...("name" in field ? [field.name] : []),
-    ...("fields" in field ? fieldNames(field.fields) : []),
-  ]);
-}
 
 describe("login lockout", () => {
   it("locks an account for 10 minutes after 5 failed logins", () => {
