@@ -15,7 +15,7 @@ commit messages cite them by section, e.g. "Backend Spec §3.7". The spec's §3
 
 | Tool    | Version                 | Notes                                              |
 | ------- | ----------------------- | -------------------------------------------------- |
-| Node.js | 20.11+                  | `.nvmrc` pins 20 — `nvm use`                       |
+| Node.js | 20.20+                  | `.nvmrc` pins 20 — `nvm use`                       |
 | pnpm    | 10.14+                  | `corepack enable` picks up the pinned version      |
 | AWS CLI | v2                      | Credentials for the DIL AWS account                |
 | SST     | 4.x (installed by pnpm) | This is the "SST v3 / ion" line the spec refers to |
@@ -94,6 +94,28 @@ docker compose --profile queue down -v
 docker compose up -d
 ```
 
+**Run the CMS** once Postgres is up:
+
+```bash
+pnpm --filter cms dev
+```
+
+Open http://localhost:3000/admin and create the first user. In development
+Payload syncs the database schema from the collection config on start, so
+there is nothing to migrate locally yet (migrations come with DILM-21).
+Uploads are written to `apps/cms/media/` (gitignored) until the S3 adapter
+lands in DILM-18.
+
+Both `next` and the `payload` CLI read the repo-root `.env`: `next.config.ts`
+loads it with `process.loadEnvFile`, and `pnpm --filter cms payload …` runs
+the CLI under `node --env-file-if-exists`. After changing a collection,
+regenerate the committed types and admin import map:
+
+```bash
+pnpm --filter cms generate:types
+pnpm --filter cms generate:importmap
+```
+
 **Seed tenants** once the stack is up. The seeding script lands with the
 multi-tenancy ticket (DILM-14); until then this command doesn't exist yet:
 
@@ -114,7 +136,12 @@ How it lines up with AWS:
   it will on AWS. The master `postgres` user is for admin work only.
 - **Same connection pool.** `databasePoolOptions("cms" | "cv-consumer" |
 "migrations")` returns the Backend Spec §8.2 pool sizes and timeouts, used
-  unchanged in both environments.
+  unchanged in both environments. Payload 3.90.2's Postgres adapter keeps
+  the client it checks out while connecting, which pins one connection
+  forever and would stop Aurora from auto-pausing.
+  `patches/@payloadcms__db-postgres@3.90.2.patch` backports the upstream fix
+  (payloadcms/payload#17831, so far only released on the v4 line). Drop it
+  when Payload is upgraded past a 3.x release that includes the fix.
 - **Same bucket split.** `dilm-local-public` is anonymously readable (standing
   in for the Cloudflare path); `dilm-local-cv-private` has no public access.
 - **Same CPU architecture.** Every container runs as `linux/arm64`, matching
@@ -262,7 +289,9 @@ compose.yaml, docker/   Local development stack (Postgres, MinIO, Mailpit, Elast
 Every workspace package is private and unpublished. `packages/shared-types` and
 `packages/runtime-config` are consumed straight from TypeScript source
 (`exports` points at `src/index.ts`), so there is no build step between them and
-the apps.
+the apps. Their relative imports are extensionless (`./config`, not
+`./config.js`) because Turbopack, which compiles them inside `apps/cms`, does
+not map a `.js` specifier to its `.ts` source.
 
 `packages/config` is the single home for the shared base configs:
 

@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.14.0",
   "engines": {
-    "node": ">=20.11"
+    "node": ">=20.20"
   },
   "scripts": {
     "deploy:dev": "pnpm --filter infra deploy --stage dev",
@@ -15,7 +15,7 @@
     "lint": "eslint .",
     "prepare": "husky",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && pnpm --filter @dilm/cms typecheck"
   },
   "devDependencies": {
     "@dilm/config": "workspace:*",

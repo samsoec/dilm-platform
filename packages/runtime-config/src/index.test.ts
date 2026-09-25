@@ -9,7 +9,7 @@ import {
   MissingEnvError,
   readRuntimeConfigFromEnv,
   runtimeConfigSource,
-} from "./index.js";
+} from "./index";
 
 function parseDotenv(path: string): Record<string, string> {
   const entries = readFileSync(path, "utf8")

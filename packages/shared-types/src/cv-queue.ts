@@ -1,4 +1,4 @@
-import type { TenantSlug } from "./tenant.js";
+import type { TenantSlug } from "./tenant";
 
 export interface CvSubmissionFields {
   applicantName: string;

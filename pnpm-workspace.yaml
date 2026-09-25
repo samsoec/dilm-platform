@@ -5,3 +5,12 @@ packages:
 
 onlyBuiltDependencies:
   - esbuild
+  - sharp
+
+patchedDependencies:
+  "@payloadcms/db-postgres@3.90.2": patches/@payloadcms__db-postgres@3.90.2.patch
+
+supportedArchitectures:
+  cpu: [current, arm64]
+  libc: [current, glibc]
+  os: [current, linux]

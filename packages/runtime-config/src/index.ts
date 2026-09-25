@@ -1,9 +1,9 @@
-import type { RuntimeConfig } from "./config.js";
-import { readRuntimeConfigFromEnv } from "./env.js";
+import type { RuntimeConfig } from "./config";
+import { readRuntimeConfigFromEnv } from "./env";
 
-export * from "./config.js";
-export { MissingEnvError, readRuntimeConfigFromEnv } from "./env.js";
-export * from "./pool.js";
+export * from "./config";
+export { MissingEnvError, readRuntimeConfigFromEnv } from "./env";
+export * from "./pool";
 
 export type RuntimeConfigSource = "env" | "aws";
 
