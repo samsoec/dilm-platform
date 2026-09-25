@@ -116,6 +116,15 @@ pnpm --filter cms generate:types
 pnpm --filter cms generate:importmap
 ```
 
+**Languages.** The CMS is configured for English and Indonesian, English by
+default (Backend Spec §7.7), in `apps/cms/src/localization.ts`. A field only
+gets a value per language once it is marked `localized: true`. The Postgres
+adapter keeps the language list in a `_locales` enum type, so adding a third
+language is a one-line config change plus the migration Payload generates
+for it: a single `ALTER TYPE "_locales" ADD VALUE '<code>'` that leaves every
+table and existing translation untouched. No content exists yet for any
+language beyond the two.
+
 **Seed tenants** once the stack is up. The seeding script lands with the
 multi-tenancy ticket (DILM-14); until then this command doesn't exist yet:
 

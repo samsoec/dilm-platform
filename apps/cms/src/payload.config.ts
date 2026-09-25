@@ -9,6 +9,7 @@ import sharp from "sharp";
 import { Media } from "./collections/Media";
 import { Users } from "./collections/Users";
 import { cmsDatabasePool } from "./database";
+import { localization } from "./localization";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -22,6 +23,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media],
+  localization,
   secret: runtimeConfig.payloadSecret,
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
