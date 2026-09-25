@@ -13,7 +13,8 @@
     "payload": "node --env-file-if-exists=../../.env node_modules/payload/bin.js",
     "seed:tenants": "pnpm payload run src/seed/seed-tenants.ts",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify:login-lockout": "pnpm payload run src/seed/verify-login-lockout.ts"
   },
   "dependencies": {
     "@dilm/runtime-config": "workspace:*",

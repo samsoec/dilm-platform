@@ -157,6 +157,25 @@ plugin accepts per collection, such as `{ isGlobal: true }` for one document
 per tenant, go in the second argument. Until roles arrive with DILM-15 every
 signed-in user can see every tenant.
 
+**Sign-in lockout.** Admin and editor accounts use Payload's built-in
+email/password login. After 5 wrong passwords in a row an account is locked
+for 10 minutes, even for the right password (Backend Spec §7.4). A Super
+Admin can lift it early with the admin panel's unlock button. The numbers
+are fixed in `LOGIN_LOCKOUT` in `apps/cms/src/collections/Users.ts`, not read
+from the environment, so every stage behaves the same. There is deliberately
+no MFA: no MFA/TOTP fields, plugins or flows (Backend Spec §3.3), and
+`auth.test.ts` fails if one appears. To prove the lockout against a real
+database, run
+
+```bash
+pnpm --filter cms verify:login-lockout
+```
+
+It creates a throwaway user, fails its login five times, checks that the
+correct password is then refused for ~10 minutes, and deletes the user. It
+uses whichever database the runtime config points at, so the same command
+verifies staging.
+
 How it lines up with AWS:
 
 - **One `.env`, read by both sides.** Docker Compose reads `.env` for ports,
