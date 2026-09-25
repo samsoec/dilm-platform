@@ -125,6 +125,7 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  roles: ('super-admin' | 'tenant-editor' | 'tenant-viewer')[];
   tenants?:
     | {
         tenant: number | Tenant;
@@ -284,6 +285,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  roles?: T;
   tenants?:
     | T
     | {

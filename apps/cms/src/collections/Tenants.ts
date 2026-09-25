@@ -1,10 +1,20 @@
 import type { CollectionConfig } from "payload";
 
+import {
+  superAdmins,
+  systemCriticalFieldAccess,
+  tenantMembers,
+} from "../access";
 import { localization } from "../localization";
 
-// TODO(DILM-15): restrict create, update and delete to Super Admins.
 export const Tenants: CollectionConfig = {
   slug: "tenants",
+  access: {
+    read: tenantMembers,
+    create: superAdmins,
+    update: superAdmins,
+    delete: superAdmins,
+  },
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "slug", "domain", "defaultLocale"],
@@ -20,12 +30,14 @@ export const Tenants: CollectionConfig = {
       type: "text",
       required: true,
       unique: true,
+      access: systemCriticalFieldAccess,
     },
     {
       name: "domain",
       type: "text",
       required: true,
       unique: true,
+      access: systemCriticalFieldAccess,
     },
     {
       name: "defaultLocale",

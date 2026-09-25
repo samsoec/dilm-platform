@@ -1,12 +1,9 @@
-import type { CollectionConfig, Config } from "payload";
+import type { CollectionConfig } from "payload";
 import { describe, expect, it } from "vitest";
 
 import { Tenants } from "./collections/Tenants";
-import {
-  multiTenant,
-  tenantScopedCollections,
-  withTenantAccess,
-} from "./tenancy";
+import { tenantScopedCollections, withTenantAccess } from "./tenancy";
+import { applyMultiTenant } from "./testing";
 
 const users: CollectionConfig = { slug: "users", auth: true, fields: [] };
 const posts: CollectionConfig = {
@@ -36,17 +33,12 @@ describe("tenantScopedCollections", () => {
 });
 
 describe("multiTenant", () => {
-  async function apply(collections: CollectionConfig[]) {
-    const config = await multiTenant(collections)({
-      admin: { user: "users" },
-      collections: structuredClone(collections),
-    } as Config);
-    return (slug: string) =>
-      config.collections!.find((collection) => collection.slug === slug)!;
-  }
-
   it("adds a tenant field and tenant access to wrapped collections", async () => {
-    const collection = await apply([users, Tenants, withTenantAccess(posts)]);
+    const collection = await applyMultiTenant([
+      users,
+      Tenants,
+      withTenantAccess(posts),
+    ]);
 
     expect(
       collection("posts").fields.map((field) => "name" in field && field.name),
@@ -55,13 +47,13 @@ describe("multiTenant", () => {
   });
 
   it("leaves unwrapped collections alone", async () => {
-    const collection = await apply([users, Tenants, posts]);
+    const collection = await applyMultiTenant([users, Tenants, posts]);
 
     expect(collection("posts").fields).toEqual(posts.fields);
   });
 
   it("gives users a tenants field", async () => {
-    const collection = await apply([users, Tenants]);
+    const collection = await applyMultiTenant([users, Tenants]);
 
     expect(
       collection("users").fields.map((field) => "name" in field && field.name),
