@@ -100,9 +100,11 @@ docker compose up -d
 pnpm --filter cms dev
 ```
 
-Open http://localhost:3000/admin and create the first user. In development
-Payload syncs the database schema from the collection config on start, so
-there is nothing to migrate locally yet (migrations come with DILM-21).
+Open http://localhost:3000/admin and create the first user. Against the
+local `.env` database, Payload syncs the schema from the collection config on
+start, so you can iterate on fields without writing a migration each time.
+Every deployed database only changes through committed migrations — see
+[Database migrations](#database-migrations).
 Uploads are written to `apps/cms/media/` (gitignored) until the S3 adapter
 lands in DILM-18.
 
@@ -210,6 +212,47 @@ permission scoped to the three verified sender identities.
 MinIO's official Docker images were discontinued in late 2025, so the stack
 uses [`pgsty/minio`](https://hub.docker.com/r/pgsty/minio), a
 community-maintained build of the same server, pinned to a fixed release.
+
+## Database migrations
+
+A migration is a committed file in `apps/cms/src/migrations/` that describes
+one change to the database's shape — new tables, columns or enum values — in
+SQL, with an `up` to apply it and a `down` to undo it. Deployed databases only
+ever change by running these files, as an explicit CI step before the new
+version goes live (Backend Spec §8.1, §13). The CMS never reshapes a database
+while starting up: schema sync is on only for databases configured from a
+local `.env`, and Payload's run-migrations-on-start option is left off.
+
+After changing a collection, generate the migration and commit it with the
+change:
+
+```bash
+pnpm --filter cms migrate:create add_news_summary   # writes <timestamp>_add_news_summary.{ts,json}
+pnpm --filter cms generate:types
+```
+
+Payload compares the collection config with the snapshot (`.json`) of the
+latest migration, so this needs no database. Read the generated SQL before
+committing — a renamed field shows up as a dropped column plus a new one, and
+that drops its data. The files are Payload's output verbatim, so ESLint and
+Prettier skip the folder.
+
+To check the migrations themselves, run them against an empty database:
+
+```bash
+docker compose down -v && docker compose up -d
+pnpm --filter cms migrate          # apply every pending migration
+pnpm --filter cms migrate:status   # list which have run
+```
+
+Reset first if you have already run `pnpm --filter cms dev` against that
+database: a schema Payload synced on start isn't recorded as a migration, and
+`migrate` stops to ask before touching it.
+
+The `Payload migrations` CI job runs on every pull request. It applies every
+migration to an empty Postgres 16, then runs `migrate:create --skip-empty` and
+fails if that writes a file — meaning a collection changed without its
+migration being committed.
 
 ## Code quality
 
@@ -362,11 +405,12 @@ up.
 
 ## CI/CD
 
-| Workflow                | Trigger         | Does                                                             |
-| ----------------------- | --------------- | ---------------------------------------------------------------- |
-| `ci.yml`                | PR → `main`     | Lint, typecheck, test, `sst diff --stage staging`                |
-| `deploy-staging.yml`    | Push to `main`  | `sst deploy --stage staging`                                     |
-| `deploy-production.yml` | Manual dispatch | `sst deploy --stage production`, behind the environment approval |
+| Workflow                | Trigger         | Does                                                                        |
+| ----------------------- | --------------- | --------------------------------------------------------------------------- |
+| `ci.yml`                | PR → `main`     | Lint, typecheck, test, `sst diff --stage staging`, Payload migrations check |
+| `deploy-staging.yml`    | Push to `main`  | `sst deploy --stage staging`                                                |
+| `deploy-production.yml` | Manual dispatch | `sst deploy --stage production`, behind the environment approval            |
 
-The Payload migration step is added with the app that needs it (Backend Spec
-§13).
+Both deploy workflows will run `pnpm --filter @dilm/cms migrate` before
+`sst deploy` once Aurora exists (DILM-38): the runner connects to Aurora's
+public endpoint over TLS as `payload_app` (Backend Spec §8.1, §13).

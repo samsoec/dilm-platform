@@ -8,5 +8,6 @@ next-env.d.ts
 apps/cms/media/
 **/payload-types.ts
 **/importMap.js
+apps/cms/src/migrations/
 docs/
 pnpm-lock.yaml

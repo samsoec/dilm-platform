@@ -34,5 +34,9 @@ jobs:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ap-southeast-3
 
+      # TODO(DILM-38): run `pnpm --filter @dilm/cms migrate` here, before the
+      # new version goes live (Backend Spec §13), once Aurora and the AWS
+      # runtime-config loader (DILM-12) exist for it to connect with.
+
       - name: Deploy
         run: pnpm deploy:production
