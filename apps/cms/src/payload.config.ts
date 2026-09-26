@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { getRuntimeConfig } from "@dilm/runtime-config";
+import { getRuntimeConfig, runtimeConfigSource } from "@dilm/runtime-config";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { buildConfig } from "payload";
 import sharp from "sharp";
@@ -9,7 +9,7 @@ import sharp from "sharp";
 import { Media } from "./collections/Media";
 import { Tenants } from "./collections/Tenants";
 import { Users } from "./collections/Users";
-import { cmsDatabasePool } from "./database";
+import { cmsDatabaseAdapter } from "./database";
 import { localization } from "./localization";
 import { multiTenant } from "./tenancy";
 
@@ -32,9 +32,13 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
-  db: postgresAdapter({
-    pool: cmsDatabasePool(runtimeConfig.database),
-  }),
+  db: postgresAdapter(
+    cmsDatabaseAdapter(
+      runtimeConfig.database,
+      runtimeConfigSource(process.env),
+      path.resolve(dirname, "migrations"),
+    ),
+  ),
   sharp,
   plugins: [multiTenant(collections)],
 });
