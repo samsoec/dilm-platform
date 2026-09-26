@@ -1,1 +1,3 @@
-export { default } from "@dilm/config/eslint/base";
+import base from "@dilm/config/eslint/base";
+
+export default [...base, { ignores: ["src/migrations/**"] }];

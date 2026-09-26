@@ -31,6 +31,8 @@ pnpm diff --stage staging                    # preview infra changes
 pnpm deploy:dev                              # sst deploy --stage dev
 pnpm --filter infra dev                      # sst dev
 docker compose up -d && pnpm --filter cms dev   # Payload admin on :3000/admin
+pnpm --filter cms migrate:create <name>      # after any collection change; commit the output
+pnpm --filter cms migrate                    # apply pending migrations
 ```
 
 ESLint and Prettier are shared from `packages/config`; the root `lint`,

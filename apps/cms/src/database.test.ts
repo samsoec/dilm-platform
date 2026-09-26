@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { cmsDatabasePool } from "./database";
+import { cmsDatabaseAdapter, cmsDatabasePool } from "./database";
 
 const local = {
   host: "localhost",
@@ -25,5 +25,25 @@ describe("cmsDatabasePool", () => {
     expect(cmsDatabasePool({ ...local, ssl: true }).ssl).toEqual({
       rejectUnauthorized: true,
     });
+  });
+});
+
+describe("cmsDatabaseAdapter", () => {
+  const migrationDir = "/app/src/migrations";
+
+  it("lets a local .env database follow the collection config on start", () => {
+    expect(cmsDatabaseAdapter(local, "env", migrationDir).push).toBe(true);
+  });
+
+  it("never changes a deployed database's schema as a side effect of startup", () => {
+    const adapter = cmsDatabaseAdapter(local, "aws", migrationDir);
+    expect(adapter.push).toBe(false);
+    expect(adapter.prodMigrations).toBeUndefined();
+  });
+
+  it("reads migrations from the committed directory", () => {
+    expect(cmsDatabaseAdapter(local, "aws", migrationDir).migrationDir).toBe(
+      migrationDir,
+    );
   });
 });

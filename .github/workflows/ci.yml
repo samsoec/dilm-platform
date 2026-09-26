@@ -48,3 +48,55 @@ jobs:
 
       - name: sst diff (staging)
         run: pnpm diff --stage staging
+
+  migrations:
+    name: Payload migrations
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: payload_app
+          POSTGRES_PASSWORD: payload_app
+          POSTGRES_DB: dilm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U payload_app -d dilm"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      RUNTIME_CONFIG_SOURCE: env
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DATABASE_NAME: dilm
+      DATABASE_USER: payload_app
+      DATABASE_PASSWORD: payload_app
+      DATABASE_SSL: "false"
+      PAYLOAD_SECRET: ci-only-not-a-real-secret
+      S3_PUBLIC_BUCKET: dilm-ci-public
+      S3_PRIVATE_BUCKET: dilm-ci-cv-private
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Apply every migration to an empty database
+        run: pnpm --filter @dilm/cms migrate
+
+      - name: Fail if a collection changed without a migration
+        run: |
+          pnpm --filter @dilm/cms migrate:create uncommitted --skip-empty
+          if [ -n "$(git status --porcelain apps/cms/src/migrations)" ]; then
+            echo "::error::The collection config has changed but no migration was committed. Run 'pnpm --filter cms migrate:create <name>' and commit the files it writes."
+            git status --porcelain apps/cms/src/migrations
+            exit 1
+          fi
