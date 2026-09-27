@@ -431,6 +431,67 @@ three root domains. That last condition matters because a verified domain
 identity also lets SES send from any of its subdomains. The policy is built
 in `infra/src/ses.ts` from the same tenant list the CMS uses.
 
+## CV intake consumer
+
+A career application reaches the CMS as a message on the CV queue: the
+website puts the résumé in the private bucket and sends
+`{ submissionId, tenant, fields, resumeFileKey }` (the `CvQueueMessage`
+contract in `packages/shared-types`). A small Lambda,
+`apps/cms/src/cv-intake/handler.ts`, turns each message into three things
+(FR-CMS-24 to 27, 33, 34; Backend Spec §12.1):
+
+1. **One `cv-submissions` record**, written through Payload's Local API
+   (in-process, never an HTTP call to the CMS) and keyed on `submissionId`.
+   If the record already exists it is reused, so a redelivered message never
+   creates a second one.
+2. **Two emails**, sent only after the record is saved: a confirmation to
+   the applicant, in the tenant's default language, and a notification to
+   the tenant's `recruiterEmail` from `tenant-settings`, with Reply-To set to
+   the applicant. Both come from that tenant's `noreply@`. Each is stamped
+   (`applicantNotifiedAt` / `recruiterNotifiedAt`) right after it is sent and
+   skipped if already stamped.
+3. **One webhook call to the job-application platform**: a JSON POST with
+   `Idempotency-Key: <submissionId>`, an `X-DILM-Signature: sha256=<hex>`
+   HMAC of the body using the webhook secret, and a 10-second timeout.
+   Skipped once `externalSyncStatus` is `synced`; every attempt adds one to
+   `externalSyncAttempts`, and a failed one sets the status to `failed`.
+   With no `JOB_PLATFORM_WEBHOOK_URL` configured it is left `pending`.
+
+The three steps run independently, so a job-platform outage doesn't hold
+back the emails. If any of them fails, the handler throws; SQS makes the
+message visible again after the visibility timeout (6 × the 60s function
+timeout) and redelivers it. The next attempt skips whatever already
+succeeded. After 5 failed receives the message moves to the CV dead-letter
+queue. A missing `recruiterEmail` counts as a failure, so a tenant without
+one sends its applications to the DLQ rather than dropping the recruiter
+email silently.
+
+The consumer runs with a single database connection
+(`databasePoolOptions("cv-consumer")`), processes one message per
+invocation, and at most 2 invocations run at once. That keeps Aurora's
+connection count predictable. These numbers live as `CV_CONSUMER_*` /
+`CV_QUEUE_*` constants in `packages/shared-types`. The handler imports only
+the Payload config, not the Next.js admin app, so it bundles on its own.
+
+The webhook payload and header names are provisional until the job
+platform's contract (endpoint, auth scheme, payload schema, résumé
+hand-off) is agreed; see the `TODO(job-platform contract)` in
+`cv-intake/webhook.ts`.
+
+To exercise the whole flow locally against the Docker stack:
+
+```bash
+pnpm --filter cms seed:tenants     # once
+pnpm --filter cms verify:cv-intake
+```
+
+It puts a résumé in the private MinIO bucket and starts a request-capture
+server as the webhook, which fails its first call. It then hands the
+consumer the same synthetic SQS message three times. It checks for one
+record, one applicant and one recruiter email in Mailpit, and exactly one
+accepted, correctly signed webhook call, then cleans up. The emails stay in
+Mailpit (http://localhost:8025) for you to read.
+
 ## Layout
 
 ```

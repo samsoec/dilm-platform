@@ -21,6 +21,10 @@ describe("cmsDatabasePool", () => {
     });
   });
 
+  it("gives the CV consumer a single connection", () => {
+    expect(cmsDatabasePool(local, "cv-consumer")?.max).toBe(1);
+  });
+
   it("verifies the server certificate whenever TLS is on", () => {
     expect(cmsDatabasePool({ ...local, ssl: true }).ssl).toEqual({
       rejectUnauthorized: true,
@@ -39,6 +43,12 @@ describe("cmsDatabaseAdapter", () => {
     const adapter = cmsDatabaseAdapter(local, "aws", migrationDir);
     expect(adapter.push).toBe(false);
     expect(adapter.prodMigrations).toBeUndefined();
+  });
+
+  it("passes the client's pool budget through", () => {
+    expect(
+      cmsDatabaseAdapter(local, "aws", migrationDir, "cv-consumer").pool?.max,
+    ).toBe(1);
   });
 
   it("reads migrations from the committed directory", () => {
