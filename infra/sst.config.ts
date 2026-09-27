@@ -49,6 +49,10 @@ export default $config({
     // TODO(DILM Track 1/2): define the VPC, Aurora cluster, S3 buckets, CV
     // queue and the web/cms Lambdas here; attach payloadSesSend to the cms
     // and CV-consumer function roles via `policies: [payloadSesSend.arn]`.
+    // TODO(DILM-8): subscribe apps/cms/src/cv-intake/handler.handler to the
+    // CV queue outside the VPC, using the CV_CONSUMER_* and CV_QUEUE_*
+    // constants from @dilm/shared-types: batch.size, function timeout, and
+    // transform.eventSourceMapping scalingConfig.maximumConcurrency.
     return {
       region: REGION,
       stage: $app.stage,

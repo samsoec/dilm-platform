@@ -40,6 +40,9 @@ importers:
 
   apps/cms:
     dependencies:
+      '@aws-sdk/client-s3':
+        specifier: 3.1141.0
+        version: 3.1141.0
       '@aws-sdk/client-sesv2':
         specifier: 3.1141.0
         version: 3.1141.0
@@ -92,6 +95,9 @@ importers:
       '@dilm/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@types/aws-lambda':
+        specifier: ^8.10.163
+        version: 8.10.163
       '@types/node':
         specifier: ^22.20.4
         version: 22.20.4
@@ -1436,6 +1442,9 @@ packages:
 
   '@tokenizer/token@0.3.0':
     resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
+
+  '@types/aws-lambda@8.10.163':
+    resolution: {integrity: sha512-+4zuoEB3S8RIhimtOFT7zAEk2SbpwrKjjGl9CyYnQR6k08uynxfauIIB0pDU1ssr05F8oyGiETwpn+8eXZMqPw==}
 
   '@types/busboy@1.5.4':
     resolution: {integrity: sha512-kG7WrUuAKK0NoyxfQHsVE6j1m01s6kMma64E+OZenQABMQyTJop1DumUWcLwAQ2JzpefU7PDYoRDKl8uZosFjw==}
@@ -4379,6 +4388,8 @@ snapshots:
       - supports-color
 
   '@tokenizer/token@0.3.0': {}
+
+  '@types/aws-lambda@8.10.163': {}
 
   '@types/busboy@1.5.4':
     dependencies:
