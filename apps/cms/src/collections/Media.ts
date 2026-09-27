@@ -1,9 +1,8 @@
 import type { CollectionConfig } from "payload";
 
 import { anyone, tenantContentAccess } from "../access";
+import { IMAGE_SIZES } from "../storage";
 
-// TODO(DILM-18): store on S3 via @payloadcms/storage-s3 and replace these
-// sizes with the adjustable thumbnail/card/social-share preset array.
 // TODO(DILM-17): wrap in withTenantAccess so every file belongs to a tenant.
 export const Media: CollectionConfig = {
   slug: "media",
@@ -20,9 +19,6 @@ export const Media: CollectionConfig = {
   ],
   upload: {
     mimeTypes: ["image/*"],
-    imageSizes: [
-      { name: "thumbnail", width: 400, height: 300, position: "centre" },
-      { name: "card", width: 768 },
-    ],
+    imageSizes: IMAGE_SIZES,
   },
 };

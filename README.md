@@ -105,8 +105,18 @@ local `.env` database, Payload syncs the schema from the collection config on
 start, so you can iterate on fields without writing a migration each time.
 Every deployed database only changes through committed migrations — see
 [Database migrations](#database-migrations).
-Uploads are written to `apps/cms/media/` (gitignored) until the S3 adapter
-lands in DILM-18.
+
+**Uploads** go to the public bucket through `@payloadcms/storage-s3` —
+MinIO locally, S3 once deployed. Media files are stored under `media/` and
+IR documents under `ir-documents/` (Backend Spec §7.5); nothing is written
+to local disk. Browse them in the MinIO console at http://localhost:9001.
+Every image upload also gets resized copies from `IMAGE_SIZES` in
+`apps/cms/src/storage.ts` — currently `thumbnail` (400×300), `card` (768
+wide) and `social-share` (1200×630). To tune them once real designs exist,
+edit that one array, then run `generate:types` and `migrate:create`, since
+each size has its own columns. The adapter is only ever given the public
+bucket: résumés live in the private bucket and are handled by the CV intake
+flow alone (FR-CMS-19), and `storage.test.ts` fails if that changes.
 
 Both `next` and the `payload` CLI read the repo-root `.env`: `next.config.ts`
 loads it with `process.loadEnvFile`, and `pnpm --filter cms payload …` runs

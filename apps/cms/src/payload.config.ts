@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { getRuntimeConfig, runtimeConfigSource } from "@dilm/runtime-config";
 import { postgresAdapter } from "@payloadcms/db-postgres";
+import { s3Storage } from "@payloadcms/storage-s3";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
@@ -11,6 +12,7 @@ import { Tenants } from "./collections/Tenants";
 import { Users } from "./collections/Users";
 import { cmsDatabaseAdapter } from "./database";
 import { localization } from "./localization";
+import { publicBucketStorage } from "./storage";
 import { multiTenant } from "./tenancy";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -40,5 +42,8 @@ export default buildConfig({
     ),
   ),
   sharp,
-  plugins: [multiTenant(collections)],
+  plugins: [
+    multiTenant(collections),
+    s3Storage(publicBucketStorage(runtimeConfig.storage)),
+  ],
 });

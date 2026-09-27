@@ -172,6 +172,8 @@ export interface Tenant {
 export interface Media {
   id: number;
   alt: string;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -193,6 +195,14 @@ export interface Media {
       filename?: string | null;
     };
     card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    'social-share'?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -328,6 +338,8 @@ export interface TenantsSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -353,6 +365,16 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
         card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        'social-share'?:
           | T
           | {
               url?: T;
