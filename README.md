@@ -186,6 +186,30 @@ plugin accepts per collection, such as `{ isGlobal: true }` for one document
 per tenant, go in the second argument. Until roles arrive with DILM-15 every
 signed-in user can see every tenant.
 
+**Collections.** The data model before any page content exists is seven
+collections (Backend Spec §7.2), each in `apps/cms/src/collections/`:
+
+| Collection        | Holds                                                        | Who writes it                            |
+| ----------------- | ------------------------------------------------------------ | ---------------------------------------- |
+| `users`           | Admin and editor accounts, their roles and tenants           | Super Admins                             |
+| `tenants`         | The three companies                                          | `seed:tenants`, Super Admins             |
+| `tenant-settings` | One settings document per tenant: contacts, social, SEO, GA4 | Editors; only Super Admins delete        |
+| `media`           | Images, publicly readable                                    | Editors                                  |
+| `consent-logs`    | UU PDP consent audit trail, never an IP address              | The system only; Super Admins may delete |
+| `ir-documents`    | Investor-relations PDFs                                      | Editors                                  |
+| `cv-submissions`  | Career applications                                          | The CV consumer; editors change `status` |
+
+Everything except `users` and `tenants` belongs to exactly one tenant, so an
+editor or viewer only ever sees their own tenants' documents. "The system
+only" means the collection's `create` access is denied to every role, so the
+admin panel shows no Create button; server code writes through Payload's
+Local API, which skips access checks. In `cv-submissions` only `status` is
+editable: what the applicant sent, the résumé's S3 key (a plain text field,
+not an upload, since the file sits in the private bucket — FR-CMS-16) and
+the email/job-platform bookkeeping fields are read-only for every role,
+Super Admins included. `collections.test.ts` pins these rules and fails if a
+field that looks like an IP address appears anywhere (FR-CMS-15).
+
 **Sign-in lockout.** Admin and editor accounts use Payload's built-in
 email/password login. After 5 wrong passwords in a row an account is locked
 for 10 minutes, even for the right password (Backend Spec §7.4). A Super
