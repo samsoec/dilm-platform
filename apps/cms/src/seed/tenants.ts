@@ -1,5 +1,6 @@
 import {
   TENANT_DOMAINS,
+  TENANT_NAMES,
   TENANT_SLUGS,
   type TenantSlug,
 } from "@dilm/shared-types";
@@ -10,12 +11,6 @@ import type { Tenant } from "../payload-types";
 
 export type TenantSeed = Pick<Tenant, "name" | "domain" | "defaultLocale"> & {
   slug: TenantSlug;
-};
-
-const TENANT_NAMES: Record<TenantSlug, string> = {
-  indoacid: "Indonesian Acids Industry",
-  duniakimia: "Dunia Kimia Utama",
-  likutelaga: "Liku Telaga",
 };
 
 export const TENANT_SEED: TenantSeed[] = TENANT_SLUGS.map((slug) => ({

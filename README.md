@@ -118,6 +118,23 @@ each size has its own columns. The adapter is only ever given the public
 bucket: résumés live in the private bucket and are handled by the CV intake
 flow alone (FR-CMS-19), and `storage.test.ts` fails if that changes.
 
+**Email** goes through `@payloadcms/email-nodemailer` (FR-CMS-20): to
+Mailpit over SMTP while `SMTP_HOST` is set, and straight to Amazon SES
+through the SES v2 API once it is empty, as it is on AWS. Open the Mailpit
+inbox at http://localhost:8025 to read what the CMS sent. Every message
+leaves from a tenant's own `noreply@<tenant-domain>` (see
+[SES sending identities](#ses-sending-identities)), resolved in
+`apps/cms/src/email.ts`:
+
+- A sender already set to one of the three tenant addresses is kept.
+- Anything else, including Payload's own password-reset email, is sent from
+  the recipient's tenant: the first tenant on their user record.
+- A recipient with no tenant (a super-admin, say) gets `indoacid`'s sender.
+
+Payload's built-in default sender is `noreply@unresolved-tenant.invalid`,
+which can never be delivered, so an email that somehow skipped the lookup
+is rejected by SES instead of leaving from a shared address.
+
 Both `next` and the `payload` CLI read the repo-root `.env`: `next.config.ts`
 loads it with `process.loadEnvFile`, and `pnpm --filter cms payload …` runs
 the CLI under `node --env-file-if-exists`. After changing a collection,
@@ -378,6 +395,17 @@ recreating them issues new DKIM keys and breaks the DNS records.
 3. **Confirm the pricing plan is à-la-carte** ($0.10 per 1,000 emails), not
    Essentials ($0.16 per 1,000). There is no CLI for this: check the SES
    console's Account dashboard.
+
+### Who may send
+
+`sst.config.ts` creates one IAM policy per stage,
+`dilm-<stage>-payload-ses-send`, for the CMS function and the CV consumer
+(FR-CMS-22). It allows `ses:SendEmail` and `ses:SendRawEmail` only on the
+three identities above and the `dilm-transactional` configuration set —
+no wildcard — and only when the sender is exactly `noreply@` one of the
+three root domains. That last condition matters because a verified domain
+identity also lets SES send from any of its subdomains. The policy is built
+in `infra/src/ses.ts` from the same tenant list the CMS uses.
 
 ## Layout
 

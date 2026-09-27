@@ -26,11 +26,33 @@ export default $config({
   },
 
   async run() {
+    const { sesSendPolicy } = await import("./src/ses");
+
+    const caller = aws.getCallerIdentityOutput({});
+    const partition = aws.getPartitionOutput({});
+    const payloadSesSend = new aws.iam.Policy("PayloadSesSend", {
+      name: `dilm-${$app.stage}-payload-ses-send`,
+      description:
+        "Payload (admin/API function and CV consumer) may send only as noreply@ of the three tenant SES identities (FR-CMS-22).",
+      policy: $resolve([partition.partition, caller.accountId]).apply(
+        ([partitionName, accountId]) =>
+          JSON.stringify(
+            sesSendPolicy({
+              partition: partitionName,
+              region: REGION,
+              accountId,
+            }),
+          ),
+      ),
+    });
+
     // TODO(DILM Track 1/2): define the VPC, Aurora cluster, S3 buckets, CV
-    // queue and the web/cms Lambdas here.
+    // queue and the web/cms Lambdas here; attach payloadSesSend to the cms
+    // and CV-consumer function roles via `policies: [payloadSesSend.arn]`.
     return {
       region: REGION,
       stage: $app.stage,
+      payloadSesSendPolicy: payloadSesSend.arn,
     };
   },
 });
