@@ -9,6 +9,7 @@
     "remove": "sst remove"
   },
   "devDependencies": {
+    "@dilm/shared-types": "workspace:*",
     "sst": "^4.17.1"
   }
 }

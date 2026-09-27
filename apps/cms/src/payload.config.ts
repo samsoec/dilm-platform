@@ -11,6 +11,7 @@ import { Media } from "./collections/Media";
 import { Tenants } from "./collections/Tenants";
 import { Users } from "./collections/Users";
 import { cmsDatabaseAdapter } from "./database";
+import { cmsEmailAdapter } from "./email";
 import { localization } from "./localization";
 import { publicBucketStorage } from "./storage";
 import { multiTenant } from "./tenancy";
@@ -41,6 +42,7 @@ export default buildConfig({
       path.resolve(dirname, "migrations"),
     ),
   ),
+  email: cmsEmailAdapter(runtimeConfig.email),
   sharp,
   plugins: [
     multiTenant(collections),
