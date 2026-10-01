@@ -1,0 +1,56 @@
+name: Migrate dev database
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: migrate-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  migrate:
+    name: payload migrate (dev express cluster, IAM token)
+    runs-on: ubuntu-latest
+    env:
+      RUNTIME_CONFIG_SOURCE: env
+      DATABASE_AUTH: iam
+      DATABASE_NAME: dilm
+      DATABASE_USER: payload_app
+      PAYLOAD_SECRET: migrations-do-not-sign-anything
+      S3_PUBLIC_BUCKET: dilm-dev-public
+      S3_PRIVATE_BUCKET: dilm-dev-cv-private
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-southeast-3
+
+      - name: Look up the dev cluster endpoint
+        run: |
+          endpoint="$(aws rds describe-db-clusters \
+            --region ap-southeast-3 \
+            --db-cluster-identifier dilm-dev-db \
+            --query 'DBClusters[0].[Endpoint,Port]' \
+            --output text)"
+          read -r host port <<<"$endpoint"
+          echo "DATABASE_HOST=$host" >>"$GITHUB_ENV"
+          echo "DATABASE_PORT=$port" >>"$GITHUB_ENV"
+
+      - name: Apply pending migrations
+        run: pnpm --filter @dilm/cms migrate

@@ -5,5 +5,9 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "3.1141.0",
+    "@aws-sdk/rds-signer": "3.1141.0"
   }
 }

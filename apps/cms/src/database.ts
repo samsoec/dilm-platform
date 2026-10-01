@@ -1,38 +1,26 @@
 import {
   type DatabaseClient,
-  databasePoolOptions,
   type DatabaseConfig,
+  type DatabaseCredentialProviders,
+  databasePoolConfig,
   type RuntimeConfigSource,
 } from "@dilm/runtime-config";
 import type { PostgresAdapterArgs } from "@payloadcms/db-postgres";
 
 export type PayloadClient = Exclude<DatabaseClient, "migrations">;
 
-export function cmsDatabasePool(
-  database: DatabaseConfig,
-  client: PayloadClient = "cms",
-): PostgresAdapterArgs["pool"] {
-  return {
-    host: database.host,
-    port: database.port,
-    database: database.database,
-    user: database.user,
-    password: database.password,
-    // TODO(DILM-38): pin the RDS CA bundle once Payload connects to Aurora.
-    ssl: database.ssl ? { rejectUnauthorized: true } : false,
-    ...databasePoolOptions(client),
-  };
-}
-
-export function cmsDatabaseAdapter(
+export async function cmsDatabaseAdapter(
   database: DatabaseConfig,
   source: RuntimeConfigSource,
   migrationDir: string,
   client: PayloadClient = "cms",
-): PostgresAdapterArgs {
+  providers?: DatabaseCredentialProviders,
+): Promise<PostgresAdapterArgs> {
+  // TODO(DILM-38): add the RDS CA bundle to `ssl` for the staging/production
+  // Aurora cluster; the dev express gateway presents an AWS public-root cert.
   return {
-    pool: cmsDatabasePool(database, client),
+    pool: await databasePoolConfig(database, client, providers),
     migrationDir,
-    push: source === "env",
+    push: source === "env" && database.auth === "password",
   };
 }
