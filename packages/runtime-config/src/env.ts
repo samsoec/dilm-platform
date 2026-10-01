@@ -1,5 +1,9 @@
 import {
   AWS_REGION,
+  DATABASE_AUTH_MODES,
+  type DatabaseAuthMode,
+  type DatabaseConfig,
+  type DatabaseEndpoint,
   type EmailConfig,
   type EndpointOverride,
   type JobPlatformConfig,
@@ -55,6 +59,16 @@ class EnvReader {
     throw new Error(`${name} must be "true" or "false", got "${raw}".`);
   }
 
+  databaseAuthMode(name: string): DatabaseAuthMode {
+    const raw = this.optional(name) ?? "password";
+    if (!(DATABASE_AUTH_MODES as readonly string[]).includes(raw)) {
+      throw new Error(
+        `${name} must be one of ${DATABASE_AUTH_MODES.join(", ")}, got "${raw}".`,
+      );
+    }
+    return raw as DatabaseAuthMode;
+  }
+
   endpointOverride(prefix: string): EndpointOverride | undefined {
     const url = this.optional(`${prefix}_ENDPOINT`);
     if (url === undefined) return undefined;
@@ -66,6 +80,33 @@ class EnvReader {
       },
     };
   }
+}
+
+function readDatabaseConfig(read: EnvReader, region: string): DatabaseConfig {
+  const auth = read.databaseAuthMode("DATABASE_AUTH");
+  if (auth === "secret") {
+    return { auth, secretArn: read.required("DATABASE_SECRET_ARN"), region };
+  }
+  const endpoint: DatabaseEndpoint = {
+    host: read.required("DATABASE_HOST"),
+    port: read.port("DATABASE_PORT", 5432),
+    database: read.required("DATABASE_NAME"),
+    user: read.required("DATABASE_USER"),
+  };
+  if (auth === "iam") {
+    if (!read.boolean("DATABASE_SSL", true)) {
+      throw new Error(
+        "DATABASE_SSL=false cannot be combined with DATABASE_AUTH=iam: RDS only accepts IAM tokens over TLS.",
+      );
+    }
+    return { auth, ...endpoint, region };
+  }
+  return {
+    auth,
+    ...endpoint,
+    password: read.required("DATABASE_PASSWORD"),
+    ssl: read.boolean("DATABASE_SSL", true),
+  };
 }
 
 export function readRuntimeConfigFromEnv(env: Env): RuntimeConfig {
@@ -98,14 +139,7 @@ export function readRuntimeConfigFromEnv(env: Env): RuntimeConfig {
         };
 
   const config: RuntimeConfig = {
-    database: {
-      host: read.required("DATABASE_HOST"),
-      port: read.port("DATABASE_PORT", 5432),
-      database: read.required("DATABASE_NAME"),
-      user: read.required("DATABASE_USER"),
-      password: read.required("DATABASE_PASSWORD"),
-      ssl: read.boolean("DATABASE_SSL", true),
-    },
+    database: readDatabaseConfig(read, region),
     payloadSecret: read.required("PAYLOAD_SECRET"),
     storage: {
       region,
