@@ -240,9 +240,12 @@ How it lines up with AWS:
 - **Same database shape.** Postgres runs major version 16 like Aurora, and the
   app connects as a non-superuser `payload_app` that owns the database, just as
   it will on AWS. The master `postgres` user is for admin work only.
-- **Same connection pool.** `databasePoolOptions("cms" | "cv-consumer" |
-"migrations")` returns the Backend Spec §8.2 pool sizes and timeouts, used
-  unchanged in both environments. Payload 3.90.2's Postgres adapter keeps
+- **Same connection pool.** `databasePoolConfig(database, client)` in
+  `@dilm/runtime-config` is the one place a `pg` pool is configured. It
+  applies the Backend Spec §8.2 pool sizes and timeouts for `"cms"`,
+  `"cv-consumer"` or `"migrations"` identically in every environment; only
+  the sign-in changes with `DATABASE_AUTH` (`password` here, `iam` on dev,
+  `secret` on staging/production — see [Dev database](#dev-database-free-plan)). Payload 3.90.2's Postgres adapter keeps
   the client it checks out while connecting, which pins one connection
   forever and would stop Aurora from auto-pausing.
   `patches/@payloadcms__db-postgres@3.90.2.patch` backports the upstream fix
@@ -354,6 +357,47 @@ It prints two role ARNs. Wire them up in GitHub:
   environment, so the approval gate can't be bypassed by pushing a branch.
 
 The template is [`infra/bootstrap/github-oidc.yaml`](infra/bootstrap/github-oidc.yaml).
+
+## Dev database (Free plan)
+
+The CMS Development phase runs on an AWS **Free-plan** account, which only
+offers Aurora PostgreSQL in **express configuration**: no VPC (it is reached
+through Aurora's internet access gateway), IAM authentication only, no
+Secrets Manager credential, the default parameter group, an engine version
+AWS picks, and no CloudFormation/SST support. So the `dev` stage uses such a
+cluster, created by a script, while `staging` and `production` keep the
+locked architecture (Backend Spec §3.2, §8). Which one a stage gets is decided
+by `databaseMode(stage)` in [`infra/src/database.ts`](infra/src/database.ts).
+
+| Stage                   | Database                            | App signs in with                                                                    | Payload reserved concurrency             |
+| ----------------------- | ----------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------- |
+| local                   | Docker Postgres                     | `DATABASE_AUTH=password`                                                             | —                                        |
+| `dev`                   | Express cluster `dilm-dev-db`       | `DATABASE_AUTH=iam`: a fresh IAM token per connection                                | unset (Free plan caps the account at 10) |
+| `staging`, `production` | Locked-architecture Aurora (DILM-5) | `DATABASE_AUTH=secret`: `payload_app` from Secrets Manager, read once per cold start | 10                                       |
+
+Create the cluster once per account, before the first `sst deploy --stage dev`:
+
+```bash
+AWS_PROFILE=<your-profile> ./scripts/db/create-express-cluster.sh
+```
+
+It creates the cluster (0–1 ACU, auto-pause after 300s), the `dilm` database
+and the `payload_app` login with `rds_iam`, then prints the `.env` lines for
+connecting a local Payload to it. It is safe to re-run. Express clusters pick
+their own PostgreSQL major version; if it differs from the `postgres` image
+pinned in `compose.yaml` and `ci.yml`, the script says so and exits non-zero,
+and both pins should be moved to match.
+
+`sst deploy --stage dev` then reads the cluster's endpoint and exposes it as
+the `Database` linkable, whose link grants `rds-db:connect` as `payload_app`
+only. The same permission is attached to `dilm-github-deploy` so the
+**Migrate dev database** workflow can run `payload migrate` against dev with
+an IAM token.
+
+IAM tokens last 15 minutes, but only for opening a connection: the pool asks
+for a new token each time it opens one, and an open connection is unaffected
+when its token expires. Idle connections close after 30s either way, so the
+cluster can still pause.
 
 ## SES sending identities
 
@@ -501,7 +545,7 @@ packages/shared-types/  Shared TS types, including the CV queue message contract
 packages/runtime-config/ Cached Secrets Manager / SSM loader shared by all Lambdas, env vars locally
 packages/config/        Shared tsconfig / eslint / tailwind base configs
 infra/                  SST app — every AWS resource is defined here
-scripts/                Ops scripts (tenant seeding, migrations, Cloudflare IP refresh)
+scripts/                Ops scripts (AWS/SES bootstrap, dev express database, Cloudflare IP refresh)
 compose.yaml, docker/   Local development stack (Postgres, MinIO, Mailpit, ElasticMQ)
 ```
 
@@ -528,11 +572,12 @@ up.
 
 ## CI/CD
 
-| Workflow                | Trigger         | Does                                                                        |
-| ----------------------- | --------------- | --------------------------------------------------------------------------- |
-| `ci.yml`                | PR → `main`     | Lint, typecheck, test, `sst diff --stage staging`, Payload migrations check |
-| `deploy-staging.yml`    | Push to `main`  | `sst deploy --stage staging`                                                |
-| `deploy-production.yml` | Manual dispatch | `sst deploy --stage production`, behind the environment approval            |
+| Workflow                | Trigger         | Does                                                                           |
+| ----------------------- | --------------- | ------------------------------------------------------------------------------ |
+| `ci.yml`                | PR → `main`     | Lint, typecheck, test, `sst diff --stage staging`, Payload migrations check    |
+| `deploy-staging.yml`    | Push to `main`  | `sst deploy --stage staging`                                                   |
+| `deploy-production.yml` | Manual dispatch | `sst deploy --stage production`, behind the environment approval               |
+| `migrate-dev.yml`       | Manual dispatch | `payload migrate` against the dev express cluster, signed in with an IAM token |
 
 Both deploy workflows will run `pnpm --filter @dilm/cms migrate` before
 `sst deploy` once Aurora exists (DILM-38): the runner connects to Aurora's

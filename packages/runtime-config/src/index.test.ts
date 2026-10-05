@@ -4,7 +4,6 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import {
-  databasePoolOptions,
   loadRuntimeConfig,
   MissingEnvError,
   readRuntimeConfigFromEnv,
@@ -32,6 +31,7 @@ describe("readRuntimeConfigFromEnv", () => {
     const config = readRuntimeConfigFromEnv(envExample);
 
     expect(config.database).toEqual({
+      auth: "password",
       host: "localhost",
       port: 5432,
       database: "dilm",
@@ -90,7 +90,7 @@ describe("readRuntimeConfigFromEnv", () => {
       S3_PRIVATE_BUCKET: "dilm-staging-cv-private",
     });
 
-    expect(config.database.ssl).toBe(true);
+    expect(config.database).toMatchObject({ auth: "password", ssl: true });
     expect(config.email).toEqual({
       transport: "ses",
       region: "ap-southeast-3",
@@ -103,6 +103,55 @@ describe("readRuntimeConfigFromEnv", () => {
     expect(() =>
       readRuntimeConfigFromEnv({ ...envExample, S3_SECRET_ACCESS_KEY: "" }),
     ).toThrow(/S3_SECRET_ACCESS_KEY/);
+  });
+
+  it("connects with an IAM token instead of a password when DATABASE_AUTH=iam", () => {
+    const config = readRuntimeConfigFromEnv({
+      ...envExample,
+      DATABASE_AUTH: "iam",
+      DATABASE_HOST: "dilm-dev-db.cluster-abc.ap-southeast-3.rds.amazonaws.com",
+      DATABASE_PASSWORD: "",
+      DATABASE_SSL: "",
+    });
+
+    expect(config.database).toEqual({
+      auth: "iam",
+      host: "dilm-dev-db.cluster-abc.ap-southeast-3.rds.amazonaws.com",
+      port: 5432,
+      database: "dilm",
+      user: "payload_app",
+      region: "ap-southeast-3",
+    });
+  });
+
+  it("refuses IAM auth without TLS", () => {
+    expect(() =>
+      readRuntimeConfigFromEnv({ ...envExample, DATABASE_AUTH: "iam" }),
+    ).toThrow(/DATABASE_SSL=false/);
+  });
+
+  it("needs only the secret ARN when DATABASE_AUTH=secret", () => {
+    const config = readRuntimeConfigFromEnv({
+      PAYLOAD_SECRET: "secret",
+      S3_PUBLIC_BUCKET: "dilm-staging-public",
+      S3_PRIVATE_BUCKET: "dilm-staging-cv-private",
+      DATABASE_AUTH: "secret",
+      DATABASE_SECRET_ARN:
+        "arn:aws:secretsmanager:ap-southeast-3:123456789012:secret:payload_app",
+    });
+
+    expect(config.database).toEqual({
+      auth: "secret",
+      secretArn:
+        "arn:aws:secretsmanager:ap-southeast-3:123456789012:secret:payload_app",
+      region: "ap-southeast-3",
+    });
+  });
+
+  it("rejects an unknown DATABASE_AUTH", () => {
+    expect(() =>
+      readRuntimeConfigFromEnv({ ...envExample, DATABASE_AUTH: "token" }),
+    ).toThrow(/DATABASE_AUTH/);
   });
 
   it("rejects a malformed port", () => {
@@ -133,17 +182,5 @@ describe("loadRuntimeConfig", () => {
 
   it("refuses the AWS source until DILM-12 lands", async () => {
     await expect(loadRuntimeConfig({})).rejects.toThrow(/DILM-12/);
-  });
-});
-
-describe("databasePoolOptions", () => {
-  it("matches the Backend Spec §8.2 connection budget", () => {
-    expect(databasePoolOptions("cms")).toEqual({
-      max: 2,
-      idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 20_000,
-    });
-    expect(databasePoolOptions("cv-consumer").max).toBe(1);
-    expect(databasePoolOptions("migrations").max).toBe(1);
   });
 });

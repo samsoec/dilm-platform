@@ -80,9 +80,17 @@ extensionless relative imports because Turbopack can't resolve `./x.js` to
   domains, created once per account (not per stage, since all stages share the
   account). The script
   prints the DNS records to add and the verification status.
+- [scripts/db/create-express-cluster.sh](scripts/db/create-express-cluster.sh)
+  — the `dev` database: a Free-plan Aurora express cluster (no VPC, IAM auth
+  only, no CloudFormation support), so it is created by script and
+  `sst.config.ts` only reads it. `staging`/`production` keep the locked
+  Aurora architecture; `databaseMode(stage)` in `infra/src/database.ts` picks.
+  The app's sign-in follows `DATABASE_AUTH` (`password` | `iam` | `secret`)
+  through `databasePoolConfig` in `packages/runtime-config`.
 - [.github/workflows/](.github/workflows/) — `ci.yml` (PR: typecheck + diff),
   `deploy-staging.yml` (push to `main`), `deploy-production.yml` (manual
-  dispatch behind the `production` environment approval).
+  dispatch behind the `production` environment approval), `migrate-dev.yml`
+  (manual: Payload migrations against dev with an IAM token).
 
 ## Task workflow
 

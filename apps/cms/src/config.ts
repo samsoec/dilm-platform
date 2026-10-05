@@ -48,7 +48,7 @@ export async function cmsConfig(client: PayloadClient) {
       outputFile: path.resolve(dirname, "payload-types.ts"),
     },
     db: postgresAdapter(
-      cmsDatabaseAdapter(
+      await cmsDatabaseAdapter(
         runtimeConfig.database,
         runtimeConfigSource(process.env),
         path.resolve(dirname, "migrations"),
