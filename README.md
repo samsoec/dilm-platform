@@ -210,6 +210,22 @@ the email/job-platform bookkeeping fields are read-only for every role,
 Super Admins included. `collections.test.ts` pins these rules and fails if a
 field that looks like an IP address appears anywhere (FR-CMS-15).
 
+**Layout globals.** The navbar each website shows is the `header`
+collection (TRD Content Structure §4.3), a multi-tenant global: the plugin's
+`isGlobal` makes `tenant` unique, so each tenant has exactly one header and
+the admin opens it directly instead of a list. Up to 8 menu items, each
+either a single link or a dropdown with a label and 1–6 links, all built
+from the shared `link` field. The menu's order and targets are the same in
+English and Indonesian; only the labels are translated, so saving one
+language needs every visible label filled in for it. A menu item's hidden
+half (the link of a dropdown, the children of a link) is not validated, and
+the CTA's link is only required once the button is switched on. Logos are
+not stored here; the website reads them from `tenant-settings.brand`, and
+the transparent/white navbar style is presentation, not content. Access
+matches `tenant-settings`: editors edit their own tenant, viewers read it,
+only Super Admins delete. Every save is kept as a version for rollback;
+there are no drafts.
+
 **Sign-in lockout.** Admin and editor accounts use Payload's built-in
 email/password login. After 5 wrong passwords in a row an account is locked
 for 10 minutes, even for the right password (Backend Spec §7.4). A Super
