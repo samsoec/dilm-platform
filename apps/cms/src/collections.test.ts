@@ -11,6 +11,7 @@ import { describe, expect, it } from "vitest";
 import type { Role } from "./access";
 import { ConsentLogs } from "./collections/ConsentLogs";
 import { CvSubmissions } from "./collections/CvSubmissions";
+import { Footer } from "./collections/Footer";
 import { Header } from "./collections/Header";
 import { IrDocuments } from "./collections/IrDocuments";
 import { Media } from "./collections/Media";
@@ -32,6 +33,7 @@ const ALL = [
   IrDocuments,
   CvSubmissions,
   Header,
+  Footer,
 ];
 
 const TENANT_SCOPED = [
@@ -41,6 +43,7 @@ const TENANT_SCOPED = [
   "ir-documents",
   "cv-submissions",
   "header",
+  "footer",
 ];
 
 const IP_ADDRESS_PATTERN =
@@ -117,7 +120,7 @@ describe("the collections", () => {
     for (const { slug } of ALL) {
       expect(collection(slug).slug).toBe(slug);
     }
-    expect(ALL).toHaveLength(8);
+    expect(ALL).toHaveLength(9);
   });
 
   it("put every content collection under a required tenant", async () => {
