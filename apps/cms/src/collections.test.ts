@@ -4,6 +4,7 @@ import type {
   Field,
   FieldAccess,
   RelationshipField,
+  SelectFieldSingleValidation,
 } from "payload";
 import { describe, expect, it } from "vitest";
 
@@ -12,7 +13,11 @@ import { ConsentLogs } from "./collections/ConsentLogs";
 import { CvSubmissions } from "./collections/CvSubmissions";
 import { IrDocuments } from "./collections/IrDocuments";
 import { Media } from "./collections/Media";
-import { TenantSettings } from "./collections/TenantSettings";
+import {
+  isUniquePlatform,
+  SOCIAL_PLATFORMS,
+  TenantSettings,
+} from "./collections/TenantSettings";
 import { Tenants } from "./collections/Tenants";
 import { Users } from "./collections/Users";
 import { applyMultiTenant, fieldNames } from "./testing";
@@ -76,6 +81,17 @@ function field(collection: CollectionConfig, name: string): Field {
   );
   if (!found) throw new Error(`${collection.slug} has no ${name} field`);
   return found;
+}
+
+function nested(fields: Field[], name: string): Field {
+  for (const candidate of fields) {
+    if ("name" in candidate && candidate.name === name) return candidate;
+    if ("fields" in candidate) {
+      const found = nested(candidate.fields, name);
+      if (found) return found;
+    }
+  }
+  return undefined as unknown as Field;
 }
 
 function fieldAllows(
@@ -175,6 +191,85 @@ describe("tenant-settings", () => {
         "waLink",
       ]),
     );
+  });
+
+  it("keeps the brand identity in one group", () => {
+    const brand = field(TenantSettings, "brand") as { fields: Field[] };
+
+    expect(brand).toMatchObject({ type: "group" });
+    expect(fieldNames(brand.fields)).toEqual([
+      "logoOnDark",
+      "logoOnLight",
+      "legalName",
+      "tagline",
+      "address",
+    ]);
+    for (const name of ["logoOnDark", "logoOnLight"]) {
+      expect(nested(brand.fields, name)).toMatchObject({
+        type: "upload",
+        relationTo: "media",
+      });
+    }
+    expect(nested(brand.fields, "legalName")).toMatchObject({ type: "text" });
+    for (const name of ["tagline", "address"]) {
+      expect(nested(brand.fields, name)).toMatchObject({
+        type: "textarea",
+        localized: true,
+      });
+    }
+    expect(
+      (nested(brand.fields, "legalName") as { localized?: boolean }).localized,
+    ).toBeUndefined();
+  });
+
+  it("offers the four social platforms in the design", () => {
+    expect(SOCIAL_PLATFORMS).toEqual([
+      "linkedin",
+      "instagram",
+      "facebook",
+      "youtube",
+    ]);
+    expect(nested(TenantSettings.fields, "platform")).toMatchObject({
+      options: [...SOCIAL_PLATFORMS],
+      validate: isUniquePlatform,
+    });
+  });
+
+  it("rejects a social platform listed twice", async () => {
+    const options = [...SOCIAL_PLATFORMS];
+    const check = (value: string, socialLinks: { platform: string }[]) =>
+      isUniquePlatform(value, {
+        data: { socialLinks },
+        options,
+        required: true,
+        req: { t: (key: string) => key },
+      } as unknown as Parameters<SelectFieldSingleValidation>[1]);
+
+    expect(
+      await check("linkedin", [
+        { platform: "linkedin" },
+        { platform: "youtube" },
+      ]),
+    ).toBe(true);
+    expect(
+      await check("linkedin", [
+        { platform: "linkedin" },
+        { platform: "linkedin" },
+      ]),
+    ).toBe("Each platform can only be listed once.");
+    expect(await check("tiktok", [{ platform: "tiktok" }])).not.toBe(true);
+  });
+
+  it("leaves brand and social fields under the collection's access rules", () => {
+    const brand = field(TenantSettings, "brand") as { fields: Field[] };
+
+    for (const candidate of [
+      brand,
+      ...fieldNames(brand.fields).map((name) => nested(brand.fields, name)),
+      field(TenantSettings, "socialLinks"),
+    ]) {
+      expect(candidate).not.toHaveProperty("access");
+    }
   });
 
   it("lets editors edit their tenant's settings but only Super Admins delete them", async () => {
