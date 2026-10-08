@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   isGa4MeasurementId,
   isHttpsUrl,
+  isInternalPath,
   isPhoneNumber,
   isWhatsAppLink,
 } from "./validation";
@@ -16,6 +17,7 @@ describe("field validators", () => {
   it("leave empty optional fields alone", () => {
     for (const validate of [
       isHttpsUrl,
+      isInternalPath,
       isGa4MeasurementId,
       isWhatsAppLink,
       isPhoneNumber,
@@ -30,6 +32,12 @@ describe("field validators", () => {
       "string",
     );
     expect(check(isHttpsUrl, "instagram.com/dilgroup")).toBeTypeOf("string");
+  });
+
+  it("accept only site paths without a locale prefix", () => {
+    expect(check(isInternalPath, "/about")).toBe(true);
+    expect(check(isInternalPath, "/en/about")).toBeTypeOf("string");
+    expect(check(isInternalPath, "about")).toBeTypeOf("string");
   });
 
   it("accept only GA4 measurement IDs", () => {
