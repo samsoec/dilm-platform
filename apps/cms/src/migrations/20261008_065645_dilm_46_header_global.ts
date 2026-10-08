@@ -196,9 +196,9 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "_header_v_version_nav_items_locales" CASCADE;
   DROP TABLE "_header_v" CASCADE;
   DROP TABLE "_header_v_locales" CASCADE;
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_header_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_header_fk";
   
-  DROP INDEX "payload_locked_documents_rels_header_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_header_id_idx";
   ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "header_id";
   DROP TYPE "public"."enum_header_nav_items_children_link_type";
   DROP TYPE "public"."enum_header_nav_items_type";
