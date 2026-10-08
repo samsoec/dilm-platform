@@ -74,6 +74,8 @@ export interface Config {
     'consent-logs': ConsentLog;
     'ir-documents': IrDocument;
     'cv-submissions': CvSubmission;
+    header: Header;
+    footer: Footer;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,6 +90,8 @@ export interface Config {
     'consent-logs': ConsentLogsSelect<false> | ConsentLogsSelect<true>;
     'ir-documents': IrDocumentsSelect<false> | IrDocumentsSelect<true>;
     'cv-submissions': CvSubmissionsSelect<false> | CvSubmissionsSelect<true>;
+    header: HeaderSelect<false> | HeaderSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -339,6 +343,172 @@ export interface CvSubmission {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header".
+ */
+export interface Header {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  navItems?:
+    | {
+        type: 'link' | 'dropdown';
+        link?: {
+          type: 'internal' | 'external';
+          newTab?: boolean | null;
+          /**
+           * A page on this site, e.g. /about. No /en or /id prefix.
+           */
+          internalPath?: string | null;
+          /**
+           * A full https:// address on another site.
+           */
+          externalUrl?: string | null;
+          label?: string | null;
+        };
+        label?: string | null;
+        children?:
+          | {
+              link: {
+                type: 'internal' | 'external';
+                newTab?: boolean | null;
+                /**
+                 * A page on this site, e.g. /about. No /en or /id prefix.
+                 */
+                internalPath?: string | null;
+                /**
+                 * A full https:// address on another site.
+                 */
+                externalUrl?: string | null;
+                label?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  showSearch?: boolean | null;
+  showLanguageSwitcher?: boolean | null;
+  cta?: {
+    enabled?: boolean | null;
+    link?: {
+      type: 'internal' | 'external';
+      newTab?: boolean | null;
+      /**
+       * A page on this site, e.g. /about. No /en or /id prefix.
+       */
+      internalPath?: string | null;
+      /**
+       * A full https:// address on another site.
+       */
+      externalUrl?: string | null;
+      label?: string | null;
+    };
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  ctaBand: {
+    eyebrow?: string | null;
+    heading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    primaryButton: {
+      type: 'internal' | 'external';
+      newTab?: boolean | null;
+      /**
+       * A page on this site, e.g. /about. No /en or /id prefix.
+       */
+      internalPath?: string | null;
+      /**
+       * A full https:// address on another site.
+       */
+      externalUrl?: string | null;
+      label?: string | null;
+    };
+    secondaryButton: {
+      type: 'internal' | 'external';
+      newTab?: boolean | null;
+      /**
+       * A page on this site, e.g. /about. No /en or /id prefix.
+       */
+      internalPath?: string | null;
+      /**
+       * A full https:// address on another site.
+       */
+      externalUrl?: string | null;
+      label?: string | null;
+    };
+  };
+  linkColumns?:
+    | {
+        title: string;
+        links?:
+          | {
+              link: {
+                type: 'internal' | 'external';
+                newTab?: boolean | null;
+                /**
+                 * A page on this site, e.g. /about. No /en or /id prefix.
+                 */
+                internalPath?: string | null;
+                /**
+                 * A full https:// address on another site.
+                 */
+                externalUrl?: string | null;
+                label?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  partOf?: {
+    enabled?: boolean | null;
+    label?: string | null;
+    logo?: (number | null) | Media;
+    link?: {
+      type: 'internal' | 'external';
+      newTab?: boolean | null;
+      /**
+       * A page on this site, e.g. /about. No /en or /id prefix.
+       */
+      internalPath?: string | null;
+      /**
+       * A full https:// address on another site.
+       */
+      externalUrl?: string | null;
+      label?: string | null;
+    };
+  };
+  /**
+   * Use {year} for the current year and {legalName} for the company's legal name from Tenant Settings, e.g. Copyright © {year} {legalName}. All Rights Reserved.
+   */
+  copyright?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -388,6 +558,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'cv-submissions';
         value: number | CvSubmission;
+      } | null)
+    | ({
+        relationTo: 'header';
+        value: number | Header;
+      } | null)
+    | ({
+        relationTo: 'footer';
+        value: number | Footer;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -621,6 +799,131 @@ export interface CvSubmissionsSelect<T extends boolean = true> {
   recruiterNotifiedAt?: T;
   externalSyncStatus?: T;
   externalSyncAttempts?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header_select".
+ */
+export interface HeaderSelect<T extends boolean = true> {
+  tenant?: T;
+  navItems?:
+    | T
+    | {
+        type?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              label?: T;
+            };
+        label?: T;
+        children?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    internalPath?: T;
+                    externalUrl?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  showSearch?: T;
+  showLanguageSwitcher?: T;
+  cta?:
+    | T
+    | {
+        enabled?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              label?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  tenant?: T;
+  ctaBand?:
+    | T
+    | {
+        eyebrow?: T;
+        heading?: T;
+        primaryButton?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              label?: T;
+            };
+        secondaryButton?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              label?: T;
+            };
+      };
+  linkColumns?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    internalPath?: T;
+                    externalUrl?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  partOf?:
+    | T
+    | {
+        enabled?: T;
+        label?: T;
+        logo?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              label?: T;
+            };
+      };
+  copyright?: T;
   updatedAt?: T;
   createdAt?: T;
 }

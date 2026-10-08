@@ -11,6 +11,8 @@ import { describe, expect, it } from "vitest";
 import type { Role } from "./access";
 import { ConsentLogs } from "./collections/ConsentLogs";
 import { CvSubmissions } from "./collections/CvSubmissions";
+import { Footer } from "./collections/Footer";
+import { Header } from "./collections/Header";
 import { IrDocuments } from "./collections/IrDocuments";
 import { Media } from "./collections/Media";
 import {
@@ -30,6 +32,8 @@ const ALL = [
   ConsentLogs,
   IrDocuments,
   CvSubmissions,
+  Header,
+  Footer,
 ];
 
 const TENANT_SCOPED = [
@@ -38,6 +42,8 @@ const TENANT_SCOPED = [
   "consent-logs",
   "ir-documents",
   "cv-submissions",
+  "header",
+  "footer",
 ];
 
 const IP_ADDRESS_PATTERN =
@@ -107,14 +113,14 @@ function fieldAllows(
   return access({ req: { user: as } } as Parameters<FieldAccess>[0]);
 }
 
-describe("the seven collections", () => {
+describe("the collections", () => {
   it("are all registered", async () => {
     const collection = await configured();
 
     for (const { slug } of ALL) {
       expect(collection(slug).slug).toBe(slug);
     }
-    expect(ALL).toHaveLength(7);
+    expect(ALL).toHaveLength(9);
   });
 
   it("put every content collection under a required tenant", async () => {
