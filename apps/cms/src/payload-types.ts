@@ -183,13 +183,26 @@ export interface TenantSetting {
   siteName: string;
   contactEmail?: string | null;
   contactPhone?: string | null;
+  brand?: {
+    /**
+     * Light-coloured logo for the transparent navbar and the footer.
+     */
+    logoOnDark?: (number | null) | Media;
+    /**
+     * Dark-coloured logo for the white navbar.
+     */
+    logoOnLight?: (number | null) | Media;
+    legalName?: string | null;
+    tagline?: string | null;
+    address?: string | null;
+  };
   /**
    * Receives a notification for every career application to this tenant.
    */
   recruiterEmail?: string | null;
   socialLinks?:
     | {
-        platform: 'facebook' | 'instagram' | 'linkedin' | 'x' | 'youtube' | 'tiktok';
+        platform: 'linkedin' | 'instagram' | 'facebook' | 'youtube';
         url: string;
         id?: string | null;
       }[]
@@ -469,6 +482,15 @@ export interface TenantSettingsSelect<T extends boolean = true> {
   siteName?: T;
   contactEmail?: T;
   contactPhone?: T;
+  brand?:
+    | T
+    | {
+        logoOnDark?: T;
+        logoOnLight?: T;
+        legalName?: T;
+        tagline?: T;
+        address?: T;
+      };
   recruiterEmail?: T;
   socialLinks?:
     | T
