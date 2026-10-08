@@ -1,5 +1,7 @@
 import type { TextFieldSingleValidation } from "payload";
 
+import { localization } from "./localization";
+
 type Rule = (value: string) => string | true;
 
 function optional(rule: Rule): TextFieldSingleValidation {
@@ -14,6 +16,20 @@ export const isHttpsUrl = optional((value) => {
   } catch {
     return "Use a full https:// link.";
   }
+});
+
+const LOCALE_PREFIX = new RegExp(
+  `^/(${localization.locales.join("|")})(/|\\?|#|$)`,
+  "i",
+);
+
+export const isInternalPath = optional((value) => {
+  if (!/^\/(?!\/)\S*$/.test(value)) {
+    return "Use a site path starting with a single /, e.g. /about.";
+  }
+  return LOCALE_PREFIX.test(value)
+    ? "Leave out the language prefix; the site adds /en or /id itself."
+    : true;
 });
 
 export const isGa4MeasurementId = optional((value) =>
