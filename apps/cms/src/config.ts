@@ -9,6 +9,7 @@ import sharp from "sharp";
 
 import { ConsentLogs } from "./collections/ConsentLogs";
 import { CvSubmissions } from "./collections/CvSubmissions";
+import { Header } from "./collections/Header";
 import { IrDocuments } from "./collections/IrDocuments";
 import { Media } from "./collections/Media";
 import { TenantSettings } from "./collections/TenantSettings";
@@ -30,6 +31,7 @@ const collections = [
   ConsentLogs,
   IrDocuments,
   CvSubmissions,
+  Header,
 ];
 
 export async function cmsConfig(client: PayloadClient) {
