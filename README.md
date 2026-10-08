@@ -238,6 +238,32 @@ so editors never type the year, and any other `{…}` placeholder is
 rejected. The footer's logo, tagline, phone, email, address and social
 links are not stored here; they come from `tenant-settings`.
 
+**Seed the layout** after the tenants (§4.5):
+
+```bash
+pnpm --filter cms seed:layout
+```
+
+It gives each tenant the approved Figma navbar and footer, so editors adjust
+a finished layout instead of filling in an empty form. The English labels
+are copied from Figma character for character, design inconsistencies
+("Product & Solutions" next to "Products & Solutions", "Contact US")
+included, for editors to correct in the admin panel. The Indonesian labels
+start as copies of the English ones, waiting to be translated. Links point
+at the sitemap paths, such as `/about-us/overview`, even before those pages
+exist. #BetteringYourWorld is one page owned by Liku Telaga, so on the other
+two sites it links out to `https://likutelaga.com/bettering-your-world`. The
+copyright line uses the `{year}` and `{legalName}` placeholders instead of
+the Figma text's fixed "2025 PT Indonesia Acid Industry". Search starts
+hidden and the "Part of" block starts switched off until someone uploads its
+logo. Brand details and social links are left to `tenant-settings`, since
+each company supplies its own.
+
+The script never overwrites: a tenant that already has a header or footer
+is reported as `skipped`, so re-running it keeps every editor change. It
+exits non-zero if any of the three tenants is missing; run `seed:tenants`
+first.
+
 **Sign-in lockout.** Admin and editor accounts use Payload's built-in
 email/password login. After 5 wrong passwords in a row an account is locked
 for 10 minutes, even for the right password (Backend Spec §7.4). A Super

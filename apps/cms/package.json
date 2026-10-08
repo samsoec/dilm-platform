@@ -14,6 +14,7 @@
     "migrate:create": "pnpm payload migrate:create",
     "migrate:status": "pnpm payload migrate:status",
     "payload": "node --env-file-if-exists=../../.env node_modules/payload/bin.js",
+    "seed:layout": "pnpm payload run src/seed/seed-layout.ts",
     "seed:tenants": "pnpm payload run src/seed/seed-tenants.ts",
     "start": "next start",
     "typecheck": "tsc --noEmit",
