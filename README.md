@@ -226,6 +226,18 @@ matches `tenant-settings`: editors edit their own tenant, viewers read it,
 only Super Admins delete. Every save is kept as a version for rollback;
 there are no drafts.
 
+The `footer` collection (§4.4) works the same way: one per tenant, same
+access and versioning. It holds the contact band (a localized eyebrow, a
+heading, a required primary button and an optional secondary one), up to 4
+link columns of up to 8 links, an optional "Part of" block (label, logo,
+link) and the copyright line. The heading is rich text whose editor offers
+only italic; the server also rejects any other formatting, headings, lists
+or links pasted in. The copyright is a template: `{year}` is filled in when
+the page renders and `{legalName}` from `tenant-settings.brand.legalName`,
+so editors never type the year, and any other `{…}` placeholder is
+rejected. The footer's logo, tagline, phone, email, address and social
+links are not stored here; they come from `tenant-settings`.
+
 **Sign-in lockout.** Admin and editor accounts use Payload's built-in
 email/password login. After 5 wrong passwords in a row an account is locked
 for 10 minutes, even for the right password (Backend Spec §7.4). A Super
