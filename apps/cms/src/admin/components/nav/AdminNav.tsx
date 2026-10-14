@@ -13,7 +13,6 @@ import {
 import { PRODUCT_NAME } from "../../brand";
 import type { NavBadgeKey } from "../../data/badges";
 import {
-  loadNavPreferences,
   loadSidebar,
   selectedTenantID,
   TENANT_COOKIE,
@@ -93,23 +92,13 @@ export async function AdminNav({
     user as RoleHolder,
     (await cookies()).get(TENANT_COOKIE)?.value,
   );
-  const context = { payload, user };
-  const [sidebar, preferences] = await Promise.all([
-    loadSidebar(
-      context,
-      tenant,
-      badgeKeys,
-      items.some(({ slug }) => slug === ATTENTION_SLUG),
-    ),
-    loadNavPreferences(context),
-  ]);
-
-  const openGroups = Object.fromEntries(
-    Object.entries(preferences?.groups ?? {}).map(([label, { open }]) => [
-      label,
-      open,
-    ]),
+  const sidebar = await loadSidebar(
+    { payload, user },
+    tenant,
+    badgeKeys,
+    items.some(({ slug }) => slug === ATTENTION_SLUG),
   );
+
   const roles = (user as RoleHolder)?.roles ?? [];
   const role = ROLES.find((candidate) => roles.includes(candidate));
   const person = user as { name?: string | null; email?: string | null };
@@ -125,7 +114,6 @@ export async function AdminNav({
         <NavLinks
           adminRoute={adminRoute}
           attentionSlug={ATTENTION_SLUG}
-          openGroups={openGroups}
           sections={sections}
           sidebar={sidebar}
         />

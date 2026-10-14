@@ -1,5 +1,3 @@
-import { PREFERENCE_KEYS } from "payload/shared";
-
 import { hasTenantAccess, isSuperAdmin, type RoleHolder } from "../../access";
 import { localization } from "../../localization";
 import type { Media, Tenant } from "../../payload-types";
@@ -88,19 +86,7 @@ async function loadTenantCard(
     };
   }
 
-  const found = await payload.findByID({
-    collection: "tenants",
-    id: tenant,
-    depth: 0,
-    select: { name: true, domain: true, brandColor: true },
-    disableErrors: true,
-    overrideAccess: false,
-    user,
-  });
-  return {
-    tenant: found ? sidebarTenant(found, undefined) : undefined,
-    attention: true,
-  };
+  return { tenant: undefined, attention: true };
 }
 
 async function loadBadges(
@@ -133,27 +119,3 @@ export async function loadSidebar(
 export type NavPreferences = {
   groups?: Record<string, { open?: boolean }>;
 };
-
-export async function loadNavPreferences({
-  payload,
-  user,
-}: AdminQueryContext): Promise<NavPreferences | undefined> {
-  const {
-    docs: [preference],
-  } = await payload.find({
-    collection: "payload-preferences",
-    where: {
-      and: [
-        { key: { equals: PREFERENCE_KEYS.NAV } },
-        { "user.relationTo": { equals: user.collection } },
-        { "user.value": { equals: user.id } },
-      ],
-    },
-    limit: 1,
-    pagination: false,
-    depth: 0,
-    overrideAccess: false,
-    user,
-  });
-  return preference?.value as NavPreferences | undefined;
-}

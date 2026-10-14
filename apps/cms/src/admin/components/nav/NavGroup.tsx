@@ -2,26 +2,40 @@
 
 import { usePreferences } from "@payloadcms/ui";
 import { PREFERENCE_KEYS } from "payload/shared";
-import { type ReactNode, useId, useState } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 
+import type { NavPreferences } from "../../data/sidebar";
 import { MaterialIcon } from "../MaterialIcon";
 import type { NavSection } from "./sections";
 
 export function NavGroup({
   section,
-  initiallyOpen,
   children,
 }: {
   section: NavSection;
-  initiallyOpen: boolean;
   children: ReactNode;
 }) {
-  const [open, setOpen] = useState(initiallyOpen);
-  const { setPreference } = usePreferences();
+  const [open, setOpen] = useState(true);
+  const touched = useRef(false);
+  const { getPreference, setPreference } = usePreferences();
   const contentId = useId();
+
+  useEffect(() => {
+    let current = true;
+    void getPreference<NavPreferences>(PREFERENCE_KEYS.NAV).then((saved) => {
+      const savedOpen = saved?.groups?.[section.label]?.open;
+      if (current && !touched.current && savedOpen !== undefined) {
+        setOpen(savedOpen);
+      }
+    });
+    return () => {
+      current = false;
+    };
+  }, [getPreference, section.label]);
 
   const toggle = () => {
     const next = !open;
+    touched.current = true;
     setOpen(next);
     void setPreference(
       PREFERENCE_KEYS.NAV,

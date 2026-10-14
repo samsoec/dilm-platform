@@ -81,13 +81,11 @@ export function NavLinks({
   sidebar,
   attentionSlug,
   adminRoute,
-  openGroups,
 }: {
   sections: NavSection[];
   sidebar: SidebarData;
   attentionSlug: string;
   adminRoute: string;
-  openGroups: Record<string, boolean | undefined>;
 }) {
   const pathname = usePathname();
 
@@ -100,11 +98,7 @@ export function NavLinks({
         label="Dashboard"
       />
       {sections.map((section) => (
-        <NavGroup
-          initiallyOpen={openGroups[section.label] !== false}
-          key={section.key}
-          section={section}
-        >
+        <NavGroup key={section.key} section={section}>
           {section.items.map((item) => (
             <NavLink
               active={isActiveHref(pathname, item.href)}
