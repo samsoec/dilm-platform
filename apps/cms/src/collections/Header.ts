@@ -1,6 +1,7 @@
 import type { Condition, TextFieldSingleValidation } from "payload";
 
 import { superAdmins } from "../access";
+import { navGroup } from "../admin/navGroups";
 import { link } from "../fields/link";
 import { withTenantAccess } from "../tenancy";
 
@@ -27,6 +28,7 @@ const requireDropdownLabel: TextFieldSingleValidation = (value) =>
 export const Header = withTenantAccess(
   {
     slug: "header",
+    admin: { group: navGroup("layout") },
     access: {
       delete: superAdmins,
     },

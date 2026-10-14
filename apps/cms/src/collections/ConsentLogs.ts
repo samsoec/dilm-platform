@@ -1,4 +1,5 @@
 import { nobody, superAdmins } from "../access";
+import { navGroup } from "../admin/navGroups";
 import { withTenantAccess } from "../tenancy";
 
 export const CONSENT_TYPES = ["career-application", "contact-form"] as const;
@@ -11,6 +12,7 @@ export const ConsentLogs = withTenantAccess({
     delete: superAdmins,
   },
   admin: {
+    group: navGroup("inbox"),
     defaultColumns: ["timestamp", "consentType", "policyVersion"],
     description:
       "UU PDP consent audit trail, written by the system. Holds no IP addresses.",

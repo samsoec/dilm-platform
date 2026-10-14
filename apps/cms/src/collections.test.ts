@@ -2,6 +2,7 @@ import type {
   AccessArgs,
   CollectionConfig,
   Field,
+  GlobalConfig,
   FieldAccess,
   RelationshipField,
   SelectFieldSingleValidation,
@@ -9,32 +10,19 @@ import type {
 import { describe, expect, it } from "vitest";
 
 import type { Role } from "./access";
-import { ConsentLogs } from "./collections/ConsentLogs";
+import { ICON_NAMES } from "./admin/icons";
+import { type CollectionNav, navGroupByLabel } from "./admin/navGroups";
+import { collections, globals } from "./collections";
 import { CvSubmissions } from "./collections/CvSubmissions";
-import { Footer } from "./collections/Footer";
-import { Header } from "./collections/Header";
 import { IrDocuments } from "./collections/IrDocuments";
-import { Media } from "./collections/Media";
 import {
   isUniquePlatform,
   SOCIAL_PLATFORMS,
   TenantSettings,
 } from "./collections/TenantSettings";
-import { Tenants } from "./collections/Tenants";
-import { Users } from "./collections/Users";
 import { applyMultiTenant, fieldNames } from "./testing";
 
-const ALL = [
-  Users,
-  Tenants,
-  TenantSettings,
-  Media,
-  ConsentLogs,
-  IrDocuments,
-  CvSubmissions,
-  Header,
-  Footer,
-];
+const ALL = collections;
 
 const TENANT_SCOPED = [
   "tenant-settings",
@@ -68,6 +56,17 @@ function user(roles: Role[], tenantIds: number[] = []) {
 const superAdmin = user(["super-admin"]);
 const editor = user(["tenant-editor"], [1]);
 const viewer = user(["tenant-viewer"], [1]);
+
+function navProblems(configs: (CollectionConfig | GlobalConfig)[]): string[] {
+  return configs.flatMap(({ slug, admin }) => {
+    if (admin?.group === undefined || admin.group === false) {
+      return [`${slug} has no admin.group`];
+    }
+    return navGroupByLabel(admin.group)
+      ? []
+      : [`${slug} names a group missing from NAV_GROUPS`];
+  });
+}
 
 function configured() {
   return applyMultiTenant(ALL);
@@ -155,6 +154,34 @@ describe("the collections", () => {
           IP_ADDRESS_PATTERN.test(name),
         ),
       ).toEqual([]);
+    }
+  });
+});
+
+describe("the sidebar navigation (FR-UI-01 to FR-UI-03)", () => {
+  it("files every collection and global under a NAV_GROUPS group", async () => {
+    const collection = await configured();
+
+    expect(navProblems(ALL.map(({ slug }) => collection(slug)))).toEqual([]);
+    expect(navProblems(globals)).toEqual([]);
+  });
+
+  it("flags a collection with no group or an unknown group", () => {
+    expect(
+      navProblems([
+        { slug: "pages", fields: [] },
+        { slug: "products", admin: { group: "Catalogue" }, fields: [] },
+      ]),
+    ).toEqual([
+      "pages has no admin.group",
+      "products names a group missing from NAV_GROUPS",
+    ]);
+  });
+
+  it("gives every custom.nav a known icon", () => {
+    for (const config of [...ALL, ...globals]) {
+      const nav = config.custom?.nav as CollectionNav | undefined;
+      if (nav) expect(ICON_NAMES).toContain(nav.icon);
     }
   });
 });

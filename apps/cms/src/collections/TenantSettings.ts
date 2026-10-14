@@ -2,6 +2,7 @@ import type { SelectFieldSingleValidation } from "payload";
 import { select } from "payload/shared";
 
 import { superAdmins } from "../access";
+import { navGroup } from "../admin/navGroups";
 import { withTenantAccess } from "../tenancy";
 import {
   isGa4MeasurementId,
@@ -39,6 +40,7 @@ export const TenantSettings = withTenantAccess(
       delete: superAdmins,
     },
     admin: {
+      group: navGroup("settings"),
       useAsTitle: "siteName",
     },
     fields: [

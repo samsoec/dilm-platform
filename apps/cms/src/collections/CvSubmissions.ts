@@ -1,6 +1,7 @@
 import type { Field } from "payload";
 
 import { nobody, superAdmins, systemManagedField } from "../access";
+import { navGroup } from "../admin/navGroups";
 import { withTenantAccess } from "../tenancy";
 
 export const CV_STATUSES = [
@@ -28,6 +29,7 @@ export const CvSubmissions = withTenantAccess({
     delete: superAdmins,
   },
   admin: {
+    group: navGroup("inbox"),
     useAsTitle: "applicantName",
     defaultColumns: ["applicantName", "position", "status", "submittedAt"],
   },

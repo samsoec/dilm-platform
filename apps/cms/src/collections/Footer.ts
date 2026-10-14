@@ -12,6 +12,7 @@ import type {
 import { richText } from "payload/shared";
 
 import { superAdmins } from "../access";
+import { navGroup } from "../admin/navGroups";
 import { link } from "../fields/link";
 import { withTenantAccess } from "../tenancy";
 
@@ -80,6 +81,7 @@ const partOfEnabled: Condition = (_, siblingData) =>
 export const Footer = withTenantAccess(
   {
     slug: "footer",
+    admin: { group: navGroup("layout") },
     access: {
       delete: superAdmins,
     },
