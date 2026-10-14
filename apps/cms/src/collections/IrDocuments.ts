@@ -1,3 +1,4 @@
+import { navGroup } from "../admin/navGroups";
 import { localization } from "../localization";
 import { withTenantAccess } from "../tenancy";
 
@@ -14,6 +15,7 @@ export const IrDocuments = withTenantAccess({
   slug: "ir-documents",
   labels: { singular: "IR document", plural: "IR documents" },
   admin: {
+    group: navGroup("investor"),
     useAsTitle: "title",
     defaultColumns: ["title", "documentType", "publishedDate", "locale"],
   },

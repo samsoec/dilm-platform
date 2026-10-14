@@ -5,6 +5,7 @@ import {
   systemCriticalFieldAccess,
   tenantMembers,
 } from "../access";
+import { navGroup } from "../admin/navGroups";
 import { localization } from "../localization";
 
 export const Tenants: CollectionConfig = {
@@ -16,6 +17,7 @@ export const Tenants: CollectionConfig = {
     delete: superAdmins,
   },
   admin: {
+    group: navGroup("admin"),
     useAsTitle: "name",
     defaultColumns: ["name", "slug", "domain", "defaultLocale"],
   },

@@ -9,6 +9,7 @@ import {
   systemCriticalFieldAccess,
   type Role,
 } from "../access";
+import { navGroup } from "../admin/navGroups";
 
 export const promoteFirstUserToSuperAdmin: CollectionBeforeChangeHook = async ({
   data,
@@ -29,6 +30,7 @@ export const LOGIN_LOCKOUT = {
 export const Users: CollectionConfig = {
   slug: "users",
   admin: {
+    group: navGroup("admin"),
     useAsTitle: "email",
     defaultColumns: ["email", "roles"],
   },

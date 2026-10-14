@@ -8,14 +8,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { PRODUCT_NAME } from "./admin/brand";
-import { ConsentLogs } from "./collections/ConsentLogs";
-import { CvSubmissions } from "./collections/CvSubmissions";
-import { Footer } from "./collections/Footer";
-import { Header } from "./collections/Header";
-import { IrDocuments } from "./collections/IrDocuments";
-import { Media } from "./collections/Media";
-import { TenantSettings } from "./collections/TenantSettings";
-import { Tenants } from "./collections/Tenants";
+import { collections, globals } from "./collections";
 import { Users } from "./collections/Users";
 import { cmsDatabaseAdapter, type PayloadClient } from "./database";
 import { cmsEmailAdapter } from "./email";
@@ -24,18 +17,6 @@ import { publicBucketStorage } from "./storage";
 import { multiTenant } from "./tenancy";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const collections = [
-  Users,
-  Tenants,
-  TenantSettings,
-  Media,
-  ConsentLogs,
-  IrDocuments,
-  CvSubmissions,
-  Header,
-  Footer,
-];
 
 export async function cmsConfig(client: PayloadClient) {
   const runtimeConfig = await getRuntimeConfig();
@@ -59,6 +40,7 @@ export async function cmsConfig(client: PayloadClient) {
       },
     },
     collections,
+    globals,
     localization,
     secret: runtimeConfig.payloadSecret,
     typescript: {
