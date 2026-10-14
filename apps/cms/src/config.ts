@@ -54,7 +54,7 @@ export async function cmsConfig(client: PayloadClient) {
         },
       },
       meta: {
-        titleSuffix: `· ${PRODUCT_NAME}`,
+        titleSuffix: `— ${PRODUCT_NAME}`,
         icons: [{ rel: "icon", type: "image/svg+xml", url: "/favicon.svg" }],
       },
     },

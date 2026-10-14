@@ -22,15 +22,13 @@
     --dil-ok-bg: #e5f4ec;
     --dil-danger: #b42318;
     --dil-danger-bg: #fdecea;
-    --dil-rail: #1a2b40;
-    --dil-tenant: #2a2d7e;
-    --dil-tenant-soft: #ecedf8;
-    --dil-tenant-ink: #2a2d7e;
     --dil-shadow-s: 0 1px 2px rgb(17 28 42 / 12%);
 
-    --dil-radius-s: 4px;
-    --dil-radius-m: 8px;
+    --dil-radius-s: 8px;
+    --dil-radius-m: 10px;
     --dil-radius-l: 12px;
+
+    --dil-sidebar-width: 272px;
 
     --dil-font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
     --dil-font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -58,10 +56,6 @@
     --dil-ok-bg: #12301f;
     --dil-danger: #f19c94;
     --dil-danger-bg: #3a1714;
-    --dil-rail: #05090e;
-    --dil-tenant: #3b3fa6;
-    --dil-tenant-soft: #1c2050;
-    --dil-tenant-ink: #c9cbf5;
     --dil-shadow-s: 0 1px 2px rgb(0 0 0 / 40%);
   }
 }

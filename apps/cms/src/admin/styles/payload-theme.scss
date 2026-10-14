@@ -79,4 +79,10 @@ $status-scales: (
 
     --accessibility-outline: 2px solid var(--dil-brand);
   }
+
+  @media (min-width: 769px) {
+    :root {
+      --nav-width: var(--dil-sidebar-width);
+    }
+  }
 }

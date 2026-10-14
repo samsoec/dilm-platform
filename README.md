@@ -314,10 +314,13 @@ returned CSS:
 
 ```bash
 NAMES=$(grep -o '"[a-z_]*"' apps/cms/src/admin/icons.ts | tr -d '"' | paste -sd, -)
-curl -A "Mozilla/5.0 Chrome/130" "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=$NAMES&display=block"
+UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+curl -A "$UA" "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=$NAMES&display=block"
 ```
 
-Keep the five font files under 250 KB together; the test checks this.
+A full browser user agent matters: with a short one Google serves TrueType
+instead of woff2. The test checks that every font is woff2, that the icon
+subset stays under 60 KB and that the five files stay under 250 KB together.
 
 How it lines up with AWS:
 

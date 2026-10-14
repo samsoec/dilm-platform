@@ -11,6 +11,7 @@
     font-family: var(--dil-font-mono);
   }
 
+  // Payload class: .btn--style-primary (@payloadcms/ui elements/Button)
   .btn--style-primary:not(.btn--disabled) {
     --bg-color: var(--dil-action);
     --color: var(--dil-on-action);

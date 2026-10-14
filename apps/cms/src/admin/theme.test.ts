@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -65,7 +65,6 @@ const TEXT_PAIRS: [string, string][] = [
   ["ok", "ok-bg"],
   ["danger", "danger-bg"],
   ["danger", "surface"],
-  ["tenant-ink", "tenant-soft"],
 ];
 
 const UI_PAIRS: [string, string][] = [
@@ -115,11 +114,22 @@ describe("admin stylesheets", () => {
     expect(tokens.trimStart()).toMatch(/^@layer payload-default, dil;/);
   });
 
+  const fonts = readdirSync(fontsDir).map((file) => ({
+    file,
+    bytes: readFileSync(path.join(fontsDir, file)),
+  }));
+
+  it.each(fonts)("$file is a woff2 file", ({ bytes }) => {
+    expect(bytes.subarray(0, 4).toString("latin1")).toBe("wOF2");
+  });
+
   it("keeps the self-hosted fonts within 250 KB", () => {
-    const bytes = readdirSync(fontsDir).reduce(
-      (total, file) => total + statSync(path.join(fontsDir, file)).size,
-      0,
-    );
-    expect(bytes).toBeLessThanOrEqual(250 * 1024);
+    const total = fonts.reduce((sum, { bytes }) => sum + bytes.length, 0);
+    expect(total).toBeLessThanOrEqual(250 * 1024);
+  });
+
+  it("keeps the icon subset under 60 KB", () => {
+    const icons = fonts.find(({ file }) => file.startsWith("material-symbols"));
+    expect(icons?.bytes.length).toBeLessThan(60 * 1024);
   });
 });
