@@ -7,6 +7,7 @@ import { s3Storage } from "@payloadcms/storage-s3";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
+import { PRODUCT_NAME } from "./admin/brand";
 import { ConsentLogs } from "./collections/ConsentLogs";
 import { CvSubmissions } from "./collections/CvSubmissions";
 import { Footer } from "./collections/Footer";
@@ -43,6 +44,18 @@ export async function cmsConfig(client: PayloadClient) {
       user: Users.slug,
       importMap: {
         baseDir: dirname,
+      },
+      theme: "all",
+      avatar: { Component: "/admin/graphics/Avatar#Avatar" },
+      components: {
+        graphics: {
+          Icon: "/admin/graphics/Icon#Icon",
+          Logo: "/admin/graphics/Logo#Logo",
+        },
+      },
+      meta: {
+        titleSuffix: `· ${PRODUCT_NAME}`,
+        icons: [{ rel: "icon", type: "image/svg+xml", url: "/favicon.svg" }],
       },
     },
     collections,

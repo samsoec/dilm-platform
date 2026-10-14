@@ -1,0 +1,82 @@
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+
+$elevation-anchors: (
+  0: surface,
+  100: surface-2,
+  150: line,
+  500: muted,
+  800: ink-2,
+  1000: ink,
+);
+
+$status-scales: (
+  success: (
+    0: ok-bg,
+    500: ok,
+    1000: ink,
+  ),
+  error: (
+    0: danger-bg,
+    500: danger,
+    1000: ink,
+  ),
+  warning: (
+    0: warn-bg,
+    500: warn,
+    1000: ink,
+  ),
+);
+
+@function ramp($anchors, $step) {
+  $keys: map.keys($anchors);
+  @for $i from 1 to list.length($keys) {
+    $lo: list.nth($keys, $i);
+    $hi: list.nth($keys, $i + 1);
+    @if $step == $lo {
+      @return var(--dil-#{map.get($anchors, $lo)});
+    }
+    @if $step == $hi {
+      @return var(--dil-#{map.get($anchors, $hi)});
+    }
+    @if $step > $lo and $step < $hi {
+      $weight: math.round(math.div($step - $lo, $hi - $lo) * 1000) * 0.1%;
+      @return color-mix(
+        in srgb,
+        var(--dil-#{map.get($anchors, $hi)}) $weight,
+        var(--dil-#{map.get($anchors, $lo)})
+      );
+    }
+  }
+  @error "Step #{$step} is outside the anchors #{$keys}.";
+}
+
+@layer dil {
+  :root,
+  html[data-theme="dark"] {
+    @for $i from 0 through 20 {
+      --theme-elevation-#{$i * 50}: #{ramp($elevation-anchors, $i * 50)};
+    }
+
+    @each $scale, $anchors in $status-scales {
+      @for $i from 1 through 19 {
+        --theme-#{$scale}-#{$i * 50}: #{ramp($anchors, $i * 50)};
+      }
+    }
+
+    --theme-bg: var(--dil-bg);
+    --theme-input-bg: var(--dil-surface);
+    --theme-text: var(--dil-ink);
+    --theme-border-color: var(--dil-line);
+
+    --style-radius-s: var(--dil-radius-s);
+    --style-radius-m: var(--dil-radius-m);
+    --style-radius-l: var(--dil-radius-l);
+
+    --font-body: var(--dil-font-sans);
+    --font-mono: var(--dil-font-mono);
+
+    --accessibility-outline: 2px solid var(--dil-brand);
+  }
+}
