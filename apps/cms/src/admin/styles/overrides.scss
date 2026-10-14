@@ -13,10 +13,10 @@
 
   // Payload class: .btn--style-primary (@payloadcms/ui elements/Button)
   .btn--style-primary:not(.btn--disabled) {
-    --bg-color: var(--dil-action);
-    --color: var(--dil-on-action);
-    --hover-bg: var(--dil-action-hover);
-    --hover-color: var(--dil-on-action);
+    --bg-color: var(--dil-brand);
+    --color: #ffffff;
+    --hover-bg: color-mix(in srgb, var(--dil-brand) 85%, #000000);
+    --hover-color: #ffffff;
   }
 
   a:focus-visible,

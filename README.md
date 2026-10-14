@@ -299,9 +299,9 @@ Everything sits in `@layer dil`, declared after Payload's
 `payload-default` layer, so it wins without `!important`. Tailwind is
 never imported into the admin. `src/admin/theme.test.ts` fails if a text
 colour pair drops below WCAG AA in either theme, so a new token pair
-belongs in its list. Filled buttons use `--dil-action` (#3c6394) rather than
-the design's `--dil-brand` (#558ed4), because white on #558ed4 is only
-3.4:1.
+belongs in its list. Filled buttons follow TRD-UI §4.2 and use
+`--dil-brand` (#558ed4) with white text. That pair is 3.4:1, under AA's
+4.5:1, so it is deliberately not in the test's list.
 
 Plus Jakarta Sans and JetBrains Mono (both SIL OFL) and Material Symbols
 Rounded (Apache 2.0) are committed woff2 files in `src/admin/fonts/`, so the

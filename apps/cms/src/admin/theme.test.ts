@@ -58,8 +58,6 @@ const TEXT_PAIRS: [string, string][] = [
   ["muted", "surface-2"],
   ["brand-ink", "bg"],
   ["brand-ink", "surface"],
-  ["on-action", "action"],
-  ["on-action", "action-hover"],
   ["sel-ink", "sel-bg"],
   ["warn", "warn-bg"],
   ["ok", "ok-bg"],
