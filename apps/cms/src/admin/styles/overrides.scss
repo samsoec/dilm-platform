@@ -1,0 +1,63 @@
+@layer dil {
+  ::selection {
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+  }
+
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--dil-font-mono);
+  }
+
+  // Payload class: .btn--style-primary (@payloadcms/ui elements/Button)
+  .btn--style-primary:not(.btn--disabled) {
+    --bg-color: var(--dil-brand);
+    --color: #ffffff;
+    --hover-bg: color-mix(in srgb, var(--dil-brand) 85%, #000000);
+    --hover-color: #ffffff;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: var(--accessibility-outline);
+    outline-offset: var(--accessibility-outline-offset);
+  }
+
+  .dil-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--dil-ink);
+    font-family: var(--dil-font-sans);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .dil-mark {
+    display: block;
+    flex: none;
+    color: var(--dil-brand);
+  }
+
+  .dil-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+}

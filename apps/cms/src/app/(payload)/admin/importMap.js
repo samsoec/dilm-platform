@@ -7,6 +7,9 @@ import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8c
 import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ParagraphFeatureClient as ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { Avatar as Avatar_5599fe28f2b3157f52fea861e6ba12e6 } from '../../../admin/graphics/Avatar'
+import { Icon as Icon_48a75e37b0630d5b8c8066e180c0e6ef } from '../../../admin/graphics/Icon'
+import { Logo as Logo_88541c286955dbac4d90fb5ed606381c } from '../../../admin/graphics/Logo'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
@@ -24,6 +27,9 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient": InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ParagraphFeatureClient": ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/admin/graphics/Avatar#Avatar": Avatar_5599fe28f2b3157f52fea861e6ba12e6,
+  "/admin/graphics/Icon#Icon": Icon_48a75e37b0630d5b8c8066e180c0e6ef,
+  "/admin/graphics/Logo#Logo": Logo_88541c286955dbac4d90fb5ed606381c,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,

@@ -1,0 +1,55 @@
+@layer payload-default, dil;
+
+@layer dil {
+  :root {
+    --dil-bg: #f5f7fa;
+    --dil-surface: #ffffff;
+    --dil-surface-2: #f0f4f9;
+    --dil-line: #e2e8f0;
+    --dil-ink: #111c2a;
+    --dil-ink-2: #2b3a4d;
+    --dil-muted: #5f6f84;
+    --dil-brand: #558ed4;
+    --dil-brand-ink: #3c6394;
+    --dil-sel-bg: #dde8f6;
+    --dil-sel-ink: #2b476a;
+    --dil-warn: #a15c07;
+    --dil-warn-bg: #fdf3e2;
+    --dil-ok: #1f7a4d;
+    --dil-ok-bg: #e5f4ec;
+    --dil-danger: #b42318;
+    --dil-danger-bg: #fdecea;
+    --dil-shadow-s: 0 1px 2px rgb(17 28 42 / 12%);
+
+    --dil-radius-s: 8px;
+    --dil-radius-m: 10px;
+    --dil-radius-l: 12px;
+
+    --dil-sidebar-width: 272px;
+
+    --dil-font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+    --dil-font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --dil-font-icon: "Material Symbols Rounded";
+  }
+
+  html[data-theme="dark"] {
+    --dil-bg: #090e15;
+    --dil-surface: #111c2a;
+    --dil-surface-2: #1a2b40;
+    --dil-line: #223955;
+    --dil-ink: #eef4fb;
+    --dil-ink-2: #ccddf2;
+    --dil-muted: #99abc2;
+    --dil-brand: #558ed4;
+    --dil-brand-ink: #88b0e1;
+    --dil-sel-bg: #223955;
+    --dil-sel-ink: #ccddf2;
+    --dil-warn: #f0b35a;
+    --dil-warn-bg: #3a2a10;
+    --dil-ok: #6fd0a0;
+    --dil-ok-bg: #12301f;
+    --dil-danger: #f19c94;
+    --dil-danger-bg: #3a1714;
+    --dil-shadow-s: 0 1px 2px rgb(0 0 0 / 40%);
+  }
+}

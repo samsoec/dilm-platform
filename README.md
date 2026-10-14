@@ -283,6 +283,45 @@ correct password is then refused for ~10 minutes, and deletes the user. It
 uses whichever database the runtime config points at, so the same command
 verifies staging.
 
+**Admin theme.** The admin panel's DIL Group look (TRD-UI §4.2) lives in
+`apps/cms/src/admin/styles/`, loaded once from `app/(payload)/layout.tsx`:
+
+- `tokens.scss` holds every colour, radius and font as a `--dil-*` variable,
+  once for light and once for `html[data-theme="dark"]`. Change a colour
+  here and nowhere else.
+- `payload-theme.scss` points Payload's own `--theme-*`, `--style-radius-*`
+  and `--font-*` variables at those tokens, so native fields, buttons and
+  lists follow the theme without per-component CSS.
+- `fonts.scss` and `overrides.scss` add the self-hosted fonts and the few
+  rules variables can't reach.
+
+Everything sits in `@layer dil`, declared after Payload's
+`payload-default` layer, so it wins without `!important`. Tailwind is
+never imported into the admin. `src/admin/theme.test.ts` fails if a text
+colour pair drops below WCAG AA in either theme, so a new token pair
+belongs in its list. Filled buttons follow TRD-UI §4.2 and use
+`--dil-brand` (#558ed4) with white text. That pair is 3.4:1, under AA's
+4.5:1, so it is deliberately not in the test's list.
+
+Plus Jakarta Sans and JetBrains Mono (both SIL OFL) and Material Symbols
+Rounded (Apache 2.0) are committed woff2 files in `src/admin/fonts/`, so the
+admin never calls Google Fonts. The icon font is a subset holding only the
+icons listed in `ICON_NAMES` (`src/admin/icons.ts`); the `IconName` type stops
+a component from asking for one that isn't there. To add an icon, add its
+name to that list (it must stay alphabetical), rebuild the subset, and
+replace `material-symbols-rounded.woff2` with the woff2 file linked in the
+returned CSS:
+
+```bash
+NAMES=$(grep -o '"[a-z_]*"' apps/cms/src/admin/icons.ts | tr -d '"' | paste -sd, -)
+UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+curl -A "$UA" "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400,0..1,0&icon_names=$NAMES&display=block"
+```
+
+A full browser user agent matters: with a short one Google serves TrueType
+instead of woff2. The test checks that every font is woff2, that the icon
+subset stays under 60 KB and that the five files stay under 250 KB together.
+
 How it lines up with AWS:
 
 - **One `.env`, read by both sides.** Docker Compose reads `.env` for ports,
