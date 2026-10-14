@@ -14,6 +14,7 @@ import { richText } from "payload/shared";
 import { superAdmins } from "../access";
 import { navGroup } from "../admin/navGroups";
 import { link } from "../fields/link";
+import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
 
 export const MAX_LINK_COLUMNS = 4;
@@ -79,7 +80,7 @@ const partOfEnabled: Condition = (_, siblingData) =>
   Boolean((siblingData as { enabled?: boolean } | undefined)?.enabled);
 
 export const Footer = withTenantAccess(
-  {
+  withUpdatedBy({
     slug: "footer",
     admin: { group: navGroup("layout") },
     access: {
@@ -171,6 +172,6 @@ export const Footer = withTenantAccess(
         },
       },
     ],
-  },
+  }),
   { isGlobal: true },
 );

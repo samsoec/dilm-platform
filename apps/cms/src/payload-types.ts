@@ -137,6 +137,7 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  name?: string | null;
   roles: ('super-admin' | 'tenant-editor' | 'tenant-viewer')[];
   tenants?:
     | {
@@ -218,6 +219,7 @@ export interface TenantSetting {
   };
   analyticsId?: string | null;
   waLink?: string | null;
+  updatedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -404,6 +406,7 @@ export interface Header {
       label?: string | null;
     };
   };
+  updatedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -504,6 +507,7 @@ export interface Footer {
    * Use {year} for the current year and {legalName} for the company's legal name from Tenant Settings, e.g. Copyright © {year} {legalName}. All Rights Reserved.
    */
   copyright?: string | null;
+  updatedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -614,6 +618,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
   roles?: T;
   tenants?:
     | T
@@ -686,6 +691,7 @@ export interface TenantSettingsSelect<T extends boolean = true> {
       };
   analyticsId?: T;
   waLink?: T;
+  updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -854,6 +860,7 @@ export interface HeaderSelect<T extends boolean = true> {
               label?: T;
             };
       };
+  updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -924,6 +931,7 @@ export interface FooterSelect<T extends boolean = true> {
             };
       };
   copyright?: T;
+  updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }

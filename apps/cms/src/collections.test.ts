@@ -2,6 +2,7 @@ import type {
   AccessArgs,
   CollectionConfig,
   Field,
+  FieldHook,
   GlobalConfig,
   FieldAccess,
   RelationshipField,
@@ -9,12 +10,17 @@ import type {
 } from "payload";
 import { describe, expect, it } from "vitest";
 
-import type { Role } from "./access";
+import { type Role, superAdminsOrSelf } from "./access";
 import { ICON_NAMES } from "./admin/icons";
 import { type CollectionNav, navGroupByLabel } from "./admin/navGroups";
 import { collections, globals } from "./collections";
 import { CvSubmissions } from "./collections/CvSubmissions";
 import { IrDocuments } from "./collections/IrDocuments";
+import {
+  defaultNameFromEmail,
+  nameFromEmail,
+  Users,
+} from "./collections/Users";
 import {
   isUniquePlatform,
   SOCIAL_PLATFORMS,
@@ -198,6 +204,31 @@ describe("users", () => {
     expect(field({ ...users, fields: tenants.fields }, "tenant")).toMatchObject(
       { type: "relationship", relationTo: "tenants" },
     );
+  });
+
+  it("names users, editable by Super Admins or the user themself", () => {
+    expect(field(Users, "name")).toMatchObject({ type: "text" });
+    expect(field(Users, "name")).not.toHaveProperty("access");
+    expect(Users.access!.update).toBe(superAdminsOrSelf);
+    expect(Users.admin).toMatchObject({
+      useAsTitle: "name",
+      defaultColumns: ["name", "email", "roles"],
+    });
+  });
+
+  it("falls back to the email local part, as the migration backfill does", () => {
+    const hook = (value: unknown, email: string | undefined, stored?: string) =>
+      defaultNameFromEmail({
+        value,
+        data: email === undefined ? {} : { email },
+        originalDoc: stored === undefined ? undefined : { email: stored },
+      } as Parameters<FieldHook>[0]);
+
+    expect(nameFromEmail("rani.saputra@duniakimia.com")).toBe("rani.saputra");
+    expect(nameFromEmail("")).toBeUndefined();
+    expect(hook("  Rani Saputra ", "rani@duniakimia.com")).toBe("Rani Saputra");
+    expect(hook("", "rani@duniakimia.com")).toBe("rani");
+    expect(hook(undefined, undefined, "hendra@likutelaga.com")).toBe("hendra");
   });
 });
 

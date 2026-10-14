@@ -3,6 +3,7 @@ import { select } from "payload/shared";
 
 import { superAdmins } from "../access";
 import { navGroup } from "../admin/navGroups";
+import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
 import {
   isGa4MeasurementId,
@@ -34,7 +35,7 @@ export const isUniquePlatform: SelectFieldSingleValidation = async (
 };
 
 export const TenantSettings = withTenantAccess(
-  {
+  withUpdatedBy({
     slug: "tenant-settings",
     access: {
       delete: superAdmins,
@@ -144,6 +145,6 @@ export const TenantSettings = withTenantAccess(
         validate: isWhatsAppLink,
       },
     ],
-  },
+  }),
   { isGlobal: true },
 );

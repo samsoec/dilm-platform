@@ -3,6 +3,7 @@ import type { Condition, TextFieldSingleValidation } from "payload";
 import { superAdmins } from "../access";
 import { navGroup } from "../admin/navGroups";
 import { link } from "../fields/link";
+import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
 
 export const NAV_ITEM_TYPES = ["link", "dropdown"] as const;
@@ -26,7 +27,7 @@ const requireDropdownLabel: TextFieldSingleValidation = (value) =>
   value ? true : "Add the dropdown's label.";
 
 export const Header = withTenantAccess(
-  {
+  withUpdatedBy({
     slug: "header",
     admin: { group: navGroup("layout") },
     access: {
@@ -111,6 +112,6 @@ export const Header = withTenantAccess(
         ],
       },
     ],
-  },
+  }),
   { isGlobal: true },
 );
