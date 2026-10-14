@@ -30,6 +30,7 @@ export const Header = withTenantAccess(
   withUpdatedBy({
     slug: "header",
     admin: { group: navGroup("layout") },
+    custom: { nav: { icon: "web_asset", order: 1 } },
     access: {
       delete: superAdmins,
     },

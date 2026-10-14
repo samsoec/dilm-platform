@@ -33,6 +33,9 @@ export const CvSubmissions = withTenantAccess({
     useAsTitle: "applicantName",
     defaultColumns: ["applicantName", "position", "status", "submittedAt"],
   },
+  custom: {
+    nav: { icon: "badge", order: 1, badge: "cv-received" },
+  },
   fields: [
     systemManaged({
       name: "submissionId",

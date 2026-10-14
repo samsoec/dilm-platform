@@ -29,6 +29,7 @@ export async function cmsConfig(client: PayloadClient) {
       theme: "all",
       avatar: { Component: "/admin/graphics/Avatar#Avatar" },
       components: {
+        Nav: "/admin/components/nav/AdminNav#AdminNav",
         graphics: {
           Icon: "/admin/graphics/Icon#Icon",
           Logo: "/admin/graphics/Logo#Logo",

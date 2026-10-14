@@ -19,6 +19,34 @@
     --hover-color: #ffffff;
   }
 
+  // Payload class: .nav / .nav__scroll (@payloadcms/next elements/Nav)
+  .nav {
+    background: var(--dil-surface);
+    border-inline-end: 1px solid var(--dil-line);
+  }
+
+  .nav__scroll {
+    --nav-padding-block-start: 0px;
+    --nav-padding-block-end: 12px;
+    --nav-padding-inline-start: 12px;
+    --nav-padding-inline-end: 12px;
+  }
+
+  // Payload class: .nav__log-out (@payloadcms/ui elements/Logout)
+  .dil-nav .nav__log-out {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--dil-radius-s);
+    color: var(--dil-muted);
+
+    &:hover {
+      background: var(--dil-surface-2);
+    }
+  }
+
   a:focus-visible,
   button:focus-visible,
   input:focus-visible,

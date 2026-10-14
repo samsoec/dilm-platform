@@ -44,6 +44,9 @@ export const TenantSettings = withTenantAccess(
       group: navGroup("settings"),
       useAsTitle: "siteName",
     },
+    custom: {
+      nav: { icon: "tune" },
+    },
     fields: [
       {
         name: "siteName",

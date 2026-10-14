@@ -6,6 +6,7 @@ import { withTenantAccess } from "../tenancy";
 export const Media = withTenantAccess({
   slug: "media",
   admin: { group: navGroup("media") },
+  custom: { nav: { icon: "photo_library" } },
   access: {
     read: anyone,
   },

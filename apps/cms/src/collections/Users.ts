@@ -48,6 +48,9 @@ export const Users: CollectionConfig = {
     useAsTitle: "name",
     defaultColumns: ["name", "email", "roles"],
   },
+  custom: {
+    nav: { icon: "group", order: 1 },
+  },
   auth: { ...LOGIN_LOCKOUT },
   access: {
     admin: ({ req }) => hasAnyRole(req.user),

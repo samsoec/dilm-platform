@@ -1,0 +1,393 @@
+@layer dil {
+  .dil-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .dil-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 100%;
+    font-family: var(--dil-font-sans);
+    color: var(--dil-ink);
+  }
+
+  .dil-nav__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: var(--app-header-height);
+    margin-bottom: -12px;
+    padding-inline-start: calc(var(--gutter-h) + 4px);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--dil-muted);
+  }
+
+  .dil-tenant-switch {
+    position: relative;
+  }
+
+  .dil-tenant-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    margin: 0;
+    padding: 12px;
+    border: 0;
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-tenant);
+    color: #ffffff;
+    font: inherit;
+    text-align: start;
+  }
+
+  button.dil-tenant-card {
+    cursor: pointer;
+  }
+
+  button.dil-tenant-card:hover {
+    background: color-mix(in srgb, var(--dil-tenant) 88%, #000000);
+  }
+
+  html[data-theme="dark"] .dil-tenant-card {
+    background: var(--dil-tenant-dark);
+  }
+
+  html[data-theme="dark"] button.dil-tenant-card:hover {
+    background: color-mix(in srgb, var(--dil-tenant-dark) 88%, #000000);
+  }
+
+  .dil-tenant-card__logo {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 40px;
+
+    img {
+      max-width: 48px;
+      max-height: 34px;
+      object-fit: contain;
+    }
+
+    .dil-icon {
+      font-size: 28px;
+      opacity: 0.9;
+    }
+  }
+
+  .dil-tenant-card__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .dil-tenant-card__eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  .dil-tenant-card__name {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .dil-tenant-card__domain {
+    overflow: hidden;
+    font-family: var(--dil-font-mono);
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0.9;
+  }
+
+  .dil-tenant-card__switch {
+    flex: none;
+    opacity: 0.9;
+  }
+
+  .dil-tenant-switch__list {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 6px);
+    right: 0;
+    left: 0;
+    max-height: 280px;
+    margin: 0;
+    padding: 4px;
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface);
+    box-shadow: 0 8px 24px rgb(17 28 42 / 16%);
+
+    &:focus-visible {
+      outline: var(--accessibility-outline);
+      outline-offset: 2px;
+    }
+  }
+
+  .dil-tenant-switch__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 36px;
+    padding: 0 10px;
+    border-radius: var(--dil-radius-s);
+    color: var(--dil-ink-2);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+
+    &[aria-selected="true"] {
+      color: var(--dil-sel-ink);
+      font-weight: 600;
+    }
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-tenant-switch__option--active {
+    background: var(--dil-surface-2);
+  }
+
+  .dil-nav__links {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .dil-nav__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 34px;
+    flex: none;
+    padding: 0 10px;
+    border-radius: var(--dil-radius-s);
+    color: var(--dil-ink-2);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--dil-surface-2);
+    }
+  }
+
+  .dil-nav__item-icon {
+    color: var(--dil-muted);
+  }
+
+  .dil-nav__item--active {
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+    font-weight: 600;
+
+    &:hover {
+      background: var(--dil-sel-bg);
+    }
+
+    .dil-nav__item-icon {
+      color: inherit;
+    }
+  }
+
+  .dil-nav__item-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dil-nav__badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: var(--dil-brand);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .dil-nav__lock {
+    display: flex;
+    color: var(--dil-muted);
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+
+  .dil-nav__dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--dil-warn);
+  }
+
+  .dil-nav__group {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .dil-nav__group-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    padding: 12px 10px 4px;
+    border: 0;
+    border-radius: var(--dil-radius-s);
+    background: none;
+    color: var(--dil-muted);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--dil-ink-2);
+    }
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+
+  .dil-nav__group-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dil-nav__group-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .dil-nav__tag {
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--dil-surface-2);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .dil-nav__hint {
+    margin: 2px 4px;
+    padding: 8px 10px;
+    border: 1px dashed var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    color: var(--dil-muted);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .dil-nav__user {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: auto;
+    padding: 10px 0 0;
+    border-top: 1px solid var(--dil-line);
+  }
+
+  .dil-nav__account {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 4px;
+    border-radius: var(--dil-radius-s);
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--dil-surface-2);
+    }
+  }
+
+  .dil-nav__user-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .dil-nav__user-name,
+  .dil-nav__user-role {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dil-nav__user-name {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .dil-nav__user-role {
+    color: var(--dil-muted);
+    font-size: 12px;
+  }
+
+  .dil-nav__icon-button {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--dil-radius-s);
+    background: none;
+    color: var(--dil-muted);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--dil-surface-2);
+      color: var(--dil-ink);
+    }
+  }
+}

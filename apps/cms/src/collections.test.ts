@@ -11,11 +11,13 @@ import type {
 import { describe, expect, it } from "vitest";
 
 import { type Role, superAdminsOrSelf } from "./access";
+import { validateBrandColor } from "./admin/brandColor";
 import { ICON_NAMES } from "./admin/icons";
 import { type CollectionNav, navGroupByLabel } from "./admin/navGroups";
 import { collections, globals } from "./collections";
 import { CvSubmissions } from "./collections/CvSubmissions";
 import { IrDocuments } from "./collections/IrDocuments";
+import { Tenants } from "./collections/Tenants";
 import {
   defaultNameFromEmail,
   nameFromEmail,
@@ -184,11 +186,30 @@ describe("the sidebar navigation (FR-UI-01 to FR-UI-03)", () => {
     ]);
   });
 
+  it("gives every collection a sidebar icon", () => {
+    expect(
+      ALL.filter(
+        (config) => !(config.custom?.nav as CollectionNav | undefined),
+      ).map(({ slug }) => slug),
+    ).toEqual([]);
+  });
+
   it("gives every custom.nav a known icon", () => {
     for (const config of [...ALL, ...globals]) {
       const nav = config.custom?.nav as CollectionNav | undefined;
       if (nav) expect(ICON_NAMES).toContain(nav.icon);
     }
+  });
+});
+
+describe("tenants", () => {
+  it("stores a brand colour only Super Admins can set (FR-UI-09)", () => {
+    expect(field(Tenants, "brandColor")).toMatchObject({
+      type: "text",
+      validate: validateBrandColor,
+    });
+    expect(fieldAllows(Tenants, "brandColor", "create", superAdmin)).toBe(true);
+    expect(fieldAllows(Tenants, "brandColor", "update", editor)).toBe(false);
   });
 });
 
