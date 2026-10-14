@@ -1,4 +1,8 @@
-import type { CollectionBeforeChangeHook, CollectionConfig } from "payload";
+import type {
+  CollectionBeforeChangeHook,
+  CollectionConfig,
+  FieldHook,
+} from "payload";
 
 import {
   hasAnyRole,
@@ -22,6 +26,16 @@ export const promoteFirstUserToSuperAdmin: CollectionBeforeChangeHook = async ({
   return { ...data, roles: ["super-admin"] satisfies Role[] };
 };
 
+export function nameFromEmail(email: unknown): string | undefined {
+  return typeof email === "string"
+    ? email.split("@")[0] || undefined
+    : undefined;
+}
+
+export const defaultNameFromEmail: FieldHook = ({ value, data, originalDoc }) =>
+  (typeof value === "string" ? value.trim() : "") ||
+  nameFromEmail(data?.email ?? originalDoc?.email);
+
 export const LOGIN_LOCKOUT = {
   maxLoginAttempts: 5,
   lockTime: 10 * 60 * 1000,
@@ -31,8 +45,8 @@ export const Users: CollectionConfig = {
   slug: "users",
   admin: {
     group: navGroup("admin"),
-    useAsTitle: "email",
-    defaultColumns: ["email", "roles"],
+    useAsTitle: "name",
+    defaultColumns: ["name", "email", "roles"],
   },
   auth: { ...LOGIN_LOCKOUT },
   access: {
@@ -47,6 +61,11 @@ export const Users: CollectionConfig = {
     beforeChange: [promoteFirstUserToSuperAdmin],
   },
   fields: [
+    {
+      name: "name",
+      type: "text",
+      hooks: { beforeChange: [defaultNameFromEmail] },
+    },
     {
       name: "roles",
       type: "select",
