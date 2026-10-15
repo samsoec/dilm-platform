@@ -8,6 +8,11 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { PRODUCT_NAME } from "./admin/brand";
+import {
+  appendAdminProviders,
+  PROVIDERS_INSIDE_TENANT_SELECTION,
+  TOP_BAR_ACTIONS,
+} from "./admin/shell";
 import { collections, globals } from "./collections";
 import { Users } from "./collections/Users";
 import { cmsDatabaseAdapter, type PayloadClient } from "./database";
@@ -30,6 +35,7 @@ export async function cmsConfig(client: PayloadClient) {
       avatar: { Component: "/admin/graphics/Avatar#Avatar" },
       components: {
         Nav: "/admin/components/nav/AdminNav#AdminNav",
+        actions: TOP_BAR_ACTIONS,
         graphics: {
           Icon: "/admin/graphics/Icon#Icon",
           Logo: "/admin/graphics/Logo#Logo",
@@ -60,6 +66,7 @@ export async function cmsConfig(client: PayloadClient) {
     plugins: [
       multiTenant(collections),
       s3Storage(publicBucketStorage(runtimeConfig.storage)),
+      appendAdminProviders(PROVIDERS_INSIDE_TENANT_SELECTION),
     ],
   });
 }
