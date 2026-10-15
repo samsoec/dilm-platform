@@ -1,0 +1,125 @@
+@layer dil {
+  .dil-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .dil-search-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: clamp(180px, 16vw, 260px);
+    height: 36px;
+    margin: 0;
+    padding: 0 8px 0 10px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface);
+    color: var(--dil-muted);
+    font: inherit;
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    text-align: start;
+
+    &:disabled {
+      cursor: default;
+    }
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-search-trigger__text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dil-search-trigger__key {
+    padding: 2px 6px;
+    border: 1px solid var(--dil-line);
+    border-radius: 6px;
+    background: var(--dil-surface-2);
+    color: var(--dil-muted);
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .dil-lang {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-lang__label {
+    color: var(--dil-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .dil-lang__options {
+    display: flex;
+    padding: 2px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface-2);
+  }
+
+  .dil-lang__option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 6px;
+    color: var(--dil-ink-2);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--dil-ink);
+    }
+  }
+
+  .dil-lang__option--active {
+    background: var(--dil-surface);
+    box-shadow: var(--dil-shadow-s);
+    color: var(--dil-sel-ink);
+
+    &:hover {
+      color: var(--dil-sel-ink);
+    }
+  }
+
+  .dil-view-site {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface);
+    color: var(--dil-ink-2);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--dil-surface-2);
+      color: var(--dil-ink);
+    }
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+}
