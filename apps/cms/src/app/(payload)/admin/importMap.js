@@ -8,6 +8,7 @@ import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ParagraphFeatureClient as ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { Avatar as Avatar_5599fe28f2b3157f52fea861e6ba12e6 } from '../../../admin/graphics/Avatar'
+import { AdminNav as AdminNav_61caf5a364251c10976dd7df6a186775 } from '../../../admin/components/nav/AdminNav'
 import { Icon as Icon_48a75e37b0630d5b8c8066e180c0e6ef } from '../../../admin/graphics/Icon'
 import { Logo as Logo_88541c286955dbac4d90fb5ed606381c } from '../../../admin/graphics/Logo'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
@@ -28,6 +29,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ParagraphFeatureClient": ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/admin/graphics/Avatar#Avatar": Avatar_5599fe28f2b3157f52fea861e6ba12e6,
+  "/admin/components/nav/AdminNav#AdminNav": AdminNav_61caf5a364251c10976dd7df6a186775,
   "/admin/graphics/Icon#Icon": Icon_48a75e37b0630d5b8c8066e180c0e6ef,
   "/admin/graphics/Logo#Logo": Logo_88541c286955dbac4d90fb5ed606381c,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,

@@ -17,6 +17,9 @@ export const ConsentLogs = withTenantAccess({
     description:
       "UU PDP consent audit trail, written by the system. Holds no IP addresses.",
   },
+  custom: {
+    nav: { icon: "verified_user", order: 2 },
+  },
   fields: [
     {
       name: "timestamp",

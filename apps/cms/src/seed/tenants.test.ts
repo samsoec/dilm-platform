@@ -2,6 +2,7 @@ import { TENANT_DOMAINS, TENANT_SLUGS } from "@dilm/shared-types";
 import type { Payload } from "payload";
 import { describe, expect, it } from "vitest";
 
+import { brandColorProblem } from "../admin/brandColor";
 import { seedTenants, TENANT_SEED } from "./tenants";
 
 type TenantData = { slug: string } & Record<string, unknown>;
@@ -48,18 +49,21 @@ describe("TENANT_SEED", () => {
         slug: "indoacid",
         domain: TENANT_DOMAINS.indoacid,
         defaultLocale: "en",
+        brandColor: "#d92d20",
       },
       {
         name: "Dunia Kimia Utama",
         slug: "duniakimia",
         domain: "duniakimia.com",
         defaultLocale: "en",
+        brandColor: "#1e3a8a",
       },
       {
         name: "Liku Telaga",
         slug: "likutelaga",
         domain: "likutelaga.com",
         defaultLocale: "en",
+        brandColor: "#2f6db5",
       },
     ]);
     expect(TENANT_SEED.map(({ slug }) => slug)).toEqual([...TENANT_SLUGS]);
@@ -113,6 +117,23 @@ describe("seedTenants", () => {
 
     expect(result.outcomes.indoacid).toBe("updated");
     expect(docs[0]).toEqual({ id: 1, ...TENANT_SEED[0] });
+  });
+
+  it("seeds only brand colours that pass the contrast rule (FR-UI-09)", () => {
+    for (const { brandColor } of TENANT_SEED) {
+      expect(brandColorProblem(brandColor)).toBeUndefined();
+    }
+  });
+
+  it("puts a drifted brand colour back to the seeded one", async () => {
+    const { payload, docs } = fakePayload([
+      { id: 1, ...TENANT_SEED[1], brandColor: "#000000" },
+    ]);
+
+    const result = await seedTenants(payload);
+
+    expect(result.outcomes.duniakimia).toBe("updated");
+    expect(docs[0].brandColor).toBe("#1e3a8a");
   });
 
   it("reports tenants it did not seed and leaves them alone", async () => {

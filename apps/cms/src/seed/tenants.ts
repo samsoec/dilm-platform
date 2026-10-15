@@ -11,6 +11,13 @@ import type { Tenant } from "../payload-types";
 
 export type TenantSeed = Pick<Tenant, "name" | "domain" | "defaultLocale"> & {
   slug: TenantSlug;
+  brandColor: string;
+};
+
+export const TENANT_BRAND_COLORS: Record<TenantSlug, string> = {
+  indoacid: "#d92d20",
+  duniakimia: "#1e3a8a",
+  likutelaga: "#2f6db5",
 };
 
 export const TENANT_SEED: TenantSeed[] = TENANT_SLUGS.map((slug) => ({
@@ -18,6 +25,7 @@ export const TENANT_SEED: TenantSeed[] = TENANT_SLUGS.map((slug) => ({
   slug,
   domain: TENANT_DOMAINS[slug],
   defaultLocale: localization.defaultLocale,
+  brandColor: TENANT_BRAND_COLORS[slug],
 }));
 
 export type SeedOutcome = "created" | "updated" | "unchanged";
@@ -48,7 +56,8 @@ export async function seedTenants(
     } else if (
       existing.name === tenant.name &&
       existing.domain === tenant.domain &&
-      existing.defaultLocale === tenant.defaultLocale
+      existing.defaultLocale === tenant.defaultLocale &&
+      existing.brandColor === tenant.brandColor
     ) {
       outcomes[tenant.slug] = "unchanged";
     } else {

@@ -19,6 +19,9 @@ export const IrDocuments = withTenantAccess({
     useAsTitle: "title",
     defaultColumns: ["title", "documentType", "publishedDate", "locale"],
   },
+  custom: {
+    nav: { icon: "description" },
+  },
   upload: {
     mimeTypes: ["application/pdf"],
   },

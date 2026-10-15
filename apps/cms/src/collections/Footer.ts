@@ -83,6 +83,7 @@ export const Footer = withTenantAccess(
   withUpdatedBy({
     slug: "footer",
     admin: { group: navGroup("layout") },
+    custom: { nav: { icon: "call_to_action", order: 2 } },
     access: {
       delete: superAdmins,
     },

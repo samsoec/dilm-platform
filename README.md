@@ -165,8 +165,13 @@ never typed into the admin panel. Their slugs and domains come from
 `TENANT_DOMAINS` in `packages/shared-types`, the same map the web app uses
 to route a `Host` header to a tenant, so the two can't drift apart. The
 script is safe to re-run: it creates missing tenants, resets any whose name,
-domain or default language was edited by hand, and reports each one as
-`created`, `updated` or `unchanged`. If it finds a tenant it didn't seed it
+domain, default language or brand colour was edited by hand, and reports
+each one as `created`, `updated` or `unchanged`. The brand colours live in
+`TENANT_BRAND_COLORS` (`apps/cms/src/seed/tenants.ts`): Indonesian Acids
+Industry red `#d92d20` (its logo's distinctive colour; the logo's blue
+`#2b3d97` is its secondary colour and isn't stored), Dunia Kimia Utama
+navy `#1e3a8a`, and Liku Telaga cobalt `#2f6db5`, kept lighter than DKU's
+navy so the two don't blur together. If it finds a tenant it didn't seed it
 leaves it in place and exits non-zero, because deleting a tenant also
 deletes every document that belongs to it.
 
@@ -321,6 +326,34 @@ curl -A "$UA" "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded
 A full browser user agent matters: with a short one Google serves TrueType
 instead of woff2. The test checks that every font is woff2, that the icon
 subset stays under 60 KB and that the five files stay under 250 KB together.
+
+**Admin sidebar.** `admin.components.Nav` points at
+`src/admin/components/nav/AdminNav.tsx` (TRD-UI §5.1), which replaces
+Payload's default sidebar with a tenant card, grouped links and a user
+footer. It builds its links from the same list Payload's own sidebar uses,
+so a collection a role can't read never shows up. Groups and their order
+come from `NAV_GROUPS` in `src/admin/navGroups.ts`; inside a group, each
+collection's `custom.nav` gives its icon, its position (`order`) and an
+optional count badge (`badge`, a key of `NAV_BADGES` in
+`src/admin/data/badges.ts`). A new collection only needs
+`admin.group: navGroup("…")` and a `custom.nav`, and `collections.test.ts`
+fails if either is missing.
+
+The tenant card is filled with the tenant's `brandColor`, which only Super
+Admins can set and which must leave white text at 4.5:1 or better. Dark
+mode uses a lighter shade of the same colour, worked out in code
+(`darkTenantColor` in `src/admin/brandColor.ts`) rather than stored. The
+card's switcher calls the multi-tenant plugin's `setTenant`, so on Header,
+Footer or Tenant settings the plugin's own redirect opens the other
+tenant's document.
+
+The counts and the "needs attention" dot on Tenant settings are worked out
+on the server for the selected tenant only. Every Local API read under
+`src/admin` passes `overrideAccess: false`, so it sees only what the signed-in
+user may see; `src/admin/access-guard.test.ts` fails if one doesn't. The
+dot follows the completeness rules in `src/admin/data/completeness.ts`
+(TRD-UI FR-UI-45), which the tenant-settings screen and the dashboard will
+reuse.
 
 How it lines up with AWS:
 

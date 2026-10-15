@@ -5,6 +5,10 @@ import {
   systemCriticalFieldAccess,
   tenantMembers,
 } from "../access";
+import {
+  normalizeBrandColorHook,
+  validateBrandColor,
+} from "../admin/brandColor";
 import { navGroup } from "../admin/navGroups";
 import { localization } from "../localization";
 
@@ -20,6 +24,9 @@ export const Tenants: CollectionConfig = {
     group: navGroup("admin"),
     useAsTitle: "name",
     defaultColumns: ["name", "slug", "domain", "defaultLocale"],
+  },
+  custom: {
+    nav: { icon: "domain", order: 2 },
   },
   fields: [
     {
@@ -40,6 +47,19 @@ export const Tenants: CollectionConfig = {
       required: true,
       unique: true,
       access: systemCriticalFieldAccess,
+    },
+    {
+      name: "brandColor",
+      label: "Brand colour",
+      type: "text",
+      access: systemCriticalFieldAccess,
+      validate: validateBrandColor,
+      hooks: { beforeValidate: [normalizeBrandColorHook] },
+      admin: {
+        placeholder: "#1e3a8a",
+        description:
+          "Hex colour behind the tenant card in the admin sidebar. White text must reach 4.5:1 on it.",
+      },
     },
     {
       name: "defaultLocale",

@@ -1,3 +1,4 @@
+import type { NavBadgeKey } from "./data/badges";
 import type { IconName } from "./icons";
 
 export type NavGroup = {
@@ -10,7 +11,7 @@ export type NavGroup = {
 export type CollectionNav = {
   icon: IconName;
   order?: number;
-  badge?: string;
+  badge?: NavBadgeKey;
 };
 
 export const NAV_GROUPS = [

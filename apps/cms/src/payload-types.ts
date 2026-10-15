@@ -174,6 +174,10 @@ export interface Tenant {
   name: string;
   slug: string;
   domain: string;
+  /**
+   * Hex colour behind the tenant card in the admin sidebar. White text must reach 4.5:1 on it.
+   */
+  brandColor?: string | null;
   defaultLocale: 'en' | 'id';
   updatedAt: string;
   createdAt: string;
@@ -652,6 +656,7 @@ export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   domain?: T;
+  brandColor?: T;
   defaultLocale?: T;
   updatedAt?: T;
   createdAt?: T;
