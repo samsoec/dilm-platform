@@ -56,7 +56,7 @@ export const Tenants: CollectionConfig = {
       validate: validateBrandColor,
       hooks: { beforeValidate: [normalizeBrandColorHook] },
       admin: {
-        placeholder: "#2a2d7e",
+        placeholder: "#1e3a8a",
         description:
           "Hex colour behind the tenant card in the admin sidebar. White text must reach 4.5:1 on it.",
       },

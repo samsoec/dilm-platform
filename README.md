@@ -165,11 +165,13 @@ never typed into the admin panel. Their slugs and domains come from
 `TENANT_DOMAINS` in `packages/shared-types`, the same map the web app uses
 to route a `Host` header to a tenant, so the two can't drift apart. The
 script is safe to re-run: it creates missing tenants, resets any whose name,
-domain or default language was edited by hand, and reports each one as
-`created`, `updated` or `unchanged`. It also sets each tenant's
-`brandColor` where `TENANT_BRAND_COLORS` has one (only Dunia Kimia Utama so
-far); a colour typed in for a tenant that isn't in that map is left alone.
-If it finds a tenant it didn't seed it
+domain, default language or brand colour was edited by hand, and reports
+each one as `created`, `updated` or `unchanged`. The brand colours live in
+`TENANT_BRAND_COLORS` (`apps/cms/src/seed/tenants.ts`): Indonesian Acids
+Industry red `#d92d20` (its logo's distinctive colour; the logo's blue
+`#2b3d97` is its secondary colour and isn't stored), Dunia Kimia Utama
+navy `#1e3a8a`, and Liku Telaga cobalt `#2f6db5`, kept lighter than DKU's
+navy so the two don't blur together. If it finds a tenant it didn't seed it
 leaves it in place and exits non-zero, because deleting a tenant also
 deletes every document that belongs to it.
 

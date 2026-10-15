@@ -20,7 +20,7 @@ export const normalizeBrandColorHook: FieldHook = ({ value }) =>
 export function brandColorProblem(value: unknown): string | undefined {
   if (value === null || value === undefined || value === "") return undefined;
   if (typeof value !== "string" || !HEX_COLOR.test(value)) {
-    return "Use a six-digit hex colour, like #2a2d7e.";
+    return "Use a six-digit hex colour, like #1e3a8a.";
   }
   const ratio = contrast(value, WHITE);
   if (ratio < AA_TEXT) {

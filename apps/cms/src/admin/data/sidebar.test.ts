@@ -15,7 +15,7 @@ const DKU = {
   id: 2,
   name: "Dunia Kimia Utama",
   domain: "duniakimia.com",
-  brandColor: "#2a2d7e",
+  brandColor: "#1e3a8a",
 };
 
 function fakePayload(settings: object[]) {
@@ -72,7 +72,7 @@ describe("loadSidebar (FR-UI-18, NFR-UI-03)", () => {
       attention: true,
       badges: { "cv-received": 6 },
     });
-    expect(data.tenant?.colors.light).toBe("#2a2d7e");
+    expect(data.tenant?.colors.light).toBe("#1e3a8a");
   });
 
   it("stays at two queries when the tenant has no settings document yet", async () => {
