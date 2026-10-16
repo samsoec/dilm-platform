@@ -425,6 +425,9 @@ export interface Footer {
   tenant?: (number | null) | Tenant;
   ctaBand: {
     eyebrow?: string | null;
+    /**
+     * Plain or italic text only.
+     */
     heading?: {
       root: {
         type: string;
@@ -467,6 +470,9 @@ export interface Footer {
       label?: string | null;
     };
   };
+  /**
+   * Drag to reorder.
+   */
   linkColumns?:
     | {
         title: string;
@@ -492,6 +498,9 @@ export interface Footer {
       }[]
     | null;
   partOf?: {
+    /**
+     * Off: the footer shows no group affiliation. On: a label, the group's logo and a link to its site.
+     */
     enabled?: boolean | null;
     label?: string | null;
     logo?: (number | null) | Media;

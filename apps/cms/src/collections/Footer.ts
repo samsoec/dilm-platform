@@ -13,7 +13,19 @@ import { richText } from "payload/shared";
 
 import { superAdmins } from "../access";
 import { navGroup } from "../admin/navGroups";
+import {
+  countedArray,
+  localeBanner,
+  ROW_LABELS,
+  SAME_AS_EN_TAG,
+  section,
+  sectionAnchors,
+  sourcedFrom,
+  versionInfo,
+  withSameAsEnTag,
+} from "../fields/layoutEditor";
 import { link } from "../fields/link";
+import { keepRowStructure, lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
 
@@ -90,88 +102,137 @@ export const Footer = withTenantAccess(
     versions: {
       drafts: false,
     },
+    hooks: {
+      beforeChange: [keepRowStructure],
+    },
     fields: [
-      {
-        name: "ctaBand",
-        label: "Contact band",
-        type: "group",
-        fields: [
-          { name: "eyebrow", type: "text", localized: true },
+      localeBanner,
+      sectionAnchors,
+      versionInfo,
+      sourcedFrom,
+      ...lockStructure([
+        ...section("contact-band", [
           {
-            name: "heading",
-            type: "richText",
-            localized: true,
-            validate: isItalicOnlyHeading,
-            editor: lexicalEditor({
-              features: () => [
-                ParagraphFeature(),
-                ItalicFeature(),
-                InlineToolbarFeature(),
-              ],
-            }),
+            name: "ctaBand",
+            label: "Contact band",
+            type: "group",
+            fields: [
+              withSameAsEnTag({
+                name: "eyebrow",
+                type: "text",
+                localized: true,
+              }),
+              {
+                name: "heading",
+                type: "richText",
+                localized: true,
+                validate: isItalicOnlyHeading,
+                editor: lexicalEditor({
+                  features: () => [
+                    ParagraphFeature(),
+                    ItalicFeature(),
+                    InlineToolbarFeature(),
+                  ],
+                }),
+                admin: { description: "Plain or italic text only." },
+              },
+              link({
+                name: "primaryButton",
+                label: "Primary button",
+                required: true,
+              }),
+              link({ name: "secondaryButton", label: "Secondary button" }),
+            ],
           },
-          link({
-            name: "primaryButton",
-            label: "Primary button",
-            required: true,
-          }),
-          link({ name: "secondaryButton", label: "Secondary button" }),
-        ],
-      },
-      {
-        name: "linkColumns",
-        label: "Link columns",
-        type: "array",
-        maxRows: MAX_LINK_COLUMNS,
-        fields: [
-          { name: "title", type: "text", localized: true, required: true },
-          {
-            name: "links",
+        ]),
+        ...section("link-columns", [
+          countedArray({
+            name: "linkColumns",
+            label: "Link columns",
+            labels: { singular: "Link column", plural: "Link columns" },
             type: "array",
-            maxRows: MAX_COLUMN_LINKS,
-            fields: [link({ required: true })],
-          },
-        ],
-      },
-      {
-        name: "partOf",
-        label: "Part of",
-        type: "group",
-        fields: [
+            maxRows: MAX_LINK_COLUMNS,
+            admin: {
+              description: "Drag to reorder.",
+              components: {
+                RowLabel: {
+                  path: ROW_LABELS.column,
+                  clientProps: { maxLinks: MAX_COLUMN_LINKS },
+                },
+              },
+            },
+            fields: [
+              withSameAsEnTag({
+                name: "title",
+                type: "text",
+                localized: true,
+                required: true,
+              }),
+              countedArray({
+                name: "links",
+                labels: { singular: "Link", plural: "Links" },
+                type: "array",
+                maxRows: MAX_COLUMN_LINKS,
+                admin: { components: { RowLabel: ROW_LABELS.link } },
+                fields: [link({ required: true })],
+              }),
+            ],
+          }),
+        ]),
+        ...section("part-of", [
           {
-            name: "enabled",
-            label: "Show the “Part of” block",
-            type: "checkbox",
-            defaultValue: false,
+            name: "partOf",
+            label: "Part of",
+            type: "group",
+            fields: [
+              {
+                name: "enabled",
+                label: "Show the “Part of” block",
+                type: "checkbox",
+                defaultValue: false,
+                admin: {
+                  description:
+                    "Off: the footer shows no group affiliation. On: a label, the group's logo and a link to its site.",
+                },
+              },
+              withSameAsEnTag({
+                name: "label",
+                type: "text",
+                localized: true,
+                admin: { condition: partOfEnabled },
+              }),
+              {
+                name: "logo",
+                type: "upload",
+                relationTo: "media",
+                admin: { condition: partOfEnabled },
+              },
+              {
+                ...link(),
+                admin: { condition: partOfEnabled },
+              },
+            ],
           },
+        ]),
+        ...section("copyright", [
           {
-            name: "label",
+            name: "copyright",
             type: "text",
             localized: true,
-            admin: { condition: partOfEnabled },
+            validate: isCopyrightTemplate,
+            admin: {
+              description:
+                "Use {year} for the current year and {legalName} for the company's legal name from Tenant Settings, e.g. Copyright © {year} {legalName}. All Rights Reserved.",
+              components: {
+                afterInput: [
+                  SAME_AS_EN_TAG,
+                  "/admin/components/fields/CopyrightPreview#CopyrightPreview",
+                ],
+              },
+            },
           },
-          {
-            name: "logo",
-            type: "upload",
-            relationTo: "media",
-            admin: { condition: partOfEnabled },
-          },
-          {
-            ...link(),
-            admin: { condition: partOfEnabled },
-          },
-        ],
-      },
-      {
-        name: "copyright",
-        type: "text",
-        localized: true,
-        validate: isCopyrightTemplate,
-        admin: {
-          description:
-            "Use {year} for the current year and {legalName} for the company's legal name from Tenant Settings, e.g. Copyright © {year} {legalName}. All Rights Reserved.",
-        },
-      },
+        ]),
+      ]),
     ],
   }),
   { isGlobal: true },

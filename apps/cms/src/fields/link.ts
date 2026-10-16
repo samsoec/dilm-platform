@@ -6,10 +6,16 @@ import type {
 } from "payload";
 
 import { isHttpsUrl, isInternalPath } from "../validation";
+import { withSameAsEnTag } from "./layoutEditor";
 
 export const LINK_TYPES = ["internal", "external"] as const;
 
 export type LinkType = (typeof LINK_TYPES)[number];
+
+export const LINK_TYPE_LABELS: Record<LinkType, string> = {
+  internal: "This site",
+  external: "Other site",
+};
 
 export type LinkFieldOptions = {
   name?: string;
@@ -90,7 +96,10 @@ export function link({
             type: "radio",
             required: true,
             defaultValue: "internal",
-            options: [...LINK_TYPES],
+            options: LINK_TYPES.map((value) => ({
+              value,
+              label: LINK_TYPE_LABELS[value],
+            })),
             admin: { layout: "horizontal" },
           },
           {
@@ -105,12 +114,12 @@ export function link({
       target("external", isHttpsUrl, required),
       ...(withLabel
         ? [
-            {
+            withSameAsEnTag({
               name: "label",
               type: "text",
               localized: true,
               validate: validateLabel,
-            } satisfies TextField,
+            } satisfies TextField),
           ]
         : []),
     ],
