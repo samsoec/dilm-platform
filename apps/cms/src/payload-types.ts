@@ -323,6 +323,8 @@ export interface IrDocument {
   focalY?: number | null;
 }
 /**
+ * Applications sent from the careers page. Open one to read it and set its status as you review.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "cv-submissions".
  */
