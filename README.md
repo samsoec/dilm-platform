@@ -662,6 +662,27 @@ record, one applicant and one recruiter email in Mailpit, and exactly one
 accepted, correctly signed webhook call, then cleans up. The emails stay in
 Mailpit (http://localhost:8025) for you to read.
 
+**Sample applications.** To see the CV list with realistic, varied data:
+
+```bash
+pnpm --filter cms seed:cv-samples              # add or refresh the samples
+pnpm --filter cms seed:cv-samples -- --remove  # take them out again
+```
+
+It writes 90 applications per tenant (270 in all). For each tenant, 80
+cover every combination of status (received, reviewed, shortlisted,
+rejected), job-platform sync (pending; synced first try or after retries;
+failed once or five times) and notification email (none, applicant only,
+recruiter only, both). Ten more are edge cases: an application from two
+minutes ago and one from a year ago, a very long name, a one-word name,
+an apostrophe, accents, a very long email, a long job title, a sync that
+failed twelve times and a non-Indonesian phone number. Every sample has a
+`submissionId` starting with `seed-cv-`, and each run deletes those
+before writing, so re-running replaces the set and never touches real
+submissions. Emails use `example.com` and the résumé keys point at no real
+file. It refuses to run unless `RUNTIME_CONFIG_SOURCE=env`, so it can't
+reach staging or production.
+
 ## Layout
 
 ```
