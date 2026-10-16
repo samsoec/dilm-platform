@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`tenant-settings data shape (FR-UI-44) > keeps every data path, so the admin layout needs no migration 1`] = `
+[
+  "analyticsId: text",
+  "brand.address: textarea localized=true",
+  "brand.legalName: text",
+  "brand.logoOnDark: upload relationTo=media",
+  "brand.logoOnLight: upload relationTo=media",
+  "brand.tagline: textarea localized=true",
+  "brand: group",
+  "contactEmail: email",
+  "contactPhone: text",
+  "defaultSeo.description: textarea localized=true",
+  "defaultSeo.ogImage: upload relationTo=media",
+  "defaultSeo.title: text localized=true",
+  "defaultSeo: group",
+  "recruiterEmail: email",
+  "siteName: text localized=true required=true",
+  "socialLinks.platform: select required=true options=linkedin|instagram|facebook|youtube",
+  "socialLinks.url: text required=true",
+  "socialLinks: array",
+  "tenant: relationship unique=true index=true relationTo=tenants",
+  "updatedBy: relationship relationTo=users",
+  "waLink: text",
+]
+`;
