@@ -6,6 +6,7 @@ export const TOP_BAR_ACTIONS = [
 
 export const PROVIDERS_INSIDE_TENANT_SELECTION = [
   "/admin/components/topbar/ShellCrumbs#ShellCrumbs",
+  "/admin/components/command-palette/CommandPaletteProvider#CommandPaletteProvider",
 ];
 
 export function appendAdminProviders(providers: string[]): Plugin {
