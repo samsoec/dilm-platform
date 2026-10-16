@@ -465,6 +465,32 @@ describe("cv-submissions", () => {
     expect(CvSubmissions.upload).toBeUndefined();
   });
 
+  it("lists applications the way recruiters triage them (TRD-UI §6.3)", () => {
+    expect(CvSubmissions.admin?.listSearchableFields).toEqual([
+      "applicantName",
+      "email",
+    ]);
+    expect(CvSubmissions.admin?.defaultColumns).toEqual([
+      "applicantName",
+      "position",
+      "status",
+      "submittedAt",
+      "applicantNotifiedAt",
+      "externalSyncStatus",
+    ]);
+    expect(CvSubmissions.admin?.components?.beforeListTable).toEqual([
+      expect.stringMatching(/StatusTabs$/),
+    ]);
+    expect(CvSubmissions.admin?.groupBy).toBeUndefined();
+    const cell = (name: string) =>
+      (field(CvSubmissions, name).admin as { components?: { Cell?: string } })
+        .components?.Cell;
+    expect(cell("applicantName")).toMatch(/ApplicantCell$/);
+    expect(cell("status")).toMatch(/StatusPill$/);
+    expect(cell("applicantNotifiedAt")).toMatch(/EmailsCell$/);
+    expect(cell("externalSyncStatus")).toMatch(/SyncCell$/);
+  });
+
   it("keeps system-managed fields read-only for every role", async () => {
     const submissions = (await configured())("cv-submissions");
 
