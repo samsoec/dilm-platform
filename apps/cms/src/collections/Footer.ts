@@ -114,7 +114,7 @@ export const Footer = withTenantAccess(
         ...section("contact-band", [
           {
             name: "ctaBand",
-            label: "Contact band",
+            label: false,
             type: "group",
             fields: [
               withSameAsEnTag({
@@ -182,7 +182,7 @@ export const Footer = withTenantAccess(
         ...section("part-of", [
           {
             name: "partOf",
-            label: "Part of",
+            label: false,
             type: "group",
             fields: [
               {
