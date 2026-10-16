@@ -1,5 +1,7 @@
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
+import { CompletenessPanel as CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77 } from '../../../admin/components/fields/CompletenessPanel'
+import { CareersNotice as CareersNotice_4ec7abca466eaed7a6d39b518b93e551 } from '../../../admin/components/fields/CareersNotice'
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { ApplicantCell as ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3 } from '../../../admin/components/cells/ApplicantCell'
 import { StatusPill as StatusPill_9934788374c7dcc43b168cee27281175 } from '../../../admin/components/cells/StatusPill'
@@ -44,6 +46,8 @@ import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc056
 export const importMap = {
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
+  "/admin/components/fields/CompletenessPanel#CompletenessPanel": CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77,
+  "/admin/components/fields/CareersNotice#CareersNotice": CareersNotice_4ec7abca466eaed7a6d39b518b93e551,
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
   "/admin/components/cells/ApplicantCell#ApplicantCell": ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3,
   "/admin/components/cells/StatusPill#StatusPill": StatusPill_9934788374c7dcc43b168cee27281175,
