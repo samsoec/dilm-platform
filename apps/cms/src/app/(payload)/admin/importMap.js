@@ -13,9 +13,12 @@ import { Icon as Icon_48a75e37b0630d5b8c8066e180c0e6ef } from '../../../admin/gr
 import { Logo as Logo_88541c286955dbac4d90fb5ed606381c } from '../../../admin/graphics/Logo'
 import { TopBarActions as TopBarActions_4c8de44916aff9faf4c4d2c3f1ea8046 } from '../../../admin/components/topbar/TopBarActions'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
+import { LoginFootnote as LoginFootnote_fe03b3a75690de7b47667ac8353bb056 } from '../../../admin/components/login/LoginFootnote'
+import { LoginIntro as LoginIntro_8a7a25ec3456ee26918acab06c86f8c2 } from '../../../admin/components/login/LoginIntro'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { ShellCrumbs as ShellCrumbs_2655bbb4d61960264c14c8889231a4e5 } from '../../../admin/components/topbar/ShellCrumbs'
+import { LoginScreen as LoginScreen_22f500d6dd68e64c5e8155425d1d2e99 } from '../../../admin/components/login/LoginScreen'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
@@ -36,9 +39,12 @@ export const importMap = {
   "/admin/graphics/Logo#Logo": Logo_88541c286955dbac4d90fb5ed606381c,
   "/admin/components/topbar/TopBarActions#TopBarActions": TopBarActions_4c8de44916aff9faf4c4d2c3f1ea8046,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
+  "/admin/components/login/LoginFootnote#LoginFootnote": LoginFootnote_fe03b3a75690de7b47667ac8353bb056,
+  "/admin/components/login/LoginIntro#LoginIntro": LoginIntro_8a7a25ec3456ee26918acab06c86f8c2,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
   "/admin/components/topbar/ShellCrumbs#ShellCrumbs": ShellCrumbs_2655bbb4d61960264c14c8889231a4e5,
+  "/admin/components/login/LoginScreen#LoginScreen": LoginScreen_22f500d6dd68e64c5e8155425d1d2e99,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }

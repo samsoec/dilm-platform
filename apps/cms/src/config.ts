@@ -8,6 +8,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { PRODUCT_NAME } from "./admin/brand";
+import { LOGIN_COMPONENTS, LOGIN_TRANSLATIONS } from "./admin/login";
 import {
   appendAdminProviders,
   PROVIDERS_INSIDE_TENANT_SELECTION,
@@ -36,6 +37,7 @@ export async function cmsConfig(client: PayloadClient) {
       components: {
         Nav: "/admin/components/nav/AdminNav#AdminNav",
         actions: TOP_BAR_ACTIONS,
+        ...LOGIN_COMPONENTS,
         graphics: {
           Icon: "/admin/graphics/Icon#Icon",
           Logo: "/admin/graphics/Logo#Logo",
@@ -48,6 +50,7 @@ export async function cmsConfig(client: PayloadClient) {
     },
     collections,
     globals,
+    i18n: { translations: LOGIN_TRANSLATIONS },
     localization,
     secret: runtimeConfig.payloadSecret,
     typescript: {
