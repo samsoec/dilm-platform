@@ -1,15 +1,13 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { TENANT_SLUGS } from "@dilm/shared-types";
 import { describe, expect, it } from "vitest";
 
-import { TENANT_BRAND_COLORS } from "../seed/tenants";
 import {
   LOCKED_ACCOUNT_MESSAGE,
   LOGIN_COMPONENTS,
-  LOGIN_TENANTS,
+  GROUP_ENTITIES_LOGO,
   LOGIN_TRANSLATIONS,
 } from "./login";
 
@@ -41,11 +39,14 @@ describe("login screen (TRD-UI §6.1)", () => {
     );
   });
 
-  it("draws the tenant row from static data, with no tenant query (FR-UI-31)", () => {
-    expect(LOGIN_TENANTS.map(({ slug }) => slug)).toEqual([...TENANT_SLUGS]);
-    expect(LOGIN_TENANTS.map(({ color }) => color)).toEqual(
-      TENANT_SLUGS.map((slug) => TENANT_BRAND_COLORS[slug]),
+  it("shows the group's entity logos from a static file, with no tenant query (FR-UI-31)", () => {
+    const file = path.join(
+      path.dirname(fileURLToPath(import.meta.url)),
+      "../../public",
+      GROUP_ENTITIES_LOGO.src,
     );
+    expect(existsSync(file)).toBe(true);
+    expect(GROUP_ENTITIES_LOGO.alt).toMatch(/Dunia Kimia Utama/);
     for (const file of ["LoginScreen.tsx", "BrandPanel.tsx"]) {
       expect(readFileSync(path.join(loginDir, file), "utf8")).not.toMatch(
         /payload\.(find|count|findByID)\(/,
