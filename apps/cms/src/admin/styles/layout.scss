@@ -1,0 +1,227 @@
+@layer dil {
+  .dil-locale-banner {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    border: 1px solid color-mix(in srgb, var(--dil-brand) 35%, transparent);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+    font-family: var(--dil-font-sans);
+
+    .dil-icon {
+      font-size: 22px;
+    }
+  }
+
+  .dil-locale-banner__title {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .dil-locale-banner__text {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .dil-same-tag {
+    display: inline-flex;
+    align-items: center;
+    margin-inline-start: 8px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--dil-warn-bg);
+    color: var(--dil-warn);
+    font-family: var(--dil-font-sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .field-type .dil-same-tag {
+    margin: 6px 0 0;
+  }
+
+  .dil-array-count {
+    font-family: var(--dil-font-sans);
+    font-weight: 700;
+  }
+
+  .dil-row-label {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    font-family: var(--dil-font-sans);
+    font-size: 14px;
+  }
+
+  .dil-row-label__number {
+    color: var(--dil-muted);
+    font-family: var(--dil-font-mono);
+    font-size: 12px;
+  }
+
+  .dil-row-label__title {
+    color: var(--dil-ink);
+    font-weight: 600;
+  }
+
+  .dil-row-label__meta {
+    color: var(--dil-muted);
+    font-size: 12px;
+
+    &:first-of-type {
+      font-family: var(--dil-font-mono);
+    }
+  }
+
+  .dil-anchors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-anchors__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: 999px;
+    background: var(--dil-surface);
+    color: var(--dil-ink-2);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--dil-surface-2);
+      color: var(--dil-ink);
+    }
+  }
+
+  .dil-anchors__number,
+  .dil-section-label__number {
+    color: var(--dil-muted);
+    font-family: var(--dil-font-mono);
+    font-size: 12px;
+  }
+
+  .dil-section-label {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 40px 0 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--dil-line);
+    color: var(--dil-ink);
+    line-height: 1.3;
+    scroll-margin-top: calc(var(--app-header-height, 64px) + 16px);
+    font-family: var(--dil-font-sans);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .dil-copyright-preview {
+    margin: 8px 0 0;
+    color: var(--dil-ink-2);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+  }
+
+  .dil-copyright-preview__label {
+    color: var(--dil-muted);
+    font-weight: 600;
+  }
+
+  .dil-copyright-preview__warn {
+    color: var(--dil-warn);
+  }
+
+  .dil-side-panel {
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-surface);
+    font-family: var(--dil-font-sans);
+    color: var(--dil-ink);
+  }
+
+  .dil-side-panel__title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 700;
+
+    .dil-icon {
+      color: var(--dil-muted);
+      font-size: 18px;
+    }
+  }
+
+  .dil-side-panel__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dil-side-panel__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: var(--dil-ink-2);
+    font-size: 13px;
+    font-weight: 600;
+
+    .dil-icon {
+      color: var(--dil-tone);
+      font-size: 18px;
+    }
+  }
+
+  .dil-side-panel__detail {
+    display: block;
+    color: var(--dil-muted);
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .dil-side-panel__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-top: 12px;
+    color: var(--dil-brand-ink);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-version-info__saved {
+    margin: 0;
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+}

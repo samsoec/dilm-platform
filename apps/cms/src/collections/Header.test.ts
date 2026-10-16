@@ -80,7 +80,11 @@ describe("header", () => {
       type: "radio",
       required: true,
       defaultValue: "link",
-      options: [...NAV_ITEM_TYPES],
+      options: [
+        { value: "link", label: "Single link" },
+        { value: "dropdown", label: "Dropdown" },
+      ],
+      admin: { layout: "horizontal" },
     });
     expect(NAV_ITEM_TYPES).toEqual(["link", "dropdown"]);
   });

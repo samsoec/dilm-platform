@@ -96,6 +96,16 @@
     }
   }
 
+  // Payload classes: .array-field__add-row, .array-actions, .collapsible__drag, .clipboard-action__popup (@payloadcms/ui fields/Array, elements/ArrayAction, elements/Collapsible, elements/ClipboardAction popup); LocaleBanner renders only outside the default locale, where rows are shared structure
+  form:has(.dil-locale-banner) {
+    .array-field__add-row,
+    .array-actions,
+    .collapsible__drag,
+    .array-field__header-actions .clipboard-action__popup {
+      display: none;
+    }
+  }
+
   a:focus-visible,
   button:focus-visible,
   input:focus-visible,
