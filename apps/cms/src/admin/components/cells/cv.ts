@@ -1,24 +1,5 @@
 import type { IconName } from "../../icons";
 
-export type Tone = "brand" | "muted" | "ok" | "warn" | "danger";
-
-export type CellBadge = {
-  icon: IconName;
-  label: string;
-  tone: Tone;
-};
-
-export const STATUS_BADGES: Record<string, CellBadge> = {
-  received: { icon: "inbox", label: "Received", tone: "brand" },
-  reviewed: { icon: "visibility", label: "Reviewed", tone: "muted" },
-  shortlisted: { icon: "check_circle", label: "Shortlisted", tone: "ok" },
-  rejected: { icon: "remove", label: "Rejected", tone: "danger" },
-};
-
-export function statusBadge(status: unknown): CellBadge | undefined {
-  return typeof status === "string" ? STATUS_BADGES[status] : undefined;
-}
-
 const jakartaTime = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Asia/Jakarta",
   day: "numeric",
@@ -61,19 +42,4 @@ export function emailMarks(rowData: {
     emailMark("Applicant", "mark_email_read", rowData.applicantNotifiedAt),
     emailMark("Recruiter", "person_check", rowData.recruiterNotifiedAt),
   ];
-}
-
-export function syncBadge(status: unknown, attempts: unknown): CellBadge {
-  const tries = typeof attempts === "number" ? attempts : 0;
-  if (status === "synced") {
-    return { icon: "check_circle", label: "Synced", tone: "ok" };
-  }
-  if (status === "failed") {
-    return {
-      icon: "sync_problem",
-      label: `Failed · ${tries} ${tries === 1 ? "try" : "tries"}`,
-      tone: "danger",
-    };
-  }
-  return { icon: "schedule_send", label: "Pending", tone: "warn" };
 }

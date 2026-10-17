@@ -1,5 +1,10 @@
 import type { Plugin } from "payload";
 
+export const ADMIN_TOAST = {
+  duration: 6000,
+  position: "bottom-right",
+} as const;
+
 export const TOP_BAR_ACTIONS = [
   "/admin/components/topbar/TopBarActions#TopBarActions",
 ];

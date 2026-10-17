@@ -1,0 +1,806 @@
+@layer dil {
+  @keyframes dil-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .dil-spinner {
+    display: inline-block;
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid color-mix(in srgb, currentColor 40%, transparent);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: dil-spin 0.8s linear infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation-duration: 2.4s;
+    }
+  }
+
+  // Payload classes: .btn, .btn--style-*, .btn__content, .btn--disabled (@payloadcms/ui elements/Button)
+  .btn.dil-btn {
+    --btn-padding-block-start: 0;
+    --btn-padding-block-end: 0;
+    --btn-padding-inline-start: 14px;
+    --btn-padding-inline-end: 14px;
+    --btn-font-weight: 700;
+    --btn-line-height: 34px;
+
+    min-height: 36px;
+    font-size: 13px;
+
+    .btn__content,
+    .btn__label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .btn.dil-btn:focus:not(:hover) {
+    background-color: var(--bg-color);
+    color: var(--color);
+    border: var(--btn-border, 1px solid transparent);
+  }
+
+  .btn.dil-btn:focus-visible {
+    outline: 3px solid var(--dil-brand);
+    outline-offset: 2px;
+  }
+
+  .btn.dil-btn--text {
+    --btn-padding-inline-start: 6px;
+    --btn-padding-inline-end: 6px;
+    --color: var(--dil-brand-ink);
+    --hover-color: var(--dil-ink);
+    --bg-color: transparent;
+    --hover-bg: var(--dil-surface-2);
+
+    .btn__label {
+      gap: 4px;
+    }
+  }
+
+  .btn.dil-btn--busy.btn--disabled {
+    cursor: progress;
+    opacity: 0.85;
+
+    .btn__label {
+      gap: 8px;
+    }
+
+    &.btn--style-primary {
+      --bg-color: var(--dil-brand);
+      --color: #ffffff;
+      --hover-bg: var(--bg-color);
+      --hover-color: var(--color);
+    }
+
+    &.btn--style-error {
+      --bg-color: var(--dil-danger-fill);
+      --color: #ffffff;
+      --hover-bg: var(--bg-color);
+      --hover-color: var(--color);
+    }
+
+    &.btn--style-secondary {
+      --bg-color: var(--dil-surface);
+      --color: var(--dil-ink);
+      --btn-border: 1px solid var(--dil-line);
+      --hover-btn-border: var(--btn-border);
+      --hover-color: var(--color);
+    }
+  }
+
+  .btn.dil-btn--unavailable.btn--disabled {
+    --bg-color: var(--dil-surface-2);
+    --color: var(--dil-muted);
+    --hover-bg: var(--bg-color);
+    --hover-color: var(--color);
+    --btn-border: 1px solid transparent;
+    --hover-btn-border: var(--btn-border);
+  }
+
+  .btn.dil-btn--text.dil-btn--unavailable.btn--disabled {
+    --bg-color: transparent;
+  }
+
+  .dil-btn-with-reason {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+  }
+
+  .dil-btn-reason {
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .dil-status-chip {
+    --dil-tone: var(--dil-ink-2);
+    --dil-tone-bg: var(--dil-surface-2);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--dil-tone-bg);
+    color: var(--dil-tone);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+
+    .dil-icon {
+      font-size: 14px;
+    }
+  }
+
+  .dil-status-chip--brand {
+    --dil-tone: var(--dil-sel-ink);
+    --dil-tone-bg: var(--dil-sel-bg);
+  }
+
+  .dil-status-chip--ok {
+    --dil-tone: var(--dil-ok);
+    --dil-tone-bg: var(--dil-ok-bg);
+  }
+
+  .dil-status-chip--warn {
+    --dil-tone: var(--dil-warn);
+    --dil-tone-bg: var(--dil-warn-bg);
+  }
+
+  .dil-status-chip--danger {
+    --dil-tone: var(--dil-danger);
+    --dil-tone-bg: var(--dil-danger-bg);
+  }
+
+  .dil-status-chip--plain {
+    padding: 0;
+    background: none;
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+
+  .dil-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--dil-surface-2);
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .dil-tag--tenant {
+    background: var(--dil-tenant-soft, var(--dil-sel-bg));
+    color: var(--dil-tenant-ink, var(--dil-sel-ink));
+  }
+
+  .dil-tag--warn {
+    background: var(--dil-warn-bg);
+    color: var(--dil-warn);
+  }
+
+  .dil-tag--with-icon {
+    gap: 3px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0;
+
+    .dil-icon {
+      font-size: 13px;
+    }
+  }
+
+  .dil-count-tag {
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .dil-banner {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface-2);
+    color: var(--dil-ink);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .dil-banner__icon {
+    flex: none;
+    font-size: 20px;
+  }
+
+  .dil-banner__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dil-banner__text {
+    margin: 0;
+  }
+
+  .dil-banner--info {
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+  }
+
+  .dil-banner--warning {
+    background: var(--dil-warn-bg);
+
+    .dil-banner__icon {
+      color: var(--dil-warn);
+    }
+  }
+
+  .dil-banner--error {
+    background: var(--dil-danger-bg);
+
+    .dil-banner__icon {
+      color: var(--dil-danger);
+    }
+  }
+
+  .dil-banner--readonly {
+    color: var(--dil-ink-2);
+
+    .dil-banner__icon {
+      color: var(--dil-muted);
+    }
+  }
+
+  .dil-readonly-hint {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 6px 0 0;
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+
+    .dil-icon {
+      font-size: 14px;
+    }
+  }
+
+  .dil-segmented-control {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface-2);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-segmented-control__option {
+    padding: 5px 12px;
+    border-radius: 6px;
+    color: var(--dil-muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--dil-ink);
+    }
+
+    &:has(:focus-visible) {
+      outline: var(--accessibility-outline);
+      outline-offset: 1px;
+    }
+
+    &:has(:disabled) {
+      cursor: not-allowed;
+    }
+  }
+
+  .dil-segmented-control__option--active {
+    background: var(--dil-surface);
+    box-shadow: var(--dil-shadow-s);
+    color: var(--dil-ink);
+    font-weight: 700;
+  }
+
+  .dil-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface);
+  }
+
+  .dil-skeleton__line {
+    display: block;
+    height: 10px;
+    border-radius: 5px;
+    background: var(--dil-surface-2);
+
+    &:first-child {
+      height: 12px;
+      border-radius: 6px;
+    }
+  }
+
+  .dil-wake-up {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface);
+    color: var(--dil-ink-2);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+
+    .dil-spinner {
+      width: 16px;
+      height: 16px;
+      border-color: var(--dil-sel-bg);
+      border-top-color: var(--dil-brand);
+    }
+  }
+
+  // Payload classes: .payload-toast-container, .payload-toast-item, .toast-* (@payloadcms/ui providers/ToastContainer, sonner)
+  .payload-toast-container .payload-toast-item {
+    border: 1px solid var(--dil-toast-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-toast-bg);
+    box-shadow: 0 12px 30px rgb(17 28 42 / 25%);
+    color: var(--dil-toast-ink);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    line-height: 1.45;
+
+    .toast-title {
+      font-weight: 700;
+    }
+
+    .toast-icon {
+      color: var(--dil-toast-ink);
+    }
+
+    &.toast-success .toast-icon {
+      color: var(--dil-toast-ok);
+    }
+
+    &.toast-error .toast-icon {
+      color: var(--dil-toast-danger);
+    }
+
+    &.toast-warning .toast-icon {
+      color: var(--dil-toast-warn);
+    }
+
+    .payload-toast-close-button {
+      color: var(--dil-toast-ink);
+    }
+  }
+
+  .payload-toast-container .payload-toast-item:has(.dil-toast) {
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .dil-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--dil-toast-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-toast-bg);
+    box-shadow: 0 12px 30px rgb(17 28 42 / 25%);
+    color: var(--dil-toast-ink);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .dil-toast__icon {
+    flex: none;
+    font-size: 20px;
+    color: var(--dil-toast-ink-2);
+  }
+
+  .dil-toast--success .dil-toast__icon {
+    color: var(--dil-toast-ok);
+  }
+
+  .dil-toast--error .dil-toast__icon {
+    color: var(--dil-toast-danger);
+  }
+
+  .dil-toast__text {
+    flex: 1;
+    margin: 0;
+  }
+
+  .dil-toast__action {
+    flex: none;
+    padding: 0 2px;
+    border: 0;
+    background: none;
+    color: var(--dil-toast-link);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .dil-confirm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 300;
+    background: rgb(17 28 42 / 55%);
+  }
+
+  .dil-confirm__dialog {
+    width: min(440px, 100%);
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--dil-surface);
+    box-shadow: 0 24px 60px rgb(17 28 42 / 30%);
+    color: var(--dil-ink);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-confirm__content {
+    display: flex;
+    gap: 14px;
+    padding: 20px 22px 0;
+  }
+
+  .dil-confirm__tile {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+
+    .dil-icon {
+      font-size: 22px;
+    }
+
+    .dil-confirm--discard & {
+      background: var(--dil-warn-bg);
+      color: var(--dil-warn);
+    }
+
+    .dil-confirm--delete & {
+      background: var(--dil-danger-bg);
+      color: var(--dil-danger);
+    }
+  }
+
+  .dil-confirm__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .dil-confirm__title {
+    margin: 0;
+    color: var(--dil-ink);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .dil-confirm__body {
+    color: var(--dil-ink-2);
+    font-size: 14px;
+    line-height: 1.5;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .dil-confirm__typed {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+
+    label {
+      color: var(--dil-ink);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--dil-line);
+      border-radius: var(--dil-radius-s);
+      background: var(--dil-surface);
+      color: var(--dil-ink);
+      font-family: var(--dil-font-mono);
+      font-size: 13px;
+    }
+  }
+
+  .dil-confirm__controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 18px 22px;
+  }
+
+  .btn.dil-confirm__secondary {
+    --color: var(--dil-danger);
+    --hover-color: var(--dil-danger);
+  }
+
+  .dil-confirm__controls .dil-btn-with-reason {
+    display: contents;
+  }
+
+  // Payload classes: .field-type, .field-type__wrap, .error, .read-only, .field-error, .field-label (@payloadcms/ui fields/*, FieldError, FieldLabel); K-03 field states
+  .field-type {
+    input:not([type="checkbox"], [type="radio"]),
+    textarea {
+      transition:
+        border-color 120ms,
+        box-shadow 120ms;
+
+      &:focus,
+      &:focus-visible {
+        border-color: var(--dil-brand);
+        box-shadow: 0 0 0 3px var(--dil-sel-bg);
+        outline: none;
+      }
+    }
+
+    &.error {
+      input:not([type="checkbox"], [type="radio"]),
+      textarea {
+        border-color: var(--dil-danger);
+        background: var(--dil-surface);
+      }
+    }
+
+    &.read-only {
+      input:not([type="checkbox"], [type="radio"]),
+      textarea {
+        border-color: transparent;
+        background: var(--dil-surface-2);
+        color: var(--dil-ink-2);
+      }
+
+      > .field-label::after,
+      > label.field-label::after {
+        content: "lock";
+        margin-inline-start: 6px;
+        color: var(--dil-muted);
+        font-family: var(--dil-font-icon);
+        font-size: 15px;
+        font-weight: 400;
+        vertical-align: -2px;
+      }
+    }
+
+    .field-type__wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .field-error.tooltip {
+      position: static;
+      order: 2;
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      margin-top: 6px;
+      padding: 0;
+      transform: none;
+      background: none;
+      color: var(--dil-danger);
+      font-family: var(--dil-font-sans);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.4;
+      white-space: normal;
+      visibility: visible;
+      opacity: 1;
+
+      &::before {
+        content: "error";
+        font-family: var(--dil-font-icon);
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1;
+      }
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  // Payload classes: .checkbox-input, .checkbox-input__input, .checkbox-input__icon (@payloadcms/ui fields/Checkbox); K-04 switch on fields with admin.className "dil-switch"
+  .dil-switch .checkbox-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dil-switch .checkbox-input__input {
+    position: relative;
+    flex: none;
+    width: 36px;
+    height: 20px;
+
+    input[type="checkbox"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .checkbox-input__icon {
+      position: absolute;
+      inset: 0;
+      width: 36px;
+      height: 20px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--dil-line);
+      transition: background 120ms;
+
+      svg {
+        display: none;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: var(--dil-shadow-s);
+        transition: transform 120ms;
+      }
+    }
+
+    input:checked + .checkbox-input__icon {
+      background: var(--dil-brand);
+
+      &::after {
+        transform: translateX(16px);
+      }
+    }
+
+    input:focus-visible + .checkbox-input__icon {
+      outline: var(--accessibility-outline);
+      outline-offset: 2px;
+    }
+  }
+
+  .dil-switch .checkbox-input--read-only {
+    color: var(--dil-muted);
+
+    .checkbox-input__icon {
+      border: 1px dashed var(--dil-line);
+      background: var(--dil-surface-2);
+
+      &::after {
+        top: 1px;
+        background: var(--dil-line);
+        box-shadow: none;
+      }
+    }
+
+    input:checked + .checkbox-input__icon {
+      background: var(--dil-surface-2);
+    }
+  }
+
+  // Payload classes: .radio-group--group, .radio-input, .radio-input--is-selected, .radio-input__styled-radio (@payloadcms/ui fields/RadioGroup); K-04 segmented control on fields with admin.className "dil-segmented"
+  .dil-segmented .radio-group--group {
+    display: inline-flex;
+    gap: 2px;
+    margin: 0;
+    padding: 3px;
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface-2);
+    list-style: none;
+
+    li {
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .dil-segmented .radio-input {
+    padding: 5px 12px;
+    border-radius: 6px;
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--dil-ink);
+    }
+
+    &:has(:focus-visible) {
+      outline: var(--accessibility-outline);
+      outline-offset: 1px;
+    }
+
+    input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .radio-input__styled-radio {
+      display: none;
+    }
+  }
+
+  .dil-segmented .radio-input--is-selected {
+    background: var(--dil-surface);
+    box-shadow: var(--dil-shadow-s);
+    color: var(--dil-ink);
+    font-weight: 700;
+  }
+}

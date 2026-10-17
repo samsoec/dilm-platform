@@ -2,7 +2,7 @@
 
 import { useFormFields } from "@payloadcms/ui";
 
-import { MaterialIcon } from "../MaterialIcon";
+import { Banner } from "../kit/Banner";
 
 export function CareersNotice() {
   const recruiterEmail = useFormFields(
@@ -12,15 +12,13 @@ export function CareersNotice() {
     return null;
   }
   return (
-    <div className="dil-notice dil-notice--danger">
-      <MaterialIcon name="error" />
-      <div>
-        <p className="dil-notice__title">No recruiter email yet</p>
-        <p className="dil-notice__text">
-          Career applications to this site can&apos;t notify anyone until you
-          add one.
-        </p>
-      </div>
-    </div>
+    <Banner
+      className="dil-field-banner"
+      title="No recruiter email yet."
+      tone="error"
+    >
+      Career applications to this site can&apos;t notify anyone until you add
+      one.
+    </Banner>
   );
 }

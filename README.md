@@ -327,6 +327,31 @@ A full browser user agent matters: with a short one Google serves TrueType
 instead of woff2. The test checks that every font is woff2, that the icon
 subset stays under 60 KB and that the five files stay under 250 KB together.
 
+**Component kit.** Every custom admin screen builds its states from
+`src/admin/components/kit` (TRD-UI §4.5, design cards K-01 to K-08), so busy,
+error, read-only and destructive states look the same everywhere:
+
+- `ActionButton` wraps Payload's own `Button`: primary, secondary,
+  destructive and text. `busy` keeps the label and adds a spinner;
+  `unavailableReason` disables it and prints the reason next to it. Actions a
+  role can't take are hidden, never shown as unavailable.
+- `StatusChip` (application, document, sync and user statuses), `Banner`
+  (info, warning, error, read-only), `Tag` / `LocaleTag` / `SameAsEn` /
+  `SuperAdminTag` / `CountTag`, `SegmentedControl`, `ReadOnlyHint`.
+- `ConfirmDialog` sits on Payload's modal. Focus starts on Cancel, Esc
+  closes it and focus goes back to the button that opened it; `typeToConfirm`
+  asks for `DELETE` before an irreversible delete.
+- `notify()` shows a kit toast: bottom-right, 6 s, paused while hovered or
+  focused, with at most one action. Payload's own toasts get the same look and
+  6 s through `admin.toast`.
+- `LoadingBlock` / `Skeleton` / `useWakeUpNotice` show a skeleton first and,
+  after 3 s, the "CMS is waking up" line.
+
+Native fields need no wrapper: focus, error and read-only states are CSS in
+`styles/kit.scss`. Give a checkbox field `admin.className: "dil-switch"` for
+the switch look, or a horizontal radio field `admin.className:
+"dil-segmented"` for the segmented control.
+
 **Admin sidebar.** `admin.components.Nav` points at
 `src/admin/components/nav/AdminNav.tsx` (TRD-UI §5.1), which replaces
 Payload's default sidebar with a tenant card, grouped links and a user
