@@ -190,8 +190,6 @@ export interface TenantSetting {
   id: number;
   tenant?: (number | null) | Tenant;
   siteName: string;
-  contactEmail?: string | null;
-  contactPhone?: string | null;
   brand?: {
     /**
      * Light-coloured logo for the transparent navbar and the footer.
@@ -201,10 +199,16 @@ export interface TenantSetting {
      * Dark-coloured logo for the white navbar.
      */
     logoOnLight?: (number | null) | Media;
+    /**
+     * Fills {legalName} in the footer copyright.
+     */
     legalName?: string | null;
     tagline?: string | null;
     address?: string | null;
   };
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  waLink?: string | null;
   /**
    * Receives a notification for every career application to this tenant.
    */
@@ -222,7 +226,6 @@ export interface TenantSetting {
     ogImage?: (number | null) | Media;
   };
   analyticsId?: string | null;
-  waLink?: string | null;
   updatedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -679,8 +682,6 @@ export interface TenantsSelect<T extends boolean = true> {
 export interface TenantSettingsSelect<T extends boolean = true> {
   tenant?: T;
   siteName?: T;
-  contactEmail?: T;
-  contactPhone?: T;
   brand?:
     | T
     | {
@@ -690,6 +691,9 @@ export interface TenantSettingsSelect<T extends boolean = true> {
         tagline?: T;
         address?: T;
       };
+  contactEmail?: T;
+  contactPhone?: T;
+  waLink?: T;
   recruiterEmail?: T;
   socialLinks?:
     | T
@@ -706,7 +710,6 @@ export interface TenantSettingsSelect<T extends boolean = true> {
         ogImage?: T;
       };
   analyticsId?: T;
-  waLink?: T;
   updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;

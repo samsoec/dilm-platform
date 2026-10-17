@@ -2,6 +2,7 @@ import type { SelectFieldSingleValidation } from "payload";
 import { select } from "payload/shared";
 
 import { superAdmins } from "../access";
+import { settingsTabLabel } from "../admin/data/completeness";
 import { navGroup } from "../admin/navGroups";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
@@ -49,103 +50,170 @@ export const TenantSettings = withTenantAccess(
     },
     fields: [
       {
-        name: "siteName",
-        type: "text",
-        required: true,
-        localized: true,
-      },
-      {
-        type: "row",
-        fields: [
-          { name: "contactEmail", type: "email" },
-          { name: "contactPhone", type: "text", validate: isPhoneNumber },
-        ],
-      },
-      {
-        name: "brand",
-        type: "group",
-        fields: [
-          {
-            type: "row",
-            fields: [
-              {
-                name: "logoOnDark",
-                label: "Logo on dark",
-                type: "upload",
-                relationTo: "media",
-                admin: {
-                  description:
-                    "Light-coloured logo for the transparent navbar and the footer.",
-                },
-              },
-              {
-                name: "logoOnLight",
-                label: "Logo on light",
-                type: "upload",
-                relationTo: "media",
-                admin: {
-                  description: "Dark-coloured logo for the white navbar.",
-                },
-              },
-            ],
-          },
-          { name: "legalName", type: "text" },
-          { name: "tagline", type: "textarea", localized: true },
-          { name: "address", type: "textarea", localized: true },
-        ],
-      },
-      {
-        name: "recruiterEmail",
-        type: "email",
+        name: "completeness",
+        type: "ui",
         admin: {
-          description:
-            "Receives a notification for every career application to this tenant.",
+          position: "sidebar",
+          components: {
+            Field:
+              "/admin/components/fields/CompletenessPanel#CompletenessPanel",
+          },
         },
       },
       {
-        name: "socialLinks",
-        type: "array",
-        fields: [
+        type: "tabs",
+        tabs: [
           {
-            type: "row",
+            label: settingsTabLabel("general"),
             fields: [
               {
-                name: "platform",
-                type: "select",
-                required: true,
-                options: [...SOCIAL_PLATFORMS],
-                validate: isUniquePlatform,
-              },
-              {
-                name: "url",
+                name: "siteName",
                 type: "text",
                 required: true,
-                validate: isHttpsUrl,
+                localized: true,
+              },
+            ],
+          },
+          {
+            label: settingsTabLabel("brand"),
+            fields: [
+              {
+                name: "brand",
+                type: "group",
+                fields: [
+                  {
+                    type: "row",
+                    fields: [
+                      {
+                        name: "logoOnDark",
+                        label: "Logo on dark",
+                        type: "upload",
+                        relationTo: "media",
+                        admin: {
+                          description:
+                            "Light-coloured logo for the transparent navbar and the footer.",
+                        },
+                      },
+                      {
+                        name: "logoOnLight",
+                        label: "Logo on light",
+                        type: "upload",
+                        relationTo: "media",
+                        admin: {
+                          description:
+                            "Dark-coloured logo for the white navbar.",
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    name: "legalName",
+                    type: "text",
+                    admin: {
+                      description: "Fills {legalName} in the footer copyright.",
+                    },
+                  },
+                  { name: "tagline", type: "textarea", localized: true },
+                  { name: "address", type: "textarea", localized: true },
+                ],
+              },
+            ],
+          },
+          {
+            label: settingsTabLabel("contact"),
+            fields: [
+              {
+                type: "row",
+                fields: [
+                  { name: "contactEmail", type: "email" },
+                  {
+                    name: "contactPhone",
+                    type: "text",
+                    validate: isPhoneNumber,
+                  },
+                ],
+              },
+              {
+                name: "waLink",
+                label: "WhatsApp link",
+                type: "text",
+                validate: isWhatsAppLink,
+              },
+            ],
+          },
+          {
+            label: settingsTabLabel("careers"),
+            fields: [
+              {
+                name: "careersNotice",
+                type: "ui",
+                admin: {
+                  components: {
+                    Field:
+                      "/admin/components/fields/CareersNotice#CareersNotice",
+                  },
+                },
+              },
+              {
+                name: "recruiterEmail",
+                type: "email",
+                admin: {
+                  description:
+                    "Receives a notification for every career application to this tenant.",
+                },
+              },
+            ],
+          },
+          {
+            label: settingsTabLabel("social"),
+            fields: [
+              {
+                name: "socialLinks",
+                type: "array",
+                fields: [
+                  {
+                    type: "row",
+                    fields: [
+                      {
+                        name: "platform",
+                        type: "select",
+                        required: true,
+                        options: [...SOCIAL_PLATFORMS],
+                        validate: isUniquePlatform,
+                      },
+                      {
+                        name: "url",
+                        type: "text",
+                        required: true,
+                        validate: isHttpsUrl,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            label: settingsTabLabel("seo"),
+            fields: [
+              {
+                name: "defaultSeo",
+                type: "group",
+                fields: [
+                  { name: "title", type: "text", localized: true },
+                  { name: "description", type: "textarea", localized: true },
+                  { name: "ogImage", type: "upload", relationTo: "media" },
+                ],
+              },
+              {
+                name: "analyticsId",
+                label: "GA4 measurement ID",
+                type: "text",
+                validate: isGa4MeasurementId,
               },
             ],
           },
         ],
-      },
-      {
-        name: "defaultSeo",
-        type: "group",
-        fields: [
-          { name: "title", type: "text", localized: true },
-          { name: "description", type: "textarea", localized: true },
-          { name: "ogImage", type: "upload", relationTo: "media" },
-        ],
-      },
-      {
-        name: "analyticsId",
-        label: "GA4 measurement ID",
-        type: "text",
-        validate: isGa4MeasurementId,
-      },
-      {
-        name: "waLink",
-        label: "WhatsApp link",
-        type: "text",
-        validate: isWhatsAppLink,
       },
     ],
   }),

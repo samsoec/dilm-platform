@@ -18,18 +18,24 @@ export async function applyMultiTenant(collections: CollectionConfig[]) {
     config.collections!.find((collection) => collection.slug === slug)!;
 }
 
+export function childFields(field: Field): Field[] {
+  if ("fields" in field) return field.fields;
+  if (field.type === "tabs") return field.tabs.flatMap((tab) => tab.fields);
+  return [];
+}
+
 export function fieldNames(fields: Field[]): string[] {
   return fields.flatMap((field) => [
     ...("name" in field ? [field.name] : []),
-    ...("fields" in field ? fieldNames(field.fields) : []),
+    ...fieldNames(childFields(field)),
   ]);
 }
 
 export function findField(fields: Field[], name: string): Field {
   for (const candidate of fields) {
     if ("name" in candidate && candidate.name === name) return candidate;
-    if ("fields" in candidate && !("name" in candidate)) {
-      const found = findField(candidate.fields, name);
+    if (!("name" in candidate)) {
+      const found = findField(childFields(candidate), name);
       if (found) return found;
     }
   }

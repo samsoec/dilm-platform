@@ -106,6 +106,26 @@
     }
   }
 
+  // Payload class: .tabs-field__tab-button (@payloadcms/ui fields/Tabs/Tab); its ::after is the active underline, data-dil-status is set by CompletenessPanel
+  .tabs-field__tab-button[data-dil-status] {
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      inset-inline-end: -10px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--dil-warn);
+    }
+  }
+
+  .tabs-field__tab-button[data-dil-status="error"]::before {
+    background: var(--dil-danger);
+  }
+
   a:focus-visible,
   button:focus-visible,
   input:focus-visible,

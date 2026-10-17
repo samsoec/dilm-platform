@@ -2,9 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import {
   type CompletenessInput,
+  type CompletenessPath,
+  completenessFromValues,
+  SETTINGS_TABS,
   settingsCompleteness,
   settingsNeedAttention,
 } from "./completeness";
+import { settingsTabStates } from "./settingsTabs";
 
 const COMPLETE: CompletenessInput = {
   siteName: "Dunia Kimia Utama",
@@ -78,5 +82,66 @@ describe("tenant settings completeness (FR-UI-45)", () => {
       "seo",
     ]);
     expect(settingsNeedAttention(undefined)).toBe(true);
+  });
+});
+
+describe("completeness from form values", () => {
+  const form: Record<string, unknown> = {
+    siteName: "Situs",
+    contactEmail: "",
+    contactPhone: "+62 21 555",
+    recruiterEmail: "",
+    "brand.logoOnDark": { id: 1, filename: "dark.png" },
+    "brand.logoOnLight": 2,
+    "brand.legalName": "PT Dunia Kimia Utama",
+    "defaultSeo.title": "",
+  };
+
+  it("reads upload values as ids and empty strings as missing", () => {
+    expect(
+      incomplete(
+        completenessFromValues((path: CompletenessPath) => form[path]),
+      ),
+    ).toEqual(["careers", "seo"]);
+  });
+
+  it("checks localized fields in the default locale when given", () => {
+    expect(
+      incomplete(
+        completenessFromValues((path: CompletenessPath) => form[path], {
+          siteName: "",
+          "defaultSeo.title": "Dunia Kimia Utama",
+        }),
+      ),
+    ).toEqual(["general", "careers"]);
+  });
+});
+
+describe("settings tab states (FR-UI-46)", () => {
+  it("follows the tab order, with Social always optional", () => {
+    expect(
+      settingsTabStates(
+        settingsCompleteness({
+          ...COMPLETE,
+          recruiterEmail: null,
+          siteName: "",
+        }),
+      ),
+    ).toEqual([
+      "warning",
+      "complete",
+      "complete",
+      "error",
+      "optional",
+      "complete",
+    ]);
+    expect(SETTINGS_TABS.map(({ label }) => label)).toEqual([
+      "General",
+      "Brand",
+      "Contact",
+      "Careers",
+      "Social",
+      "SEO & analytics",
+    ]);
   });
 });

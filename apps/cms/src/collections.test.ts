@@ -28,7 +28,12 @@ import {
   SOCIAL_PLATFORMS,
   TenantSettings,
 } from "./collections/TenantSettings";
-import { applyMultiTenant, fieldNames } from "./testing";
+import {
+  applyMultiTenant,
+  childFields,
+  fieldNames,
+  findField,
+} from "./testing";
 
 const ALL = collections;
 
@@ -89,9 +94,7 @@ function call(
 }
 
 function field(collection: CollectionConfig, name: string): Field {
-  const found = collection.fields.find(
-    (candidate) => "name" in candidate && candidate.name === name,
-  );
+  const found = findField(collection.fields, name);
   if (!found) throw new Error(`${collection.slug} has no ${name} field`);
   return found;
 }
@@ -99,10 +102,8 @@ function field(collection: CollectionConfig, name: string): Field {
 function nested(fields: Field[], name: string): Field {
   for (const candidate of fields) {
     if ("name" in candidate && candidate.name === name) return candidate;
-    if ("fields" in candidate) {
-      const found = nested(candidate.fields, name);
-      if (found) return found;
-    }
+    const found = nested(childFields(candidate), name);
+    if (found) return found;
   }
   return undefined as unknown as Field;
 }
