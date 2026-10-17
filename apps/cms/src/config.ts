@@ -10,6 +10,7 @@ import sharp from "sharp";
 import { PRODUCT_NAME } from "./admin/brand";
 import { LOGIN_COMPONENTS, LOGIN_TRANSLATIONS } from "./admin/login";
 import {
+  ADMIN_TOAST,
   appendAdminProviders,
   PROVIDERS_INSIDE_TENANT_SELECTION,
   TOP_BAR_ACTIONS,
@@ -43,6 +44,7 @@ export async function cmsConfig(client: PayloadClient) {
           Logo: "/admin/graphics/Logo#Logo",
         },
       },
+      toast: ADMIN_TOAST,
       meta: {
         titleSuffix: `— ${PRODUCT_NAME}`,
         icons: [{ rel: "icon", type: "image/svg+xml", url: "/favicon.svg" }],

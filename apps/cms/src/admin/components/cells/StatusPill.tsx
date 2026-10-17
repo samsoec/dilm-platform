@@ -2,10 +2,8 @@
 
 import type { DefaultCellComponentProps } from "payload";
 
-import { Badge } from "./Badge";
-import { statusBadge } from "./cv";
+import { StatusChip } from "../kit/StatusChip";
 
 export function StatusPill({ cellData }: DefaultCellComponentProps) {
-  const badge = statusBadge(cellData);
-  return badge ? <Badge badge={badge} srText=" status" /> : null;
+  return <StatusChip set="application" srText=" status" status={cellData} />;
 }

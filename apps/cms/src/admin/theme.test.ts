@@ -47,6 +47,9 @@ const TEXT_PAIRS: [string, string][] = [
   ["ok", "ok-bg"],
   ["danger", "danger-bg"],
   ["danger", "surface"],
+  ["toast-ink", "toast-bg"],
+  ["toast-ink-2", "toast-bg"],
+  ["toast-link", "toast-bg"],
 ];
 
 const UI_PAIRS: [string, string][] = [

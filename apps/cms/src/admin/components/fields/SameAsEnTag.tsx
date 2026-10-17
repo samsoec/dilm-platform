@@ -3,15 +3,13 @@
 import { useFormFields } from "@payloadcms/ui";
 
 import { isSameAsDefault, valueAtPath } from "../../layoutEditor";
+import { SameAsEn } from "../kit/Tag";
 import { useDefaultLocaleDoc } from "./useDefaultLocaleDoc";
 
 export function SameAsEnBadge() {
   return (
-    <span
-      className="dil-same-tag"
-      title="This Indonesian label still shows the English text."
-    >
-      Same as EN
+    <span className="dil-same-tag">
+      <SameAsEn />
     </span>
   );
 }

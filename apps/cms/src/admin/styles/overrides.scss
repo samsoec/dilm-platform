@@ -11,11 +11,33 @@
     font-family: var(--dil-font-mono);
   }
 
-  // Payload class: .btn--style-primary (@payloadcms/ui elements/Button)
+  // Payload classes: .btn--style-primary, .btn--style-secondary, .btn--style-error (@payloadcms/ui elements/Button); K-01
+  .btn--style-primary,
+  .btn--style-secondary,
+  .btn--style-error {
+    --btn-font-weight: 700;
+  }
+
   .btn--style-primary:not(.btn--disabled) {
     --bg-color: var(--dil-brand);
     --color: #ffffff;
     --hover-bg: color-mix(in srgb, var(--dil-brand) 85%, #000000);
+    --hover-color: #ffffff;
+  }
+
+  .btn--style-secondary:not(.btn--disabled) {
+    --bg-color: var(--dil-surface);
+    --color: var(--dil-ink);
+    --btn-border: 1px solid var(--dil-line);
+    --hover-bg: var(--dil-surface-2);
+    --hover-color: var(--dil-ink);
+    --hover-btn-border: 1px solid var(--dil-line);
+  }
+
+  .btn--style-error:not(.btn--disabled) {
+    --bg-color: var(--dil-danger-fill);
+    --color: #ffffff;
+    --hover-bg: color-mix(in srgb, var(--dil-danger-fill) 85%, #000000);
     --hover-color: #ffffff;
   }
 

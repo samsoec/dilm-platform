@@ -10,7 +10,7 @@ import {
   loadStatusCounts,
 } from "../../data/cvSubmissions";
 import { selectedTenantID, TENANT_COOKIE } from "../../data/sidebar";
-import { STATUS_BADGES } from "../cells/cv";
+import { STATUS_SETS } from "../kit/status";
 import { activeStatus, type SearchParams, statusTabHref } from "./statusQuery";
 
 export async function StatusTabs({
@@ -38,7 +38,7 @@ export async function StatusTabs({
   const tabs = [
     ...CV_STATUSES.map((status) => ({
       key: status,
-      label: STATUS_BADGES[status].label,
+      label: STATUS_SETS.application[status].label,
       count: counts?.[status],
     })),
     {

@@ -1,46 +1,13 @@
 @layer dil {
-  .dil-locale-banner {
-    display: flex;
-    gap: 12px;
+  .dil-locale-banner,
+  .dil-field-banner {
     margin-bottom: 24px;
-    padding: 14px 16px;
-    border: 1px solid color-mix(in srgb, var(--dil-brand) 35%, transparent);
-    border-radius: var(--dil-radius-m);
-    background: var(--dil-sel-bg);
-    color: var(--dil-sel-ink);
-    font-family: var(--dil-font-sans);
-
-    .dil-icon {
-      font-size: 22px;
-    }
-  }
-
-  .dil-locale-banner__title {
-    margin: 0 0 4px;
-    font-size: 14px;
-    font-weight: 700;
-  }
-
-  .dil-locale-banner__text {
-    margin: 0;
-    font-size: 13px;
-    line-height: 1.5;
   }
 
   .dil-same-tag {
     display: inline-flex;
-    align-items: center;
     margin-inline-start: 8px;
-    padding: 1px 8px;
-    border-radius: 999px;
-    background: var(--dil-warn-bg);
-    color: var(--dil-warn);
-    font-family: var(--dil-font-sans);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    white-space: nowrap;
+    vertical-align: middle;
   }
 
   .field-type .dil-same-tag {

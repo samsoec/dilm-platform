@@ -1,13 +1,10 @@
-import { syncBadge } from "../cells/cv";
+import { statusChip } from "../kit/status";
 import { MaterialIcon } from "../MaterialIcon";
 
 const SYNC_STATES = [
-  [syncBadge("synced", 1), "sent to the job platform"],
-  [
-    syncBadge("failed", 3),
-    "the last try didn't go through; the queue tries again",
-  ],
-  [syncBadge("pending", 0), "not sent yet"],
+  ["synced", "sent to the job platform"],
+  ["failed", "the last try didn't go through; the queue tries again"],
+  ["pending", "not sent yet"],
 ] as const;
 
 export function CvLegend() {
@@ -30,15 +27,18 @@ export function CvLegend() {
       </div>
       <div className="dil-legend__group">
         <span className="dil-legend__title">Job platform</span>
-        {SYNC_STATES.map(([badge, meaning]) => (
-          <span className="dil-legend__item" key={badge.label}>
-            <MaterialIcon
-              className={`dil-tone--${badge.tone}`}
-              name={badge.icon}
-            />
-            {badge.label.split(" · ")[0]}: {meaning}
-          </span>
-        ))}
+        {SYNC_STATES.map(([status, meaning]) => {
+          const chip = statusChip("sync", status)!;
+          return (
+            <span className="dil-legend__item" key={status}>
+              <MaterialIcon
+                className={`dil-tone--${chip.tone}`}
+                name={chip.icon}
+              />
+              {chip.label}: {meaning}
+            </span>
+          );
+        })}
       </div>
     </aside>
   );
