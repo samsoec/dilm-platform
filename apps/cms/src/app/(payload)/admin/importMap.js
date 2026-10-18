@@ -4,6 +4,7 @@ import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@pa
 import { CompletenessPanel as CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77 } from '../../../admin/components/fields/CompletenessPanel'
 import { CareersNotice as CareersNotice_4ec7abca466eaed7a6d39b518b93e551 } from '../../../admin/components/fields/CareersNotice'
 import { DocumentStatus as DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732 } from '../../../admin/components/document/DocumentStatus'
+import { VersionsDrawer as VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e } from '../../../admin/components/document/VersionsDrawer'
 import { SaveButton as SaveButton_40f7aaa07144fdaeb435852de88db2db } from '../../../admin/components/document/SaveButton'
 import { UploadImagesButton as UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af4d } from '../../../admin/components/media/UploadImagesButton'
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
@@ -55,6 +56,7 @@ export const importMap = {
   "/admin/components/fields/CompletenessPanel#CompletenessPanel": CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77,
   "/admin/components/fields/CareersNotice#CareersNotice": CareersNotice_4ec7abca466eaed7a6d39b518b93e551,
   "/admin/components/document/DocumentStatus#DocumentStatus": DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732,
+  "/admin/components/document/VersionsDrawer#VersionsDrawer": VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e,
   "/admin/components/document/SaveButton#SaveButton": SaveButton_40f7aaa07144fdaeb435852de88db2db,
   "/admin/components/media/UploadImagesButton#UploadImagesButton": UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af4d,
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
