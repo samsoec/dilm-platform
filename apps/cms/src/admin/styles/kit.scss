@@ -766,6 +766,7 @@
 
   // Payload classes: .radio-group--group, .radio-input, .radio-input--is-selected, .radio-input__styled-radio (@payloadcms/ui fields/RadioGroup); K-04 segmented control on fields with admin.className "dil-segmented"
   .dil-segmented .radio-group--group {
+    align-self: flex-start;
     display: inline-flex;
     gap: 2px;
     margin: 0;

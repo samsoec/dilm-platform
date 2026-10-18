@@ -8,6 +8,7 @@ import {
   localeBanner,
   ROW_LABELS,
   sourcedFrom,
+  validationSummary,
   versionInfo,
   withSameAsEnTag,
 } from "../fields/layoutEditor";
@@ -29,6 +30,10 @@ export const NAV_ITEM_TYPE_LABELS: Record<NavItemType, string> = {
 export const MAX_NAV_ITEMS = 8;
 
 export const MAX_DROPDOWN_LINKS = 6;
+
+const NAV_TYPE_FIELD = "/admin/components/fields/NavTypeField#NavTypeField";
+
+const ARRAY_NOTE = "/admin/components/fields/ArrayLimitNote#ArrayLimitNote";
 
 const isNavItem =
   (type: NavItemType): Condition =>
@@ -62,6 +67,7 @@ export const Header = withTenantAccess(
     },
     fields: [
       localeBanner,
+      validationSummary,
       versionInfo,
       sourcedFrom,
       ...lockStructure([
@@ -73,11 +79,15 @@ export const Header = withTenantAccess(
           maxRows: MAX_NAV_ITEMS,
           admin: {
             initCollapsed: true,
-            components: { RowLabel: ROW_LABELS.navItem },
+            components: {
+              RowLabel: ROW_LABELS.navItem,
+              afterInput: [ARRAY_NOTE],
+            },
           },
           fields: [
             {
               name: "type",
+              label: "Type",
               type: "radio",
               required: true,
               defaultValue: "link",
@@ -85,7 +95,11 @@ export const Header = withTenantAccess(
                 value,
                 label: NAV_ITEM_TYPE_LABELS[value],
               })),
-              admin: { layout: "horizontal" },
+              admin: {
+                layout: "horizontal",
+                className: "dil-segmented",
+                components: { Field: NAV_TYPE_FIELD },
+              },
             },
             {
               ...link({ required: true }),
@@ -108,7 +122,10 @@ export const Header = withTenantAccess(
               required: true,
               admin: {
                 condition: isNavItem("dropdown"),
-                components: { RowLabel: ROW_LABELS.link },
+                components: {
+                  RowLabel: ROW_LABELS.link,
+                  afterInput: [ARRAY_NOTE],
+                },
               },
               fields: [link({ required: true })],
             }),
@@ -116,17 +133,22 @@ export const Header = withTenantAccess(
         }),
         {
           name: "showSearch",
-          label: "Show search",
+          label: "Show search icon",
           type: "checkbox",
           defaultValue: false,
-          admin: { position: "sidebar" },
+          admin: {
+            position: "sidebar",
+            className: "dil-switch",
+            description:
+              "Only shows the icon. Site search isn't available yet.",
+          },
         },
         {
           name: "showLanguageSwitcher",
           label: "Show language switcher",
           type: "checkbox",
           defaultValue: true,
-          admin: { position: "sidebar" },
+          admin: { position: "sidebar", className: "dil-switch" },
         },
         {
           name: "cta",
@@ -139,6 +161,11 @@ export const Header = withTenantAccess(
               label: "Show the button",
               type: "checkbox",
               defaultValue: false,
+              admin: {
+                className: "dil-switch",
+                description:
+                  "Off: no button on the navbar. Turn on to set its text and link.",
+              },
             },
             {
               ...link({ required: true }),

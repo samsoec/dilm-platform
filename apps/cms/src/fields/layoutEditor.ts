@@ -32,6 +32,11 @@ export const localeBanner = uiField(
   "LocaleBanner#LocaleBanner",
 );
 
+export const validationSummary = uiField(
+  "validationSummary",
+  "ValidationSummary#ValidationSummary",
+);
+
 export const versionInfo = uiField(
   "versionInfo",
   "VersionInfo#VersionInfo",

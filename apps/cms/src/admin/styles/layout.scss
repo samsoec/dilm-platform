@@ -235,4 +235,149 @@
   .dil-document-status__readonly {
     max-width: 640px;
   }
+
+  // Payload classes: .field-type__wrap (@payloadcms/ui fields/Text); the internal path field shows the site prefix inside its box (H-01)
+  .dil-path-field .field-type__wrap {
+    flex-flow: row wrap;
+    align-items: stretch;
+
+    .dil-path-prefix {
+      display: flex;
+      align-items: center;
+      padding: 0 0 0 12px;
+      border: 1px solid var(--dil-line);
+      border-inline-end: 0;
+      border-radius: var(--dil-radius-s) 0 0 var(--dil-radius-s);
+      background: var(--dil-surface);
+      color: var(--dil-muted);
+      font-family: var(--dil-font-mono);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .dil-path-prefix + input {
+      flex: 1;
+      min-width: 0;
+      padding-inline-start: 0;
+      border-inline-start: 0;
+      border-start-start-radius: 0;
+      border-end-start-radius: 0;
+      font-family: var(--dil-font-mono);
+      font-size: 13px;
+
+      &:focus {
+        box-shadow: none;
+      }
+    }
+
+    &:has(input:read-only) .dil-path-prefix,
+    &:has(input:disabled) .dil-path-prefix {
+      border-color: transparent;
+      background: var(--dil-surface-2);
+    }
+
+    &:has(input:focus) .dil-path-prefix {
+      border-color: var(--dil-brand);
+    }
+
+    .field-error,
+    .field-description {
+      flex-basis: 100%;
+    }
+  }
+
+  .dil-nav-type {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .dil-array-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0 0;
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+
+  .dil-validation {
+    margin-bottom: 24px;
+  }
+
+  .dil-validation__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    button {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--dil-brand-ink);
+      font: inherit;
+      font-weight: 600;
+      text-align: start;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .dil-en-reference {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-top: 6px;
+
+    .dil-same-tag {
+      margin: 0;
+    }
+  }
+
+  .dil-en-reference__text {
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+  }
+
+  .dil-side-panel__item--linked {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    > span {
+      flex: 1;
+      color: var(--dil-ink);
+      text-align: start;
+    }
+  }
+
+  .dil-side-panel__missing {
+    font-weight: 600;
+  }
+
+  .dil-side-panel__item-link {
+    color: var(--dil-brand-ink);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }

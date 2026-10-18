@@ -8,13 +8,16 @@ function optional(rule: Rule): TextFieldSingleValidation {
   return (value) => (value ? rule(value) : true);
 }
 
+export const HTTPS_MESSAGE = "Use a full address starting with https://";
+
+export const PATH_MESSAGE =
+  "Start the path with / and leave out the language, the site adds it.";
+
 export const isHttpsUrl = optional((value) => {
   try {
-    return new URL(value).protocol === "https:"
-      ? true
-      : "Use a full https:// link.";
+    return new URL(value).protocol === "https:" ? true : HTTPS_MESSAGE;
   } catch {
-    return "Use a full https:// link.";
+    return HTTPS_MESSAGE;
   }
 });
 
@@ -24,12 +27,8 @@ const LOCALE_PREFIX = new RegExp(
 );
 
 export const isInternalPath = optional((value) => {
-  if (!/^\/(?!\/)\S*$/.test(value)) {
-    return "Use a site path starting with a single /, e.g. /about.";
-  }
-  return LOCALE_PREFIX.test(value)
-    ? "Leave out the language prefix; the site adds /en or /id itself."
-    : true;
+  if (!/^\/(?!\/)\S*$/.test(value)) return PATH_MESSAGE;
+  return LOCALE_PREFIX.test(value) ? PATH_MESSAGE : true;
 });
 
 export const isGa4MeasurementId = optional((value) =>

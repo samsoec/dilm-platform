@@ -20,10 +20,14 @@ import { StatusTabs as StatusTabs_c467731604d0d3674e06a5e6b3537a04 } from '../..
 import { CvToolbar as CvToolbar_6e7bbbc44355b310e20f11bbdf672e51 } from '../../../admin/components/lists/CvToolbar'
 import { ListIntro as ListIntro_3758f5318f3bce3eb36c93ddfc96aba0 } from '../../../admin/components/lists/ListIntro'
 import { LocaleBanner as LocaleBanner_6e922f404c87f00d1c61cd1cda241d71 } from '../../../admin/components/fields/LocaleBanner'
+import { ValidationSummary as ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2 } from '../../../admin/components/fields/ValidationSummary'
 import { VersionInfo as VersionInfo_015c9769215da0668226801191ca76fc } from '../../../admin/components/fields/VersionInfo'
 import { SourcedFromPanel as SourcedFromPanel_5c55509d5c0ba2360d16a128794e5b0d } from '../../../admin/components/fields/SourcedFromPanel'
+import { NavTypeField as NavTypeField_8694bf897a6746ab2199d0709a24c346 } from '../../../admin/components/fields/NavTypeField'
+import { PathPrefix as PathPrefix_ee56f462e1df17b24b760ddd7386e5b7 } from '../../../admin/components/fields/PathPrefix'
 import { SameAsEnTag as SameAsEnTag_4e5f1095615c1ec350a3e95bc7f13ee9 } from '../../../admin/components/fields/SameAsEnTag'
 import { ArrayCountLabel as ArrayCountLabel_640892f7df83aaebc977cc56c785029c } from '../../../admin/components/fields/ArrayCountLabel'
+import { ArrayLimitNote as ArrayLimitNote_a3e50ded41523764bcb0b09ceeb17fa2 } from '../../../admin/components/fields/ArrayLimitNote'
 import { LinkRowLabel as LinkRowLabel_d7a74f343adbd5aa0b681db641f8edd6 } from '../../../admin/components/fields/RowLabels'
 import { NavItemRowLabel as NavItemRowLabel_d7a74f343adbd5aa0b681db641f8edd6 } from '../../../admin/components/fields/RowLabels'
 import { SectionAnchors as SectionAnchors_7e4e1ff615494f90a536731354e22ec8 } from '../../../admin/components/fields/SectionAnchors'
@@ -83,10 +87,14 @@ export const importMap = {
   "/admin/components/lists/CvToolbar#CvToolbar": CvToolbar_6e7bbbc44355b310e20f11bbdf672e51,
   "/admin/components/lists/ListIntro#ListIntro": ListIntro_3758f5318f3bce3eb36c93ddfc96aba0,
   "/admin/components/fields/LocaleBanner#LocaleBanner": LocaleBanner_6e922f404c87f00d1c61cd1cda241d71,
+  "/admin/components/fields/ValidationSummary#ValidationSummary": ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2,
   "/admin/components/fields/VersionInfo#VersionInfo": VersionInfo_015c9769215da0668226801191ca76fc,
   "/admin/components/fields/SourcedFromPanel#SourcedFromPanel": SourcedFromPanel_5c55509d5c0ba2360d16a128794e5b0d,
+  "/admin/components/fields/NavTypeField#NavTypeField": NavTypeField_8694bf897a6746ab2199d0709a24c346,
+  "/admin/components/fields/PathPrefix#PathPrefix": PathPrefix_ee56f462e1df17b24b760ddd7386e5b7,
   "/admin/components/fields/SameAsEnTag#SameAsEnTag": SameAsEnTag_4e5f1095615c1ec350a3e95bc7f13ee9,
   "/admin/components/fields/ArrayCountLabel#ArrayCountLabel": ArrayCountLabel_640892f7df83aaebc977cc56c785029c,
+  "/admin/components/fields/ArrayLimitNote#ArrayLimitNote": ArrayLimitNote_a3e50ded41523764bcb0b09ceeb17fa2,
   "/admin/components/fields/RowLabels#LinkRowLabel": LinkRowLabel_d7a74f343adbd5aa0b681db641f8edd6,
   "/admin/components/fields/RowLabels#NavItemRowLabel": NavItemRowLabel_d7a74f343adbd5aa0b681db641f8edd6,
   "/admin/components/fields/SectionAnchors#SectionAnchors": SectionAnchors_7e4e1ff615494f90a536731354e22ec8,

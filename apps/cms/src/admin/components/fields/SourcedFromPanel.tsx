@@ -20,9 +20,14 @@ function headerSources(sources: LayoutSources | undefined): Source[] {
   const brand = sources?.brand;
   return [
     {
-      label: "Logos",
-      detail: "Company settings › Brand",
-      ok: filled(brand?.logoOnDark) && filled(brand?.logoOnLight),
+      label: "Logo for light backgrounds",
+      detail: "Brand",
+      ok: filled(brand?.logoOnLight),
+    },
+    {
+      label: "Logo for dark backgrounds",
+      detail: "Brand",
+      ok: filled(brand?.logoOnDark),
     },
   ];
 }
@@ -84,16 +89,23 @@ export async function SourcedFromPanel({
       <ul className="dil-side-panel__list">
         {items.map(({ label, detail, ok }) => (
           <li
-            className={`dil-side-panel__item dil-tone--${ok ? "ok" : "warn"}`}
+            className={`dil-side-panel__item dil-side-panel__item--linked dil-tone--${ok ? "ok" : "warn"}`}
             key={label}
           >
             <MaterialIcon name={STATE_ICON[ok ? "ok" : "missing"]} />
-            <span>
+            <span className={ok ? undefined : "dil-side-panel__missing"}>
               {label}
-              <span className="dil-side-panel__detail">
-                {ok ? detail : `Missing · ${detail}`}
-              </span>
+              {!ok && " · missing"}
             </span>
+            {settingsHref && (
+              <Link
+                className="dil-side-panel__item-link"
+                href={settingsHref}
+                prefetch={false}
+              >
+                {ok ? detail : "Add"} →
+              </Link>
+            )}
           </li>
         ))}
       </ul>

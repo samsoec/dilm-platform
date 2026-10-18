@@ -51,6 +51,7 @@ export function SaveButton() {
     if (busy || !modified) return;
     if (!(await validateForm())) {
       await submit();
+      setModified(true);
       return;
     }
     setBusy(true);
