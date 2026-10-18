@@ -30,11 +30,9 @@ function relationID(value: unknown): number | string | undefined {
   return undefined;
 }
 
-export const MediaPickerField: UploadFieldClientComponent = ({
-  field,
-  path,
-  readOnly,
-}) => {
+export const MediaPickerField: UploadFieldClientComponent = (props) => {
+  const { field, path, readOnly } = props;
+  const { chooseLabel } = props as { chooseLabel?: string };
   const fieldPath = path ?? field.name;
   const { value, setValue, showError } = useField<unknown>({ path: fieldPath });
   const tenantValue = useFormFields(([fields]) => fields.tenant?.value);
@@ -97,7 +95,12 @@ export const MediaPickerField: UploadFieldClientComponent = ({
           )}
           <span className="dil-media-field__text">
             <b>
-              {media?.filename ?? (id === undefined ? "No image" : "Image")}
+              {media?.filename ??
+                (id === undefined
+                  ? isLogo
+                    ? "No logo chosen"
+                    : "No image chosen"
+                  : "Image")}
             </b>
             {media?.alt && <span>{media.alt}</span>}
           </span>
@@ -108,7 +111,9 @@ export const MediaPickerField: UploadFieldClientComponent = ({
                 type="button"
                 variant="secondary"
               >
-                {id === undefined ? "Choose or upload" : "Change"}
+                {id === undefined
+                  ? (chooseLabel ?? "Choose or upload")
+                  : "Change"}
               </ActionButton>
               {id !== undefined && (
                 <ActionButton

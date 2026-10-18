@@ -372,11 +372,11 @@ export interface Header {
           type: 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * A page on this site, e.g. /about. No /en or /id prefix.
+           * Start with /. The site adds the language.
            */
           internalPath?: string | null;
           /**
-           * A full https:// address on another site.
+           * A full address starting with https://
            */
           externalUrl?: string | null;
           label?: string | null;
@@ -388,11 +388,11 @@ export interface Header {
                 type: 'internal' | 'external';
                 newTab?: boolean | null;
                 /**
-                 * A page on this site, e.g. /about. No /en or /id prefix.
+                 * Start with /. The site adds the language.
                  */
                 internalPath?: string | null;
                 /**
-                 * A full https:// address on another site.
+                 * A full address starting with https://
                  */
                 externalUrl?: string | null;
                 label?: string | null;
@@ -403,19 +403,25 @@ export interface Header {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Only shows the icon. Site search isn't available yet.
+   */
   showSearch?: boolean | null;
   showLanguageSwitcher?: boolean | null;
   cta?: {
+    /**
+     * Off: no button on the navbar. Turn on to set its text and link.
+     */
     enabled?: boolean | null;
     link?: {
       type: 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * A page on this site, e.g. /about. No /en or /id prefix.
+       * Start with /. The site adds the language.
        */
       internalPath?: string | null;
       /**
-       * A full https:// address on another site.
+       * A full address starting with https://
        */
       externalUrl?: string | null;
       label?: string | null;
@@ -435,7 +441,7 @@ export interface Footer {
   ctaBand: {
     eyebrow?: string | null;
     /**
-     * Plain or italic text only.
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
      */
     heading?: {
       root: {
@@ -456,11 +462,11 @@ export interface Footer {
       type: 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * A page on this site, e.g. /about. No /en or /id prefix.
+       * Start with /. The site adds the language.
        */
       internalPath?: string | null;
       /**
-       * A full https:// address on another site.
+       * A full address starting with https://
        */
       externalUrl?: string | null;
       label?: string | null;
@@ -469,11 +475,11 @@ export interface Footer {
       type: 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * A page on this site, e.g. /about. No /en or /id prefix.
+       * Start with /. The site adds the language.
        */
       internalPath?: string | null;
       /**
-       * A full https:// address on another site.
+       * A full address starting with https://
        */
       externalUrl?: string | null;
       label?: string | null;
@@ -491,11 +497,11 @@ export interface Footer {
                 type: 'internal' | 'external';
                 newTab?: boolean | null;
                 /**
-                 * A page on this site, e.g. /about. No /en or /id prefix.
+                 * Start with /. The site adds the language.
                  */
                 internalPath?: string | null;
                 /**
-                 * A full https:// address on another site.
+                 * A full address starting with https://
                  */
                 externalUrl?: string | null;
                 label?: string | null;
@@ -508,7 +514,7 @@ export interface Footer {
     | null;
   partOf?: {
     /**
-     * Off: the footer shows no group affiliation. On: a label, the group's logo and a link to its site.
+     * Hidden on the site. Turn on to show a parent-company logo.
      */
     enabled?: boolean | null;
     label?: string | null;
@@ -517,11 +523,11 @@ export interface Footer {
       type: 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * A page on this site, e.g. /about. No /en or /id prefix.
+       * Start with /. The site adds the language.
        */
       internalPath?: string | null;
       /**
-       * A full https:// address on another site.
+       * A full address starting with https://
        */
       externalUrl?: string | null;
       label?: string | null;

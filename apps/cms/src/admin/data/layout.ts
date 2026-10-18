@@ -8,7 +8,7 @@ export type LayoutSources = Pick<
 > & {
   brand?: Pick<
     NonNullable<TenantSetting["brand"]>,
-    "logoOnDark" | "logoOnLight" | "legalName" | "address"
+    "logoOnDark" | "logoOnLight" | "legalName" | "address" | "tagline"
   > | null;
 };
 
@@ -44,6 +44,7 @@ export async function loadLayoutSources(
         logoOnLight: true,
         legalName: true,
         address: true,
+        tagline: true,
       },
     },
     overrideAccess: false,

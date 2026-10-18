@@ -49,9 +49,10 @@ export const sourcedFrom = uiField(
   "sidebar",
 );
 
-export const sectionAnchors = uiField(
-  "sectionAnchors",
-  "SectionAnchors#SectionAnchors",
+export const sectionJump = uiField(
+  "sectionJump",
+  "SectionJump#SectionJump",
+  "sidebar",
 );
 
 export function countedArray<T extends ArrayField>(field: T): T {

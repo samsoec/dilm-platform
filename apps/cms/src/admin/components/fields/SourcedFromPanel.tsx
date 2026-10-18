@@ -10,7 +10,15 @@ import {
 import type { IconName } from "../../icons";
 import { MaterialIcon } from "../MaterialIcon";
 
-type Source = { label: string; detail: string; ok: boolean };
+type Tab = "brand" | "contact" | "social";
+
+type Source = { label: string; tab: Tab; ok: boolean };
+
+const TAB_NAMES: Record<Tab, string> = {
+  brand: "Brand",
+  contact: "Contact",
+  social: "Social",
+};
 
 function filled(value: unknown): boolean {
   return typeof value === "string" ? value.trim() !== "" : value != null;
@@ -21,12 +29,12 @@ function headerSources(sources: LayoutSources | undefined): Source[] {
   return [
     {
       label: "Logo for light backgrounds",
-      detail: "Brand",
+      tab: "brand",
       ok: filled(brand?.logoOnLight),
     },
     {
       label: "Logo for dark backgrounds",
-      detail: "Brand",
+      tab: "brand",
       ok: filled(brand?.logoOnDark),
     },
   ];
@@ -36,22 +44,15 @@ function footerSources(sources: LayoutSources | undefined): Source[] {
   const brand = sources?.brand;
   const social = sources?.socialLinks?.length ?? 0;
   return [
-    { label: "Logo", detail: "Brand", ok: filled(brand?.logoOnDark) },
-    { label: "Address", detail: "Brand", ok: filled(brand?.address) },
+    { label: "Logo", tab: "brand", ok: filled(brand?.logoOnDark) },
+    { label: "Tagline", tab: "brand", ok: filled(brand?.tagline) },
+    { label: "Phone", tab: "contact", ok: filled(sources?.contactPhone) },
+    { label: "Email", tab: "contact", ok: filled(sources?.contactEmail) },
+    { label: "Address", tab: "brand", ok: filled(brand?.address) },
     {
-      label: "Email and phone",
-      detail: "Contact",
-      ok: filled(sources?.contactEmail) || filled(sources?.contactPhone),
-    },
-    {
-      label: social === 1 ? "1 social link" : `${social} social links`,
-      detail: "Social",
+      label: social > 0 ? `Social links · ${social}` : "Social links",
+      tab: "social",
       ok: social > 0,
-    },
-    {
-      label: "Legal name for {legalName}",
-      detail: "Brand",
-      ok: filled(brand?.legalName),
     },
   ];
 }
@@ -74,51 +75,45 @@ export async function SourcedFromPanel({
   );
   const footer = collectionSlug === "footer";
   const items = footer ? footerSources(sources) : headerSources(sources);
-  const settingsHref = sources
-    ? formatAdminURL({
-        adminRoute: payload.config.routes.admin,
-        path: `/collections/tenant-settings/${sources.id}`,
-      })
-    : undefined;
+  const settingsHref = (tab: Tab) =>
+    sources
+      ? formatAdminURL({
+          adminRoute: payload.config.routes.admin,
+          path: `/collections/tenant-settings/${sources.id}?tab=${tab}`,
+        })
+      : undefined;
 
   return (
     <section className="dil-side-panel">
       <h3 className="dil-side-panel__title">
-        {footer ? "Also in the footer" : "Comes from elsewhere"}
+        {footer ? "Comes from Company settings" : "Comes from elsewhere"}
       </h3>
       <ul className="dil-side-panel__list">
-        {items.map(({ label, detail, ok }) => (
-          <li
-            className={`dil-side-panel__item dil-side-panel__item--linked dil-tone--${ok ? "ok" : "warn"}`}
-            key={label}
-          >
-            <MaterialIcon name={STATE_ICON[ok ? "ok" : "missing"]} />
-            <span className={ok ? undefined : "dil-side-panel__missing"}>
-              {label}
-              {!ok && " · missing"}
-            </span>
-            {settingsHref && (
-              <Link
-                className="dil-side-panel__item-link"
-                href={settingsHref}
-                prefetch={false}
-              >
-                {ok ? detail : "Add"} →
-              </Link>
-            )}
-          </li>
-        ))}
+        {items.map(({ label, tab, ok }) => {
+          const href = settingsHref(tab);
+          return (
+            <li
+              className={`dil-side-panel__item dil-side-panel__item--linked dil-tone--${ok ? "ok" : "warn"}`}
+              key={label}
+            >
+              <MaterialIcon name={STATE_ICON[ok ? "ok" : "missing"]} />
+              <span className={ok ? undefined : "dil-side-panel__missing"}>
+                {label}
+                {!ok && " · missing"}
+              </span>
+              {href && (
+                <Link
+                  className="dil-side-panel__item-link"
+                  href={href}
+                  prefetch={false}
+                >
+                  {ok ? TAB_NAMES[tab] : "Add"} →
+                </Link>
+              )}
+            </li>
+          );
+        })}
       </ul>
-      {settingsHref && (
-        <Link
-          className="dil-side-panel__link"
-          href={settingsHref}
-          prefetch={false}
-        >
-          Open company settings
-          <MaterialIcon name="chevron_right" />
-        </Link>
-      )}
     </section>
   );
 }

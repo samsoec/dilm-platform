@@ -15,6 +15,7 @@ import {
   rowNumberText,
   tabText,
 } from "../../layoutEditor";
+import { MaterialIcon } from "../MaterialIcon";
 import { SameAsEnBadge, useSameAsDefault } from "./SameAsEnTag";
 
 function RowLabel({
@@ -22,18 +23,35 @@ function RowLabel({
   title,
   meta,
   same,
+  full = false,
+  missingTitle,
 }: {
   number: string;
   title: string;
   meta: string[];
   same: boolean;
+  full?: boolean;
+  missingTitle?: string;
 }) {
   return (
     <span className="dil-row-label">
       <span className="dil-row-label__number">{number}</span>
-      <span className="dil-row-label__title">{title || "Untitled"}</span>
+      <span
+        className={`dil-row-label__title${title ? "" : " dil-row-label__title--empty"}`}
+      >
+        {title || "Untitled"}
+      </span>
+      {!title && missingTitle && (
+        <span className="dil-row-label__missing">
+          <MaterialIcon name="error" />
+          {missingTitle}
+        </span>
+      )}
       {meta.map((part) => (
-        <span className="dil-row-label__meta" key={part}>
+        <span
+          className={`dil-row-label__meta${full ? " dil-row-label__meta--full" : ""}`}
+          key={part}
+        >
           {part}
         </span>
       ))}
@@ -118,7 +136,9 @@ export function ColumnRowLabel({ maxLinks }: { maxLinks: number }) {
   const same = useSameAsDefault(`${path}.title`, data?.title);
   return (
     <RowLabel
+      full={(data?.links?.length ?? 0) >= maxLinks}
       meta={[columnMeta(data ?? {}, maxLinks)]}
+      missingTitle="Add a title"
       number={rowNumberText(rowNumber)}
       same={same}
       title={data?.title ?? ""}
