@@ -1,5 +1,6 @@
 import type { CollectionSlug, UIFieldServerProps } from "payload";
 
+import { authorName } from "../../authors";
 import { savedAtText } from "../../layoutEditor";
 import { MaterialIcon } from "../MaterialIcon";
 
@@ -40,10 +41,8 @@ export async function VersionInfo({
           user: req.user,
         }),
   ]);
-  const editor = editors.docs[0] as
-    { name?: string | null; email?: string | null } | undefined;
   const savedAt = savedAtText(data?.updatedAt);
-  const by = editor?.name || editor?.email;
+  const by = authorName(editors.docs[0] ?? savedBy, false);
 
   return (
     <section className="dil-side-panel dil-version-info">

@@ -460,6 +460,7 @@ describe("ir-documents", () => {
       "documentType",
       "publishedDate",
       "locale",
+      "updatedBy",
     ]);
   });
 
@@ -484,6 +485,8 @@ describe("cv-submissions", () => {
       "resumeFileKey",
       "submittedAt",
       "status",
+      "statusChangedBy",
+      "statusChangedAt",
       ...SYSTEM_MANAGED,
     ]);
   });

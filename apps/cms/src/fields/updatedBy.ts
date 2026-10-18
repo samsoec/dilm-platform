@@ -5,6 +5,7 @@ import type {
 } from "payload";
 
 import { systemManagedField } from "../access";
+import { stampsBy } from "./systemWrite";
 
 export const updatedByField: RelationshipField = {
   name: "updatedBy",
@@ -15,8 +16,10 @@ export const updatedByField: RelationshipField = {
   admin: { position: "sidebar", readOnly: true },
 };
 
-export const stampUpdatedBy: CollectionBeforeChangeHook = ({ data, req }) =>
-  req.user ? { ...data, updatedBy: req.user.id } : data;
+export const stampUpdatedBy: CollectionBeforeChangeHook = ({ data, req }) => {
+  const author = stampsBy(req);
+  return author === undefined ? data : { ...data, updatedBy: author };
+};
 
 export function withUpdatedBy(collection: CollectionConfig): CollectionConfig {
   return {
