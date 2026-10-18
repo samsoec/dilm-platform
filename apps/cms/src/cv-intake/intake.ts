@@ -3,6 +3,7 @@ import type { CvQueueMessage, TenantSlug } from "@dilm/shared-types";
 import type { Payload } from "payload";
 
 import { tenantSender } from "../email";
+import { SYSTEM_WRITE } from "../fields/systemWrite";
 import type { CvSubmission, Tenant } from "../payload-types";
 import { applicantConfirmation, recruiterNotification } from "./emails";
 import { postToJobPlatform } from "./webhook";
@@ -77,6 +78,7 @@ export async function upsertSubmission(
         externalSyncStatus: "pending",
         externalSyncAttempts: 0,
       },
+      context: SYSTEM_WRITE,
       depth: 0,
     });
   } catch (error) {
@@ -125,6 +127,7 @@ export async function processCvMessage(
       collection: "cv-submissions",
       id: submission.id,
       data,
+      context: SYSTEM_WRITE,
       depth: 0,
     });
   };

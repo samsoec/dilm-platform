@@ -6,6 +6,7 @@ import * as migration_20261008_065645_dilm_46_header_global from './20261008_065
 import * as migration_20261008_070940_dilm_47_footer_global from './20261008_070940_dilm_47_footer_global';
 import * as migration_20261014_140948_dilm_58_authoring_metadata from './20261014_140948_dilm_58_authoring_metadata';
 import * as migration_20261014_232338_dilm_54_tenant_brand_color from './20261014_232338_dilm_54_tenant_brand_color';
+import * as migration_20261018_041320_dilm_70_authoring_stamps from './20261018_041320_dilm_70_authoring_stamps';
 
 export const migrations = [
   {
@@ -46,6 +47,11 @@ export const migrations = [
   {
     up: migration_20261014_232338_dilm_54_tenant_brand_color.up,
     down: migration_20261014_232338_dilm_54_tenant_brand_color.down,
-    name: '20261014_232338_dilm_54_tenant_brand_color'
+    name: '20261014_232338_dilm_54_tenant_brand_color',
+  },
+  {
+    up: migration_20261018_041320_dilm_70_authoring_stamps.up,
+    down: migration_20261018_041320_dilm_70_authoring_stamps.down,
+    name: '20261018_041320_dilm_70_authoring_stamps'
   },
 ];

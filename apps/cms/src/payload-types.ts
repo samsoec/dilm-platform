@@ -238,6 +238,7 @@ export interface Media {
   id: number;
   tenant?: (number | null) | Tenant;
   alt: string;
+  uploadedBy?: (number | null) | User;
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -311,6 +312,7 @@ export interface IrDocument {
     | 'prospectus';
   publishedDate: string;
   locale: 'en' | 'id';
+  updatedBy?: (number | null) | User;
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -345,6 +347,8 @@ export interface CvSubmission {
   resumeFileKey: string;
   submittedAt: string;
   status: 'received' | 'reviewed' | 'shortlisted' | 'rejected';
+  statusChangedBy?: (number | null) | User;
+  statusChangedAt?: string | null;
   applicantNotifiedAt?: string | null;
   recruiterNotifiedAt?: string | null;
   externalSyncStatus: 'pending' | 'synced' | 'failed';
@@ -721,6 +725,7 @@ export interface TenantSettingsSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   tenant?: T;
   alt?: T;
+  uploadedBy?: T;
   prefix?: T;
   _objectKey?: T;
   updatedAt?: T;
@@ -792,6 +797,7 @@ export interface IrDocumentsSelect<T extends boolean = true> {
   documentType?: T;
   publishedDate?: T;
   locale?: T;
+  updatedBy?: T;
   prefix?: T;
   _objectKey?: T;
   updatedAt?: T;
@@ -820,6 +826,8 @@ export interface CvSubmissionsSelect<T extends boolean = true> {
   resumeFileKey?: T;
   submittedAt?: T;
   status?: T;
+  statusChangedBy?: T;
+  statusChangedAt?: T;
   applicantNotifiedAt?: T;
   recruiterNotifiedAt?: T;
   externalSyncStatus?: T;

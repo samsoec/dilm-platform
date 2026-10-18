@@ -3,6 +3,11 @@ import type { Field } from "payload";
 import { nobody, superAdmins, systemManagedField } from "../access";
 import { navGroup } from "../admin/navGroups";
 import { withTenantAccess } from "../tenancy";
+import {
+  stampStatusChange,
+  statusChangedAtField,
+  statusChangedByField,
+} from "../fields/authoring";
 import { collectionLabels } from "../admin/labels";
 
 export const CV_STATUSES = [
@@ -59,6 +64,9 @@ export const CvSubmissions = withTenantAccess({
   custom: {
     nav: { icon: "badge", order: 1, badge: "cv-received" },
   },
+  hooks: {
+    beforeChange: [stampStatusChange],
+  },
   fields: [
     systemManaged({
       name: "submissionId",
@@ -98,6 +106,8 @@ export const CvSubmissions = withTenantAccess({
       defaultValue: "received",
       admin: { components: { Cell: CELLS.status } },
     },
+    statusChangedByField,
+    statusChangedAtField,
     systemManaged({
       name: "applicantNotifiedAt",
       type: "date",
