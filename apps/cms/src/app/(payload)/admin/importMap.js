@@ -3,7 +3,13 @@ import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da1
 import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { CompletenessPanel as CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77 } from '../../../admin/components/fields/CompletenessPanel'
 import { MediaPickerField as MediaPickerField_c1a0497f67f40c4b5a41bd7dd6573213 } from '../../../admin/components/media/MediaPickerField'
+import { TabIntro as TabIntro_b11e3c6d7c067629e5bc1d6294b75ba1 } from '../../../admin/components/fields/TabIntro'
 import { CareersNotice as CareersNotice_4ec7abca466eaed7a6d39b518b93e551 } from '../../../admin/components/fields/CareersNotice'
+import { LaunchRequiredLabel as LaunchRequiredLabel_0b876ba66792ba4b7921bebf7f495f98 } from '../../../admin/components/fields/LaunchRequiredLabel'
+import { PlatformSelect as PlatformSelect_e5a3ed79f2c8e344cb6082339e06e6c8 } from '../../../admin/components/fields/PlatformSelect'
+import { SocialRowLabel as SocialRowLabel_d7a74f343adbd5aa0b681db641f8edd6 } from '../../../admin/components/fields/RowLabels'
+import { CountedLabel as CountedLabel_bc9f79672c5648acce074f6515fa86f0 } from '../../../admin/components/fields/CharacterCount'
+import { CharacterLimit as CharacterLimit_bc9f79672c5648acce074f6515fa86f0 } from '../../../admin/components/fields/CharacterCount'
 import { DocumentStatus as DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732 } from '../../../admin/components/document/DocumentStatus'
 import { VersionsDrawer as VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e } from '../../../admin/components/document/VersionsDrawer'
 import { SaveButton as SaveButton_40f7aaa07144fdaeb435852de88db2db } from '../../../admin/components/document/SaveButton'
@@ -70,7 +76,13 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
   "/admin/components/fields/CompletenessPanel#CompletenessPanel": CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77,
   "/admin/components/media/MediaPickerField#MediaPickerField": MediaPickerField_c1a0497f67f40c4b5a41bd7dd6573213,
+  "/admin/components/fields/TabIntro#TabIntro": TabIntro_b11e3c6d7c067629e5bc1d6294b75ba1,
   "/admin/components/fields/CareersNotice#CareersNotice": CareersNotice_4ec7abca466eaed7a6d39b518b93e551,
+  "/admin/components/fields/LaunchRequiredLabel#LaunchRequiredLabel": LaunchRequiredLabel_0b876ba66792ba4b7921bebf7f495f98,
+  "/admin/components/fields/PlatformSelect#PlatformSelect": PlatformSelect_e5a3ed79f2c8e344cb6082339e06e6c8,
+  "/admin/components/fields/RowLabels#SocialRowLabel": SocialRowLabel_d7a74f343adbd5aa0b681db641f8edd6,
+  "/admin/components/fields/CharacterCount#CountedLabel": CountedLabel_bc9f79672c5648acce074f6515fa86f0,
+  "/admin/components/fields/CharacterCount#CharacterLimit": CharacterLimit_bc9f79672c5648acce074f6515fa86f0,
   "/admin/components/document/DocumentStatus#DocumentStatus": DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732,
   "/admin/components/document/VersionsDrawer#VersionsDrawer": VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e,
   "/admin/components/document/SaveButton#SaveButton": SaveButton_40f7aaa07144fdaeb435852de88db2db,

@@ -4,6 +4,7 @@ import {
   type CompletenessInput,
   type CompletenessPath,
   completenessFromValues,
+  launchItems,
   SETTINGS_TABS,
   settingsCompleteness,
   settingsNeedAttention,
@@ -64,6 +65,7 @@ describe("tenant settings completeness (FR-UI-45)", () => {
       section: "careers",
       severity: "error",
       complete: false,
+      missing: [{ label: "recruiter email", path: "recruiterEmail" }],
     });
   });
 
@@ -143,5 +145,36 @@ describe("settings tab states (FR-UI-46)", () => {
       "Social",
       "SEO & analytics",
     ]);
+  });
+});
+
+describe("launch items (T-07)", () => {
+  it("names each missing piece, launch-blocking ones first", () => {
+    expect(
+      launchItems(
+        settingsCompleteness({
+          ...COMPLETE,
+          recruiterEmail: "",
+          brand: { ...COMPLETE.brand, logoOnDark: null },
+        }),
+      ),
+    ).toEqual([
+      {
+        label: "Careers · recruiter email",
+        path: "recruiterEmail",
+        section: "careers",
+        severity: "error",
+      },
+      {
+        label: "Brand · dark logo",
+        path: "brand.logoOnDark",
+        section: "brand",
+        severity: "warning",
+      },
+    ]);
+  });
+
+  it("is empty once everything needed for launch is set", () => {
+    expect(launchItems(settingsCompleteness(COMPLETE))).toEqual([]);
   });
 });

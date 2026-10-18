@@ -329,8 +329,8 @@ describe("tenant-settings", () => {
 
     expect(brand).toMatchObject({ type: "group" });
     expect(fieldNames(brand.fields)).toEqual([
-      "logoOnDark",
       "logoOnLight",
+      "logoOnDark",
       "legalName",
       "tagline",
       "address",
@@ -361,7 +361,12 @@ describe("tenant-settings", () => {
       "youtube",
     ]);
     expect(nested(TenantSettings.fields, "platform")).toMatchObject({
-      options: [...SOCIAL_PLATFORMS],
+      options: [
+        { label: "LinkedIn", value: "linkedin" },
+        { label: "Instagram", value: "instagram" },
+        { label: "Facebook", value: "facebook" },
+        { label: "YouTube", value: "youtube" },
+      ],
       validate: isUniquePlatform,
     });
   });

@@ -1,10 +1,20 @@
-import type { SelectFieldSingleValidation } from "payload";
-import { select } from "payload/shared";
+import type {
+  EmailFieldValidation,
+  SelectFieldSingleValidation,
+} from "payload";
+import { email, select } from "payload/shared";
 
 import { superAdmins } from "../access";
 import { settingsTabLabel } from "../admin/data/completeness";
+import {
+  SEO_LIMITS,
+  SOCIAL_PLATFORM_OPTIONS,
+  SOCIAL_PLATFORMS,
+} from "../admin/data/socialPlatforms";
+import { collectionLabels } from "../admin/labels";
 import { navGroup } from "../admin/navGroups";
 import { LIVE_DOCUMENT_CONTROLS } from "../admin/shell";
+import { withMediaPicker } from "../fields/mediaPicker";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
 import {
@@ -13,15 +23,8 @@ import {
   isPhoneNumber,
   isWhatsAppLink,
 } from "../validation";
-import { collectionLabels } from "../admin/labels";
-import { withMediaPicker } from "../fields/mediaPicker";
 
-export const SOCIAL_PLATFORMS = [
-  "linkedin",
-  "instagram",
-  "facebook",
-  "youtube",
-] as const;
+export { SOCIAL_PLATFORMS };
 
 type SocialLinkRow = { platform?: string | null };
 
@@ -37,6 +40,47 @@ export const isUniquePlatform: SelectFieldSingleValidation = async (
   const count = rows.filter((row) => row?.platform === value).length;
   return count > 1 ? "Each platform can only be listed once." : true;
 };
+
+async function tenantDomain(
+  args: Parameters<EmailFieldValidation>[1],
+): Promise<string | undefined> {
+  const tenant = (args.data as { tenant?: unknown } | undefined)?.tenant;
+  const id =
+    tenant && typeof tenant === "object" && "id" in tenant
+      ? (tenant as { id: number | string }).id
+      : tenant;
+  const payload = args.req?.payload;
+  if (
+    (typeof id !== "number" && typeof id !== "string") ||
+    typeof payload?.findByID !== "function"
+  ) {
+    return undefined;
+  }
+  try {
+    const doc = await payload.findByID({
+      collection: "tenants",
+      id,
+      depth: 0,
+      select: { domain: true },
+    });
+    return doc.domain ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function isFullEmail(mailbox: string): EmailFieldValidation {
+  return async (value, args) => {
+    if (!value || email(value, args) === true) return true;
+    const domain = (await tenantDomain(args)) ?? "example.com";
+    return `Enter a full email, like ${mailbox}@${domain}`;
+  };
+}
+
+const TAB_INTRO = "/admin/components/fields/TabIntro#TabIntro";
+const CHARACTER_LIMIT =
+  "/admin/components/fields/CharacterCount#CharacterLimit";
+const COUNTED_LABEL = "/admin/components/fields/CharacterCount#CountedLabel";
 
 export const TenantSettings = withTenantAccess(
   withUpdatedBy({
@@ -88,41 +132,72 @@ export const TenantSettings = withTenantAccess(
               {
                 name: "brand",
                 type: "group",
+                label: false,
+                admin: { hideGutter: true, className: "dil-flat-group" },
                 fields: [
                   {
                     type: "row",
                     fields: [
-                      withMediaPicker({
-                        name: "logoOnDark",
-                        label: "Logo on dark",
-                        type: "upload",
-                        relationTo: "media",
-                        admin: {
-                          description:
-                            "Light-coloured logo for the transparent navbar and the footer.",
+                      withMediaPicker(
+                        {
+                          name: "logoOnLight",
+                          label: "Logo for light backgrounds",
+                          type: "upload",
+                          relationTo: "media",
+                          admin: {
+                            description: "Header on white, footer on light.",
+                            width: "50%",
+                          },
                         },
-                      }),
-                      withMediaPicker({
-                        name: "logoOnLight",
-                        label: "Logo on light",
-                        type: "upload",
-                        relationTo: "media",
-                        admin: {
-                          description:
-                            "Dark-coloured logo for the white navbar.",
+                        { preview: "light", launchRequired: true },
+                      ),
+                      withMediaPicker(
+                        {
+                          name: "logoOnDark",
+                          label: "Logo for dark backgrounds",
+                          type: "upload",
+                          relationTo: "media",
+                          admin: {
+                            description: "Transparent header over photos.",
+                            width: "50%",
+                          },
                         },
-                      }),
+                        { preview: "dark", launchRequired: true },
+                      ),
                     ],
                   },
                   {
                     name: "legalName",
+                    label: "Legal name",
                     type: "text",
                     admin: {
                       description: "Fills {legalName} in the footer copyright.",
                     },
                   },
-                  { name: "tagline", type: "textarea", localized: true },
-                  { name: "address", type: "textarea", localized: true },
+                  {
+                    type: "row",
+                    fields: [
+                      {
+                        name: "tagline",
+                        type: "textarea",
+                        localized: true,
+                        admin: {
+                          description: "Under the footer logo.",
+                          rows: 2,
+                        },
+                      },
+                      {
+                        name: "address",
+                        type: "textarea",
+                        localized: true,
+                        admin: {
+                          description: "Footer contact block.",
+                          placeholder: "Street, city, postcode",
+                          rows: 2,
+                        },
+                      },
+                    ],
+                  },
                 ],
               },
             ],
@@ -131,21 +206,37 @@ export const TenantSettings = withTenantAccess(
             label: settingsTabLabel("contact"),
             fields: [
               {
-                type: "row",
-                fields: [
-                  { name: "contactEmail", type: "email" },
-                  {
-                    name: "contactPhone",
-                    type: "text",
-                    validate: isPhoneNumber,
+                name: "contactIntro",
+                type: "ui",
+                admin: {
+                  components: {
+                    Field: {
+                      path: TAB_INTRO,
+                      clientProps: {
+                        text: "These appear in the footer. Email or phone is needed for launch.",
+                      },
+                    },
                   },
-                ],
+                },
+              },
+              {
+                name: "contactEmail",
+                label: "Contact email",
+                type: "email",
+                validate: isFullEmail("info"),
+              },
+              {
+                name: "contactPhone",
+                label: "Contact phone",
+                type: "text",
+                validate: isPhoneNumber,
               },
               {
                 name: "waLink",
                 label: "WhatsApp link",
                 type: "text",
                 validate: isWhatsAppLink,
+                admin: { className: "dil-mono-input" },
               },
             ],
           },
@@ -164,20 +255,38 @@ export const TenantSettings = withTenantAccess(
               },
               {
                 name: "recruiterEmail",
+                label: "Recruiter notification email",
                 type: "email",
+                validate: isFullEmail("hr"),
                 admin: {
+                  className: "dil-launch-required",
                   description:
-                    "Receives a notification for every career application to this company.",
+                    "Changes apply to applications received after you save.",
+                  components: {
+                    Label:
+                      "/admin/components/fields/LaunchRequiredLabel#LaunchRequiredLabel",
+                  },
                 },
               },
             ],
           },
           {
-            label: settingsTabLabel("social"),
+            label: `${settingsTabLabel("social")} · optional`,
             fields: [
               {
                 name: "socialLinks",
+                label: "Social links",
                 type: "array",
+                labels: { singular: "Social link", plural: "Social links" },
+                admin: {
+                  className: "dil-social-links",
+                  description:
+                    "Each platform once per company. Used platforms stay listed but can't be picked.",
+                  components: {
+                    RowLabel:
+                      "/admin/components/fields/RowLabels#SocialRowLabel",
+                  },
+                },
                 fields: [
                   {
                     type: "row",
@@ -186,14 +295,27 @@ export const TenantSettings = withTenantAccess(
                         name: "platform",
                         type: "select",
                         required: true,
-                        options: [...SOCIAL_PLATFORMS],
+                        options: SOCIAL_PLATFORM_OPTIONS,
                         validate: isUniquePlatform,
+                        admin: {
+                          placeholder: "Platform",
+                          width: "35%",
+                          components: {
+                            Field:
+                              "/admin/components/fields/PlatformSelect#PlatformSelect",
+                          },
+                        },
                       },
                       {
                         name: "url",
+                        label: "Profile link",
                         type: "text",
                         required: true,
                         validate: isHttpsUrl,
+                        admin: {
+                          className: "dil-mono-input",
+                          placeholder: "https://",
+                        },
                       },
                     ],
                   },
@@ -207,11 +329,55 @@ export const TenantSettings = withTenantAccess(
               {
                 name: "defaultSeo",
                 type: "group",
+                label: false,
+                admin: { hideGutter: true, className: "dil-flat-group" },
                 fields: [
-                  { name: "title", type: "text", localized: true },
-                  { name: "description", type: "textarea", localized: true },
+                  {
+                    name: "title",
+                    label: "Default page title",
+                    type: "text",
+                    localized: true,
+                    admin: {
+                      className: "dil-counted",
+                      components: {
+                        Label: {
+                          path: COUNTED_LABEL,
+                          clientProps: { limit: SEO_LIMITS.title },
+                        },
+                        afterInput: [
+                          {
+                            path: CHARACTER_LIMIT,
+                            clientProps: { limit: SEO_LIMITS.title, bar: true },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                  {
+                    name: "description",
+                    label: "Default description",
+                    type: "textarea",
+                    localized: true,
+                    admin: {
+                      className: "dil-counted",
+                      rows: 3,
+                      components: {
+                        Label: {
+                          path: COUNTED_LABEL,
+                          clientProps: { limit: SEO_LIMITS.description },
+                        },
+                        afterInput: [
+                          {
+                            path: CHARACTER_LIMIT,
+                            clientProps: { limit: SEO_LIMITS.description },
+                          },
+                        ],
+                      },
+                    },
+                  },
                   withMediaPicker({
                     name: "ogImage",
+                    label: "Social-share image",
                     type: "upload",
                     relationTo: "media",
                   }),
@@ -219,9 +385,13 @@ export const TenantSettings = withTenantAccess(
               },
               {
                 name: "analyticsId",
-                label: "GA4 measurement ID",
+                label: "Google Analytics 4 ID",
                 type: "text",
                 validate: isGa4MeasurementId,
+                admin: {
+                  className: "dil-mono-input",
+                  placeholder: "G-XXXXXXXXXX",
+                },
               },
             ],
           },

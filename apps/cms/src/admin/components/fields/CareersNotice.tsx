@@ -13,12 +13,11 @@ export function CareersNotice() {
   }
   return (
     <Banner
-      className="dil-field-banner"
-      title="No recruiter email yet."
+      className="dil-field-banner dil-careers-notice"
+      title="Nobody is notified of new applications."
       tone="error"
     >
-      Career applications to this site can&apos;t notify anyone until you add
-      one.
+      They still arrive in Career applications, but no recruiter gets an email.
     </Banner>
   );
 }

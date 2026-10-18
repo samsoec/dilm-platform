@@ -42,7 +42,9 @@ describe("field validators", () => {
 
   it("accept only GA4 measurement IDs", () => {
     expect(check(isGa4MeasurementId, "G-AB12CD34EF")).toBe(true);
-    expect(check(isGa4MeasurementId, "UA-12345-1")).toBeTypeOf("string");
+    expect(check(isGa4MeasurementId, "UA-12345-1")).toBe(
+      "Use the G-XXXXXXXXXX format",
+    );
   });
 
   it("accept only wa.me links with a full number", () => {
@@ -51,6 +53,9 @@ describe("field validators", () => {
       true,
     );
     expect(check(isWhatsAppLink, "https://wa.me/081234")).toBeTypeOf("string");
+    expect(check(isWhatsAppLink, "wa.me/62215550123")).toBe(
+      "Start with https://",
+    );
     expect(
       check(isWhatsAppLink, "https://example.com/6281234567890"),
     ).toBeTypeOf("string");

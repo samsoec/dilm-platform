@@ -3,7 +3,11 @@ import type { UploadField } from "payload";
 export const MEDIA_PICKER_FIELD =
   "/admin/components/media/MediaPickerField#MediaPickerField";
 
-export type MediaPickerOptions = { chooseLabel?: string };
+export type MediaPickerOptions = {
+  chooseLabel?: string;
+  preview?: "light" | "dark";
+  launchRequired?: boolean;
+};
 
 export function withMediaPicker<T extends UploadField>(
   field: T,

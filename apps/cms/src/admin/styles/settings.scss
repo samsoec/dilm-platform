@@ -1,150 +1,273 @@
 @layer dil {
   .dil-completeness {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 24px;
-    padding: 16px;
+    padding: 14px 16px;
     border: 1px solid var(--dil-line);
     border-radius: var(--dil-radius-l);
     background: var(--dil-surface);
     font-family: var(--dil-font-sans);
+    font-size: 13px;
     color: var(--dil-ink);
-  }
-
-  .dil-completeness__header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 8px;
   }
 
   .dil-completeness__title {
     margin: 0;
-    font-size: 14px;
-    font-weight: 700;
-  }
-
-  .dil-completeness__count {
     color: var(--dil-muted);
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .dil-completeness__list {
-    margin: 0 -8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
 
   .dil-completeness__item {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
-    width: 100%;
     margin: 0;
-    padding: 8px;
-    border: 0;
-    border-radius: var(--dil-radius-s);
-    background: none;
-    color: var(--dil-ink-2);
-    font: inherit;
-    font-size: 13px;
-    text-align: start;
-    cursor: pointer;
-
-    &:hover {
-      background: var(--dil-surface-2);
-    }
 
     .dil-icon {
+      flex: none;
       font-size: 18px;
     }
   }
 
   .dil-completeness__label {
-    display: flex;
     flex: 1;
-    flex-direction: column;
-    gap: 2px;
-    font-weight: 600;
-  }
-
-  .dil-completeness__hint {
-    color: var(--dil-muted);
-    font-size: 12px;
-    font-weight: 400;
-  }
-
-  .dil-completeness__state {
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .dil-completeness__item--complete {
-    .dil-icon,
-    .dil-completeness__state {
-      color: var(--dil-ok);
-    }
-  }
-
-  .dil-completeness__item--warning {
-    .dil-icon,
-    .dil-completeness__state {
-      color: var(--dil-warn);
-    }
   }
 
   .dil-completeness__item--error {
-    .dil-icon,
-    .dil-completeness__state {
+    .dil-icon {
       color: var(--dil-danger);
+    }
+
+    .dil-completeness__label {
+      font-weight: 700;
     }
   }
 
-  .dil-completeness__item--optional {
-    .dil-icon,
-    .dil-completeness__state {
-      color: var(--dil-muted);
+  .dil-completeness__item--warning .dil-icon {
+    color: var(--dil-warn);
+  }
+
+  .dil-completeness__item--complete .dil-icon {
+    color: var(--dil-ok);
+  }
+
+  .dil-completeness__fix {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-brand-ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
     }
   }
 
   .dil-completeness__used {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--dil-line);
-  }
-
-  .dil-completeness__used-label {
-    display: block;
-    margin-bottom: 6px;
-    color: var(--dil-muted);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .dil-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
     margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .dil-chip {
-    padding: 2px 8px;
-    border-radius: 999px;
-    background: var(--dil-surface-2);
-    color: var(--dil-ink-2);
-    font-size: 12px;
-    font-weight: 600;
-  }
-
-  .dil-completeness__note {
-    margin: 12px 0 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--dil-line);
     color: var(--dil-muted);
     font-size: 12px;
     line-height: 1.5;
+
+    b {
+      color: var(--dil-ink-2);
+    }
+  }
+
+  .dil-completeness__note {
+    margin: 0;
+    color: var(--dil-muted);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .dil-tab-intro {
+    margin: 0 0 var(--base);
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .dil-logo-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    height: 100px;
+    padding: 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-l);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    cursor: pointer;
+
+    img {
+      max-width: 160px;
+      max-height: 52px;
+      object-fit: contain;
+    }
+
+    .dil-icon {
+      font-size: 24px;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  .dil-logo-preview--light {
+    background: #ffffff;
+    color: #5b6b80;
+  }
+
+  .dil-logo-preview--dark {
+    background: #111c2a;
+    color: #ccddf2;
+  }
+
+  .dil-logo-preview--missing {
+    border: 1.5px dashed var(--dil-warn);
+  }
+
+  .dil-logo-preview__actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+
+    button {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--dil-brand-ink);
+      font-family: var(--dil-font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .dil-logo-preview__missing {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    color: var(--dil-warn);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+    font-weight: 600;
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+
+  .dil-mono-input input {
+    font-family: var(--dil-font-mono);
+    font-size: 12px;
+  }
+
+  // Payload class: .tabs-field__tab (@payloadcms/ui fields/Tabs); the careers notice renders only while the recruiter email is empty
+  .tabs-field__tab:has(.dil-careers-notice) .dil-launch-required input {
+    border-color: var(--dil-danger);
+  }
+
+  .dil-counted-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .dil-char-count {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-char-count__value {
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .dil-char-count__value--over {
+    color: var(--dil-warn);
+    font-weight: 600;
+  }
+
+  .dil-char-count__bar {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--dil-surface-2);
+
+    span {
+      display: block;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--dil-ok);
+    }
+  }
+
+  .dil-char-count--over .dil-char-count__bar span {
+    background: var(--dil-warn);
+  }
+
+  .dil-char-count__warning {
+    color: var(--dil-warn);
+    font-size: 12px;
+  }
+
+  .dil-counted:has(.dil-char-count--over) :is(input, textarea) {
+    border-color: var(--dil-warn);
+  }
+
+  // Payload class: .rs__option (@payloadcms/ui elements/ReactSelect); react-select marks used platforms --is-disabled
+  .dil-platform-select .rs__option--is-disabled {
+    color: var(--dil-muted);
+    cursor: not-allowed;
+
+    &::after {
+      content: "In use";
+      float: inline-end;
+      margin-inline-start: 12px;
+      font-size: 11px;
+      line-height: inherit;
+    }
+  }
+
+  // Payload class: .group-field--within-tab (@payloadcms/ui fields/Group) adds a divider and padding meant for titled groups
+  .dil-flat-group.group-field--within-tab {
+    margin-bottom: var(--spacing-field);
+    padding-bottom: 0;
+    border-bottom: 0;
   }
 }
