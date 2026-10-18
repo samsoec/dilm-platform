@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { getRuntimeConfig, runtimeConfigSource } from "@dilm/runtime-config";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { s3Storage } from "@payloadcms/storage-s3";
+import { en } from "@payloadcms/translations/languages/en";
+import { id } from "@payloadcms/translations/languages/id";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
@@ -53,7 +55,11 @@ export async function cmsConfig(client: PayloadClient) {
     },
     collections,
     globals,
-    i18n: { translations: LOGIN_TRANSLATIONS },
+    i18n: {
+      supportedLanguages: { en, id },
+      fallbackLanguage: "en",
+      translations: LOGIN_TRANSLATIONS,
+    },
     localization,
     secret: runtimeConfig.payloadSecret,
     typescript: {

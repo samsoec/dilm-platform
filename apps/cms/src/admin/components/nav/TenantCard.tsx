@@ -1,6 +1,8 @@
 "use client";
 
 import { useTenantSelection } from "@payloadcms/plugin-multi-tenant/client";
+import { useConfig, useTranslation } from "@payloadcms/ui";
+import { usePathname } from "next/navigation";
 import type { ViewTypes } from "payload";
 import {
   type CSSProperties,
@@ -15,6 +17,7 @@ import { type TenantColors, tenantColors } from "../../brandColor";
 import type { SidebarTenant } from "../../data/sidebar";
 import { useUnsavedChangesGuard } from "../guard/UnsavedChangesProvider";
 import { MaterialIcon } from "../MaterialIcon";
+import { type CompanyDetail, useCompanyDetails } from "./companyDetails";
 import { listboxKey, typeaheadIndex } from "./listbox";
 
 const TYPEAHEAD_RESET_MS = 600;
@@ -32,10 +35,12 @@ function TenantFace({
   tenant,
   name,
   switchable,
+  open = false,
 }: {
   tenant?: SidebarTenant;
   name?: string;
   switchable: boolean;
+  open?: boolean;
 }) {
   return (
     <>
@@ -56,7 +61,10 @@ function TenantFace({
         </span>
       </span>
       {switchable && (
-        <MaterialIcon className="dil-tenant-card__switch" name="unfold_more" />
+        <MaterialIcon
+          className="dil-tenant-card__switch"
+          name={open ? "unfold_less" : "unfold_more"}
+        />
       )}
     </>
   );
@@ -79,6 +87,9 @@ export function TenantCard({
   const listRef = useRef<HTMLUListElement>(null);
   const typeahead = useRef({ query: "", at: 0 });
   const listId = useId();
+  const headingId = useId();
+  const details = useCompanyDetails(open);
+  const landingName = useLandingDocumentName();
 
   const tenantOptions = options as TenantOption[];
   const selectedIndex = tenantOptions.findIndex(
@@ -205,43 +216,118 @@ export function TenantCard({
         style={colorStyle(colors)}
         type="button"
       >
-        <TenantFace name={selected?.label} switchable tenant={shown} />
+        <TenantFace
+          name={selected?.label}
+          open={open}
+          switchable
+          tenant={shown}
+        />
       </button>
       {open && (
-        <ul
-          aria-activedescendant={optionId(active)}
-          aria-label="Switch company"
-          className="dil-tenant-switch__list"
-          id={listId}
-          onKeyDown={onListKeyDown}
-          ref={listRef}
-          role="listbox"
-          tabIndex={-1}
-        >
-          {tenantOptions.map((option, index) => (
-            <li
-              aria-selected={option.value === selectedTenantID}
-              className={[
-                "dil-tenant-switch__option",
-                index === active && "dil-tenant-switch__option--active",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              data-index={index}
-              id={optionId(index)}
-              key={option.value}
-              onClick={() => choose(index)}
-              onMouseMove={() => setActive(index)}
-              role="option"
-            >
-              <span>{option.label}</span>
-              {option.value === selectedTenantID && (
-                <MaterialIcon name="check" />
-              )}
-            </li>
-          ))}
-        </ul>
+        <div className="dil-tenant-switch__popover">
+          <span className="dil-tenant-switch__heading" id={headingId}>
+            Switch company
+          </span>
+          <ul
+            aria-activedescendant={optionId(active)}
+            aria-labelledby={headingId}
+            className="dil-tenant-switch__list"
+            id={listId}
+            onKeyDown={onListKeyDown}
+            ref={listRef}
+            role="listbox"
+            tabIndex={-1}
+          >
+            {tenantOptions.map((option, index) => (
+              <li
+                aria-selected={option.value === selectedTenantID}
+                className={[
+                  "dil-tenant-switch__option",
+                  index === active && "dil-tenant-switch__option--active",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                data-index={index}
+                id={optionId(index)}
+                key={option.value}
+                onClick={() => choose(index)}
+                onMouseMove={() => setActive(index)}
+                role="option"
+              >
+                <CompanyTile detail={details?.get(String(option.value))} />
+                <span className="dil-tenant-switch__text">
+                  <b className="dil-tenant-switch__name">{option.label}</b>
+                  {details?.get(String(option.value))?.domain && (
+                    <span className="dil-tenant-switch__domain">
+                      {details.get(String(option.value))?.domain}
+                    </span>
+                  )}
+                </span>
+                {option.value === selectedTenantID ? (
+                  <MaterialIcon
+                    className="dil-tenant-switch__check"
+                    name="check"
+                  />
+                ) : (
+                  index === active && (
+                    <span
+                      aria-hidden="true"
+                      className="dil-tenant-switch__enter"
+                    >
+                      ↵
+                    </span>
+                  )
+                )}
+              </li>
+            ))}
+          </ul>
+          {entityType === "global" && landingName && (
+            <p className="dil-tenant-switch__footer">
+              You&apos;ll stay on <b>{landingName}</b>, for the company you
+              pick.
+            </p>
+          )}
+        </div>
       )}
     </div>
+  );
+}
+
+function CompanyTile({ detail }: { detail?: CompanyDetail }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="dil-tenant-switch__tile"
+      style={detail ? colorStyle(detail.colors) : undefined}
+    >
+      {detail?.logo ? (
+        <img alt="" src={detail.logo} />
+      ) : (
+        <MaterialIcon name="domain" />
+      )}
+    </span>
+  );
+}
+
+function labelText(label: unknown, language: string): string | undefined {
+  if (typeof label === "string") return label;
+  if (label && typeof label === "object") {
+    const byLanguage = label as Record<string, string>;
+    return byLanguage[language] ?? byLanguage.en;
+  }
+  return undefined;
+}
+
+function useLandingDocumentName(): string | undefined {
+  const pathname = usePathname();
+  const { getEntityConfig } = useConfig();
+  const { i18n } = useTranslation();
+  const slug = pathname.match(/\/collections\/([^/]+)/)?.[1];
+  if (!slug) return undefined;
+  const entity = getEntityConfig({ collectionSlug: slug });
+  return labelText(
+    (entity as { labels?: { singular?: unknown } } | undefined)?.labels
+      ?.singular,
+    i18n.language,
   );
 }
