@@ -63,6 +63,7 @@ import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } fro
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { ShellCrumbs as ShellCrumbs_2655bbb4d61960264c14c8889231a4e5 } from '../../../admin/components/topbar/ShellCrumbs'
 import { UnsavedChangesProvider as UnsavedChangesProvider_c2240fea51188b9603a82f1a295f55a8 } from '../../../admin/components/guard/UnsavedChangesProvider'
+import { CommandPaletteProvider as CommandPaletteProvider_46e3dd79be0b1e4bb9088938f568de80 } from '../../../admin/components/command-palette/CommandPaletteProvider'
 import { LoginScreen as LoginScreen_22f500d6dd68e64c5e8155425d1d2e99 } from '../../../admin/components/login/LoginScreen'
 import { SignOutScreen as SignOutScreen_ccdb22b60be80390756933282f929812 } from '../../../admin/components/login/SignOutScreen'
 import { SessionExpiredScreen as SessionExpiredScreen_ccdb22b60be80390756933282f929812 } from '../../../admin/components/login/SignOutScreen'
@@ -136,6 +137,7 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
   "/admin/components/topbar/ShellCrumbs#ShellCrumbs": ShellCrumbs_2655bbb4d61960264c14c8889231a4e5,
   "/admin/components/guard/UnsavedChangesProvider#UnsavedChangesProvider": UnsavedChangesProvider_c2240fea51188b9603a82f1a295f55a8,
+  "/admin/components/command-palette/CommandPaletteProvider#CommandPaletteProvider": CommandPaletteProvider_46e3dd79be0b1e4bb9088938f568de80,
   "/admin/components/login/LoginScreen#LoginScreen": LoginScreen_22f500d6dd68e64c5e8155425d1d2e99,
   "/admin/components/login/SignOutScreen#SignOutScreen": SignOutScreen_ccdb22b60be80390756933282f929812,
   "/admin/components/login/SignOutScreen#SessionExpiredScreen": SessionExpiredScreen_ccdb22b60be80390756933282f929812,

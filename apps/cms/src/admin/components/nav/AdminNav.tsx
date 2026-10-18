@@ -1,5 +1,4 @@
 import { NavHamburger, NavWrapper } from "@payloadcms/next/client";
-import { EntityType, groupNavItems } from "@payloadcms/ui/shared";
 import { cookies } from "next/headers";
 import type { ServerProps } from "payload";
 import { formatAdminURL } from "payload/shared";
@@ -18,22 +17,12 @@ import {
   TENANT_COOKIE,
 } from "../../data/sidebar";
 import { Mark } from "../../graphics/Mark";
-import type { CollectionNav } from "../../navGroups";
 import { NavLinks } from "./NavLinks";
-import { buildNavSections, type NavEntityGroup } from "./sections";
 import { TenantCard } from "./TenantCard";
+import { visibleNavSections } from "./visibleSections";
 import { UserFooter } from "./UserFooter";
 
 const ATTENTION_SLUG = "tenant-settings";
-
-function labelText(label: unknown, language: string): string {
-  if (typeof label === "string") return label;
-  if (label && typeof label === "object") {
-    const byLanguage = label as Record<string, string>;
-    return byLanguage[language] ?? Object.values(byLanguage)[0] ?? "";
-  }
-  return "";
-}
 
 export async function AdminNav({
   i18n,
@@ -45,42 +34,15 @@ export async function AdminNav({
 }: ServerProps) {
   if (!user) return null;
 
-  const { collections, globals, routes } = payload.config;
+  const { routes } = payload.config;
   const adminRoute = routes.admin;
   const superAdmin = isSuperAdmin(user as RoleHolder);
 
-  const grouped = groupNavItems(
-    [
-      ...collections
-        .filter(({ slug }) => visibleEntities?.collections.includes(slug))
-        .map((entity) => ({ type: EntityType.collection as const, entity })),
-      ...globals
-        .filter(({ slug }) => visibleEntities?.globals.includes(slug))
-        .map((entity) => ({ type: EntityType.global as const, entity })),
-    ],
-    permissions!,
+  const sections = visibleNavSections({
+    config: payload.config,
     i18n,
-  );
-  const groups: NavEntityGroup[] = grouped.map(({ label, entities }) => ({
-    label: labelText(label, i18n.language),
-    entities: entities.map(({ slug, type, label: entityLabel }) => ({
-      slug,
-      type,
-      label: labelText(entityLabel, i18n.language),
-    })),
-  }));
-
-  const navConfigs = new Map<string, CollectionNav | undefined>(
-    [...collections, ...globals].map(({ slug, custom }) => [
-      slug,
-      custom?.nav as CollectionNav | undefined,
-    ]),
-  );
-  const sections = buildNavSections({
-    groups,
-    navConfig: (slug) => navConfigs.get(slug),
-    permissions,
-    adminRoute,
+    permissions: permissions!,
+    visibleEntities,
     superAdmin,
   });
 
