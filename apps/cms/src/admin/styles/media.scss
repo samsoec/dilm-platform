@@ -242,4 +242,225 @@
     color: var(--dil-muted);
     font-size: 12px;
   }
+
+  .dil-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 300;
+    background: rgb(17 28 42 / 55%);
+  }
+
+  .dil-picker__dialog {
+    display: flex;
+    flex-direction: column;
+    width: min(584px, 100%);
+    max-height: calc(100vh - 32px);
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--dil-surface);
+    box-shadow: 0 24px 60px rgb(17 28 42 / 30%);
+    color: var(--dil-ink);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-picker__bar {
+    display: flex;
+    gap: 10px;
+    padding: 12px 18px;
+  }
+
+  .dil-picker__search {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    color: var(--dil-muted);
+
+    &:focus-within {
+      border-color: var(--dil-brand);
+      box-shadow: 0 0 0 3px var(--dil-sel-bg);
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      background: none;
+      color: var(--dil-ink);
+      font-family: var(--dil-font-sans);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-picker__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    padding: 0 18px 14px;
+    overflow-y: auto;
+  }
+
+  .dil-picker__card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-ink);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: none;
+
+      .dil-picker__thumb {
+        outline: var(--accessibility-outline);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .dil-picker__thumb {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--dil-radius-s);
+    background: repeating-linear-gradient(
+      45deg,
+      var(--dil-surface-2) 0 6px,
+      var(--dil-line) 6px 12px
+    );
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .dil-picker__card--selected .dil-picker__thumb {
+    outline: 3px solid var(--dil-brand);
+    outline-offset: -3px;
+  }
+
+  .dil-picker__check {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--dil-brand);
+    color: #ffffff;
+
+    .dil-icon {
+      font-size: 14px;
+    }
+  }
+
+  .dil-picker__name {
+    overflow: hidden;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .dil-picker__card--selected & {
+      font-weight: 700;
+    }
+  }
+
+  .dil-picker__empty,
+  .dil-picker__loading {
+    margin: 0;
+    padding: 12px 18px 18px;
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+
+  .dil-picker__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--dil-line);
+  }
+
+  .dil-media-field__box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-media-field__preview {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 54px;
+    overflow: hidden;
+    border-radius: var(--dil-radius-s);
+    background: repeating-linear-gradient(
+      45deg,
+      var(--dil-surface-2) 0 6px,
+      var(--dil-line) 6px 12px
+    );
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .dil-media-field__preview--empty {
+    color: var(--dil-muted);
+  }
+
+  .dil-media-field__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    font-size: 13px;
+
+    span {
+      overflow: hidden;
+      color: var(--dil-muted);
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .dil-media-field__actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 }

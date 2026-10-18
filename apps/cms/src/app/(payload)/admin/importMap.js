@@ -2,6 +2,7 @@ import { UnsavedChangesReporter as UnsavedChangesReporter_0b686cc068a7e080540f78
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { CompletenessPanel as CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77 } from '../../../admin/components/fields/CompletenessPanel'
+import { MediaPickerField as MediaPickerField_c1a0497f67f40c4b5a41bd7dd6573213 } from '../../../admin/components/media/MediaPickerField'
 import { CareersNotice as CareersNotice_4ec7abca466eaed7a6d39b518b93e551 } from '../../../admin/components/fields/CareersNotice'
 import { DocumentStatus as DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732 } from '../../../admin/components/document/DocumentStatus'
 import { VersionsDrawer as VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e } from '../../../admin/components/document/VersionsDrawer'
@@ -54,6 +55,7 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
   "/admin/components/fields/CompletenessPanel#CompletenessPanel": CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77,
+  "/admin/components/media/MediaPickerField#MediaPickerField": MediaPickerField_c1a0497f67f40c4b5a41bd7dd6573213,
   "/admin/components/fields/CareersNotice#CareersNotice": CareersNotice_4ec7abca466eaed7a6d39b518b93e551,
   "/admin/components/document/DocumentStatus#DocumentStatus": DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732,
   "/admin/components/document/VersionsDrawer#VersionsDrawer": VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e,
