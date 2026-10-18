@@ -529,7 +529,16 @@ describe("cv-submissions", () => {
     ]);
     expect(CvSubmissions.admin?.components?.beforeListTable).toEqual([
       expect.stringMatching(/StatusTabs$/),
+      expect.stringMatching(/CvToolbar$/),
     ]);
+    expect(CvSubmissions.admin?.components?.afterListTable).toEqual([
+      expect.stringMatching(/CvListFooter$/),
+    ]);
+    expect(CvSubmissions.enableQueryPresets).toBe(true);
+    expect(CvSubmissions.admin?.pagination).toEqual({
+      defaultLimit: 20,
+      limits: [20, 50, 100],
+    });
     expect(CvSubmissions.admin?.groupBy).toBeUndefined();
     const cell = (name: string) =>
       (field(CvSubmissions, name).admin as { components?: { Cell?: string } })

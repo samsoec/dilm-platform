@@ -8,6 +8,7 @@ import * as migration_20261014_140948_dilm_58_authoring_metadata from './2026101
 import * as migration_20261014_232338_dilm_54_tenant_brand_color from './20261014_232338_dilm_54_tenant_brand_color';
 import * as migration_20261018_041320_dilm_70_authoring_stamps from './20261018_041320_dilm_70_authoring_stamps';
 import * as migration_20261018_043040_dilm_72_tenant_settings_versions from './20261018_043040_dilm_72_tenant_settings_versions';
+import * as migration_20261018_074116_dilm_80_query_presets from './20261018_074116_dilm_80_query_presets';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261018_043040_dilm_72_tenant_settings_versions.up,
     down: migration_20261018_043040_dilm_72_tenant_settings_versions.down,
-    name: '20261018_043040_dilm_72_tenant_settings_versions'
+    name: '20261018_043040_dilm_72_tenant_settings_versions',
+  },
+  {
+    up: migration_20261018_074116_dilm_80_query_presets.up,
+    down: migration_20261018_074116_dilm_80_query_presets.down,
+    name: '20261018_074116_dilm_80_query_presets'
   },
 ];

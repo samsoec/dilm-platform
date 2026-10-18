@@ -19,6 +19,11 @@ export const CV_STATUSES = [
 
 export const EXTERNAL_SYNC_STATUSES = ["pending", "synced", "failed"] as const;
 
+const LABELS = {
+  emails: "/admin/components/lists/CvColumnLabel#EmailsLabel",
+  jobPlatform: "/admin/components/lists/CvColumnLabel#JobPlatformLabel",
+};
+
 const CELLS = {
   applicant: "/admin/components/cells/ApplicantCell#ApplicantCell",
   status: "/admin/components/cells/StatusPill#StatusPill",
@@ -37,6 +42,7 @@ function systemManaged<T extends Field>(field: T): T {
 export const CvSubmissions = withTenantAccess({
   slug: "cv-submissions",
   labels: collectionLabels("cv-submissions"),
+  enableQueryPresets: true,
   access: {
     create: nobody,
     delete: superAdmins,
@@ -55,10 +61,14 @@ export const CvSubmissions = withTenantAccess({
       "applicantNotifiedAt",
       "externalSyncStatus",
     ],
+    pagination: { defaultLimit: 20, limits: [20, 50, 100] },
     components: {
       Description: "/admin/components/lists/ListIntro#ListIntro",
-      beforeListTable: ["/admin/components/lists/StatusTabs#StatusTabs"],
-      afterListTable: ["/admin/components/lists/CvLegend#CvLegend"],
+      beforeListTable: [
+        "/admin/components/lists/StatusTabs#StatusTabs",
+        "/admin/components/lists/CvToolbar#CvToolbar",
+      ],
+      afterListTable: ["/admin/components/lists/CvListFooter#CvListFooter"],
     },
   },
   custom: {
@@ -77,6 +87,7 @@ export const CvSubmissions = withTenantAccess({
     }),
     systemManaged({
       name: "applicantName",
+      label: "Applicant",
       type: "text",
       required: true,
       admin: { components: { Cell: CELLS.applicant } },
@@ -94,6 +105,7 @@ export const CvSubmissions = withTenantAccess({
     }),
     systemManaged({
       name: "submittedAt",
+      label: "Submitted",
       type: "date",
       required: true,
       admin: { date: { pickerAppearance: "dayAndTime" } },
@@ -113,7 +125,7 @@ export const CvSubmissions = withTenantAccess({
       type: "date",
       admin: {
         date: { pickerAppearance: "dayAndTime" },
-        components: { Cell: CELLS.emails },
+        components: { Cell: CELLS.emails, Label: LABELS.emails },
       },
     }),
     systemManaged({
@@ -123,12 +135,12 @@ export const CvSubmissions = withTenantAccess({
     }),
     systemManaged({
       name: "externalSyncStatus",
-      label: "Job platform sync",
+      label: "Job platform",
       type: "select",
       required: true,
       options: [...EXTERNAL_SYNC_STATUSES],
       defaultValue: "pending",
-      admin: { components: { Cell: CELLS.sync } },
+      admin: { components: { Cell: CELLS.sync, Label: LABELS.jobPlatform } },
     }),
     systemManaged({
       name: "externalSyncAttempts",
