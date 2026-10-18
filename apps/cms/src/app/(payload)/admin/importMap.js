@@ -11,10 +11,13 @@ import { UploadImagesButton as UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { ApplicantCell as ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3 } from '../../../admin/components/cells/ApplicantCell'
 import { StatusPill as StatusPill_9934788374c7dcc43b168cee27281175 } from '../../../admin/components/cells/StatusPill'
+import { EmailsLabel as EmailsLabel_7a1351ce5840c4e6fd1ca73b345df968 } from '../../../admin/components/lists/CvColumnLabel'
 import { EmailsCell as EmailsCell_de9a1a0984bb6486b79db023ef9c2b31 } from '../../../admin/components/cells/EmailsCell'
+import { JobPlatformLabel as JobPlatformLabel_7a1351ce5840c4e6fd1ca73b345df968 } from '../../../admin/components/lists/CvColumnLabel'
 import { SyncCell as SyncCell_13a9042bb703672b7e066a238d36fdc6 } from '../../../admin/components/cells/SyncCell'
-import { CvLegend as CvLegend_d18e2a144d657f22f115d8084e621594 } from '../../../admin/components/lists/CvLegend'
+import { CvListFooter as CvListFooter_f300b501cd0f471866369983ec65666d } from '../../../admin/components/lists/CvListFooter'
 import { StatusTabs as StatusTabs_c467731604d0d3674e06a5e6b3537a04 } from '../../../admin/components/lists/StatusTabs'
+import { CvToolbar as CvToolbar_6e7bbbc44355b310e20f11bbdf672e51 } from '../../../admin/components/lists/CvToolbar'
 import { ListIntro as ListIntro_3758f5318f3bce3eb36c93ddfc96aba0 } from '../../../admin/components/lists/ListIntro'
 import { LocaleBanner as LocaleBanner_6e922f404c87f00d1c61cd1cda241d71 } from '../../../admin/components/fields/LocaleBanner'
 import { VersionInfo as VersionInfo_015c9769215da0668226801191ca76fc } from '../../../admin/components/fields/VersionInfo'
@@ -33,6 +36,13 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { ParagraphFeatureClient as ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ColumnRowLabel as ColumnRowLabel_d7a74f343adbd5aa0b681db641f8edd6 } from '../../../admin/components/fields/RowLabels'
 import { CopyrightPreview as CopyrightPreview_3a45fcb568830af1d46c04277b75bda3 } from '../../../admin/components/fields/CopyrightPreview'
+import { QueryPresetsAccessCell as QueryPresetsAccessCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsWhereCell as QueryPresetsWhereCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsWhereField as QueryPresetsWhereField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsColumnsCell as QueryPresetsColumnsCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsColumnField as QueryPresetsColumnField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsGroupByCell as QueryPresetsGroupByCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { QueryPresetsGroupByField as QueryPresetsGroupByField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { Avatar as Avatar_5599fe28f2b3157f52fea861e6ba12e6 } from '../../../admin/graphics/Avatar'
 import { AdminNav as AdminNav_61caf5a364251c10976dd7df6a186775 } from '../../../admin/components/nav/AdminNav'
 import { Icon as Icon_48a75e37b0630d5b8c8066e180c0e6ef } from '../../../admin/graphics/Icon'
@@ -64,10 +74,13 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
   "/admin/components/cells/ApplicantCell#ApplicantCell": ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3,
   "/admin/components/cells/StatusPill#StatusPill": StatusPill_9934788374c7dcc43b168cee27281175,
+  "/admin/components/lists/CvColumnLabel#EmailsLabel": EmailsLabel_7a1351ce5840c4e6fd1ca73b345df968,
   "/admin/components/cells/EmailsCell#EmailsCell": EmailsCell_de9a1a0984bb6486b79db023ef9c2b31,
+  "/admin/components/lists/CvColumnLabel#JobPlatformLabel": JobPlatformLabel_7a1351ce5840c4e6fd1ca73b345df968,
   "/admin/components/cells/SyncCell#SyncCell": SyncCell_13a9042bb703672b7e066a238d36fdc6,
-  "/admin/components/lists/CvLegend#CvLegend": CvLegend_d18e2a144d657f22f115d8084e621594,
+  "/admin/components/lists/CvListFooter#CvListFooter": CvListFooter_f300b501cd0f471866369983ec65666d,
   "/admin/components/lists/StatusTabs#StatusTabs": StatusTabs_c467731604d0d3674e06a5e6b3537a04,
+  "/admin/components/lists/CvToolbar#CvToolbar": CvToolbar_6e7bbbc44355b310e20f11bbdf672e51,
   "/admin/components/lists/ListIntro#ListIntro": ListIntro_3758f5318f3bce3eb36c93ddfc96aba0,
   "/admin/components/fields/LocaleBanner#LocaleBanner": LocaleBanner_6e922f404c87f00d1c61cd1cda241d71,
   "/admin/components/fields/VersionInfo#VersionInfo": VersionInfo_015c9769215da0668226801191ca76fc,
@@ -86,6 +99,13 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ParagraphFeatureClient": ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/admin/components/fields/RowLabels#ColumnRowLabel": ColumnRowLabel_d7a74f343adbd5aa0b681db641f8edd6,
   "/admin/components/fields/CopyrightPreview#CopyrightPreview": CopyrightPreview_3a45fcb568830af1d46c04277b75bda3,
+  "@payloadcms/next/client#QueryPresetsAccessCell": QueryPresetsAccessCell_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsWhereCell": QueryPresetsWhereCell_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsWhereField": QueryPresetsWhereField_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsColumnsCell": QueryPresetsColumnsCell_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsColumnField": QueryPresetsColumnField_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsGroupByCell": QueryPresetsGroupByCell_2b8867833a34864a02ddf429b0728a40,
+  "@payloadcms/next/client#QueryPresetsGroupByField": QueryPresetsGroupByField_2b8867833a34864a02ddf429b0728a40,
   "/admin/graphics/Avatar#Avatar": Avatar_5599fe28f2b3157f52fea861e6ba12e6,
   "/admin/components/nav/AdminNav#AdminNav": AdminNav_61caf5a364251c10976dd7df6a186775,
   "/admin/graphics/Icon#Icon": Icon_48a75e37b0630d5b8c8066e180c0e6ef,
