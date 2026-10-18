@@ -28,6 +28,7 @@ import { link } from "../fields/link";
 import { keepRowStructure, lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
+import { collectionLabels } from "../admin/labels";
 
 export const MAX_LINK_COLUMNS = 4;
 
@@ -94,6 +95,7 @@ const partOfEnabled: Condition = (_, siblingData) =>
 export const Footer = withTenantAccess(
   withUpdatedBy({
     slug: "footer",
+    labels: collectionLabels("footer"),
     admin: { group: navGroup("layout") },
     custom: { nav: { icon: "call_to_action", order: 2 } },
     access: {
@@ -222,7 +224,7 @@ export const Footer = withTenantAccess(
             validate: isCopyrightTemplate,
             admin: {
               description:
-                "Use {year} for the current year and {legalName} for the company's legal name from Tenant Settings, e.g. Copyright © {year} {legalName}. All Rights Reserved.",
+                "Use {year} for the current year and {legalName} for the company's legal name from Company settings, e.g. Copyright © {year} {legalName}. All Rights Reserved.",
               components: {
                 afterInput: [
                   SAME_AS_EN_TAG,

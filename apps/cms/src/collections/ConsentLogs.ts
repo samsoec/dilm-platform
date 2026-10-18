@@ -1,11 +1,13 @@
 import { nobody, superAdmins } from "../access";
 import { navGroup } from "../admin/navGroups";
 import { withTenantAccess } from "../tenancy";
+import { collectionLabels } from "../admin/labels";
 
 export const CONSENT_TYPES = ["career-application", "contact-form"] as const;
 
 export const ConsentLogs = withTenantAccess({
   slug: "consent-logs",
+  labels: collectionLabels("consent-logs"),
   access: {
     create: nobody,
     update: nobody,

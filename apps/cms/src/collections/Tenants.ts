@@ -11,9 +11,11 @@ import {
 } from "../admin/brandColor";
 import { navGroup } from "../admin/navGroups";
 import { localization } from "../localization";
+import { collectionLabels } from "../admin/labels";
 
 export const Tenants: CollectionConfig = {
   slug: "tenants",
+  labels: collectionLabels("tenants"),
   access: {
     read: tenantMembers,
     create: superAdmins,
@@ -58,7 +60,7 @@ export const Tenants: CollectionConfig = {
       admin: {
         placeholder: "#1e3a8a",
         description:
-          "Hex colour behind the tenant card in the admin sidebar. White text must reach 4.5:1 on it.",
+          "Hex colour behind the company card in the admin sidebar. White text must reach 4.5:1 on it.",
       },
     },
     {

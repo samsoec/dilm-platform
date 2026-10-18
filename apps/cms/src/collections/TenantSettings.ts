@@ -12,6 +12,7 @@ import {
   isPhoneNumber,
   isWhatsAppLink,
 } from "../validation";
+import { collectionLabels } from "../admin/labels";
 
 export const SOCIAL_PLATFORMS = [
   "linkedin",
@@ -38,6 +39,7 @@ export const isUniquePlatform: SelectFieldSingleValidation = async (
 export const TenantSettings = withTenantAccess(
   withUpdatedBy({
     slug: "tenant-settings",
+    labels: collectionLabels("tenant-settings"),
     access: {
       delete: superAdmins,
     },
@@ -159,7 +161,7 @@ export const TenantSettings = withTenantAccess(
                 type: "email",
                 admin: {
                   description:
-                    "Receives a notification for every career application to this tenant.",
+                    "Receives a notification for every career application to this company.",
                 },
               },
             ],
