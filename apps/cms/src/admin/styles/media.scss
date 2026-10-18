@@ -1,0 +1,245 @@
+@layer dil {
+  .dil-upload-launch {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+  }
+
+  .dil-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 300;
+    background: rgb(17 28 42 / 55%);
+  }
+
+  .dil-upload__dialog {
+    display: flex;
+    flex-direction: column;
+    width: min(584px, 100%);
+    max-height: calc(100vh - 32px);
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--dil-surface);
+    box-shadow: 0 24px 60px rgb(17 28 42 / 30%);
+    color: var(--dil-ink);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-upload__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--dil-line);
+  }
+
+  .dil-upload__title {
+    flex: 1;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .dil-upload__close {
+    display: flex;
+    padding: 2px;
+    border: 0;
+    border-radius: var(--dil-radius-s);
+    background: none;
+    color: var(--dil-muted);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--dil-surface-2);
+      color: var(--dil-ink);
+    }
+
+    .dil-icon {
+      font-size: 20px;
+    }
+  }
+
+  .dil-upload__notice {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 10px 18px;
+    color: var(--dil-muted);
+    font-size: 12px;
+
+    .dil-icon {
+      color: var(--dil-warn);
+      font-size: 16px;
+    }
+  }
+
+  .dil-upload__rows {
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+  }
+
+  .dil-upload__row {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 12px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--dil-line);
+  }
+
+  .dil-upload__row--rejected {
+    background: var(--dil-danger-bg);
+  }
+
+  .dil-upload__thumb {
+    display: block;
+    width: 56px;
+    height: 42px;
+    border-radius: 6px;
+    background: repeating-linear-gradient(
+      45deg,
+      var(--dil-surface-2) 0 4px,
+      var(--dil-line) 4px 8px
+    );
+    object-fit: cover;
+  }
+
+  .dil-upload__thumb--broken {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--dil-surface);
+    color: var(--dil-danger);
+
+    .dil-icon {
+      font-size: 22px;
+    }
+  }
+
+  .dil-upload__body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .dil-upload__line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+  }
+
+  .dil-upload__name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dil-upload__state {
+    color: var(--dil-muted);
+    font-size: 12px;
+  }
+
+  .dil-upload__ok,
+  .dil-upload__error {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-weight: 600;
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+
+  .dil-upload__ok {
+    color: var(--dil-ok);
+  }
+
+  .dil-upload__error {
+    color: var(--dil-danger);
+  }
+
+  .dil-upload__alt {
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+
+    &::placeholder {
+      color: var(--dil-muted);
+    }
+
+    &:focus {
+      border-color: var(--dil-brand);
+      box-shadow: 0 0 0 3px var(--dil-sel-bg);
+      outline: none;
+    }
+
+    &:disabled {
+      background: var(--dil-surface-2);
+      color: var(--dil-ink-2);
+    }
+  }
+
+  .dil-upload__alt--error {
+    border: 1.5px solid var(--dil-danger);
+  }
+
+  .dil-upload__progress {
+    display: block;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: var(--dil-surface-2);
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: 3px;
+      background: var(--dil-brand);
+      transition: width 120ms;
+    }
+  }
+
+  .dil-upload__remove {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-brand-ink);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .dil-upload__message {
+    color: var(--dil-ink);
+    font-size: 12px;
+  }
+
+  .dil-upload__foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--dil-line);
+  }
+
+  .dil-upload__hint {
+    flex: 1;
+    color: var(--dil-muted);
+    font-size: 12px;
+  }
+}
