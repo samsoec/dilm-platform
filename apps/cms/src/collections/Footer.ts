@@ -13,6 +13,7 @@ import { richText } from "payload/shared";
 
 import { superAdmins } from "../access";
 import { navGroup } from "../admin/navGroups";
+import { LIVE_DOCUMENT_CONTROLS } from "../admin/shell";
 import {
   countedArray,
   localeBanner,
@@ -96,7 +97,10 @@ export const Footer = withTenantAccess(
   withUpdatedBy({
     slug: "footer",
     labels: collectionLabels("footer"),
-    admin: { group: navGroup("layout") },
+    admin: {
+      group: navGroup("layout"),
+      components: { edit: LIVE_DOCUMENT_CONTROLS },
+    },
     custom: { nav: { icon: "call_to_action", order: 2 } },
     access: {
       delete: superAdmins,
