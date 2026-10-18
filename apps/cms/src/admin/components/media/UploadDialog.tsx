@@ -54,7 +54,9 @@ export function UploadDialog({
   files,
   tenant,
   onUploaded,
+  slug = UPLOAD_DIALOG_SLUG,
 }: {
+  slug?: string;
   files: File[];
   tenant: number | string | undefined;
   onUploaded?: (docs: UploadedMedia[]) => void;
@@ -69,7 +71,7 @@ export function UploadDialog({
   const abort = useRef<AbortController>(undefined);
   const titleId = useId();
   const reasonId = useId();
-  const open = isModalOpen(UPLOAD_DIALOG_SLUG);
+  const open = isModalOpen(slug);
 
   useEffect(() => {
     const next = toRows(files);
@@ -91,7 +93,7 @@ export function UploadDialog({
   const close = () => {
     abort.current?.abort();
     setSaving(false);
-    closeModal(UPLOAD_DIALOG_SLUG);
+    closeModal(slug);
   };
 
   const save = async () => {
@@ -134,7 +136,7 @@ export function UploadDialog({
         : undefined,
     });
     onUploaded?.(uploaded);
-    closeModal(UPLOAD_DIALOG_SLUG);
+    closeModal(slug);
   };
 
   if (!open) return null;
@@ -142,7 +144,7 @@ export function UploadDialog({
   const count = pending.length;
 
   return (
-    <Modal className="dil-upload" closeOnBlur={false} slug={UPLOAD_DIALOG_SLUG}>
+    <Modal className="dil-upload" closeOnBlur={false} slug={slug}>
       <div
         aria-labelledby={titleId}
         aria-modal="true"

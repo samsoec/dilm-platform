@@ -30,6 +30,7 @@ import { keepRowStructure, lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
 import { collectionLabels } from "../admin/labels";
+import { withMediaPicker } from "../fields/mediaPicker";
 
 export const MAX_LINK_COLUMNS = 4;
 
@@ -207,12 +208,12 @@ export const Footer = withTenantAccess(
                 localized: true,
                 admin: { condition: partOfEnabled },
               }),
-              {
+              withMediaPicker({
                 name: "logo",
                 type: "upload",
                 relationTo: "media",
                 admin: { condition: partOfEnabled },
-              },
+              }),
               {
                 ...link(),
                 admin: { condition: partOfEnabled },

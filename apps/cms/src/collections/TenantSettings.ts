@@ -14,6 +14,7 @@ import {
   isWhatsAppLink,
 } from "../validation";
 import { collectionLabels } from "../admin/labels";
+import { withMediaPicker } from "../fields/mediaPicker";
 
 export const SOCIAL_PLATFORMS = [
   "linkedin",
@@ -91,7 +92,7 @@ export const TenantSettings = withTenantAccess(
                   {
                     type: "row",
                     fields: [
-                      {
+                      withMediaPicker({
                         name: "logoOnDark",
                         label: "Logo on dark",
                         type: "upload",
@@ -100,8 +101,8 @@ export const TenantSettings = withTenantAccess(
                           description:
                             "Light-coloured logo for the transparent navbar and the footer.",
                         },
-                      },
-                      {
+                      }),
+                      withMediaPicker({
                         name: "logoOnLight",
                         label: "Logo on light",
                         type: "upload",
@@ -110,7 +111,7 @@ export const TenantSettings = withTenantAccess(
                           description:
                             "Dark-coloured logo for the white navbar.",
                         },
-                      },
+                      }),
                     ],
                   },
                   {
@@ -209,7 +210,11 @@ export const TenantSettings = withTenantAccess(
                 fields: [
                   { name: "title", type: "text", localized: true },
                   { name: "description", type: "textarea", localized: true },
-                  { name: "ogImage", type: "upload", relationTo: "media" },
+                  withMediaPicker({
+                    name: "ogImage",
+                    type: "upload",
+                    relationTo: "media",
+                  }),
                 ],
               },
               {
