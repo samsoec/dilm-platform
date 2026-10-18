@@ -1,6 +1,7 @@
 "use client";
 
-import { useRowLabel } from "@payloadcms/ui";
+import { useFormFields, useRowLabel } from "@payloadcms/ui";
+import { useEffect, useRef } from "react";
 
 import {
   type ColumnValue,
@@ -41,9 +42,49 @@ function RowLabel({
   );
 }
 
+function announce(message: string) {
+  let region = document.getElementById("dil-row-announcer");
+  if (!region) {
+    region = document.createElement("div");
+    region.id = "dil-row-announcer";
+    region.className = "dil-sr-only";
+    region.setAttribute("aria-live", "assertive");
+    document.body.append(region);
+  }
+  region.textContent = message;
+}
+
+function useMoveAnnouncement(
+  path: string,
+  title: string,
+  rowNumber: number | undefined,
+) {
+  const arrayPath = path.slice(0, path.lastIndexOf("."));
+  const count = useFormFields(
+    ([fields]) => fields[arrayPath]?.rows?.length ?? 0,
+  );
+  const previous = useRef(rowNumber);
+  const previousCount = useRef(count);
+  useEffect(() => {
+    const moved =
+      previous.current !== undefined &&
+      rowNumber !== undefined &&
+      previous.current !== rowNumber &&
+      previousCount.current === count;
+    if (moved) {
+      announce(
+        `${title || "Untitled"}, moved to position ${rowNumber + 1} of ${count}.`,
+      );
+    }
+    previous.current = rowNumber;
+    previousCount.current = count;
+  }, [count, rowNumber, title]);
+}
+
 export function NavItemRowLabel() {
   const { data, path, rowNumber } = useRowLabel<NavItemValue>();
   const title = navItemTitle(data ?? {});
+  useMoveAnnouncement(path, title, rowNumber);
   const same = useSameAsDefault(
     `${path}.${navItemLabelPath(data ?? {})}`,
     title,

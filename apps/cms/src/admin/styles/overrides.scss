@@ -122,9 +122,23 @@
   form:has(.dil-locale-banner) {
     .array-field__add-row,
     .array-actions,
-    .collapsible__drag,
     .array-field__header-actions .clipboard-action__popup {
       display: none;
+    }
+
+    .collapsible__drag {
+      pointer-events: none;
+      color: var(--dil-muted);
+
+      > * {
+        display: none;
+      }
+
+      &::before {
+        content: "lock";
+        font-family: var(--dil-font-icon);
+        font-size: 16px;
+      }
     }
   }
 

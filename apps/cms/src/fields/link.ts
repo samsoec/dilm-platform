@@ -30,6 +30,8 @@ type LinkData = {
   externalUrl?: string | null;
 };
 
+const PATH_PREFIX = "/admin/components/fields/PathPrefix#PathPrefix";
+
 const TARGET_FIELD: Record<LinkType, "internalPath" | "externalUrl"> = {
   internal: "internalPath",
   external: "externalUrl",
@@ -59,6 +61,7 @@ function target(
 
   return {
     name: TARGET_FIELD[type],
+    label: type === "internal" ? "Page path" : "Web address",
     type: "text",
     validate,
     hooks: { beforeChange: [clearWhenInactive] },
@@ -66,8 +69,14 @@ function target(
       condition: (_, siblingData) => isActive(siblingData as LinkData),
       description:
         type === "internal"
-          ? "A page on this site, e.g. /about. No /en or /id prefix."
-          : "A full https:// address on another site.",
+          ? "Start with /. The site adds the language."
+          : "A full address starting with https://",
+      ...(type === "internal"
+        ? {
+            className: "dil-path-field",
+            components: { beforeInput: [PATH_PREFIX] },
+          }
+        : {}),
     },
   };
 }
@@ -93,6 +102,7 @@ export function link({
         fields: [
           {
             name: "type",
+            label: "Goes to",
             type: "radio",
             required: true,
             defaultValue: "internal",
@@ -100,7 +110,7 @@ export function link({
               value,
               label: LINK_TYPE_LABELS[value],
             })),
-            admin: { layout: "horizontal" },
+            admin: { layout: "horizontal", className: "dil-segmented" },
           },
           {
             name: "newTab",

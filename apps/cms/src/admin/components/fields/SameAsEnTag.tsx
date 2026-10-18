@@ -24,5 +24,16 @@ export function useSameAsDefault(path: string, value: unknown): boolean {
 
 export function SameAsEnTag({ path }: { path: string }) {
   const value = useFormFields(([fields]) => fields[path]?.value);
-  return useSameAsDefault(path, value) ? <SameAsEnBadge /> : null;
+  const defaultDoc = useDefaultLocaleDoc();
+  const same = useSameAsDefault(path, value);
+  if (defaultDoc === undefined) return null;
+  const english = valueAtPath(defaultDoc, path);
+  return (
+    <span className="dil-en-reference">
+      {same && <SameAsEnBadge />}
+      {typeof english === "string" && english !== "" && (
+        <span className="dil-en-reference__text">EN: {english}</span>
+      )}
+    </span>
+  );
 }
