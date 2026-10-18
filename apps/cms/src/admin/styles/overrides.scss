@@ -189,4 +189,9 @@
     line-height: 1;
     letter-spacing: 0.02em;
   }
+
+  // Payload id: #leave-without-saving (@payloadcms/ui elements/LeaveWithoutSaving); its link interception stays, UnsavedChangesReporter shows the kit dialog instead (FR-UI-74)
+  #leave-without-saving {
+    display: none;
+  }
 }

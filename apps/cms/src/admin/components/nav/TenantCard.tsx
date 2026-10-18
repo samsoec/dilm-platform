@@ -1,7 +1,6 @@
 "use client";
 
 import { useTenantSelection } from "@payloadcms/plugin-multi-tenant/client";
-import { ConfirmationModal, useModal, useTranslation } from "@payloadcms/ui";
 import type { ViewTypes } from "payload";
 import {
   type CSSProperties,
@@ -14,10 +13,10 @@ import {
 
 import { type TenantColors, tenantColors } from "../../brandColor";
 import type { SidebarTenant } from "../../data/sidebar";
+import { useUnsavedChangesGuard } from "../guard/UnsavedChangesProvider";
 import { MaterialIcon } from "../MaterialIcon";
 import { listboxKey, typeaheadIndex } from "./listbox";
 
-const CONFIRM_SWITCH_SLUG = "dil-confirm-tenant-switch";
 const TYPEAHEAD_RESET_MS = 600;
 
 type TenantOption = { label: string; value: number | string };
@@ -70,13 +69,11 @@ export function TenantCard({
   tenant?: SidebarTenant;
   viewType?: ViewTypes;
 }) {
-  const { entityType, modified, options, selectedTenantID, setTenant } =
+  const { entityType, options, selectedTenantID, setTenant } =
     useTenantSelection();
-  const { closeModal, openModal } = useModal();
-  const { t } = useTranslation();
+  const { guard, setCompany } = useUnsavedChangesGuard();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
-  const [pending, setPending] = useState<TenantOption>();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -95,6 +92,16 @@ export function TenantCard({
     entityType !== "global" &&
     (viewType === "document" || viewType === "version");
   const switchable = tenantOptions.length > 1 && !lockedToDocument;
+
+  const companyName = selected?.label;
+  const companyDomain = shown?.domain;
+  useEffect(() => {
+    setCompany(
+      companyName
+        ? { name: String(companyName), domain: companyDomain }
+        : undefined,
+    );
+  }, [companyDomain, companyName, setCompany]);
 
   useEffect(() => {
     if (!open) return;
@@ -146,12 +153,7 @@ export function TenantCard({
     const option = tenantOptions[index];
     close();
     if (!option || option.value === selectedTenantID) return;
-    if (entityType === "global" && modified) {
-      setPending(option);
-      openModal(CONFIRM_SWITCH_SLUG);
-    } else {
-      switchTo(option);
-    }
+    guard("company", () => switchTo(option));
   };
 
   const onButtonKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -240,15 +242,6 @@ export function TenantCard({
           ))}
         </ul>
       )}
-      <ConfirmationModal
-        body={t("general:changesNotSaved")}
-        cancelLabel={t("general:stayOnThisPage")}
-        confirmLabel={t("general:leaveAnyway")}
-        heading={t("general:leaveWithoutSaving")}
-        modalSlug={CONFIRM_SWITCH_SLUG}
-        onCancel={() => closeModal(CONFIRM_SWITCH_SLUG)}
-        onConfirm={() => switchTo(pending)}
-      />
     </div>
   );
 }
