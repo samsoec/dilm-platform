@@ -59,10 +59,10 @@ describe("header and footer editor layout (TRD-UI §6.4, §6.5)", () => {
     );
     expect(
       order.filter(
-        (name) => name.startsWith("section_") || name === "sectionAnchors",
+        (name) => name.startsWith("section_") || name === "sectionJump",
       ),
     ).toEqual([
-      "sectionAnchors",
+      "sectionJump",
       ...FOOTER_SECTIONS.map(
         ({ anchor }) => `section_${anchor.replaceAll("-", "_")}`,
       ),

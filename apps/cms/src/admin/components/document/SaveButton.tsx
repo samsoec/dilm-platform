@@ -26,7 +26,7 @@ import {
 
 export function SaveButton() {
   const modified = useFormModified();
-  const { setModified, submit, validateForm } = useForm();
+  const { getFields, setModified, submit, validateForm } = useForm();
   const { collectionSlug, hasSavePermission, id } = useDocumentInfo();
   const {
     config: { routes, serverURL },
@@ -80,6 +80,10 @@ export function SaveButton() {
     }
     setBusy(false);
     setModified(true);
+    const fieldErrors = Object.values(getFields()).some(
+      (field) => field.valid === false,
+    );
+    if (fieldErrors) return;
     toast.dismiss();
     notify({
       tone: "error",

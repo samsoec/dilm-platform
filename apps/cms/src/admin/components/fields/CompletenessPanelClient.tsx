@@ -80,6 +80,19 @@ export function CompletenessPanelClient({
   const required = states.filter((state) => state !== "optional");
   const done = required.filter((state) => state === "complete").length;
 
+  useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get("tab");
+    const index = SETTINGS_TABS.findIndex(({ section }) => section === wanted);
+    if (index < 0) return;
+    const timer = window.setTimeout(() => {
+      panel.current
+        ?.closest("form")
+        ?.querySelectorAll<HTMLElement>(TAB_BUTTON)
+        [index]?.click();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   function openTab(index: number) {
     panel.current
       ?.closest("form")

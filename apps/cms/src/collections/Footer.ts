@@ -1,17 +1,19 @@
 import {
-  InlineToolbarFeature,
+  FixedToolbarFeature,
   ItalicFeature,
   lexicalEditor,
   ParagraphFeature,
 } from "@payloadcms/richtext-lexical";
 import type {
   Condition,
+  FieldHook,
   RichTextFieldValidation,
   TextFieldSingleValidation,
 } from "payload";
 import { richText } from "payload/shared";
 
 import { superAdmins } from "../access";
+import { isPlainOrItalic, plainOrItalic } from "../admin/footerSections";
 import { navGroup } from "../admin/navGroups";
 import { LIVE_DOCUMENT_CONTROLS } from "../admin/shell";
 import {
@@ -20,7 +22,7 @@ import {
   ROW_LABELS,
   SAME_AS_EN_TAG,
   section,
-  sectionAnchors,
+  sectionJump,
   sourcedFrom,
   versionInfo,
   withSameAsEnTag,
@@ -38,42 +40,17 @@ export const MAX_COLUMN_LINKS = 8;
 
 export const COPYRIGHT_TOKENS = ["year", "legalName"] as const;
 
-const ITALIC = 2;
-
-const HEADING_NODE_TYPES = new Set(["root", "paragraph", "text", "linebreak"]);
-
-type LexicalNode = {
-  type?: string;
-  format?: number | string;
-  children?: LexicalNode[];
-};
-
-function headingProblem(node: LexicalNode): string | undefined {
-  if (!node.type || !HEADING_NODE_TYPES.has(node.type)) {
-    return "The heading only takes plain or italic text.";
-  }
-  if (
-    node.type === "text" &&
-    typeof node.format === "number" &&
-    (node.format & ~ITALIC) !== 0
-  ) {
-    return "The heading only allows italic; remove other formatting.";
-  }
-  for (const child of node.children ?? []) {
-    const problem = headingProblem(child);
-    if (problem) return problem;
-  }
-  return undefined;
-}
-
 export const isItalicOnlyHeading: RichTextFieldValidation = async (
   value,
   args,
-) => {
-  const valid = await richText(value, args);
-  if (valid !== true) return valid;
-  const root = (value as { root?: LexicalNode } | null | undefined)?.root;
-  return root ? (headingProblem(root) ?? true) : true;
+) => richText(value, args);
+
+const cleanHeading: FieldHook = ({ value }) => {
+  const root = (value as { root?: Parameters<typeof plainOrItalic>[0] } | null)
+    ?.root;
+  return root && !isPlainOrItalic(root)
+    ? { ...(value as object), root: plainOrItalic(root) }
+    : value;
 };
 
 const KNOWN_TOKENS = new Set<string>(COPYRIGHT_TOKENS);
@@ -84,12 +61,14 @@ export const isCopyrightTemplate: TextFieldSingleValidation = (value) => {
     .filter(([, token]) => !KNOWN_TOKENS.has(token ?? ""))
     .map(([placeholder]) => placeholder);
   if (unknown.length > 0) {
-    return `Unknown placeholder ${unknown.join(", ")}; use {year} or {legalName}.`;
+    return `${unknown[0]} isn't a placeholder. Use {year} or {legalName}.`;
   }
   return /[{}]/.test(value.replace(/\{[^{}]*\}/g, ""))
     ? "Close every placeholder: {year} or {legalName}."
     : true;
 };
+
+const ARRAY_NOTE = "/admin/components/fields/ArrayLimitNote#ArrayLimitNote";
 
 const partOfEnabled: Condition = (_, siblingData) =>
   Boolean((siblingData as { enabled?: boolean } | undefined)?.enabled);
@@ -114,7 +93,7 @@ export const Footer = withTenantAccess(
     },
     fields: [
       localeBanner,
-      sectionAnchors,
+      sectionJump,
       versionInfo,
       sourcedFrom,
       ...lockStructure([
@@ -134,14 +113,18 @@ export const Footer = withTenantAccess(
                 type: "richText",
                 localized: true,
                 validate: isItalicOnlyHeading,
+                hooks: { beforeValidate: [cleanHeading] },
                 editor: lexicalEditor({
                   features: () => [
                     ParagraphFeature(),
                     ItalicFeature(),
-                    InlineToolbarFeature(),
+                    FixedToolbarFeature(),
                   ],
                 }),
-                admin: { description: "Plain or italic text only." },
+                admin: {
+                  description:
+                    "Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.",
+                },
               },
               link({
                 name: "primaryButton",
@@ -161,7 +144,10 @@ export const Footer = withTenantAccess(
             maxRows: MAX_LINK_COLUMNS,
             admin: {
               description: "Drag to reorder.",
+              className: "dil-column-cards",
+              initCollapsed: true,
               components: {
+                afterInput: [ARRAY_NOTE],
                 RowLabel: {
                   path: ROW_LABELS.column,
                   clientProps: { maxLinks: MAX_COLUMN_LINKS },
@@ -198,8 +184,9 @@ export const Footer = withTenantAccess(
                 type: "checkbox",
                 defaultValue: false,
                 admin: {
+                  className: "dil-switch",
                   description:
-                    "Off: the footer shows no group affiliation. On: a label, the group's logo and a link to its site.",
+                    "Hidden on the site. Turn on to show a parent-company logo.",
                 },
               },
               withSameAsEnTag({
@@ -208,14 +195,17 @@ export const Footer = withTenantAccess(
                 localized: true,
                 admin: { condition: partOfEnabled },
               }),
-              withMediaPicker({
-                name: "logo",
-                type: "upload",
-                relationTo: "media",
-                admin: { condition: partOfEnabled },
-              }),
+              withMediaPicker(
+                {
+                  name: "logo",
+                  type: "upload",
+                  relationTo: "media",
+                  admin: { condition: partOfEnabled },
+                },
+                { chooseLabel: "Choose from Media…" },
+              ),
               {
-                ...link(),
+                ...link({ label: "Link · optional" }),
                 admin: { condition: partOfEnabled },
               },
             ],

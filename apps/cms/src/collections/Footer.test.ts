@@ -148,33 +148,39 @@ describe("footer", () => {
       ).toBe(true);
     });
 
-    it("rejects any other formatting in the heading", async () => {
-      for (const format of [1, 3, 8, 16]) {
-        expect(
-          await checkHeading(heading(text("Together", format))),
-        ).toBeTypeOf("string");
-      }
-    });
-
-    it("rejects headings, lists and links in the heading", async () => {
+    it("turns pasted bold, links and lists into plain text instead of rejecting them (F-02)", async () => {
+      const field = findField(
+        subfields(findField(Footer.fields, "ctaBand")),
+        "heading",
+      ) as RichTextField;
+      const clean = field.hooks!.beforeValidate![0]!;
+      const pasted = {
+        root: {
+          type: "root",
+          children: [
+            {
+              type: "paragraph",
+              children: [
+                text("Grow ", 1),
+                { type: "link", fields: {}, children: [text("Together", 3)] },
+              ],
+            },
+            {
+              type: "list",
+              children: [{ type: "listitem", children: [text("x")] }],
+            },
+          ],
+        },
+      };
+      const cleaned = (await clean({ value: pasted } as never)) as {
+        root: { children: { children: { format?: number }[] }[] };
+      };
       expect(
-        await checkHeading({
-          root: {
-            type: "root",
-            children: [{ type: "heading", tag: "h2", children: [text("x")] }],
-          },
-        }),
-      ).toBeTypeOf("string");
-      expect(
-        await checkHeading(
-          heading({ type: "link", fields: {}, children: [text("x")] }),
+        cleaned.root.children.flatMap(({ children }) =>
+          children.map(({ format }) => format),
         ),
-      ).toBeTypeOf("string");
-      expect(
-        await checkHeading({
-          root: { type: "root", children: [{ type: "list", children: [] }] },
-        }),
-      ).toBeTypeOf("string");
+      ).toEqual([0, 2, 0]);
+      expect(await checkHeading(cleaned)).toBe(true);
     });
 
     it("passes the editor's own validation errors through", async () => {
@@ -240,8 +246,8 @@ describe("footer", () => {
     });
 
     it("rejects unknown placeholders, naming them", () => {
-      expect(checkCopyright("© {Year} {company} {legalName}")).toBe(
-        "Unknown placeholder {Year}, {company}; use {year} or {legalName}.",
+      expect(checkCopyright("© {company} {legalName}")).toBe(
+        "{company} isn't a placeholder. Use {year} or {legalName}.",
       );
       expect(checkCopyright("© {}")).toBeTypeOf("string");
     });

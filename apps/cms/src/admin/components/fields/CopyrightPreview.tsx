@@ -1,4 +1,5 @@
 import type { TextFieldServerProps } from "payload";
+import { formatAdminURL } from "payload/shared";
 
 import { documentTenant, loadLayoutSources } from "../../data/layout";
 import { jakartaYear } from "../../layoutEditor";
@@ -17,6 +18,14 @@ export async function CopyrightPreview({
   );
   return (
     <CopyrightPreviewClient
+      brandHref={
+        sources
+          ? formatAdminURL({
+              adminRoute: payload.config.routes.admin,
+              path: `/collections/tenant-settings/${sources.id}?tab=brand`,
+            })
+          : undefined
+      }
       legalName={sources?.brand?.legalName ?? undefined}
       path={path ?? "copyright"}
       year={jakartaYear()}

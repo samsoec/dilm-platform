@@ -30,7 +30,7 @@ describe("media picker (F-05, FR-UI-78)", () => {
       );
       for (const field of found) {
         expect(field.admin?.components).toMatchObject({
-          Field: MEDIA_PICKER_FIELD,
+          Field: { path: MEDIA_PICKER_FIELD },
         });
       }
     },
