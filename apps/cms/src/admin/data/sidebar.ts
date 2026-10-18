@@ -15,6 +15,7 @@ export const TENANT_COOKIE = "payload-tenant";
 export type SidebarTenant = {
   id: TenantID;
   name: string;
+  slug?: string;
   domain?: string;
   colors: TenantColors;
   logo?: { url: string; alt: string };
@@ -45,12 +46,13 @@ export function selectedTenantID(
 }
 
 function sidebarTenant(
-  tenant: Pick<Tenant, "id" | "name" | "domain" | "brandColor">,
+  tenant: Pick<Tenant, "id" | "name" | "slug" | "domain" | "brandColor">,
   logo: Media | number | null | undefined,
 ): SidebarTenant {
   return {
     id: tenant.id,
     name: tenant.name,
+    slug: tenant.slug,
     domain: tenant.domain,
     colors: tenantColors(tenant.brandColor),
     logo:
@@ -74,7 +76,9 @@ async function loadTenantCard(
     depth: 1,
     locale: localization.defaultLocale,
     select: { ...COMPLETENESS_SELECT, tenant: true },
-    populate: { tenants: { name: true, domain: true, brandColor: true } },
+    populate: {
+      tenants: { name: true, slug: true, domain: true, brandColor: true },
+    },
     overrideAccess: false,
     user,
   });

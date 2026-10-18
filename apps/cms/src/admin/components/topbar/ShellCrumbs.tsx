@@ -5,7 +5,12 @@ import { useConfig, useStepNav } from "@payloadcms/ui";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
 
-import { entityFromPath, entityGroup, withShellCrumbs } from "./topbar";
+import {
+  entityFromPath,
+  entityGroup,
+  isAdministration,
+  withShellCrumbs,
+} from "./topbar";
 
 export function ShellCrumbs({ children }: { children: ReactNode }) {
   const { stepNav, setStepNav } = useStepNav();
@@ -21,7 +26,7 @@ export function ShellCrumbs({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    const labels = [tenant, group].filter(
+    const labels = [isAdministration(group) ? undefined : tenant, group].filter(
       (label): label is string => typeof label === "string" && label !== "",
     );
     const next = withShellCrumbs(stepNav, labels);
