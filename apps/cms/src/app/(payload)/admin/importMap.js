@@ -1,3 +1,4 @@
+import { UnsavedChangesReporter as UnsavedChangesReporter_0b686cc068a7e080540f78fe764a5893 } from '../../../admin/components/guard/UnsavedChangesReporter'
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { CompletenessPanel as CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77 } from '../../../admin/components/fields/CompletenessPanel'
@@ -38,12 +39,14 @@ import { LoginIntro as LoginIntro_8a7a25ec3456ee26918acab06c86f8c2 } from '../..
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { ShellCrumbs as ShellCrumbs_2655bbb4d61960264c14c8889231a4e5 } from '../../../admin/components/topbar/ShellCrumbs'
+import { UnsavedChangesProvider as UnsavedChangesProvider_c2240fea51188b9603a82f1a295f55a8 } from '../../../admin/components/guard/UnsavedChangesProvider'
 import { LoginScreen as LoginScreen_22f500d6dd68e64c5e8155425d1d2e99 } from '../../../admin/components/login/LoginScreen'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "/admin/components/guard/UnsavedChangesReporter#UnsavedChangesReporter": UnsavedChangesReporter_0b686cc068a7e080540f78fe764a5893,
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
   "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
   "/admin/components/fields/CompletenessPanel#CompletenessPanel": CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77,
@@ -84,6 +87,7 @@ export const importMap = {
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
   "/admin/components/topbar/ShellCrumbs#ShellCrumbs": ShellCrumbs_2655bbb4d61960264c14c8889231a4e5,
+  "/admin/components/guard/UnsavedChangesProvider#UnsavedChangesProvider": UnsavedChangesProvider_c2240fea51188b9603a82f1a295f55a8,
   "/admin/components/login/LoginScreen#LoginScreen": LoginScreen_22f500d6dd68e64c5e8155425d1d2e99,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24

@@ -576,6 +576,10 @@
     padding: 18px 22px;
   }
 
+  .dil-confirm__controls:has(.dil-confirm__secondary) > :first-child {
+    margin-inline-end: auto;
+  }
+
   .btn.dil-confirm__secondary {
     --color: var(--dil-danger);
     --hover-color: var(--dil-danger);

@@ -12,6 +12,7 @@ import { LOGIN_COMPONENTS, LOGIN_TRANSLATIONS } from "./admin/login";
 import {
   ADMIN_TOAST,
   appendAdminProviders,
+  guardEveryDocument,
   PROVIDERS_INSIDE_TENANT_SELECTION,
   TOP_BAR_ACTIONS,
 } from "./admin/shell";
@@ -72,6 +73,7 @@ export async function cmsConfig(client: PayloadClient) {
       multiTenant(collections),
       s3Storage(publicBucketStorage(runtimeConfig.storage)),
       appendAdminProviders(PROVIDERS_INSIDE_TENANT_SELECTION),
+      guardEveryDocument,
     ],
   });
 }
