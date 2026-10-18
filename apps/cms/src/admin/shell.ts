@@ -18,6 +18,7 @@ export const LIVE_DOCUMENT_CONTROLS = {
   SaveButton: "/admin/components/document/SaveButton#SaveButton",
   beforeDocumentControls: [
     "/admin/components/document/DocumentStatus#DocumentStatus",
+    "/admin/components/document/VersionsDrawer#VersionsDrawer",
   ],
 };
 
