@@ -119,6 +119,10 @@ export async function AdminNav({
         />
         <UserFooter
           accountHref={formatAdminURL({ adminRoute, path: "/account" })}
+          logoutHref={formatAdminURL({
+            adminRoute,
+            path: payload.config.admin.routes.logout as `/${string}`,
+          })}
           user={{
             name: person.name ?? undefined,
             email: person.email ?? undefined,
