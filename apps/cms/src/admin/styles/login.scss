@@ -122,6 +122,205 @@
     }
   }
 
+  .dil-signin {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-family: var(--dil-font-sans);
+
+    .dil-login__intro {
+      margin-bottom: 4px;
+    }
+
+    .dil-login__footnote {
+      justify-content: center;
+      margin: 8px 0 0;
+      padding-top: 0;
+      border-top: 0;
+      font-size: 12px;
+    }
+  }
+
+  .dil-signin__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      color: var(--dil-ink);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--dil-line);
+      border-radius: var(--dil-radius-s);
+      background: var(--dil-surface);
+      color: var(--dil-ink);
+      font-family: var(--dil-font-sans);
+      font-size: 14px;
+
+      &:focus {
+        border-color: var(--dil-brand);
+        box-shadow: 0 0 0 3px var(--dil-sel-bg);
+        outline: none;
+      }
+
+      &:read-only {
+        border-color: transparent;
+        background: var(--dil-surface-2);
+        color: var(--dil-ink-2);
+      }
+    }
+  }
+
+  .dil-signin__label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .dil-signin__forgot,
+  .dil-signin__link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-brand-ink);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .dil-signin__link {
+    align-self: flex-start;
+  }
+
+  .dil-signin__password {
+    position: relative;
+    display: block;
+
+    input {
+      padding-inline-end: 44px;
+    }
+  }
+
+  .dil-signin__reveal {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    display: flex;
+    padding: 6px;
+    border: 0;
+    border-radius: var(--dil-radius-s);
+    background: none;
+    color: var(--dil-muted);
+    transform: translateY(-50%);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--dil-ink);
+    }
+
+    .dil-icon {
+      font-size: 20px;
+    }
+  }
+
+  .btn.dil-signin__submit {
+    width: 100%;
+    min-height: 46px;
+    font-size: 14px;
+  }
+
+  .dil-signin__wake {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--dil-muted);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .dil-signin__wake-bar {
+    position: relative;
+    height: 4px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--dil-surface-2);
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 45%;
+      border-radius: 2px;
+      background: var(--dil-brand);
+      animation: dil-wake-slide 1.6s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &::after {
+        animation: none;
+      }
+    }
+  }
+
+  @keyframes dil-wake-slide {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(230%);
+    }
+  }
+
+  .dil-signin--locked {
+    gap: 14px;
+
+    .btn {
+      display: flex;
+      width: 100%;
+      min-height: 46px;
+      justify-content: center;
+    }
+  }
+
+  .dil-signin__lock-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-danger-bg);
+    color: var(--dil-danger);
+
+    .dil-icon {
+      font-size: 24px;
+    }
+  }
+
+  .dil-signin__lock-text {
+    margin: 0;
+    color: var(--dil-ink-2);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .dil-signout {
+    min-height: 100vh;
+  }
+
   @media (max-width: 959px) {
     .dil-login {
       grid-template-columns: minmax(0, 1fr);
@@ -129,10 +328,6 @@
 
     .dil-login__brand {
       display: none;
-    }
-
-    .dil-login__form .login__brand {
-      display: flex;
     }
   }
 }

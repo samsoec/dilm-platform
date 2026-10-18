@@ -3,10 +3,11 @@ import type { ReactNode } from "react";
 import type { IconName } from "../../icons";
 import { MaterialIcon } from "../MaterialIcon";
 
-export type BannerTone = "info" | "warning" | "error" | "readonly";
+export type BannerTone = "info" | "success" | "warning" | "error" | "readonly";
 
 const ICONS: Record<BannerTone, IconName> = {
   info: "info",
+  success: "check_circle",
   warning: "warning",
   error: "error",
   readonly: "lock",
@@ -14,12 +15,14 @@ const ICONS: Record<BannerTone, IconName> = {
 
 export function Banner({
   tone,
+  icon,
   title,
   children,
   action,
   className,
 }: {
   tone: BannerTone;
+  icon?: IconName;
   title?: ReactNode;
   children?: ReactNode;
   action?: ReactNode;
@@ -32,7 +35,7 @@ export function Banner({
         .join(" ")}
       role={tone === "error" ? "alert" : "note"}
     >
-      <MaterialIcon className="dil-banner__icon" name={ICONS[tone]} />
+      <MaterialIcon className="dil-banner__icon" name={icon ?? ICONS[tone]} />
       <div className="dil-banner__body">
         <p className="dil-banner__text">
           {title && <b>{title}</b>} {children}

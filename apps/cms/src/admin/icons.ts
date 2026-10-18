@@ -111,6 +111,7 @@ export const ICON_NAMES = [
   "view_column",
   "view_list",
   "visibility",
+  "visibility_off",
   "warning",
   "web_asset",
 ] as const;
