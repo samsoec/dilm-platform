@@ -104,6 +104,19 @@ export function TenantCard({
     (viewType === "document" || viewType === "version");
   const switchable = tenantOptions.length > 1 && !lockedToDocument;
 
+  const companySlug = shown?.slug;
+  const companyColor = colors.light;
+  useEffect(() => {
+    const root = document.documentElement.style;
+    if (!companySlug) return;
+    root.setProperty("--dil-company-slug", JSON.stringify(companySlug));
+    root.setProperty("--dil-company-color", companyColor);
+    return () => {
+      root.removeProperty("--dil-company-slug");
+      root.removeProperty("--dil-company-color");
+    };
+  }, [companyColor, companySlug]);
+
   const companyName = selected?.label;
   const companyDomain = shown?.domain;
   useEffect(() => {

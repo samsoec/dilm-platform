@@ -122,4 +122,48 @@
       font-size: 16px;
     }
   }
+
+  // Payload classes: .app-header__step-nav, .step-nav__last (@payloadcms/ui elements/StepNav); G-06 compact bar below 1024px
+  @media (max-width: 1023px) {
+    .dil-lang,
+    .dil-view-site,
+    .dil-search-trigger__text,
+    .dil-search-trigger__key {
+      display: none;
+    }
+
+    .dil-search-trigger {
+      width: 34px;
+      padding: 0;
+      justify-content: center;
+    }
+
+    .app-header__step-nav {
+      > :nth-child(n + 4):not(.step-nav__last):not(:nth-last-child(2)) {
+        display: none;
+      }
+
+      > :nth-child(3):not(.step-nav__last) {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0;
+
+        &::before {
+          content: "";
+          width: 10px;
+          height: 28px;
+          border-radius: 4px;
+          background: var(--dil-company-color, var(--dil-brand-ink));
+        }
+
+        &::after {
+          content: var(--dil-company-slug, "");
+          color: var(--dil-ink);
+          font-size: 14px;
+          font-weight: 700;
+        }
+      }
+    }
+  }
 }
