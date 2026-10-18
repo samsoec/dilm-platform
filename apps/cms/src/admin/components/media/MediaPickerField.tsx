@@ -11,7 +11,10 @@ import {
   useModal,
 } from "@payloadcms/ui";
 import type { UploadFieldClientComponent } from "payload";
+import { mergeFieldStyles } from "@payloadcms/ui/shared";
 import { formatAdminURL } from "payload/shared";
+
+import type { MediaPickerOptions } from "../../../fields/mediaPicker";
 import { useEffect, useId, useState } from "react";
 
 import { ActionButton } from "../kit/ActionButton";
@@ -32,7 +35,7 @@ function relationID(value: unknown): number | string | undefined {
 
 export const MediaPickerField: UploadFieldClientComponent = (props) => {
   const { field, path, readOnly } = props;
-  const { chooseLabel } = props as { chooseLabel?: string };
+  const { chooseLabel, preview, launchRequired } = props as MediaPickerOptions;
   const fieldPath = path ?? field.name;
   const { value, setValue, showError } = useField<unknown>({ path: fieldPath });
   const tenantValue = useFormFields(([fields]) => fields.tenant?.value);
@@ -46,6 +49,8 @@ export const MediaPickerField: UploadFieldClientComponent = (props) => {
   const id = relationID(value);
   const [media, setMedia] = useState<PickedMedia>();
   const isLogo = /logo/i.test(field.name);
+  const buttonId = `field-${fieldPath.replace(/\./g, "__")}`;
+  const missing = launchRequired && id === undefined;
 
   useEffect(() => {
     if (id === undefined) {
@@ -71,6 +76,7 @@ export const MediaPickerField: UploadFieldClientComponent = (props) => {
   return (
     <div
       className={`field-type dil-media-field${showError ? " error" : ""}${readOnly ? " read-only" : ""}`}
+      style={mergeFieldStyles(field)}
     >
       <FieldLabel
         label={field.label}
@@ -79,57 +85,113 @@ export const MediaPickerField: UploadFieldClientComponent = (props) => {
       />
       <div className="field-type__wrap">
         <FieldError path={fieldPath} showError={showError} />
-        <div className="dil-media-field__box">
-          {media ? (
-            <span className="dil-media-field__preview">
-              {media.thumbnail ? (
-                <img alt={media.alt ?? ""} src={media.thumbnail} />
+        {preview ? (
+          <>
+            <button
+              aria-label={
+                media
+                  ? `${String(field.label ?? field.name)}: ${media.filename ?? "Image"}. Replace`
+                  : undefined
+              }
+              className={`dil-logo-preview dil-logo-preview--${preview}${missing ? " dil-logo-preview--missing" : ""}`}
+              disabled={readOnly}
+              id={buttonId}
+              onClick={() => openModal(slug)}
+              type="button"
+            >
+              {media ? (
+                media.url || media.thumbnail ? (
+                  <img
+                    alt={media.alt ?? media.filename ?? ""}
+                    src={media.url ?? media.thumbnail}
+                  />
+                ) : (
+                  <MaterialIcon name="image" />
+                )
               ) : (
-                <MaterialIcon name="image" />
+                <>
+                  <MaterialIcon name="add_photo_alternate" />
+                  {chooseLabel ?? "Choose or upload"}
+                </>
               )}
-            </span>
-          ) : (
-            <span className="dil-media-field__preview dil-media-field__preview--empty">
-              <MaterialIcon name="add_photo_alternate" />
-            </span>
-          )}
-          <span className="dil-media-field__text">
-            <b>
-              {media?.filename ??
-                (id === undefined
-                  ? isLogo
-                    ? "No logo chosen"
-                    : "No image chosen"
-                  : "Image")}
-            </b>
-            {media?.alt && <span>{media.alt}</span>}
-          </span>
-          {!readOnly && (
-            <span className="dil-media-field__actions">
-              <ActionButton
-                onClick={() => openModal(slug)}
-                type="button"
-                variant="secondary"
-              >
-                {id === undefined
-                  ? (chooseLabel ?? "Choose or upload")
-                  : "Change"}
-              </ActionButton>
-              {id !== undefined && (
-                <ActionButton
+            </button>
+            {media && !readOnly && (
+              <span className="dil-logo-preview__actions">
+                <button onClick={() => openModal(slug)} type="button">
+                  Replace
+                </button>
+                <button
                   onClick={() => {
                     setValue(null);
                     setMedia(undefined);
                   }}
                   type="button"
-                  variant="text"
                 >
                   Remove
-                </ActionButton>
-              )}
+                </button>
+              </span>
+            )}
+            {missing && (
+              <span className="dil-logo-preview__missing">
+                <MaterialIcon name="error" />
+                Missing · needed for launch
+              </span>
+            )}
+          </>
+        ) : (
+          <div className="dil-media-field__box">
+            {media ? (
+              <span className="dil-media-field__preview">
+                {media.thumbnail ? (
+                  <img alt={media.alt ?? ""} src={media.thumbnail} />
+                ) : (
+                  <MaterialIcon name="image" />
+                )}
+              </span>
+            ) : (
+              <span className="dil-media-field__preview dil-media-field__preview--empty">
+                <MaterialIcon name="add_photo_alternate" />
+              </span>
+            )}
+            <span className="dil-media-field__text">
+              <b>
+                {media?.filename ??
+                  (id === undefined
+                    ? isLogo
+                      ? "No logo chosen"
+                      : "No image chosen"
+                    : "Image")}
+              </b>
+              {media?.alt && <span>{media.alt}</span>}
             </span>
-          )}
-        </div>
+            {!readOnly && (
+              <span className="dil-media-field__actions">
+                <ActionButton
+                  id={buttonId}
+                  onClick={() => openModal(slug)}
+                  type="button"
+                  variant="secondary"
+                >
+                  {id === undefined
+                    ? (chooseLabel ?? "Choose or upload")
+                    : "Change"}
+                </ActionButton>
+                {id !== undefined && (
+                  <ActionButton
+                    onClick={() => {
+                      setValue(null);
+                      setMedia(undefined);
+                    }}
+                    type="button"
+                    variant="text"
+                  >
+                    Remove
+                  </ActionButton>
+                )}
+              </span>
+            )}
+          </div>
+        )}
       </div>
       <FieldDescription
         description={field.admin?.description}

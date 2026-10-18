@@ -80,10 +80,11 @@ export function SaveButton() {
     }
     setBusy(false);
     setModified(true);
+    const reportedByPayload = !result && navigator.onLine;
     const fieldErrors = Object.values(getFields()).some(
       (field) => field.valid === false,
     );
-    if (fieldErrors) return;
+    if (reportedByPayload || fieldErrors) return;
     toast.dismiss();
     notify({
       tone: "error",

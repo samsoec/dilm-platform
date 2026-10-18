@@ -32,16 +32,15 @@ export const isInternalPath = optional((value) => {
 });
 
 export const isGa4MeasurementId = optional((value) =>
-  /^G-[A-Z0-9]{4,}$/.test(value)
-    ? true
-    : "Use the GA4 measurement ID, e.g. G-XXXXXXXXXX.",
+  /^G-[A-Z0-9]{4,}$/.test(value) ? true : "Use the G-XXXXXXXXXX format",
 );
 
-export const isWhatsAppLink = optional((value) =>
-  /^https:\/\/wa\.me\/\d{8,15}(\?.*)?$/.test(value)
+export const isWhatsAppLink = optional((value) => {
+  if (!value.startsWith("https://")) return "Start with https://";
+  return /^https:\/\/wa\.me\/\d{8,15}(\?.*)?$/.test(value)
     ? true
-    : "Use a wa.me link with the full number, e.g. https://wa.me/6281234567890.",
-);
+    : "Use a wa.me link with the full number, like https://wa.me/6281234567890";
+});
 
 export const isPhoneNumber = optional((value) =>
   /^\+?[\d\s()-]{6,20}$/.test(value)

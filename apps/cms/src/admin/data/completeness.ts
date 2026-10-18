@@ -35,10 +35,12 @@ export type CompletenessInput = {
   > | null;
 };
 
+export type LaunchGap = { label: string; path: CompletenessPath };
+
 type Rule = {
   section: SettingsSection;
   severity: SectionSeverity;
-  complete: (settings: CompletenessInput) => boolean;
+  missing: (settings: CompletenessInput) => LaunchGap[];
 };
 
 function filled(value: unknown): boolean {
@@ -46,35 +48,62 @@ function filled(value: unknown): boolean {
   return value !== null && value !== undefined;
 }
 
+function gaps(...checks: [boolean, LaunchGap][]): LaunchGap[] {
+  return checks.filter(([ok]) => !ok).map(([, gap]) => gap);
+}
+
 export const COMPLETENESS_RULES: readonly Rule[] = [
   {
     section: "general",
     severity: "warning",
-    complete: ({ siteName }) => filled(siteName),
+    missing: ({ siteName }) =>
+      gaps([filled(siteName), { label: "site name", path: "siteName" }]),
   },
   {
     section: "brand",
     severity: "warning",
-    complete: ({ brand }) =>
-      filled(brand?.logoOnDark) &&
-      filled(brand?.logoOnLight) &&
-      filled(brand?.legalName),
+    missing: ({ brand }) =>
+      gaps(
+        [
+          filled(brand?.logoOnLight),
+          { label: "light logo", path: "brand.logoOnLight" },
+        ],
+        [
+          filled(brand?.logoOnDark),
+          { label: "dark logo", path: "brand.logoOnDark" },
+        ],
+        [
+          filled(brand?.legalName),
+          { label: "legal name", path: "brand.legalName" },
+        ],
+      ),
   },
   {
     section: "contact",
     severity: "warning",
-    complete: ({ contactEmail, contactPhone }) =>
-      filled(contactEmail) || filled(contactPhone),
+    missing: ({ contactEmail, contactPhone }) =>
+      gaps([
+        filled(contactEmail) || filled(contactPhone),
+        { label: "email or phone", path: "contactEmail" },
+      ]),
   },
   {
     section: "careers",
     severity: "error",
-    complete: ({ recruiterEmail }) => filled(recruiterEmail),
+    missing: ({ recruiterEmail }) =>
+      gaps([
+        filled(recruiterEmail),
+        { label: "recruiter email", path: "recruiterEmail" },
+      ]),
   },
   {
     section: "seo",
     severity: "warning",
-    complete: ({ defaultSeo }) => filled(defaultSeo?.title),
+    missing: ({ defaultSeo }) =>
+      gaps([
+        filled(defaultSeo?.title),
+        { label: "default title", path: "defaultSeo.title" },
+      ]),
   },
 ];
 
@@ -91,16 +120,36 @@ export type SectionStatus = {
   section: SettingsSection;
   severity: SectionSeverity;
   complete: boolean;
+  missing: LaunchGap[];
 };
 
 export function settingsCompleteness(
   settings: CompletenessInput | null | undefined,
 ): SectionStatus[] {
-  return COMPLETENESS_RULES.map(({ section, severity, complete }) => ({
-    section,
-    severity,
-    complete: settings ? complete(settings) : false,
-  }));
+  return COMPLETENESS_RULES.map(({ section, severity, missing }) => {
+    const gaps = missing(settings ?? {});
+    return { section, severity, complete: gaps.length === 0, missing: gaps };
+  });
+}
+
+export type LaunchItem = LaunchGap & {
+  section: SettingsSection;
+  severity: SectionSeverity;
+};
+
+export function launchItems(statuses: SectionStatus[]): LaunchItem[] {
+  return statuses
+    .flatMap(({ section, severity, missing }) =>
+      missing.map((gap) => ({
+        ...gap,
+        section,
+        severity,
+        label: `${settingsTabLabel(section)} · ${gap.label}`,
+      })),
+    )
+    .sort(
+      (a, b) => Number(b.severity === "error") - Number(a.severity === "error"),
+    );
 }
 
 export function settingsNeedAttention(

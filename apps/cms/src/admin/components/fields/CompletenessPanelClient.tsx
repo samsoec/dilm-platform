@@ -6,34 +6,26 @@ import { useEffect, useId, useRef } from "react";
 import {
   COMPLETENESS_PATHS,
   completenessFromValues,
+  type LaunchItem,
+  launchItems,
   type LocalizedCompletenessValues,
   SETTINGS_TABS,
   settingsCompleteness,
 } from "../../data/completeness";
 import {
-  SECTION_HINTS,
   SETTINGS_USED_BY,
   settingsTabStates,
-  type TabState,
+  TAB_STATE_ICON,
+  TAB_STATE_TEXT,
 } from "../../data/settingsTabs";
-import type { IconName } from "../../icons";
 import { MaterialIcon } from "../MaterialIcon";
 
-const STATE_ICON: Record<TabState, IconName> = {
-  complete: "check_circle",
-  warning: "warning",
-  error: "error",
-  optional: "radio_button_unchecked",
-};
-
-const STATE_TEXT: Record<TabState, string> = {
-  complete: "Done",
-  warning: "Missing",
-  error: "Required",
-  optional: "Optional",
-};
-
 const TAB_BUTTON = ".tabs-field__tab-button";
+const FOCUSABLE = "input, textarea, button, [tabindex]";
+
+function fieldElementId(path: string): string {
+  return `field-${path.replace(/\./g, "__")}`;
+}
 
 export function CompletenessPanelClient({
   defaultLocaleValues,
@@ -49,36 +41,34 @@ export function CompletenessPanelClient({
   const byPath = new Map(
     COMPLETENESS_PATHS.map((path, index) => [path, values[index]]),
   );
-  const states = settingsTabStates(
-    settingsCompleteness(
-      completenessFromValues((path) => byPath.get(path), defaultLocaleValues),
-    ),
+  const statuses = settingsCompleteness(
+    completenessFromValues((path) => byPath.get(path), defaultLocaleValues),
   );
+  const states = settingsTabStates(statuses);
+  const items = launchItems(statuses);
   const stateKey = states.join(",");
 
   useEffect(() => {
-    const current = stateKey.split(",");
+    const current = stateKey.split(",") as (keyof typeof TAB_STATE_ICON)[];
     const buttons =
       panel.current
         ?.closest("form")
         ?.querySelectorAll<HTMLElement>(TAB_BUTTON) ?? [];
     buttons.forEach((button, index) => {
       const state = current[index];
-      if (state === "warning" || state === "error") {
-        button.dataset.dilStatus = state;
-        button.setAttribute(
-          "aria-label",
-          `${SETTINGS_TABS[index]?.label ?? ""}, needs attention before launch`,
-        );
-      } else {
-        delete button.dataset.dilStatus;
-        button.removeAttribute("aria-label");
-      }
+      if (!state) return;
+      button.dataset.dilStatus = state;
+      button.dataset.dilIcon = TAB_STATE_ICON[state];
+      button.setAttribute(
+        "aria-label",
+        `${SETTINGS_TABS[index]?.label ?? ""}, ${TAB_STATE_TEXT[state]}`,
+      );
     });
   }, [stateKey]);
 
-  const required = states.filter((state) => state !== "optional");
-  const done = required.filter((state) => state === "complete").length;
+  const tabButtons = () =>
+    panel.current?.closest("form")?.querySelectorAll<HTMLElement>(TAB_BUTTON) ??
+    [];
 
   useEffect(() => {
     const wanted = new URLSearchParams(window.location.search).get("tab");
@@ -93,12 +83,23 @@ export function CompletenessPanelClient({
     return () => window.clearTimeout(timer);
   }, []);
 
-  function openTab(index: number) {
-    panel.current
-      ?.closest("form")
-      ?.querySelectorAll<HTMLElement>(TAB_BUTTON)
-      [index]?.click();
+  function fix(item: LaunchItem) {
+    const index = SETTINGS_TABS.findIndex(
+      ({ section }) => section === item.section,
+    );
+    tabButtons()[index]?.click();
+    window.setTimeout(() => {
+      const target = document.getElementById(fieldElementId(item.path));
+      const focusable = target?.matches(FOCUSABLE)
+        ? target
+        : target?.querySelector<HTMLElement>(FOCUSABLE);
+      focusable?.scrollIntoView({ block: "center" });
+      focusable?.focus();
+    }, 50);
   }
+
+  const required = statuses.length;
+  const done = statuses.filter(({ complete }) => complete).length;
 
   return (
     <section
@@ -106,53 +107,42 @@ export function CompletenessPanelClient({
       className="dil-completeness"
       ref={panel}
     >
-      <header className="dil-completeness__header">
-        <h3 className="dil-completeness__title" id={headingId}>
-          Ready for launch
-        </h3>
-        <span className="dil-completeness__count">
-          {done} of {required.length} done
-        </span>
-      </header>
-      <ul className="dil-completeness__list">
-        {SETTINGS_TABS.map(({ section, label }, index) => {
-          const state = states[index];
-          return (
-            <li key={section}>
+      <h3 className="dil-completeness__title" id={headingId}>
+        Ready for launch · {done} of {required}
+      </h3>
+      {items.length > 0 ? (
+        <ul className="dil-completeness__list">
+          {items.map((item) => (
+            <li
+              className={`dil-completeness__item dil-completeness__item--${item.severity}`}
+              key={item.path}
+            >
+              <MaterialIcon name={TAB_STATE_ICON[item.severity]} />
+              <span className="dil-completeness__label">{item.label}</span>
               <button
-                className={`dil-completeness__item dil-completeness__item--${state}`}
-                onClick={() => openTab(index)}
+                aria-label={`Fix ${item.label}`}
+                className="dil-completeness__fix"
+                onClick={() => fix(item)}
                 type="button"
               >
-                <MaterialIcon name={STATE_ICON[state]} />
-                <span className="dil-completeness__label">
-                  {label}
-                  {state !== "complete" && (
-                    <span className="dil-completeness__hint">
-                      {SECTION_HINTS[section]}
-                    </span>
-                  )}
-                </span>
-                <span className="dil-completeness__state">
-                  {STATE_TEXT[state]}
-                </span>
+                Fix
               </button>
-            </li>
-          );
-        })}
-      </ul>
-      <div className="dil-completeness__used">
-        <span className="dil-completeness__used-label">Used by</span>
-        <ul className="dil-chips">
-          {SETTINGS_USED_BY.map((use) => (
-            <li className="dil-chip" key={use}>
-              {use}
             </li>
           ))}
         </ul>
-      </div>
+      ) : (
+        <p className="dil-completeness__item dil-completeness__item--complete">
+          <MaterialIcon name="check_circle" />
+          <span className="dil-completeness__label">
+            Everything needed for launch is set.
+          </span>
+        </p>
+      )}
+      <p className="dil-completeness__used">
+        <b>Used by</b> {SETTINGS_USED_BY}
+      </p>
       <p className="dil-completeness__note">
-        One settings document per tenant. Only Super Admins can delete it.
+        Only Super Admins can delete this settings document.
       </p>
     </section>
   );

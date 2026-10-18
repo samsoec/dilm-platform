@@ -15,6 +15,10 @@ import {
   rowNumberText,
   tabText,
 } from "../../layoutEditor";
+import {
+  SOCIAL_PLATFORM_LABELS,
+  type SocialPlatform,
+} from "../../data/socialPlatforms";
 import { MaterialIcon } from "../MaterialIcon";
 import { SameAsEnBadge, useSameAsDefault } from "./SameAsEnTag";
 
@@ -142,6 +146,23 @@ export function ColumnRowLabel({ maxLinks }: { maxLinks: number }) {
       number={rowNumberText(rowNumber)}
       same={same}
       title={data?.title ?? ""}
+    />
+  );
+}
+
+export function SocialRowLabel() {
+  const { data, path, rowNumber } = useRowLabel<{
+    platform?: SocialPlatform | null;
+    url?: string | null;
+  }>();
+  const title = data?.platform ? SOCIAL_PLATFORM_LABELS[data.platform] : "";
+  useMoveAnnouncement(path, title, rowNumber);
+  return (
+    <RowLabel
+      meta={data?.url ? [data.url] : []}
+      number={rowNumberText(rowNumber)}
+      same={false}
+      title={title}
     />
   );
 }

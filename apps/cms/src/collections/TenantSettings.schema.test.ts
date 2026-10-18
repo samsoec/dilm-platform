@@ -41,7 +41,7 @@ describe("tenant-settings data shape (FR-UI-44)", () => {
       Brand: ["brand"],
       Contact: ["contactEmail", "contactPhone", "waLink"],
       Careers: ["recruiterEmail"],
-      Social: ["socialLinks"],
+      "Social · optional": ["socialLinks"],
       "SEO & analytics": ["defaultSeo", "analyticsId"],
     });
   });

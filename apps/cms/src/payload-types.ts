@@ -194,27 +194,36 @@ export interface TenantSetting {
   siteName: string;
   brand?: {
     /**
-     * Light-coloured logo for the transparent navbar and the footer.
-     */
-    logoOnDark?: (number | null) | Media;
-    /**
-     * Dark-coloured logo for the white navbar.
+     * Header on white, footer on light.
      */
     logoOnLight?: (number | null) | Media;
+    /**
+     * Transparent header over photos.
+     */
+    logoOnDark?: (number | null) | Media;
     /**
      * Fills {legalName} in the footer copyright.
      */
     legalName?: string | null;
+    /**
+     * Under the footer logo.
+     */
     tagline?: string | null;
+    /**
+     * Footer contact block.
+     */
     address?: string | null;
   };
   contactEmail?: string | null;
   contactPhone?: string | null;
   waLink?: string | null;
   /**
-   * Receives a notification for every career application to this company.
+   * Changes apply to applications received after you save.
    */
   recruiterEmail?: string | null;
+  /**
+   * Each platform once per company. Used platforms stay listed but can't be picked.
+   */
   socialLinks?:
     | {
         platform: 'linkedin' | 'instagram' | 'facebook' | 'youtube';
@@ -746,8 +755,8 @@ export interface TenantSettingsSelect<T extends boolean = true> {
   brand?:
     | T
     | {
-        logoOnDark?: T;
         logoOnLight?: T;
+        logoOnDark?: T;
         legalName?: T;
         tagline?: T;
         address?: T;

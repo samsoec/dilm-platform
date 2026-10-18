@@ -142,24 +142,30 @@
     }
   }
 
-  // Payload class: .tabs-field__tab-button (@payloadcms/ui fields/Tabs/Tab); its ::after is the active underline, data-dil-status is set by CompletenessPanel
-  .tabs-field__tab-button[data-dil-status] {
-    position: relative;
+  // Payload class: .tabs-field__tab-button (@payloadcms/ui fields/Tabs/Tab); its ::after is the active underline, data-dil-status and data-dil-icon are set by CompletenessPanel
+  .tabs-field__tab-button[data-dil-icon] {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 
     &::before {
-      content: "";
-      position: absolute;
-      top: 2px;
-      inset-inline-end: -10px;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--dil-warn);
+      content: attr(data-dil-icon);
+      font-family: var(--dil-font-icon);
+      font-size: 16px;
+      font-weight: 400;
     }
   }
 
-  .tabs-field__tab-button[data-dil-status="error"]::before {
-    background: var(--dil-danger);
+  .tabs-field__tab-button[data-dil-status="complete"]::before {
+    color: var(--dil-ok);
+  }
+
+  .tabs-field__tab-button[data-dil-status="warning"]::before {
+    color: var(--dil-warn);
+  }
+
+  .tabs-field__tab-button[data-dil-status="error"] {
+    color: var(--dil-danger);
   }
 
   a:focus-visible,
