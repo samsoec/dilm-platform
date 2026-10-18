@@ -256,6 +256,14 @@
     color: var(--dil-sel-ink);
   }
 
+  .dil-banner--success {
+    background: var(--dil-ok-bg);
+
+    .dil-banner__icon {
+      color: var(--dil-ok);
+    }
+  }
+
   .dil-banner--warning {
     background: var(--dil-warn-bg);
 

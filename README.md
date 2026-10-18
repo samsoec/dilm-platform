@@ -288,6 +288,15 @@ correct password is then refused for ~10 minutes, and deletes the user. It
 uses whichever database the runtime config points at, so the same command
 verifies staging.
 
+The sign-in card (`src/admin/components/login/SignInForm.tsx`) posts to
+Payload's own `POST /api/users/login`, so authentication and the lockout stay
+Payload's. It only words the outcome: "Email or password is incorrect." for
+any rejection, never how many tries are left, and the lock card when the
+answer is Payload's `userLocked` message (overridden in `src/admin/login.ts`).
+Sign-out and session expiry land on `/admin/login?notice=signed-out` or
+`?notice=expired`; `?notice=password-updated` is for the reset and
+change-password flows.
+
 **Admin theme.** The admin panel's DIL Group look (TRD-UI §4.2) lives in
 `apps/cms/src/admin/styles/`, loaded once from `app/(payload)/layout.tsx`:
 
