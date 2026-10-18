@@ -9,7 +9,14 @@ export const Media = withTenantAccess(
   withUploadedBy({
     slug: "media",
     labels: collectionLabels("media"),
-    admin: { group: navGroup("media") },
+    admin: {
+      group: navGroup("media"),
+      components: {
+        beforeListTable: [
+          "/admin/components/media/UploadImagesButton#UploadImagesButton",
+        ],
+      },
+    },
     custom: { nav: { icon: "photo_library" } },
     access: {
       read: anyone,

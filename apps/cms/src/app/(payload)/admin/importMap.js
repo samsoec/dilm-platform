@@ -5,6 +5,7 @@ import { CompletenessPanel as CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77
 import { CareersNotice as CareersNotice_4ec7abca466eaed7a6d39b518b93e551 } from '../../../admin/components/fields/CareersNotice'
 import { DocumentStatus as DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732 } from '../../../admin/components/document/DocumentStatus'
 import { SaveButton as SaveButton_40f7aaa07144fdaeb435852de88db2db } from '../../../admin/components/document/SaveButton'
+import { UploadImagesButton as UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af4d } from '../../../admin/components/media/UploadImagesButton'
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { ApplicantCell as ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3 } from '../../../admin/components/cells/ApplicantCell'
 import { StatusPill as StatusPill_9934788374c7dcc43b168cee27281175 } from '../../../admin/components/cells/StatusPill'
@@ -55,6 +56,7 @@ export const importMap = {
   "/admin/components/fields/CareersNotice#CareersNotice": CareersNotice_4ec7abca466eaed7a6d39b518b93e551,
   "/admin/components/document/DocumentStatus#DocumentStatus": DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732,
   "/admin/components/document/SaveButton#SaveButton": SaveButton_40f7aaa07144fdaeb435852de88db2db,
+  "/admin/components/media/UploadImagesButton#UploadImagesButton": UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af4d,
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
   "/admin/components/cells/ApplicantCell#ApplicantCell": ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3,
   "/admin/components/cells/StatusPill#StatusPill": StatusPill_9934788374c7dcc43b168cee27281175,
