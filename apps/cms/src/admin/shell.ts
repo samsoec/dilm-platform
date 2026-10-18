@@ -14,6 +14,13 @@ export const PROVIDERS_INSIDE_TENANT_SELECTION = [
   "/admin/components/guard/UnsavedChangesProvider#UnsavedChangesProvider",
 ];
 
+export const LIVE_DOCUMENT_CONTROLS = {
+  SaveButton: "/admin/components/document/SaveButton#SaveButton",
+  beforeDocumentControls: [
+    "/admin/components/document/DocumentStatus#DocumentStatus",
+  ],
+};
+
 export const UNSAVED_CHANGES_REPORTER =
   "/admin/components/guard/UnsavedChangesReporter#UnsavedChangesReporter";
 

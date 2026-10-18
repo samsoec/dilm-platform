@@ -2,6 +2,7 @@ import type { Condition, TextFieldSingleValidation } from "payload";
 
 import { superAdmins } from "../access";
 import { navGroup } from "../admin/navGroups";
+import { LIVE_DOCUMENT_CONTROLS } from "../admin/shell";
 import {
   countedArray,
   localeBanner,
@@ -45,7 +46,10 @@ export const Header = withTenantAccess(
   withUpdatedBy({
     slug: "header",
     labels: collectionLabels("header"),
-    admin: { group: navGroup("layout") },
+    admin: {
+      group: navGroup("layout"),
+      components: { edit: LIVE_DOCUMENT_CONTROLS },
+    },
     custom: { nav: { icon: "web_asset", order: 1 } },
     access: {
       delete: superAdmins,

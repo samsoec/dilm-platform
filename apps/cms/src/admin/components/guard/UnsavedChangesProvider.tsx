@@ -33,6 +33,7 @@ type Pending = {
 };
 
 type GuardContext = {
+  company?: GuardCompany;
   guard: (trigger: GuardTrigger, action: () => void) => void;
   report: (form: FormReport | undefined) => void;
   setCompany: (company: GuardCompany | undefined) => void;
@@ -54,6 +55,16 @@ export function UnsavedChangesProvider({ children }: { children: ReactNode }) {
   const company = useRef<GuardCompany>(undefined);
   const [pending, setPending] = useState<Pending>();
   const [shownCompany, setShownCompany] = useState<GuardCompany>();
+  const [currentCompany, setCurrentCompany] = useState<GuardCompany>();
+
+  const setCompany = useCallback((next: GuardCompany | undefined) => {
+    company.current = next;
+    setCurrentCompany(next);
+  }, []);
+
+  const report = useCallback((next: FormReport | undefined) => {
+    form.current = next;
+  }, []);
 
   const guard = useCallback(
     (trigger: GuardTrigger, action: () => void) => {
@@ -70,16 +81,8 @@ export function UnsavedChangesProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<GuardContext>(
-    () => ({
-      guard,
-      report: (next) => {
-        form.current = next;
-      },
-      setCompany: (next) => {
-        company.current = next;
-      },
-    }),
-    [guard],
+    () => ({ company: currentCompany, guard, report, setCompany }),
+    [currentCompany, guard, report, setCompany],
   );
 
   const saveAndContinue = async () => {

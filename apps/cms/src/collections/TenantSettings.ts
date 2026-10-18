@@ -4,6 +4,7 @@ import { select } from "payload/shared";
 import { superAdmins } from "../access";
 import { settingsTabLabel } from "../admin/data/completeness";
 import { navGroup } from "../admin/navGroups";
+import { LIVE_DOCUMENT_CONTROLS } from "../admin/shell";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
 import {
@@ -46,6 +47,10 @@ export const TenantSettings = withTenantAccess(
     admin: {
       group: navGroup("settings"),
       useAsTitle: "siteName",
+      components: { edit: LIVE_DOCUMENT_CONTROLS },
+    },
+    versions: {
+      drafts: false,
     },
     custom: {
       nav: { icon: "tune" },
