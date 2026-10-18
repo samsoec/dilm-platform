@@ -187,6 +187,51 @@ describe("the sidebar navigation (FR-UI-01 to FR-UI-03)", () => {
     ]);
   });
 
+  it.each(ALL.map((config) => [config.slug, config]))(
+    "labels %s in English and Indonesian",
+    (_, config) => {
+      for (const form of ["singular", "plural"] as const) {
+        const label = config.labels?.[form] as Record<string, unknown>;
+        expect(label, `${form} label`).toMatchObject({
+          en: expect.stringMatching(/\S/),
+          id: expect.stringMatching(/\S/),
+        });
+      }
+    },
+  );
+
+  it("uses plain language, never system terms, in labels (PR-UX-07)", () => {
+    const labels = ALL.flatMap(({ labels }) =>
+      [labels?.singular, labels?.plural].flatMap((label) =>
+        Object.values(label as Record<string, string>),
+      ),
+    );
+    expect(
+      labels.filter((label) => /tenant|submission|log\b/i.test(label)),
+    ).toEqual([]);
+  });
+
+  it("gives every collection the sidebar icon from TRD-UI §4.1", () => {
+    expect(
+      Object.fromEntries(
+        ALL.map(({ slug, custom }) => [
+          slug,
+          (custom?.nav as CollectionNav | undefined)?.icon,
+        ]),
+      ),
+    ).toEqual({
+      header: "web_asset",
+      footer: "call_to_action",
+      "cv-submissions": "badge",
+      "consent-logs": "verified_user",
+      "ir-documents": "description",
+      media: "photo_library",
+      "tenant-settings": "tune",
+      users: "group",
+      tenants: "domain",
+    });
+  });
+
   it("gives every collection a sidebar icon", () => {
     expect(
       ALL.filter(

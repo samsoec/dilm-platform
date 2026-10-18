@@ -51,9 +51,9 @@ function TenantFace({
         <span className="dil-tenant-card__eyebrow">
           {name ? "Editing" : "Viewing"}
         </span>
-        <span className="dil-tenant-card__name">{name ?? "All tenants"}</span>
+        <span className="dil-tenant-card__name">{name ?? "All companies"}</span>
         <span className="dil-tenant-card__domain">
-          {name ? tenant?.domain : "Choose a tenant to edit its site"}
+          {name ? tenant?.domain : "Choose a company to edit its site"}
         </span>
       </span>
       {switchable && (
@@ -119,7 +119,7 @@ export function TenantCard({
         style={colorStyle(colors)}
         title={
           lockedToDocument && tenantOptions.length > 1
-            ? "Leave this document to switch tenant."
+            ? "Leave this document to switch company."
             : undefined
         }
       >
@@ -195,7 +195,7 @@ export function TenantCard({
         aria-controls={open ? listId : undefined}
         aria-expanded={open}
         aria-haspopup="listbox"
-        aria-label={`Editing ${selected?.label ?? "all tenants"}. Switch tenant`}
+        aria-label={`Editing ${selected?.label ?? "all companies"}. Switch company`}
         className="dil-tenant-card"
         onClick={() => (open ? close() : openList())}
         onKeyDown={onButtonKeyDown}
@@ -208,7 +208,7 @@ export function TenantCard({
       {open && (
         <ul
           aria-activedescendant={optionId(active)}
-          aria-label="Switch tenant"
+          aria-label="Switch company"
           className="dil-tenant-switch__list"
           id={listId}
           onKeyDown={onListKeyDown}

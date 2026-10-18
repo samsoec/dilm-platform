@@ -22,7 +22,7 @@ export function CopyrightPreviewClient({
       {!legalName && template.includes("{legalName}") && (
         <span className="dil-copyright-preview__warn">
           {" "}
-          Add the legal name in Tenant settings › Brand.
+          Add the legal name in Company settings › Brand.
         </span>
       )}
     </p>

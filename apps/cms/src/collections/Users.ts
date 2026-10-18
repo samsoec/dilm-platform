@@ -14,6 +14,7 @@ import {
   type Role,
 } from "../access";
 import { navGroup } from "../admin/navGroups";
+import { collectionLabels } from "../admin/labels";
 
 export const promoteFirstUserToSuperAdmin: CollectionBeforeChangeHook = async ({
   data,
@@ -43,6 +44,7 @@ export const LOGIN_LOCKOUT = {
 
 export const Users: CollectionConfig = {
   slug: "users",
+  labels: collectionLabels("users"),
   admin: {
     group: navGroup("admin"),
     useAsTitle: "name",

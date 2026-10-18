@@ -14,6 +14,7 @@ import { link } from "../fields/link";
 import { keepRowStructure, lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
+import { collectionLabels } from "../admin/labels";
 
 export const NAV_ITEM_TYPES = ["link", "dropdown"] as const;
 
@@ -43,6 +44,7 @@ const requireDropdownLabel: TextFieldSingleValidation = (value) =>
 export const Header = withTenantAccess(
   withUpdatedBy({
     slug: "header",
+    labels: collectionLabels("header"),
     admin: { group: navGroup("layout") },
     custom: { nav: { icon: "web_asset", order: 1 } },
     access: {

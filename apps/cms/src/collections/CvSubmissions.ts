@@ -3,6 +3,7 @@ import type { Field } from "payload";
 import { nobody, superAdmins, systemManagedField } from "../access";
 import { navGroup } from "../admin/navGroups";
 import { withTenantAccess } from "../tenancy";
+import { collectionLabels } from "../admin/labels";
 
 export const CV_STATUSES = [
   "received",
@@ -30,7 +31,7 @@ function systemManaged<T extends Field>(field: T): T {
 
 export const CvSubmissions = withTenantAccess({
   slug: "cv-submissions",
-  labels: { singular: "CV submission", plural: "CV submissions" },
+  labels: collectionLabels("cv-submissions"),
   access: {
     create: nobody,
     delete: superAdmins,

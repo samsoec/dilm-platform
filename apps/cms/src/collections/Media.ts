@@ -2,9 +2,11 @@ import { anyone } from "../access";
 import { navGroup } from "../admin/navGroups";
 import { IMAGE_SIZES } from "../storage";
 import { withTenantAccess } from "../tenancy";
+import { collectionLabels } from "../admin/labels";
 
 export const Media = withTenantAccess({
   slug: "media",
+  labels: collectionLabels("media"),
   admin: { group: navGroup("media") },
   custom: { nav: { icon: "photo_library" } },
   access: {

@@ -21,7 +21,7 @@ function headerSources(sources: LayoutSources | undefined): Source[] {
   return [
     {
       label: "Logos",
-      detail: "Tenant settings › Brand",
+      detail: "Company settings › Brand",
       ok: filled(brand?.logoOnDark) && filled(brand?.logoOnLight),
     },
   ];
@@ -103,7 +103,7 @@ export async function SourcedFromPanel({
           href={settingsHref}
           prefetch={false}
         >
-          Open tenant settings
+          Open company settings
           <MaterialIcon name="chevron_right" />
         </Link>
       )}

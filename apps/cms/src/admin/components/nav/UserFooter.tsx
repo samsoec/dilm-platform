@@ -1,7 +1,8 @@
 "use client";
 
-import { useTenantSelection } from "@payloadcms/plugin-multi-tenant/client";
-import { Link, Logout, useTheme } from "@payloadcms/ui";
+import { Link, Logout, useConfig, useTheme } from "@payloadcms/ui";
+import { formatAdminURL } from "payload/shared";
+import { useEffect, useState } from "react";
 
 import { initials } from "../../initials";
 import { MaterialIcon } from "../MaterialIcon";
@@ -13,6 +14,32 @@ export type FooterUser = {
   allTenants: boolean;
 };
 
+function useCompanySlugs(enabled: boolean): string[] | undefined {
+  const {
+    config: { routes, serverURL },
+  } = useConfig();
+  const [slugs, setSlugs] = useState<string[]>();
+
+  useEffect(() => {
+    if (!enabled) return;
+    const request = new AbortController();
+    const url = formatAdminURL({
+      apiRoute: routes.api,
+      serverURL,
+      path: "/tenants?depth=0&limit=100&sort=name&select[slug]=true",
+    });
+    fetch(url, { credentials: "include", signal: request.signal })
+      .then((response) => (response.ok ? response.json() : undefined))
+      .then((body: { docs?: { slug: string }[] } | undefined) =>
+        setSlugs(body?.docs?.map(({ slug }) => slug)),
+      )
+      .catch(() => undefined);
+    return () => request.abort();
+  }, [enabled, routes.api, serverURL]);
+
+  return slugs;
+}
+
 export function UserFooter({
   user,
   accountHref,
@@ -21,11 +48,9 @@ export function UserFooter({
   accountHref: string;
 }) {
   const { theme, setTheme } = useTheme();
-  const { options } = useTenantSelection();
+  const companies = useCompanySlugs(!user.allTenants);
   const next = theme === "dark" ? "light" : "dark";
-  const scope = user.allTenants
-    ? "all tenants"
-    : options.map(({ label }) => String(label)).join(", ");
+  const scope = user.allTenants ? "all companies" : companies?.join(", ");
   const roleLine = [user.role, scope].filter(Boolean).join(" · ");
 
   return (

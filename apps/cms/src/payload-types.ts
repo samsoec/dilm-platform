@@ -175,7 +175,7 @@ export interface Tenant {
   slug: string;
   domain: string;
   /**
-   * Hex colour behind the tenant card in the admin sidebar. White text must reach 4.5:1 on it.
+   * Hex colour behind the company card in the admin sidebar. White text must reach 4.5:1 on it.
    */
   brandColor?: string | null;
   defaultLocale: 'en' | 'id';
@@ -210,7 +210,7 @@ export interface TenantSetting {
   contactPhone?: string | null;
   waLink?: string | null;
   /**
-   * Receives a notification for every career application to this tenant.
+   * Receives a notification for every career application to this company.
    */
   recruiterEmail?: string | null;
   socialLinks?:
@@ -522,7 +522,7 @@ export interface Footer {
     };
   };
   /**
-   * Use {year} for the current year and {legalName} for the company's legal name from Tenant Settings, e.g. Copyright © {year} {legalName}. All Rights Reserved.
+   * Use {year} for the current year and {legalName} for the company's legal name from Company settings, e.g. Copyright © {year} {legalName}. All Rights Reserved.
    */
   copyright?: string | null;
   updatedBy?: (number | null) | User;
