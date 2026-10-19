@@ -9,6 +9,7 @@ import * as migration_20261014_232338_dilm_54_tenant_brand_color from './2026101
 import * as migration_20261018_041320_dilm_70_authoring_stamps from './20261018_041320_dilm_70_authoring_stamps';
 import * as migration_20261018_043040_dilm_72_tenant_settings_versions from './20261018_043040_dilm_72_tenant_settings_versions';
 import * as migration_20261018_074116_dilm_80_query_presets from './20261018_074116_dilm_80_query_presets';
+import * as migration_20261019_233054_dilm_84_sync_tried_at from './20261019_233054_dilm_84_sync_tried_at';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20261018_074116_dilm_80_query_presets.up,
     down: migration_20261018_074116_dilm_80_query_presets.down,
-    name: '20261018_074116_dilm_80_query_presets'
+    name: '20261018_074116_dilm_80_query_presets',
+  },
+  {
+    up: migration_20261019_233054_dilm_84_sync_tried_at.up,
+    down: migration_20261019_233054_dilm_84_sync_tried_at.down,
+    name: '20261019_233054_dilm_84_sync_tried_at'
   },
 ];

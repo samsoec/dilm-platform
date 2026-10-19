@@ -55,6 +55,7 @@ export async function cmsConfig(client: PayloadClient) {
     },
     collections,
     globals,
+    custom: { cvRetentionMonths: runtimeConfig.cvRetentionMonths },
     i18n: {
       supportedLanguages: { en, id },
       fallbackLanguage: "en",

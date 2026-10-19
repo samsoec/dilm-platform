@@ -60,6 +60,20 @@ describe("readRuntimeConfigFromEnv", () => {
       "http://localhost:9324/000000000000/dilm-local-cv",
     );
     expect(config.jobPlatform).toBeUndefined();
+    expect(config.cvRetentionMonths).toBe(12);
+  });
+
+  it("reads the résumé retention period, defaulting to 12 months", () => {
+    const base = { ...envExample };
+    delete base.CV_RETENTION_MONTHS;
+    expect(readRuntimeConfigFromEnv(base).cvRetentionMonths).toBe(12);
+    expect(
+      readRuntimeConfigFromEnv({ ...base, CV_RETENTION_MONTHS: "6" })
+        .cvRetentionMonths,
+    ).toBe(6);
+    expect(() =>
+      readRuntimeConfigFromEnv({ ...base, CV_RETENTION_MONTHS: "0" }),
+    ).toThrow("CV_RETENTION_MONTHS must be a whole number above 0");
   });
 
   it("reports every missing variable at once", () => {

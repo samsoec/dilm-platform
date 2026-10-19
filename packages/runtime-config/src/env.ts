@@ -1,5 +1,6 @@
 import {
   AWS_REGION,
+  DEFAULT_CV_RETENTION_MONTHS,
   DATABASE_AUTH_MODES,
   type DatabaseAuthMode,
   type DatabaseConfig,
@@ -49,6 +50,16 @@ class EnvReader {
       throw new Error(`${name} must be a TCP port number, got "${raw}".`);
     }
     return port;
+  }
+
+  positiveInteger(name: string, fallback: number): number {
+    const raw = this.optional(name);
+    if (raw === undefined) return fallback;
+    const value = Number(raw);
+    if (!Number.isInteger(value) || value < 1) {
+      throw new Error(`${name} must be a whole number above 0, got "${raw}".`);
+    }
+    return value;
   }
 
   boolean(name: string, fallback: boolean): boolean {
@@ -140,6 +151,10 @@ export function readRuntimeConfigFromEnv(env: Env): RuntimeConfig {
 
   const config: RuntimeConfig = {
     database: readDatabaseConfig(read, region),
+    cvRetentionMonths: read.positiveInteger(
+      "CV_RETENTION_MONTHS",
+      DEFAULT_CV_RETENTION_MONTHS,
+    ),
     payloadSecret: read.required("PAYLOAD_SECRET"),
     storage: {
       region,

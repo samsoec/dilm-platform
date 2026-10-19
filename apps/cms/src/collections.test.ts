@@ -58,6 +58,7 @@ const SYSTEM_MANAGED = [
   "recruiterNotifiedAt",
   "externalSyncStatus",
   "externalSyncAttempts",
+  "externalSyncTriedAt",
 ];
 
 function user(roles: Role[], tenantIds: number[] = []) {

@@ -364,6 +364,7 @@ export interface CvSubmission {
   recruiterNotifiedAt?: string | null;
   externalSyncStatus: 'pending' | 'synced' | 'failed';
   externalSyncAttempts: number;
+  externalSyncTriedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -898,6 +899,7 @@ export interface CvSubmissionsSelect<T extends boolean = true> {
   recruiterNotifiedAt?: T;
   externalSyncStatus?: T;
   externalSyncAttempts?: T;
+  externalSyncTriedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
