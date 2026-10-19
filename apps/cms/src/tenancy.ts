@@ -1,6 +1,11 @@
 import { multiTenantPlugin } from "@payloadcms/plugin-multi-tenant";
 import type { MultiTenantPluginConfig } from "@payloadcms/plugin-multi-tenant/types";
-import type { CollectionConfig, CollectionSlug, Plugin } from "payload";
+import type {
+  AccessResult,
+  CollectionConfig,
+  CollectionSlug,
+  Plugin,
+} from "payload";
 
 import { isSuperAdmin, tenantContentAccess } from "./access";
 import { Tenants } from "./collections/Tenants";
@@ -34,10 +39,24 @@ export function tenantScopedCollections(
   );
 }
 
+export function withSuperAdminAuthors({
+  accessKey,
+  accessResult,
+}: {
+  accessKey: string;
+  accessResult: AccessResult;
+}): AccessResult {
+  if (accessKey !== "read" || typeof accessResult !== "object") {
+    return accessResult;
+  }
+  return { or: [accessResult, { roles: { in: ["super-admin"] } }] };
+}
+
 export function multiTenant(collections: CollectionConfig[]): Plugin {
   return multiTenantPlugin({
     tenantsSlug: Tenants.slug,
     collections: tenantScopedCollections(collections),
     userHasAccessToAllTenants: isSuperAdmin,
+    usersAccessResultOverride: withSuperAdminAuthors,
   });
 }

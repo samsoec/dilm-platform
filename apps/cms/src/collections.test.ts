@@ -1,5 +1,6 @@
 import type {
   AccessArgs,
+  CollectionAfterReadHook,
   CollectionConfig,
   Field,
   FieldHook,
@@ -10,7 +11,7 @@ import type {
 } from "payload";
 import { describe, expect, it } from "vitest";
 
-import { type Role, superAdminsOrSelf } from "./access";
+import { type Role, superAdminsOrSelf, tenantMembers } from "./access";
 import { validateBrandColor } from "./admin/brandColor";
 import { ICON_NAMES } from "./admin/icons";
 import { type CollectionNav, navGroupByLabel } from "./admin/navGroups";
@@ -21,6 +22,7 @@ import { Tenants } from "./collections/Tenants";
 import {
   defaultNameFromEmail,
   nameFromEmail,
+  nameOnlyForOthers,
   Users,
 } from "./collections/Users";
 import {
@@ -28,6 +30,7 @@ import {
   SOCIAL_PLATFORMS,
   TenantSettings,
 } from "./collections/TenantSettings";
+import { withSuperAdminAuthors } from "./tenancy";
 import {
   applyMultiTenant,
   childFields,
@@ -281,6 +284,47 @@ describe("users", () => {
       useAsTitle: "name",
       defaultColumns: ["name", "email", "roles"],
     });
+  });
+
+  it("lets every member see who saved something, but only by name", () => {
+    expect(Users.access!.read).toBe(tenantMembers);
+    expect(Users.hooks?.afterRead).toContain(nameOnlyForOthers);
+
+    const rani = {
+      id: 7,
+      name: "Rani Saputra",
+      email: "rani@duniakimia.com",
+      roles: ["tenant-editor"],
+      tenants: [{ tenant: 2 }],
+    };
+    const read = (viewer: object | undefined) =>
+      nameOnlyForOthers({
+        doc: rani,
+        req: { user: viewer },
+      } as unknown as Parameters<CollectionAfterReadHook>[0]);
+
+    expect(read({ id: 9, roles: ["tenant-viewer"] })).toEqual({
+      id: 7,
+      name: "Rani Saputra",
+    });
+    expect(read({ id: 7, roles: ["tenant-editor"] })).toBe(rani);
+    expect(read({ id: 1, roles: ["super-admin"] })).toBe(rani);
+    expect(read(undefined)).toBe(rani);
+  });
+
+  it("adds Super Admins to the colleagues a member can read", () => {
+    const sameCompany = { "tenants.tenant": { in: [2] } };
+    expect(
+      withSuperAdminAuthors({ accessKey: "read", accessResult: sameCompany }),
+    ).toEqual({
+      or: [sameCompany, { roles: { in: ["super-admin"] } }],
+    });
+    expect(
+      withSuperAdminAuthors({ accessKey: "update", accessResult: sameCompany }),
+    ).toBe(sameCompany);
+    expect(
+      withSuperAdminAuthors({ accessKey: "read", accessResult: true }),
+    ).toBe(true);
   });
 
   it("falls back to the email local part, as the migration backfill does", () => {

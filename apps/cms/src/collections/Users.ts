@@ -1,4 +1,5 @@
 import type {
+  CollectionAfterReadHook,
   CollectionBeforeChangeHook,
   CollectionConfig,
   FieldHook,
@@ -6,11 +7,14 @@ import type {
 
 import {
   hasAnyRole,
+  isSuperAdmin,
+  type RoleHolder,
   ROLE_LABELS,
   ROLES,
   superAdmins,
   superAdminsOrSelf,
   systemCriticalFieldAccess,
+  tenantMembers,
   type Role,
 } from "../access";
 import { navGroup } from "../admin/navGroups";
@@ -37,6 +41,13 @@ export const defaultNameFromEmail: FieldHook = ({ value, data, originalDoc }) =>
   (typeof value === "string" ? value.trim() : "") ||
   nameFromEmail(data?.email ?? originalDoc?.email);
 
+export const nameOnlyForOthers: CollectionAfterReadHook = ({ doc, req }) => {
+  const viewer = req.user;
+  if (!viewer || isSuperAdmin(viewer as RoleHolder)) return doc;
+  if (String(doc.id) === String(viewer.id)) return doc;
+  return { id: doc.id, name: doc.name };
+};
+
 export const LOGIN_LOCKOUT = {
   maxLoginAttempts: 5,
   lockTime: 10 * 60 * 1000,
@@ -49,6 +60,7 @@ export const Users: CollectionConfig = {
     group: navGroup("admin"),
     useAsTitle: "name",
     defaultColumns: ["name", "email", "roles"],
+    hidden: ({ user }) => !isSuperAdmin(user as RoleHolder),
   },
   custom: {
     nav: { icon: "group", order: 1 },
@@ -56,7 +68,7 @@ export const Users: CollectionConfig = {
   auth: { ...LOGIN_LOCKOUT },
   access: {
     admin: ({ req }) => hasAnyRole(req.user),
-    read: superAdminsOrSelf,
+    read: tenantMembers,
     create: superAdmins,
     update: superAdminsOrSelf,
     delete: superAdmins,
@@ -64,6 +76,7 @@ export const Users: CollectionConfig = {
   },
   hooks: {
     beforeChange: [promoteFirstUserToSuperAdmin],
+    afterRead: [nameOnlyForOthers],
   },
   fields: [
     {
