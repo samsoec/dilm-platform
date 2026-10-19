@@ -261,6 +261,8 @@ function sample(
       : null,
     externalSyncStatus: fields.sync.status,
     externalSyncAttempts: fields.sync.attempts,
+    externalSyncTriedAt:
+      fields.sync.attempts > 0 ? iso(fields.submittedAt + 3 * MINUTE) : null,
   };
 }
 

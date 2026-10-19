@@ -60,8 +60,11 @@ export interface JobPlatformConfig {
   webhookSecret: string;
 }
 
+export const DEFAULT_CV_RETENTION_MONTHS = 12;
+
 export interface RuntimeConfig {
   database: DatabaseConfig;
+  cvRetentionMonths: number;
   payloadSecret: string;
   storage: StorageConfig;
   email: EmailConfig;

@@ -127,6 +127,7 @@ describe("processCvMessage", () => {
       recruiterNotifiedAt: "2026-09-27T03:00:05.000Z",
       externalSyncStatus: "synced",
       externalSyncAttempts: 1,
+      externalSyncTriedAt: "2026-09-27T03:00:05.000Z",
     });
     expect(payload.sent.map((email) => email.to)).toEqual([
       "siti@example.com",
@@ -182,6 +183,7 @@ describe("processCvMessage", () => {
     expect(stored()[0]).toMatchObject({
       externalSyncStatus: "failed",
       externalSyncAttempts: 1,
+      externalSyncTriedAt: "2026-09-27T03:00:05.000Z",
     });
     expect(payload.sent).toHaveLength(2);
 

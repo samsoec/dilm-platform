@@ -1,0 +1,399 @@
+@layer dil {
+  // Payload class: .doc-header (@payloadcms/next DocumentHeader); the application view draws its own header
+  .template-default__wrap:has(> .dil-app-form, > .dil-app) > .doc-header {
+    display: none;
+  }
+
+  .dil-app {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    min-height: 100%;
+    font-family: var(--dil-font-sans);
+    color: var(--dil-ink);
+  }
+
+  .dil-app__main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px var(--gutter-h) 48px;
+  }
+
+  .dil-app__side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px 20px;
+    border-left: 1px solid var(--dil-line);
+  }
+
+  .dil-app__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .dil-app__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--dil-brand-ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-app__pager {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+
+  .dil-app__step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    text-decoration: none;
+
+    &[aria-disabled="true"] {
+      color: var(--dil-muted);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    &:hover {
+      border-color: var(--dil-muted);
+    }
+  }
+
+  .dil-app__header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .dil-app__avatar {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .dil-app__name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .dil-app__applied {
+    margin: 4px 0 0;
+    color: var(--dil-muted);
+    font-size: 15px;
+
+    b {
+      color: var(--dil-ink);
+      font-weight: 600;
+    }
+  }
+
+  .dil-app__cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .dil-app-card {
+    overflow: hidden;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-surface);
+  }
+
+  .dil-app-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--dil-line);
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+    }
+  }
+
+  .dil-app-card__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--dil-muted);
+    font-size: 12px;
+    font-weight: 600;
+
+    .dil-icon {
+      font-size: 15px;
+    }
+  }
+
+  .dil-app-card__list {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    margin: 0;
+    padding: 4px 18px 8px;
+    font-size: 14px;
+
+    dt,
+    dd {
+      margin: 0;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--dil-line);
+    }
+
+    dt {
+      color: var(--dil-muted);
+    }
+
+    dd {
+      overflow-wrap: anywhere;
+    }
+
+    dt:last-of-type,
+    dd:last-of-type {
+      border-bottom: 0;
+    }
+
+    a {
+      color: var(--dil-brand-ink);
+    }
+  }
+
+  .dil-app-card__resume {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+
+    > span:last-child {
+      color: var(--dil-muted);
+      font-size: 12px;
+    }
+  }
+
+  .dil-app-delivery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dil-app-delivery__cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 18px;
+
+    & + & {
+      border-left: 1px solid var(--dil-line);
+    }
+  }
+
+  .dil-app-delivery__heading {
+    color: var(--dil-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .dil-app-delivery__state {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: 600;
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-app-delivery__state--ok {
+    color: var(--dil-ok);
+  }
+
+  .dil-app-delivery__state--warn {
+    color: var(--dil-warn);
+  }
+
+  .dil-app-delivery__state--danger {
+    color: var(--dil-danger);
+  }
+
+  .dil-app-delivery__detail {
+    color: var(--dil-ink-2);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .dil-app-delivery__banner {
+    margin: 0 18px 18px;
+  }
+
+  .dil-app-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .dil-app-panel + .dil-app-panel {
+    padding-top: 20px;
+    border-top: 1px solid var(--dil-line);
+  }
+
+  .dil-app-panel__title {
+    margin: 0;
+    color: var(--dil-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .dil-app-panel__note {
+    color: var(--dil-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .dil-app-readonly {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface-2);
+    color: var(--dil-ink-2);
+    font-size: 13px;
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+
+  .dil-app-status {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dil-app-status__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font-size: 15px;
+    cursor: pointer;
+
+    input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--dil-sel-ink);
+    }
+
+    .dil-icon {
+      color: var(--dil-muted);
+      font-size: 18px;
+    }
+
+    &:has(input:focus-visible) {
+      outline: var(--accessibility-outline);
+      outline-offset: var(--accessibility-outline-offset);
+    }
+  }
+
+  .dil-app-status__option--checked {
+    border-color: var(--dil-brand);
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+
+    .dil-icon {
+      color: inherit;
+    }
+  }
+
+  .dil-app-status__label {
+    flex: 1;
+  }
+
+  .dil-app-status__save,
+  .dil-app-panel .dil-btn-with-reason {
+    width: 100%;
+  }
+
+  .dil-app-record__id code {
+    font-family: var(--dil-font-mono);
+    font-size: 13px;
+  }
+
+  @media (max-width: 1100px) {
+    .dil-app {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dil-app__side {
+      border-top: 1px solid var(--dil-line);
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .dil-app__cards,
+    .dil-app-delivery {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dil-app-delivery__cell + .dil-app-delivery__cell {
+      border-top: 1px solid var(--dil-line);
+      border-left: 0;
+    }
+  }
+}

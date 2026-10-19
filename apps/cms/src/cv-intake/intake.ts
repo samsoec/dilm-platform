@@ -162,13 +162,17 @@ export async function processCvMessage(
       return;
     }
     const externalSyncAttempts = current.externalSyncAttempts + 1;
+    const tried = () => ({
+      externalSyncAttempts,
+      externalSyncTriedAt: now().toISOString(),
+    });
     try {
       await postToJobPlatform(jobPlatform, current, slug, context.fetch);
     } catch (error) {
-      await stamp({ externalSyncStatus: "failed", externalSyncAttempts });
+      await stamp({ externalSyncStatus: "failed", ...tried() });
       throw error;
     }
-    await stamp({ externalSyncStatus: "synced", externalSyncAttempts });
+    await stamp({ externalSyncStatus: "synced", ...tried() });
     log.info("sent to the job platform");
   };
 

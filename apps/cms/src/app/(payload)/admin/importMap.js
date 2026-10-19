@@ -25,6 +25,7 @@ import { CvListFooter as CvListFooter_f300b501cd0f471866369983ec65666d } from '.
 import { StatusTabs as StatusTabs_c467731604d0d3674e06a5e6b3537a04 } from '../../../admin/components/lists/StatusTabs'
 import { CvToolbar as CvToolbar_6e7bbbc44355b310e20f11bbdf672e51 } from '../../../admin/components/lists/CvToolbar'
 import { ListIntro as ListIntro_3758f5318f3bce3eb36c93ddfc96aba0 } from '../../../admin/components/lists/ListIntro'
+import { ApplicationView as ApplicationView_dadab5058eb4d2024b8c7d5fc6e34474 } from '../../../admin/components/application/ApplicationView'
 import { LocaleBanner as LocaleBanner_6e922f404c87f00d1c61cd1cda241d71 } from '../../../admin/components/fields/LocaleBanner'
 import { ValidationSummary as ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2 } from '../../../admin/components/fields/ValidationSummary'
 import { VersionInfo as VersionInfo_015c9769215da0668226801191ca76fc } from '../../../admin/components/fields/VersionInfo'
@@ -99,6 +100,7 @@ export const importMap = {
   "/admin/components/lists/StatusTabs#StatusTabs": StatusTabs_c467731604d0d3674e06a5e6b3537a04,
   "/admin/components/lists/CvToolbar#CvToolbar": CvToolbar_6e7bbbc44355b310e20f11bbdf672e51,
   "/admin/components/lists/ListIntro#ListIntro": ListIntro_3758f5318f3bce3eb36c93ddfc96aba0,
+  "/admin/components/application/ApplicationView#ApplicationView": ApplicationView_dadab5058eb4d2024b8c7d5fc6e34474,
   "/admin/components/fields/LocaleBanner#LocaleBanner": LocaleBanner_6e922f404c87f00d1c61cd1cda241d71,
   "/admin/components/fields/ValidationSummary#ValidationSummary": ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2,
   "/admin/components/fields/VersionInfo#VersionInfo": VersionInfo_015c9769215da0668226801191ca76fc,

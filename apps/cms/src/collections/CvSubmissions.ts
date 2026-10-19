@@ -69,6 +69,14 @@ export const CvSubmissions = withTenantAccess({
         "/admin/components/lists/CvToolbar#CvToolbar",
       ],
       afterListTable: ["/admin/components/lists/CvListFooter#CvListFooter"],
+      views: {
+        edit: {
+          default: {
+            Component:
+              "/admin/components/application/ApplicationView#ApplicationView",
+          },
+        },
+      },
     },
   },
   custom: {
@@ -148,6 +156,12 @@ export const CvSubmissions = withTenantAccess({
       required: true,
       min: 0,
       defaultValue: 0,
+    }),
+    systemManaged({
+      name: "externalSyncTriedAt",
+      label: "Last job platform try",
+      type: "date",
+      admin: { date: { pickerAppearance: "dayAndTime" } },
     }),
   ],
 });
