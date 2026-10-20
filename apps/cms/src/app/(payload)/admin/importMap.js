@@ -84,6 +84,7 @@ import { CommandPaletteProvider as CommandPaletteProvider_46e3dd79be0b1e4bb90889
 import { LoginScreen as LoginScreen_22f500d6dd68e64c5e8155425d1d2e99 } from '../../../admin/components/login/LoginScreen'
 import { SignOutScreen as SignOutScreen_ccdb22b60be80390756933282f929812 } from '../../../admin/components/login/SignOutScreen'
 import { SessionExpiredScreen as SessionExpiredScreen_ccdb22b60be80390756933282f929812 } from '../../../admin/components/login/SignOutScreen'
+import { AccountView as AccountView_19c2597698600b855c26411007192717 } from '../../../admin/components/account/AccountView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
@@ -175,6 +176,7 @@ export const importMap = {
   "/admin/components/login/LoginScreen#LoginScreen": LoginScreen_22f500d6dd68e64c5e8155425d1d2e99,
   "/admin/components/login/SignOutScreen#SignOutScreen": SignOutScreen_ccdb22b60be80390756933282f929812,
   "/admin/components/login/SignOutScreen#SessionExpiredScreen": SessionExpiredScreen_ccdb22b60be80390756933282f929812,
+  "/admin/components/account/AccountView#AccountView": AccountView_19c2597698600b855c26411007192717,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }
