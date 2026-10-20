@@ -1,4 +1,6 @@
 import type {
+  Access,
+  CollectionAfterLoginHook,
   CollectionAfterReadHook,
   CollectionBeforeChangeHook,
   CollectionConfig,
@@ -17,6 +19,7 @@ import {
   tenantMembers,
   type Role,
 } from "../access";
+import { inviteEndpoints } from "../account/invite";
 import {
   changePasswordEndpoint,
   requireVerifiedPasswordChange,
@@ -52,6 +55,30 @@ export const nameOnlyForOthers: CollectionAfterReadHook = ({ doc, req }) => {
   return { id: doc.id, name: doc.name };
 };
 
+export const onlyWhileNoUsers: Access = async ({ req }) => {
+  const { totalDocs } = await req.payload.count({ collection: "users" });
+  return totalDocs === 0;
+};
+
+export const LAST_LOGIN_CONTEXT = "stampLastLogin";
+
+export const stampLastLogin: CollectionAfterLoginHook = async ({
+  req,
+  user,
+}) => {
+  await req.payload.update({
+    collection: "users",
+    id: user.id,
+    data: { lastLoginAt: new Date().toISOString() },
+    context: { [LAST_LOGIN_CONTEXT]: true },
+    overrideAccess: true,
+    req,
+  });
+  return user;
+};
+
+const USER_CELLS = "/admin/components/users/UserCells";
+
 export const LOGIN_LOCKOUT = {
   maxLoginAttempts: 5,
   lockTime: 10 * 60 * 1000,
@@ -63,8 +90,15 @@ export const Users: CollectionConfig = {
   admin: {
     group: navGroup("admin"),
     useAsTitle: "name",
-    defaultColumns: ["name", "email", "roles"],
+    description:
+      "People who can sign in, across all three sites. Only Super Admins see this page.",
+    defaultColumns: ["name", "roles", "sites", "status", "lastLoginAt"],
     hidden: ({ user }) => !isSuperAdmin(user as RoleHolder),
+    components: {
+      Description: "/admin/components/lists/ListIntro#ListIntro",
+      beforeListTable: ["/admin/components/users/RoleTabs#RoleTabs"],
+      afterListTable: ["/admin/components/users/RoleExplainer#RoleExplainer"],
+    },
   },
   custom: {
     nav: { icon: "group", order: 1 },
@@ -73,24 +107,28 @@ export const Users: CollectionConfig = {
   access: {
     admin: ({ req }) => hasAnyRole(req.user),
     read: tenantMembers,
-    create: superAdmins,
+    create: onlyWhileNoUsers,
     update: superAdminsOrSelf,
     delete: superAdmins,
     unlock: superAdmins,
   },
-  endpoints: [changePasswordEndpoint],
+  endpoints: [changePasswordEndpoint, ...inviteEndpoints],
   hooks: {
+    afterLogin: [stampLastLogin],
     beforeChange: [promoteFirstUserToSuperAdmin, requireVerifiedPasswordChange],
     afterRead: [nameOnlyForOthers],
   },
   fields: [
     {
       name: "name",
+      label: "User",
       type: "text",
       hooks: { beforeChange: [defaultNameFromEmail] },
+      admin: { components: { Cell: `${USER_CELLS}#UserCell` } },
     },
     {
       name: "roles",
+      label: "Role",
       type: "select",
       hasMany: true,
       required: true,
@@ -98,6 +136,39 @@ export const Users: CollectionConfig = {
       defaultValue: ["tenant-viewer"] satisfies Role[],
       options: ROLES.map((role) => ({ label: ROLE_LABELS[role], value: role })),
       access: systemCriticalFieldAccess,
+      admin: { components: { Cell: `${USER_CELLS}#RoleCell` } },
+    },
+    {
+      name: "sites",
+      type: "ui",
+      admin: {
+        components: { Cell: "/admin/components/users/SitesCell#SitesCell" },
+      },
+    },
+    {
+      name: "status",
+      type: "ui",
+      admin: {
+        components: { Cell: "/admin/components/users/StatusCell#StatusCell" },
+      },
+    },
+    {
+      name: "lastLoginAt",
+      label: "Last sign-in",
+      type: "date",
+      access: { create: () => false, update: () => false },
+      admin: {
+        readOnly: true,
+        date: { pickerAppearance: "dayAndTime" },
+        components: { Cell: `${USER_CELLS}#LastSignInCell` },
+      },
+    },
+    {
+      name: "invitedBy",
+      type: "relationship",
+      relationTo: "users",
+      access: { create: () => false, update: () => false },
+      admin: { readOnly: true, disableListColumn: true },
     },
   ],
 };

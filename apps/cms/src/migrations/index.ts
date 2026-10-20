@@ -10,6 +10,7 @@ import * as migration_20261018_041320_dilm_70_authoring_stamps from './20261018_
 import * as migration_20261018_043040_dilm_72_tenant_settings_versions from './20261018_043040_dilm_72_tenant_settings_versions';
 import * as migration_20261018_074116_dilm_80_query_presets from './20261018_074116_dilm_80_query_presets';
 import * as migration_20261019_233054_dilm_84_sync_tried_at from './20261019_233054_dilm_84_sync_tried_at';
+import * as migration_20261020_022848_dilm_65_user_sign_in_and_inviter from './20261020_022848_dilm_65_user_sign_in_and_inviter';
 
 export const migrations = [
   {
@@ -70,6 +71,11 @@ export const migrations = [
   {
     up: migration_20261019_233054_dilm_84_sync_tried_at.up,
     down: migration_20261019_233054_dilm_84_sync_tried_at.down,
-    name: '20261019_233054_dilm_84_sync_tried_at'
+    name: '20261019_233054_dilm_84_sync_tried_at',
+  },
+  {
+    up: migration_20261020_022848_dilm_65_user_sign_in_and_inviter.up,
+    down: migration_20261020_022848_dilm_65_user_sign_in_and_inviter.down,
+    name: '20261020_022848_dilm_65_user_sign_in_and_inviter'
   },
 ];

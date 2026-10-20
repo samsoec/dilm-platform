@@ -134,6 +134,8 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * People who can sign in, across all three sites. Only Super Admins see this page.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -141,6 +143,8 @@ export interface User {
   id: number;
   name?: string | null;
   roles: ('super-admin' | 'tenant-editor' | 'tenant-viewer')[];
+  lastLoginAt?: string | null;
+  invitedBy?: (number | null) | User;
   tenants?:
     | {
         tenant: number | Tenant;
@@ -708,6 +712,8 @@ export interface PayloadQueryPreset {
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
   roles?: T;
+  lastLoginAt?: T;
+  invitedBy?: T;
   tenants?:
     | T
     | {

@@ -1,7 +1,8 @@
 @layer dil {
   // Payload classes: .collection-list--<slug>, .list-controls, #heading-_select, .cell-_select (@payloadcms/ui views/List, elements/Table); these lists offer no bulk actions, so the native controls row and row checkboxes stay hidden (US-CON-1, US-TEN-1)
   .collection-list--consent-logs,
-  .collection-list--tenants {
+  .collection-list--tenants,
+  .collection-list--users {
     .list-controls,
     #heading-_select,
     .cell-_select {

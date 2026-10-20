@@ -1,3 +1,11 @@
+import { UserCell as UserCell_5cd97e58844d5c99becf880375f054b9 } from '../../../admin/components/users/UserCells'
+import { RoleCell as RoleCell_5cd97e58844d5c99becf880375f054b9 } from '../../../admin/components/users/UserCells'
+import { SitesCell as SitesCell_b575303840066c9cd1a8a5971511e4a7 } from '../../../admin/components/users/SitesCell'
+import { StatusCell as StatusCell_7089b90a8494ee7c1cdec3dd4f191c33 } from '../../../admin/components/users/StatusCell'
+import { LastSignInCell as LastSignInCell_5cd97e58844d5c99becf880375f054b9 } from '../../../admin/components/users/UserCells'
+import { RoleExplainer as RoleExplainer_6083a4265825204421973f9c8002c04c } from '../../../admin/components/users/RoleExplainer'
+import { RoleTabs as RoleTabs_7f5d2ce9f08b95e86790822acf331638 } from '../../../admin/components/users/RoleTabs'
+import { ListIntro as ListIntro_3758f5318f3bce3eb36c93ddfc96aba0 } from '../../../admin/components/lists/ListIntro'
 import { UnsavedChangesReporter as UnsavedChangesReporter_0b686cc068a7e080540f78fe764a5893 } from '../../../admin/components/guard/UnsavedChangesReporter'
 import { CompanyCell as CompanyCell_0a353b7950d55d873cddd18b24ded04f } from '../../../admin/components/companies/CompanyCells'
 import { DomainCell as DomainCell_0a353b7950d55d873cddd18b24ded04f } from '../../../admin/components/companies/CompanyCells'
@@ -8,7 +16,6 @@ import { ColorCell as ColorCell_0a353b7950d55d873cddd18b24ded04f } from '../../.
 import { BrandColorField as BrandColorField_f00acec9c86e0e5439a1aec25060db59 } from '../../../admin/components/companies/BrandColorField'
 import { EditCell as EditCell_0a353b7950d55d873cddd18b24ded04f } from '../../../admin/components/companies/CompanyCells'
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
-import { ListIntro as ListIntro_3758f5318f3bce3eb36c93ddfc96aba0 } from '../../../admin/components/lists/ListIntro'
 import { CompanySaveButton as CompanySaveButton_4120b1509b6b758e788c36cbba11c6cc } from '../../../admin/components/companies/CompanySaveButton'
 import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { CompletenessPanel as CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77 } from '../../../admin/components/fields/CompletenessPanel'
@@ -90,6 +97,14 @@ import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc056
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
+  "/admin/components/users/UserCells#RoleCell": RoleCell_5cd97e58844d5c99becf880375f054b9,
+  "/admin/components/users/SitesCell#SitesCell": SitesCell_b575303840066c9cd1a8a5971511e4a7,
+  "/admin/components/users/StatusCell#StatusCell": StatusCell_7089b90a8494ee7c1cdec3dd4f191c33,
+  "/admin/components/users/UserCells#LastSignInCell": LastSignInCell_5cd97e58844d5c99becf880375f054b9,
+  "/admin/components/users/RoleExplainer#RoleExplainer": RoleExplainer_6083a4265825204421973f9c8002c04c,
+  "/admin/components/users/RoleTabs#RoleTabs": RoleTabs_7f5d2ce9f08b95e86790822acf331638,
+  "/admin/components/lists/ListIntro#ListIntro": ListIntro_3758f5318f3bce3eb36c93ddfc96aba0,
   "/admin/components/guard/UnsavedChangesReporter#UnsavedChangesReporter": UnsavedChangesReporter_0b686cc068a7e080540f78fe764a5893,
   "/admin/components/companies/CompanyCells#CompanyCell": CompanyCell_0a353b7950d55d873cddd18b24ded04f,
   "/admin/components/companies/CompanyCells#DomainCell": DomainCell_0a353b7950d55d873cddd18b24ded04f,
@@ -100,7 +115,6 @@ export const importMap = {
   "/admin/components/companies/BrandColorField#BrandColorField": BrandColorField_f00acec9c86e0e5439a1aec25060db59,
   "/admin/components/companies/CompanyCells#EditCell": EditCell_0a353b7950d55d873cddd18b24ded04f,
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
-  "/admin/components/lists/ListIntro#ListIntro": ListIntro_3758f5318f3bce3eb36c93ddfc96aba0,
   "/admin/components/companies/CompanySaveButton#CompanySaveButton": CompanySaveButton_4120b1509b6b758e788c36cbba11c6cc,
   "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
   "/admin/components/fields/CompletenessPanel#CompletenessPanel": CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77,
