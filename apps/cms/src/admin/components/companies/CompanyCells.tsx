@@ -6,7 +6,6 @@ import type { DefaultCellComponentProps } from "payload";
 import { useEffect, useRef } from "react";
 
 import { tenantColors } from "../../brandColor";
-import { MaterialIcon } from "../MaterialIcon";
 import { LOCALE_LABELS } from "./companies";
 
 function text(value: unknown): string {
@@ -86,19 +85,6 @@ function EditCompany({ rowData }: DefaultCellComponentProps) {
         {isDrawerOpen ? "Editing" : "Edit"}
       </button>
       <Drawer
-        Header={
-          <div className="dil-company-drawer__head">
-            <h2>Edit {name}</h2>
-            <button
-              aria-label="Close"
-              className="dil-drawer__close"
-              onClick={closeDrawer}
-              type="button"
-            >
-              <MaterialIcon name="close" />
-            </button>
-          </div>
-        }
         onSave={() => {
           closeDrawer();
           router.refresh();

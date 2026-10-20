@@ -75,58 +75,83 @@
     box-shadow: inset 3px 0 0 var(--dil-brand);
   }
 
-  .dil-company-drawer__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--dil-line);
-    font-family: var(--dil-font-sans);
-
-    h2 {
-      margin: 0;
-      font-size: 17px;
-      font-weight: 700;
-    }
-  }
-
-  // Payload classes: .drawer__content, .drawer__content-children, .doc-controls, .doc-controls__* (@payloadcms/ui elements/Drawer, DocumentControls); the company drawer is a narrow right panel with Cancel/Save at the bottom (3d)
-  .drawer:has(.dil-company-drawer__head) {
+  // Payload classes: .doc-drawer, .drawer__content, .collection-edit--tenants, .doc-drawer__header*, .id-label, .doc-controls* (@payloadcms/ui elements/DocumentDrawer, Drawer, DocumentControls); the company drawer is a narrow right panel titled "Edit <name>" with Cancel/Save at the bottom (3d)
+  .doc-drawer:has(.collection-edit--tenants) {
+    // Payload sets the drawer width inline from JS; max-width still caps it
     .drawer__content {
-      width: min(400px, 100vw);
+      max-width: 400px;
       margin-left: auto;
       background: var(--dil-surface);
     }
 
     .drawer__content-children {
+      height: 100%;
+      padding: 0;
+    }
+
+    .collection-edit--tenants,
+    .collection-edit__form {
       display: flex;
       flex-direction: column;
-      min-height: 100%;
+      min-height: 100vh;
+    }
+
+    .doc-drawer__header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--dil-line);
+    }
+
+    .doc-drawer__header-content {
+      align-items: center;
+    }
+
+    .doc-drawer__header-text {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+
+      &::before {
+        content: "Edit ";
+      }
+    }
+
+    .doc-drawer__header .id-label,
+    .doc-drawer__after-header {
+      display: none;
+    }
+
+    .collection-edit__main-wrapper {
+      flex: 1;
+    }
+
+    .document-fields__edit {
+      padding: 18px 22px;
     }
 
     .doc-controls {
       position: sticky;
       bottom: 0;
+      z-index: 1;
       order: 99;
-      margin-top: auto;
       padding: 14px 22px;
       border-top: 1px solid var(--dil-line);
-      border-bottom: 0;
       background: var(--dil-surface);
     }
 
     .doc-controls__meta,
-    .doc-controls__dots,
-    .doc-controls__popup {
+    .doc-controls__divider {
       display: none;
     }
 
-    .doc-controls__content,
     .doc-controls__wrapper {
       justify-content: flex-end;
-      width: 100%;
     }
+  }
+
+  // Sonner's toaster ([data-sonner-toaster], used by Payload's toast) would cover the drawer's Save button, so it rises above the footer while the company drawer is open
+  body:has(.doc-drawer .collection-edit--tenants)
+    [data-sonner-toaster][data-y-position="bottom"] {
+    translate: 0 -76px;
   }
 
   .dil-company-actions {
@@ -163,6 +188,17 @@
       font-family: var(--dil-font-mono);
       font-size: 13px;
       outline: none;
+
+      &:focus,
+      &:focus-visible {
+        border: 0;
+        box-shadow: none;
+        outline: none;
+      }
+    }
+
+    &:focus-within {
+      border-color: var(--dil-brand);
     }
   }
 

@@ -38,6 +38,7 @@ export const Tenants: CollectionConfig = {
       },
     },
   },
+  defaultSort: "name",
   custom: {
     nav: { icon: "domain", order: 2 },
   },
