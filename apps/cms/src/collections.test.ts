@@ -523,16 +523,27 @@ describe("ir-documents", () => {
     expect(IrDocuments.upload).toMatchObject({
       mimeTypes: ["application/pdf"],
     });
-    expect(fieldNames(IrDocuments.fields)).toEqual([
+    const dataFields = IrDocuments.fields.filter(({ type }) => type !== "ui");
+    expect(fieldNames(dataFields)).toEqual([
       "title",
       "documentType",
-      "publishedDate",
       "firstPublishedAt",
       "locale",
+      "publishedDate",
       "filesize",
       "_status",
       "updatedBy",
+      "uploadedBy",
       "trashedBy",
+    ]);
+    expect(
+      fieldNames(IrDocuments.fields.filter(({ type }) => type === "ui")),
+    ).toEqual([
+      "detailsHeading",
+      "readyToPublish",
+      "disclosureTiming",
+      "versionInfo",
+      "moveToTrash",
     ]);
   });
 

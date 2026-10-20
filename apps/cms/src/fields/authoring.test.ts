@@ -53,10 +53,20 @@ describe("media.uploadedBy (FR-UI-62)", () => {
     ).toEqual({ alt: "Plant", uploadedBy: editor.id });
   });
 
-  it("never changes on later saves", () => {
+  it("never changes on later saves without a new file", () => {
     expect(
       run(stampUploadedBy, { data: { alt: "New alt", uploadedBy: 99 } }),
     ).toEqual({ alt: "New alt", uploadedBy: 99 });
+  });
+
+  it("re-stamps whoever uploads a replacement file (DILM-92)", () => {
+    expect(
+      stampUploadedBy({
+        data: { title: "Laporan", uploadedBy: 99 },
+        operation: "update",
+        req: { user: editor, context: {}, file: { name: "new.pdf" } },
+      } as unknown as HookArgs),
+    ).toEqual({ title: "Laporan", uploadedBy: editor.id });
   });
 });
 

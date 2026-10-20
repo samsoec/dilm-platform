@@ -5,6 +5,7 @@ import type { RoleHolder } from "../../../access";
 import { selectedTenantID, TENANT_COOKIE } from "../../data/sidebar";
 import { Banner } from "../kit/Banner";
 import { Tag } from "../kit/Tag";
+import { IrEditNote, ListOnly } from "../ir/IrEditorParts";
 import { mediaIntro } from "../media/media";
 import { MaterialIcon } from "../MaterialIcon";
 import { TitleTag } from "./TitleTag";
@@ -80,7 +81,20 @@ const BANNERS: Record<string, { title: string; text: string }> = {
   },
 };
 
-export function ListIntro(props: ViewDescriptionServerProps) {
+export async function ListIntro(props: ViewDescriptionServerProps) {
+  return (
+    <>
+      <ListOnly>
+        <ListIntroBody {...props} />
+      </ListOnly>
+      {props.collectionSlug === "ir-documents" && (
+        <IrEditNote domain={await tenantDomain(props)} />
+      )}
+    </>
+  );
+}
+
+function ListIntroBody(props: ViewDescriptionServerProps) {
   const { collectionSlug, description } = props;
   if (collectionSlug === "consent-logs") return <ConsentIntro {...props} />;
   if (collectionSlug === "media") return <MediaIntro {...props} />;
