@@ -1,6 +1,7 @@
 @layer dil {
-  // Payload class: .template-minimal / .template-minimal__wrap (@payloadcms/next templates/Minimal)
-  .template-minimal.login {
+  // Payload class: .template-minimal / .template-minimal__wrap (@payloadcms/next templates/Minimal); the sign-in, forgot and sign-out screens all draw their own full-page layout
+  .template-minimal.login,
+  .template-minimal:has(.dil-login) {
     padding: 0;
     align-items: stretch;
 
@@ -328,6 +329,91 @@
 
     .dil-login__brand {
       display: none;
+    }
+  }
+}
+
+@layer dil {
+  .dil-login__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    color: var(--dil-brand-ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-login__tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+
+    .dil-icon {
+      font-size: 24px;
+    }
+  }
+
+  .dil-login__title--problem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .dil-icon {
+      color: var(--dil-warn, #b54708);
+      font-size: 24px;
+    }
+  }
+
+  .dil-login__hint code {
+    font-family: var(--dil-font-mono);
+    font-size: 13px;
+  }
+
+  .dil-login__companies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .dil-login__company {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .dil-signin__field input[aria-invalid="true"] {
+    border-color: var(--dil-danger);
+  }
+
+  .dil-signin__error {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--dil-danger);
+    font-size: 13px;
+
+    .dil-icon {
+      font-size: 16px;
     }
   }
 }

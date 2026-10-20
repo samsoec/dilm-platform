@@ -20,6 +20,7 @@ import {
   type Role,
 } from "../access";
 import { inviteEndpoints } from "../account/invite";
+import { inviteInfoEndpoint, resetEmailHTML } from "../account/resetToken";
 import {
   keepOwnSuperAdminRole,
   superAdminsExceptSelf,
@@ -114,7 +115,13 @@ export const Users: CollectionConfig = {
   custom: {
     nav: { icon: "group", order: 1 },
   },
-  auth: { ...LOGIN_LOCKOUT },
+  auth: {
+    ...LOGIN_LOCKOUT,
+    forgotPassword: {
+      generateEmailSubject: () => "Reset your DIL Group CMS password",
+      generateEmailHTML: (args) => resetEmailHTML(args ?? {}),
+    },
+  },
   access: {
     admin: ({ req }) => hasAnyRole(req.user),
     read: tenantMembers,
@@ -123,7 +130,7 @@ export const Users: CollectionConfig = {
     delete: superAdminsExceptSelf,
     unlock: superAdmins,
   },
-  endpoints: [changePasswordEndpoint, ...inviteEndpoints],
+  endpoints: [changePasswordEndpoint, ...inviteEndpoints, inviteInfoEndpoint],
   hooks: {
     afterLogin: [stampLastLogin],
     beforeChange: [
