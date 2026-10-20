@@ -42,6 +42,12 @@ export async function cmsConfig(client: PayloadClient) {
         Nav: "/admin/components/nav/AdminNav#AdminNav",
         actions: TOP_BAR_ACTIONS,
         ...LOGIN_COMPONENTS,
+        views: {
+          ...LOGIN_COMPONENTS.views,
+          account: {
+            Component: "/admin/components/account/AccountView#AccountView",
+          },
+        },
         graphics: {
           Icon: "/admin/graphics/Icon#Icon",
           Logo: "/admin/graphics/Logo#Logo",

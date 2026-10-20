@@ -25,12 +25,14 @@ export type ToastContent = {
   title: ReactNode;
   body?: ReactNode;
   action?: ToastAction;
+  icon?: IconName;
 };
 
 export function KitToast({
   tone,
   title,
   body,
+  icon,
   action,
   onDismiss,
   duration = TOAST_DURATION_MS,
@@ -66,7 +68,7 @@ export function KitToast({
       onMouseLeave={() => setHovered(false)}
       role={tone === "error" ? "alert" : "status"}
     >
-      <MaterialIcon className="dil-toast__icon" name={ICONS[tone]} />
+      <MaterialIcon className="dil-toast__icon" name={icon ?? ICONS[tone]} />
       <p className="dil-toast__text">
         <b>{title}</b> {body}
       </p>

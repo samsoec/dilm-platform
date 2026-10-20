@@ -17,6 +17,10 @@ import {
   tenantMembers,
   type Role,
 } from "../access";
+import {
+  changePasswordEndpoint,
+  requireVerifiedPasswordChange,
+} from "../account/password";
 import { navGroup } from "../admin/navGroups";
 import { collectionLabels } from "../admin/labels";
 
@@ -74,8 +78,9 @@ export const Users: CollectionConfig = {
     delete: superAdmins,
     unlock: superAdmins,
   },
+  endpoints: [changePasswordEndpoint],
   hooks: {
-    beforeChange: [promoteFirstUserToSuperAdmin],
+    beforeChange: [promoteFirstUserToSuperAdmin, requireVerifiedPasswordChange],
     afterRead: [nameOnlyForOthers],
   },
   fields: [

@@ -1,0 +1,259 @@
+@layer dil {
+  .dil-account {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px var(--gutter-h) 48px;
+    font-family: var(--dil-font-sans);
+    color: var(--dil-ink);
+  }
+
+  .dil-account__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    p {
+      margin: 4px 0 0;
+      color: var(--dil-ink-2);
+      font-size: 14px;
+    }
+  }
+
+  .dil-account__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 20px;
+
+    @media (max-width: 900px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .dil-account__column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .dil-account-card {
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-surface);
+  }
+
+  .dil-account-card__title {
+    margin: 0;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--dil-line);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .dil-account-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .dil-account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .dil-account-form__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .dil-account-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    input:not([type="radio"]) {
+      height: 40px;
+      padding: 0 12px;
+      border: 1px solid var(--dil-line);
+      border-radius: var(--dil-radius-s);
+      background: var(--dil-surface);
+      color: var(--dil-ink);
+      font: inherit;
+      font-size: 14px;
+
+      &[aria-invalid="true"] {
+        border-color: var(--dil-danger);
+      }
+    }
+  }
+
+  .dil-account-field__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    color: var(--dil-ink);
+    font-size: 13px;
+    font-weight: 600;
+
+    .dil-icon {
+      color: var(--dil-muted);
+      font-size: 15px;
+    }
+  }
+
+  .dil-account-field__locked {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface-2);
+    color: var(--dil-ink-2);
+    font-size: 14px;
+  }
+
+  .dil-account-field__error {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--dil-danger);
+    font-size: 13px;
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+
+  .dil-account__pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .dil-account__avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .dil-account__avatar {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .dil-account__note {
+    margin: 0;
+    color: var(--dil-muted);
+    font-size: 12px;
+  }
+
+  .dil-account__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .dil-account__chip {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--dil-surface-2);
+    color: var(--dil-ink-2);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .dil-account__chip--tenant {
+    background: var(--dil-tenant-soft, var(--dil-sel-bg));
+    color: var(--dil-tenant-ink, var(--dil-sel-ink));
+  }
+
+  a.dil-account__chip:hover {
+    text-decoration: underline;
+  }
+
+  .dil-account__languages {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dil-account__language {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    font-size: 14px;
+    cursor: pointer;
+
+    input {
+      margin: 0;
+      accent-color: var(--dil-brand-ink);
+    }
+  }
+
+  .dil-account__language--checked {
+    border-color: var(--dil-brand);
+    background: var(--dil-sel-bg);
+    font-weight: 600;
+  }
+
+  .dil-account__themes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 3px;
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface-2);
+  }
+
+  .dil-account__theme {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--dil-muted);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+
+    .dil-icon {
+      font-size: 17px;
+    }
+  }
+
+  .dil-account__theme--active {
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgb(17 28 42 / 12%);
+  }
+}
