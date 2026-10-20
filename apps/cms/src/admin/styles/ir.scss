@@ -409,4 +409,39 @@
   .dil-ir-trash {
     width: 100%;
   }
+
+  .dil-ir-publish__facts {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 4px 12px;
+    margin: 0 0 10px;
+
+    dt {
+      color: var(--dil-muted);
+    }
+
+    dd {
+      margin: 0;
+      color: var(--dil-ink);
+      font-weight: 700;
+    }
+  }
+
+  .dil-ir-file__locked {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--dil-muted);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    .dil-icon {
+      font-size: 17px;
+    }
+  }
+
+  .dil-ir-file__delayed {
+    margin: 0;
+  }
 }

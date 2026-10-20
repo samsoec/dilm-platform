@@ -10,6 +10,10 @@ export const SKIP_IR_PURGE = "skipIrPurge";
 
 export type IrTransition = "publish" | "update" | "unpublish" | "trash";
 
+export type PurgeStatus = "ok" | "failed";
+
+export const PURGE_STATUSES: PurgeStatus[] = ["ok", "failed"];
+
 export type LiveRow = {
   id?: number | string;
   _status?: unknown;
@@ -161,24 +165,45 @@ export function purgeOnLiveChange(
         ? undefined
         : (req.context[key] as LiveRow | null | undefined);
     delete req.context[key];
+    let request: PurgeRequest | undefined;
+    let status: PurgeStatus = "ok";
     try {
       const after = await liveRow(req, doc.id);
       const transition = irTransition(before, after);
       if (!transition || !after) return doc;
       const tenant = idOf(after.tenant) ?? idOf(before?.tenant);
-      const request = purgeRequest({
+      request = purgeRequest({
         transition,
         before,
         after,
         host: tenant === undefined ? undefined : await tenantHost(req, tenant),
       });
-      if (request) await purger(request, req.payload.logger);
+      if (!request) return doc;
+      await purger(request, req.payload.logger);
     } catch (error) {
+      status = "failed";
       req.payload.logger.error(
         { err: error, documentId: doc.id },
         "IR cache purge failed; the save stands and the site refreshes when the cache expires",
       );
     }
-    return doc;
+    const stamp = {
+      lastPurgeStatus: status,
+      lastPurgeAt: new Date().toISOString(),
+    };
+    try {
+      await req.payload.db.updateOne({
+        collection: IR_COLLECTION,
+        id: doc.id,
+        data: stamp,
+        req,
+      });
+    } catch (error) {
+      req.payload.logger.error(
+        { err: error, documentId: doc.id },
+        "Couldn't record the IR cache purge status",
+      );
+    }
+    return { ...doc, ...stamp };
   };
 }

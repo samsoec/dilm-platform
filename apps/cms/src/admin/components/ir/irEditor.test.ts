@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   checkPdf,
+  companyInitials,
+  disclosureText,
+  fileStateText,
+  investorURL,
   fileMetaText,
   IR_MAX_BYTES,
   progressText,
@@ -101,5 +105,35 @@ describe("ready to publish (3b)", () => {
     expect(validate(undefined)).toBe("Add the disclosure date to publish.");
     expect(validate("  ")).toBe("Add the disclosure date to publish.");
     expect(validate("2026-10-14T00:00:00.000Z")).toBe(true);
+  });
+});
+
+describe("publish copy (I-04 to I-06)", () => {
+  it("abbreviates the company like the design", () => {
+    expect(companyInitials("Dunia Kimia Utama")).toBe("DKU");
+    expect(companyInitials("Indonesian Acids Industry")).toBe("IAI");
+    expect(companyInitials(undefined)).toBe("company");
+  });
+
+  it("names the live Investor page", () => {
+    expect(investorURL("duniakimia.com", "id")).toBe(
+      "duniakimia.com/id/investor",
+    );
+  });
+
+  it("shows the disclosure date", () => {
+    expect(disclosureText("2026-10-14T00:00:00.000Z")).toBe("14 Oct 2026");
+    expect(disclosureText(null)).toBe("Not set");
+  });
+
+  it("says when a locked file was published", () => {
+    expect(
+      fileStateText({
+        filesize: 18.4 * MB,
+        createdAt: "2026-10-01T01:00:00.000Z",
+        firstPublishedAt: "2026-10-14T03:30:00.000Z",
+        uploader: "Dimas",
+      }),
+    ).toBe("18.4 MB · published 14 Oct, 10:30");
   });
 });

@@ -333,6 +333,8 @@ export interface IrDocument {
     | 'shareholder-meeting'
     | 'prospectus';
   firstPublishedAt?: string | null;
+  lastPurgeStatus?: ('ok' | 'failed') | null;
+  lastPurgeAt?: string | null;
   /**
    * One language per file. Upload the English version as its own document.
    */
@@ -889,6 +891,8 @@ export interface IrDocumentsSelect<T extends boolean = true> {
   title?: T;
   documentType?: T;
   firstPublishedAt?: T;
+  lastPurgeStatus?: T;
+  lastPurgeAt?: T;
   locale?: T;
   publishedDate?: T;
   updatedBy?: T;

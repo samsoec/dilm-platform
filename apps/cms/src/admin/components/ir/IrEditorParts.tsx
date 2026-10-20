@@ -24,7 +24,12 @@ import { ConfirmDialog } from "../kit/ConfirmDialog";
 import { SegmentedControl } from "../kit/SegmentedControl";
 import { notify } from "../kit/Toast";
 import { MaterialIcon } from "../MaterialIcon";
-import { CHECKLIST_PATHS, DRAFT_NOTE, publishChecklist } from "./irEditor";
+import {
+  CHECKLIST_PATHS,
+  companyInitials,
+  DRAFT_NOTE,
+  publishChecklist,
+} from "./irEditor";
 
 export function ListOnly({ children }: { children: ReactNode }) {
   const { collectionSlug } = useDocumentInfo();
@@ -233,9 +238,17 @@ export function IrTrashButton() {
       </ActionButton>
       <ConfirmDialog
         body={
-          hasPublishedDoc
-            ? `It's published, so it will be removed from the ${company?.name ?? "company"} Investor page. You can restore it from Trash.`
-            : "It isn't on the website. You can restore it from Trash."
+          hasPublishedDoc ? (
+            <>
+              It&apos;s published, so it will be{" "}
+              <b>
+                removed from the {companyInitials(company?.name)} Investor page
+              </b>
+              . You can restore it from Trash.
+            </>
+          ) : (
+            "It isn't on the website. You can restore it from Trash."
+          )
         }
         confirmLabel="Move to trash"
         onConfirm={trash}

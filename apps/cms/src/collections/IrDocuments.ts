@@ -11,6 +11,7 @@ import {
 import { localization } from "../localization";
 import {
   captureLiveRow,
+  PURGE_STATUSES,
   purgeOnLiveChange,
   stubPurger,
 } from "../publish/irPurge";
@@ -69,6 +70,12 @@ export const IrDocuments = withTenantAccess(
             afterListTable: ["/admin/components/ir/IrCells#IrListFooter"],
             edit: {
               Upload: "/admin/components/ir/IrFilePanel#IrFilePanel",
+              PublishButton:
+                "/admin/components/ir/IrPublishControls#IrPublishControls",
+              SaveDraftButton:
+                "/admin/components/ir/IrPublishControls#IrSaveDraftButton",
+              UnpublishButton:
+                "/admin/components/ir/IrPublishControls#NoUnpublishButton",
               beforeDocumentControls: [
                 `${IR_PARTS}#IrStatusTag`,
                 `${IR_PARTS}#IrVersionsButton`,
@@ -113,6 +120,29 @@ export const IrDocuments = withTenantAccess(
             type: "date",
             access: systemManagedField,
             admin: { readOnly: true, position: "sidebar" },
+          },
+          {
+            name: "lastPurgeStatus",
+            label: "Last site refresh",
+            type: "select",
+            options: [...PURGE_STATUSES],
+            access: systemManagedField,
+            admin: {
+              readOnly: true,
+              position: "sidebar",
+              condition: () => false,
+            },
+          },
+          {
+            name: "lastPurgeAt",
+            label: "Last site refresh at",
+            type: "date",
+            access: systemManagedField,
+            admin: {
+              readOnly: true,
+              position: "sidebar",
+              condition: () => false,
+            },
           },
           {
             name: "locale",

@@ -13,11 +13,15 @@ import { formatAdminURL } from "payload/shared";
 import { type DragEvent, useEffect, useRef, useState } from "react";
 
 import { ActionButton } from "../kit/ActionButton";
+import { Banner } from "../kit/Banner";
 import { MaterialIcon } from "../MaterialIcon";
 import { uploadMedia } from "../media/uploadMedia";
+import { PURGE_STATUS_EVENT, purgeStatus } from "./IrPublishControls";
 import {
   checkPdf,
-  fileMetaText,
+  fileStateText,
+  LOCKED_NOTE,
+  REFRESH_DELAYED,
   IR_FILE_LIMIT_TEXT,
   type PdfCheck,
   progressText,
@@ -65,8 +69,41 @@ function useUploaderName(id: unknown): string | undefined {
   return name;
 }
 
+function usePurgeStatus(
+  id: number | string | undefined,
+  collectionSlug: string | undefined,
+): string | undefined {
+  const {
+    config: { routes, serverURL },
+  } = useConfig();
+  const [status, setStatus] = useState<string>();
+  useEffect(() => {
+    if (id === undefined || !collectionSlug) return;
+    let live = true;
+    void purgeStatus(
+      formatAdminURL({
+        apiRoute: routes.api,
+        serverURL,
+        path: `/${collectionSlug}/${id}?depth=0`,
+      }),
+    ).then((value) => {
+      if (live) setStatus(value);
+    });
+    const onStatus = (event: Event) =>
+      setStatus((event as CustomEvent<string | undefined>).detail);
+    window.addEventListener(PURGE_STATUS_EVENT, onStatus);
+    return () => {
+      live = false;
+      window.removeEventListener(PURGE_STATUS_EVENT, onStatus);
+    };
+  }, [collectionSlug, id, routes.api, serverURL]);
+  return status;
+}
+
 export function IrFilePanel() {
-  const { id, collectionSlug, hasSavePermission } = useDocumentInfo();
+  const { id, collectionSlug, hasPublishedDoc, hasSavePermission } =
+    useDocumentInfo();
+  const purge = usePurgeStatus(id, collectionSlug);
   const { selectedTenantID } = useTenantSelection();
   const { getData } = useForm();
   const modified = useFormModified();
@@ -232,7 +269,12 @@ export function IrFilePanel() {
               <div className="dil-ir-file__text">
                 <b>{filename}</b>
                 <span className="dil-ir-file__meta">
-                  {fileMetaText({ filesize, uploadedAt: createdAt, uploader })}
+                  {fileStateText({
+                    filesize,
+                    createdAt,
+                    firstPublishedAt,
+                    uploader,
+                  })}
                 </span>
               </div>
               {typeof url === "string" && (
@@ -259,8 +301,26 @@ export function IrFilePanel() {
                   Replace PDF
                 </ActionButton>
               )}
+              {locked && (
+                <span className="dil-ir-file__locked">
+                  <MaterialIcon name="lock" />
+                  File locked
+                </span>
+              )}
             </div>
-            {!locked && <p className="dil-ir-file__note">{REPLACE_NOTE}</p>}
+            <p className="dil-ir-file__note">
+              {locked ? LOCKED_NOTE : REPLACE_NOTE}
+            </p>
+            {hasPublishedDoc && purge === "failed" && (
+              <Banner
+                className="dil-ir-file__delayed"
+                icon="sync_problem"
+                title={REFRESH_DELAYED.title}
+                tone="warning"
+              >
+                {REFRESH_DELAYED.body}
+              </Banner>
+            )}
           </>
         ) : (
           <div
