@@ -5,6 +5,7 @@ import type { RoleHolder } from "../../../access";
 import { selectedTenantID, TENANT_COOKIE } from "../../data/sidebar";
 import { Banner } from "../kit/Banner";
 import { Tag } from "../kit/Tag";
+import { mediaIntro } from "../media/media";
 import { MaterialIcon } from "../MaterialIcon";
 import { TitleTag } from "./TitleTag";
 
@@ -63,9 +64,19 @@ async function ConsentIntro(props: ViewDescriptionServerProps) {
   );
 }
 
+async function MediaIntro(props: ViewDescriptionServerProps) {
+  const domain = (await tenantDomain(props)) ?? "the company website";
+  return (
+    <div className="dil-list-intro">
+      <p className="dil-list-intro__text">{mediaIntro(domain)}</p>
+    </div>
+  );
+}
+
 export function ListIntro(props: ViewDescriptionServerProps) {
   const { collectionSlug, description } = props;
   if (collectionSlug === "consent-logs") return <ConsentIntro {...props} />;
+  if (collectionSlug === "media") return <MediaIntro {...props} />;
   const note = collectionSlug ? NOTES[collectionSlug] : undefined;
   return (
     <div className="dil-list-intro">
