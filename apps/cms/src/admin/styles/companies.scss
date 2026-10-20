@@ -1,0 +1,275 @@
+@layer dil {
+  .dil-company {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .dil-company__swatch {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--dil-radius-s);
+  }
+
+  .dil-company__text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dil-company__name {
+    color: var(--dil-ink);
+    font-weight: 700;
+  }
+
+  .dil-company__slug,
+  .dil-company__mono {
+    padding: 0;
+    background: none;
+    color: var(--dil-ink-2);
+    font-family: var(--dil-font-mono);
+    font-size: 12px;
+  }
+
+  .dil-company__slug {
+    color: var(--dil-muted);
+    font-size: 11px;
+  }
+
+  .dil-company__color {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dil-company__chip {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+  }
+
+  .dil-company__none {
+    color: var(--dil-muted);
+  }
+
+  .dil-company__edit-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-brand-ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // Payload class: tr inside .table (@payloadcms/ui elements/Table); EditCell marks the row whose drawer is open
+  .collection-list--tenants tr.dil-company-row--editing td {
+    background: var(--dil-sel-bg);
+  }
+
+  .collection-list--tenants tr.dil-company-row--editing td:first-child {
+    box-shadow: inset 3px 0 0 var(--dil-brand);
+  }
+
+  // Payload classes: .doc-drawer, .drawer__content, .collection-edit--tenants, .doc-drawer__header*, .id-label, .doc-controls* (@payloadcms/ui elements/DocumentDrawer, Drawer, DocumentControls); the company drawer is a narrow right panel titled "Edit <name>" with Cancel/Save at the bottom (3d)
+  .doc-drawer:has(.collection-edit--tenants) {
+    // Payload sets the drawer width inline from JS; max-width still caps it
+    .drawer__content {
+      max-width: 400px;
+      margin-left: auto;
+      background: var(--dil-surface);
+    }
+
+    .drawer__content-children {
+      height: 100%;
+      padding: 0;
+    }
+
+    .collection-edit--tenants,
+    .collection-edit__form {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .doc-drawer__header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--dil-line);
+    }
+
+    .doc-drawer__header-content {
+      align-items: center;
+    }
+
+    .doc-drawer__header-text {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+
+      &::before {
+        content: "Edit ";
+      }
+    }
+
+    .doc-drawer__header .id-label,
+    .doc-drawer__after-header {
+      display: none;
+    }
+
+    .collection-edit__main-wrapper {
+      flex: 1;
+    }
+
+    .document-fields__edit {
+      padding: 18px 22px;
+    }
+
+    .doc-controls {
+      position: sticky;
+      bottom: 0;
+      z-index: 1;
+      order: 99;
+      padding: 14px 22px;
+      border-top: 1px solid var(--dil-line);
+      background: var(--dil-surface);
+    }
+
+    .doc-controls__meta,
+    .doc-controls__divider {
+      display: none;
+    }
+
+    .doc-controls__wrapper {
+      justify-content: flex-end;
+    }
+  }
+
+  // Sonner's toaster ([data-sonner-toaster], used by Payload's toast) would cover the drawer's Save button, so it rises above the footer while the company drawer is open
+  body:has(.doc-drawer .collection-edit--tenants)
+    [data-sonner-toaster][data-y-position="bottom"] {
+    translate: 0 -76px;
+  }
+
+  .dil-company-actions {
+    display: inline-flex;
+    gap: 8px;
+  }
+
+  .dil-company-field--mono input {
+    font-family: var(--dil-font-mono);
+    font-size: 13px;
+  }
+
+  .dil-company-field__warning {
+    margin-bottom: var(--spacing-field);
+  }
+
+  .dil-brand-color__input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 6px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface);
+
+    input[type="text"] {
+      flex: 1;
+      min-width: 0;
+      height: 40px;
+      padding: 0 12px;
+      border: 0;
+      background: none;
+      color: var(--dil-ink);
+      font-family: var(--dil-font-mono);
+      font-size: 13px;
+      outline: none;
+
+      &:focus,
+      &:focus-visible {
+        border: 0;
+        box-shadow: none;
+        outline: none;
+      }
+    }
+
+    &:focus-within {
+      border-color: var(--dil-brand);
+    }
+  }
+
+  .dil-brand-color__picker {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+  }
+
+  .dil-brand-color--error .dil-brand-color__input {
+    border-color: var(--dil-danger);
+  }
+
+  .dil-brand-color__preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 10px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-brand-color__sample {
+    padding: 6px 12px;
+    border-radius: var(--dil-radius-s);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .dil-brand-color__ratio {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-brand-color__ratio--passes {
+    color: var(--dil-ok);
+  }
+
+  .dil-brand-color__ratio--too-light {
+    color: var(--dil-danger);
+  }
+
+  .dil-brand-color__hint {
+    display: flex;
+    gap: 6px;
+    margin: 8px 0 0;
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+
+    .dil-icon {
+      flex: none;
+      font-size: 16px;
+    }
+  }
+
+  .dil-brand-color--error .dil-brand-color__hint {
+    color: var(--dil-danger);
+  }
+}

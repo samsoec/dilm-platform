@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  checkBrandColor,
+  passingShade,
+  ratioText,
   brandColorProblem,
   darkTenantColor,
   FALLBACK_TENANT_COLOR,
@@ -70,5 +73,35 @@ describe("tenant card colours", () => {
     expect(contrast(darkTenantColor(hex), "#ffffff")).toBeGreaterThanOrEqual(
       AA_TEXT,
     );
+  });
+});
+
+describe("live contrast check (FR-UI-97)", () => {
+  it("passes a dark colour with its ratio", () => {
+    expect(checkBrandColor("#2A2D7E")).toEqual({
+      state: "passes",
+      color: "#2a2d7e",
+      ratio: "11.8 : 1",
+    });
+  });
+
+  it("flags a light colour and suggests a darker shade that passes", () => {
+    const check = checkBrandColor("#6FC2A8");
+    expect(check).toMatchObject({ state: "too-light", ratio: "2.1 : 1" });
+    const suggestion = (check as { suggestion: string }).suggestion;
+    expect(contrast(suggestion, "#ffffff")).toBeGreaterThanOrEqual(AA_TEXT);
+  });
+
+  it("never rounds a failing ratio up to the threshold", () => {
+    expect(ratioText(4.499)).toBe("4.4 : 1");
+  });
+
+  it("separates empty from malformed input", () => {
+    expect(checkBrandColor("  ")).toEqual({ state: "empty" });
+    expect(checkBrandColor("#12")).toMatchObject({ state: "invalid" });
+  });
+
+  it("leaves a passing colour unchanged when asked for a shade", () => {
+    expect(passingShade("#2a2d7e")).toBe("#2a2d7e");
   });
 });

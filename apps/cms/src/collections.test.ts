@@ -261,6 +261,17 @@ describe("tenants", () => {
     expect(fieldAllows(Tenants, "brandColor", "create", superAdmin)).toBe(true);
     expect(fieldAllows(Tenants, "brandColor", "update", editor)).toBe(false);
   });
+
+  it("can't be created or deleted in the admin, only edited by Super Admins (FR-CMS-02/03)", async () => {
+    const tenants = (await configured())("tenants");
+
+    for (const as of [superAdmin, editor]) {
+      expect(await call(tenants, "create", as)).toBe(false);
+      expect(await call(tenants, "delete", as)).toBe(false);
+    }
+    expect(await call(tenants, "update", superAdmin)).toBe(true);
+    expect(await call(tenants, "update", editor)).toBe(false);
+  });
 });
 
 describe("users", () => {

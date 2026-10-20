@@ -100,3 +100,47 @@ export function tenantColors(brandColor: unknown): TenantColors {
       : FALLBACK_TENANT_COLOR;
   return { light, dark: darkTenantColor(light) };
 }
+
+export function passingShade(hex: string): string {
+  const { h, s, l } = toHsl(hex);
+  let lightness = l;
+  let candidate = hex.toLowerCase();
+  while (contrast(candidate, WHITE) < AA_TEXT && lightness > 0) {
+    lightness = Math.max(0, lightness - 0.01);
+    candidate = toHex({ h, s, l: lightness });
+  }
+  return candidate;
+}
+
+export type BrandColorCheck =
+  | { state: "empty" }
+  | { state: "invalid"; message: string }
+  | { state: "passes"; color: string; ratio: string }
+  | { state: "too-light"; color: string; ratio: string; suggestion: string };
+
+export function ratioText(ratio: number): string {
+  return `${(Math.floor(ratio * 10) / 10).toFixed(1)} : 1`;
+}
+
+export function checkBrandColor(value: unknown): BrandColorCheck {
+  const color = normalizeBrandColor(value);
+  if (color === null || color === undefined || color === "") {
+    return { state: "empty" };
+  }
+  if (typeof color !== "string" || !HEX_COLOR.test(color)) {
+    return {
+      state: "invalid",
+      message: "Use a six-digit hex colour, like #1F6F5C.",
+    };
+  }
+  const ratio = contrast(color, WHITE);
+  if (ratio >= AA_TEXT) {
+    return { state: "passes", color, ratio: ratioText(ratio) };
+  }
+  return {
+    state: "too-light",
+    color,
+    ratio: ratioText(ratio),
+    suggestion: passingShade(color).toUpperCase(),
+  };
+}

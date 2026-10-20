@@ -168,6 +168,8 @@ export interface User {
   collection: 'users';
 }
 /**
+ * The three DIL Group sites run from this CMS. Companies are added by the platform setup script, so they can't be created or deleted here.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tenants".
  */
@@ -176,11 +178,8 @@ export interface Tenant {
   name: string;
   slug: string;
   domain: string;
-  /**
-   * Hex colour behind the company card in the admin sidebar. White text must reach 4.5:1 on it.
-   */
-  brandColor?: string | null;
   defaultLocale: 'en' | 'id';
+  brandColor?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -741,8 +740,8 @@ export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   domain?: T;
-  brandColor?: T;
   defaultLocale?: T;
+  brandColor?: T;
   updatedAt?: T;
   createdAt?: T;
 }
