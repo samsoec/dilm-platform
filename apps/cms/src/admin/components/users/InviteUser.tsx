@@ -40,32 +40,51 @@ export function InviteUser({
         Invite user
       </ActionButton>
       {isModalOpen(SLUG) && (
-        <InviteDialog selectedTenant={selectedTenant} tenants={tenants} />
+        <UserAccessDialog
+          selectedTenant={selectedTenant}
+          slug={SLUG}
+          tenants={tenants}
+        />
       )}
     </>
   );
 }
 
-function InviteDialog({
+export type EditTarget = {
+  id: number;
+  name: string;
+  email: string;
+  role: Role;
+  tenants: number[];
+  self: boolean;
+};
+
+export function UserAccessDialog({
+  slug,
   tenants,
   selectedTenant,
+  editing,
 }: {
+  slug: string;
   tenants: InviteTenant[];
   selectedTenant?: number | string;
+  editing?: EditTarget;
 }) {
   const router = useRouter();
   const { closeModal } = useModal();
   const {
     config: { routes, serverURL },
   } = useConfig();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState<Role>("tenant-editor");
+  const [name, setName] = useState(editing?.name ?? "");
+  const [email, setEmail] = useState(editing?.email ?? "");
+  const [role, setRole] = useState<Role>(editing?.role ?? "tenant-editor");
   const [picked, setPicked] = useState<number[]>(
-    tenants
-      .filter(({ id }) => String(id) === String(selectedTenant))
-      .map(({ id }) => id),
+    editing?.tenants ??
+      tenants
+        .filter(({ id }) => String(id) === String(selectedTenant))
+        .map(({ id }) => id),
   );
+  const lockedRole = Boolean(editing?.self && editing.role === "super-admin");
   const [error, setError] = useState<{ field: InviteField; message: string }>();
   const [busy, setBusy] = useState(false);
   const titleId = useId();
@@ -76,7 +95,7 @@ function InviteDialog({
     ? tenants.find(({ id }) => String(id) === String(selectedTenant))
     : tenants.find(({ id }) => id === picked[0]);
 
-  const close = () => closeModal(SLUG);
+  const close = () => closeModal(slug);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -86,15 +105,14 @@ function InviteDialog({
       formatAdminURL({
         apiRoute: routes.api,
         serverURL,
-        path: "/users/invite",
+        path: editing ? "/users/access" : "/users/invite",
       }),
       {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
-          email,
+          ...(editing ? { id: editing.id } : { name, email }),
           role,
           tenants: superAdmin ? [] : picked,
         }),
@@ -105,11 +123,20 @@ function InviteDialog({
       { field?: InviteField; message?: string; name?: string } | undefined;
     if (response?.ok) {
       close();
-      notify({
-        tone: "success",
-        title: `Invitation sent to ${name.trim().split(/\s+/)[0]}.`,
-        body: "The link is valid for 72 hours.",
-      });
+      const first = name.trim().split(/\s+/)[0];
+      notify(
+        editing
+          ? {
+              tone: "success",
+              title: `Saved ${first}'s role and companies.`,
+              body: "They take effect on their next click.",
+            }
+          : {
+              tone: "success",
+              title: `Invitation sent to ${first}.`,
+              body: "The link is valid for 72 hours.",
+            },
+      );
       router.refresh();
       return;
     }
@@ -143,7 +170,7 @@ function InviteDialog({
     error?.field === field ? `${titleId}-${field}` : undefined;
 
   return (
-    <Modal className="dil-confirm" closeOnBlur={false} slug={SLUG}>
+    <Modal className="dil-confirm" closeOnBlur={false} slug={slug}>
       <form
         aria-labelledby={titleId}
         aria-modal="true"
@@ -155,7 +182,18 @@ function InviteDialog({
         role="dialog"
       >
         <header className="dil-invite__head">
-          <h2 id={titleId}>Invite a user</h2>
+          <h2 id={titleId}>
+            {editing ? (
+              <>
+                {editing.name}
+                {editing.self && (
+                  <span className="dil-invite__you"> (you)</span>
+                )}
+              </>
+            ) : (
+              "Invite a user"
+            )}
+          </h2>
           <button
             aria-label="Close"
             className="dil-drawer__close"
@@ -166,114 +204,154 @@ function InviteDialog({
           </button>
         </header>
         <div className="dil-invite__body">
-          <div className="dil-account__pair">
-            <label className="dil-account-field" htmlFor={nameId}>
-              <span className="dil-account-field__label">Name</span>
-              <input
-                aria-describedby={describedBy("name")}
-                aria-invalid={error?.field === "name" || undefined}
-                autoFocus
-                id={nameId}
-                onChange={(event) => {
-                  setName(event.target.value);
-                  if (error?.field === "name") setError(undefined);
-                }}
-                value={name}
-              />
-              {fieldError("name")}
-            </label>
-            <label className="dil-account-field" htmlFor={emailId}>
-              <span className="dil-account-field__label">Email</span>
-              <input
-                aria-describedby={describedBy("email")}
-                aria-invalid={error?.field === "email" || undefined}
-                id={emailId}
-                onChange={(event) => {
-                  setEmail(event.target.value);
-                  if (error?.field === "email") setError(undefined);
-                }}
-                type="email"
-                value={email}
-              />
-              {fieldError("email")}
-            </label>
-          </div>
-          <fieldset className="dil-account-field">
-            <legend className="dil-account-field__label">Role</legend>
-            <div className="dil-invite__roles">
-              {ROLE_CARDS.map((card) => (
-                <label
-                  className={`dil-invite__role${role === card.role ? " dil-invite__role--checked" : ""}`}
-                  key={card.role}
-                >
-                  <input
-                    checked={role === card.role}
-                    className="dil-sr-only"
-                    name={`${titleId}-role`}
-                    onChange={() => setRole(card.role)}
-                    type="radio"
-                  />
-                  <b>{ROLE_LABELS[card.role]}</b>
-                  <span>{card.hint}</span>
-                </label>
-              ))}
+          {editing ? (
+            <p className="dil-account__note">{editing.email}</p>
+          ) : (
+            <div className="dil-account__pair">
+              <label className="dil-account-field" htmlFor={nameId}>
+                <span className="dil-account-field__label">Name</span>
+                <input
+                  aria-describedby={describedBy("name")}
+                  aria-invalid={error?.field === "name" || undefined}
+                  autoFocus
+                  id={nameId}
+                  onChange={(event) => {
+                    setName(event.target.value);
+                    if (error?.field === "name") setError(undefined);
+                  }}
+                  value={name}
+                />
+                {fieldError("name")}
+              </label>
+              <label className="dil-account-field" htmlFor={emailId}>
+                <span className="dil-account-field__label">Email</span>
+                <input
+                  aria-describedby={describedBy("email")}
+                  aria-invalid={error?.field === "email" || undefined}
+                  id={emailId}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                    if (error?.field === "email") setError(undefined);
+                  }}
+                  type="email"
+                  value={email}
+                />
+                {fieldError("email")}
+              </label>
             </div>
-          </fieldset>
-          <fieldset
-            aria-describedby={describedBy("tenants")}
-            className="dil-account-field"
-          >
-            <legend className="dil-account-field__label">
-              Companies <span className="dil-invite__hint">· at least one</span>
-            </legend>
-            {superAdmin ? (
-              <p className="dil-invite__all">All companies</p>
-            ) : (
-              <ul className="dil-invite__companies">
-                {tenants.map((tenant) => {
-                  const checked = picked.includes(tenant.id);
-                  return (
-                    <li key={tenant.id}>
-                      <label>
-                        <input
-                          checked={checked}
-                          onChange={() => {
-                            setPicked(
-                              checked
-                                ? picked.filter((id) => id !== tenant.id)
-                                : [...picked, tenant.id],
-                            );
-                            if (error?.field === "tenants") setError(undefined);
-                          }}
-                          type="checkbox"
-                        />
-                        {tenant.name}
-                        {picked[0] === tenant.id && (
-                          <span className="dil-invite__hint">
-                            · sends the invite
-                          </span>
-                        )}
-                      </label>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-            {fieldError("tenants")}
-          </fieldset>
+          )}
+          {lockedRole ? (
+            <div className="dil-account-field">
+              <span className="dil-account-field__label">
+                Role <MaterialIcon name="lock" />
+              </span>
+              <p className="dil-account-field__locked">
+                {ROLE_LABELS["super-admin"]}
+              </p>
+              <p className="dil-account__note">
+                You can&apos;t remove your own Super Admin role. Ask another
+                Super Admin.
+              </p>
+              <p className="dil-account__note">
+                Remove user isn&apos;t available for your own account.
+              </p>
+            </div>
+          ) : (
+            <fieldset
+              aria-describedby={describedBy("role")}
+              className="dil-account-field"
+            >
+              <legend className="dil-account-field__label">Role</legend>
+              <div className="dil-invite__roles">
+                {ROLE_CARDS.map((card) => (
+                  <label
+                    className={`dil-invite__role${role === card.role ? " dil-invite__role--checked" : ""}`}
+                    key={card.role}
+                  >
+                    <input
+                      checked={role === card.role}
+                      className="dil-sr-only"
+                      name={`${titleId}-role`}
+                      onChange={() => setRole(card.role)}
+                      type="radio"
+                    />
+                    <b>{ROLE_LABELS[card.role]}</b>
+                    <span>{card.hint}</span>
+                  </label>
+                ))}
+              </div>
+              {fieldError("role")}
+            </fieldset>
+          )}
+          {!lockedRole && (
+            <fieldset
+              aria-describedby={describedBy("tenants")}
+              className="dil-account-field"
+            >
+              <legend className="dil-account-field__label">
+                Companies{" "}
+                <span className="dil-invite__hint">· at least one</span>
+              </legend>
+              {superAdmin ? (
+                <p className="dil-invite__all">All companies</p>
+              ) : (
+                <ul className="dil-invite__companies">
+                  {tenants.map((tenant) => {
+                    const checked = picked.includes(tenant.id);
+                    return (
+                      <li key={tenant.id}>
+                        <label>
+                          <input
+                            checked={checked}
+                            onChange={() => {
+                              setPicked(
+                                checked
+                                  ? picked.filter((id) => id !== tenant.id)
+                                  : [...picked, tenant.id],
+                              );
+                              if (error?.field === "tenants")
+                                setError(undefined);
+                            }}
+                            type="checkbox"
+                          />
+                          {tenant.name}
+                          {!editing && picked[0] === tenant.id && (
+                            <span className="dil-invite__hint">
+                              · sends the invite
+                            </span>
+                          )}
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {fieldError("tenants")}
+            </fieldset>
+          )}
           <p className="dil-account__note">
-            {senderTenant?.domain
-              ? `They get an email from noreply@${senderTenant.domain} with a link to set their own password, valid 72 hours.`
-              : "They get an email with a link to set their own password, valid 72 hours."}
+            {editing
+              ? "Role and company changes take effect on the user's next click."
+              : senderTenant?.domain
+                ? `They get an email from noreply@${senderTenant.domain} with a link to set their own password, valid 72 hours.`
+                : "They get an email with a link to set their own password, valid 72 hours."}
           </p>
         </div>
         <footer className="dil-invite__foot">
           <ActionButton onClick={close} type="button" variant="secondary">
             Cancel
           </ActionButton>
-          <ActionButton busy={busy} icon="send" type="submit">
-            Send invitation
-          </ActionButton>
+          {editing ? (
+            !lockedRole && (
+              <ActionButton busy={busy} type="submit">
+                Save changes
+              </ActionButton>
+            )
+          ) : (
+            <ActionButton busy={busy} icon="send" type="submit">
+              Send invitation
+            </ActionButton>
+          )}
         </footer>
       </form>
     </Modal>

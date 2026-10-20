@@ -21,6 +21,10 @@ import {
 } from "../access";
 import { inviteEndpoints } from "../account/invite";
 import {
+  keepOwnSuperAdminRole,
+  superAdminsExceptSelf,
+} from "../account/selfGuard";
+import {
   changePasswordEndpoint,
   requireVerifiedPasswordChange,
 } from "../account/password";
@@ -92,7 +96,14 @@ export const Users: CollectionConfig = {
     useAsTitle: "name",
     description:
       "People who can sign in, across all three sites. Only Super Admins see this page.",
-    defaultColumns: ["name", "roles", "sites", "status", "lastLoginAt"],
+    defaultColumns: [
+      "name",
+      "roles",
+      "sites",
+      "status",
+      "lastLoginAt",
+      "actions",
+    ],
     hidden: ({ user }) => !isSuperAdmin(user as RoleHolder),
     components: {
       Description: "/admin/components/lists/ListIntro#ListIntro",
@@ -109,13 +120,17 @@ export const Users: CollectionConfig = {
     read: tenantMembers,
     create: onlyWhileNoUsers,
     update: superAdminsOrSelf,
-    delete: superAdmins,
+    delete: superAdminsExceptSelf,
     unlock: superAdmins,
   },
   endpoints: [changePasswordEndpoint, ...inviteEndpoints],
   hooks: {
     afterLogin: [stampLastLogin],
-    beforeChange: [promoteFirstUserToSuperAdmin, requireVerifiedPasswordChange],
+    beforeChange: [
+      promoteFirstUserToSuperAdmin,
+      requireVerifiedPasswordChange,
+      keepOwnSuperAdminRole,
+    ],
     afterRead: [nameOnlyForOthers],
   },
   fields: [
@@ -161,6 +176,14 @@ export const Users: CollectionConfig = {
         readOnly: true,
         date: { pickerAppearance: "dayAndTime" },
         components: { Cell: `${USER_CELLS}#LastSignInCell` },
+      },
+    },
+    {
+      name: "actions",
+      label: " ",
+      type: "ui",
+      admin: {
+        components: { Cell: "/admin/components/users/ActionsCell#ActionsCell" },
       },
     },
     {

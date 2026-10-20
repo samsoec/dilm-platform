@@ -294,7 +294,14 @@ describe("users", () => {
     expect(Users.access!.update).toBe(superAdminsOrSelf);
     expect(Users.admin).toMatchObject({
       useAsTitle: "name",
-      defaultColumns: ["name", "roles", "sites", "status", "lastLoginAt"],
+      defaultColumns: [
+        "name",
+        "roles",
+        "sites",
+        "status",
+        "lastLoginAt",
+        "actions",
+      ],
     });
   });
 

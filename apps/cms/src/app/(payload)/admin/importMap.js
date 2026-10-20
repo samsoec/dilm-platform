@@ -3,6 +3,7 @@ import { RoleCell as RoleCell_5cd97e58844d5c99becf880375f054b9 } from '../../../
 import { SitesCell as SitesCell_b575303840066c9cd1a8a5971511e4a7 } from '../../../admin/components/users/SitesCell'
 import { StatusCell as StatusCell_7089b90a8494ee7c1cdec3dd4f191c33 } from '../../../admin/components/users/StatusCell'
 import { LastSignInCell as LastSignInCell_5cd97e58844d5c99becf880375f054b9 } from '../../../admin/components/users/UserCells'
+import { ActionsCell as ActionsCell_52f71664e3424bfb1e4e9e8387ab7746 } from '../../../admin/components/users/ActionsCell'
 import { RoleExplainer as RoleExplainer_6083a4265825204421973f9c8002c04c } from '../../../admin/components/users/RoleExplainer'
 import { RoleTabs as RoleTabs_7f5d2ce9f08b95e86790822acf331638 } from '../../../admin/components/users/RoleTabs'
 import { ListIntro as ListIntro_3758f5318f3bce3eb36c93ddfc96aba0 } from '../../../admin/components/lists/ListIntro'
@@ -102,6 +103,7 @@ export const importMap = {
   "/admin/components/users/SitesCell#SitesCell": SitesCell_b575303840066c9cd1a8a5971511e4a7,
   "/admin/components/users/StatusCell#StatusCell": StatusCell_7089b90a8494ee7c1cdec3dd4f191c33,
   "/admin/components/users/UserCells#LastSignInCell": LastSignInCell_5cd97e58844d5c99becf880375f054b9,
+  "/admin/components/users/ActionsCell#ActionsCell": ActionsCell_52f71664e3424bfb1e4e9e8387ab7746,
   "/admin/components/users/RoleExplainer#RoleExplainer": RoleExplainer_6083a4265825204421973f9c8002c04c,
   "/admin/components/users/RoleTabs#RoleTabs": RoleTabs_7f5d2ce9f08b95e86790822acf331638,
   "/admin/components/lists/ListIntro#ListIntro": ListIntro_3758f5318f3bce3eb36c93ddfc96aba0,
