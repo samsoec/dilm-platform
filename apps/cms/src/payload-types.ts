@@ -257,6 +257,7 @@ export interface Media {
   _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
@@ -325,12 +326,15 @@ export interface IrDocument {
     | 'shareholder-meeting'
     | 'prospectus';
   publishedDate: string;
+  firstPublishedAt?: string | null;
   locale: 'en' | 'id';
   updatedBy?: (number | null) | User;
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
@@ -802,6 +806,7 @@ export interface MediaSelect<T extends boolean = true> {
   _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
   url?: T;
   thumbnailURL?: T;
   filename?: T;
@@ -868,12 +873,15 @@ export interface IrDocumentsSelect<T extends boolean = true> {
   title?: T;
   documentType?: T;
   publishedDate?: T;
+  firstPublishedAt?: T;
   locale?: T;
   updatedBy?: T;
   prefix?: T;
   _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
   url?: T;
   thumbnailURL?: T;
   filename?: T;

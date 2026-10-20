@@ -1,4 +1,4 @@
-import { anyone } from "../access";
+import { anyone, trashByEditorsDeleteBySuperAdmins } from "../access";
 import { navGroup } from "../admin/navGroups";
 import { IMAGE_SIZES } from "../storage";
 import { withTenantAccess } from "../tenancy";
@@ -20,7 +20,9 @@ export const Media = withTenantAccess(
     custom: { nav: { icon: "photo_library" } },
     access: {
       read: anyone,
+      delete: trashByEditorsDeleteBySuperAdmins,
     },
+    trash: true,
     fields: [
       {
         name: "alt",
