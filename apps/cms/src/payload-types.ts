@@ -316,6 +316,8 @@ export interface ConsentLog {
   createdAt: string;
 }
 /**
+ * Investor-relations PDFs shown on the Investor page. Each file is for one language.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ir-documents".
  */

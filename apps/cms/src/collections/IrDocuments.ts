@@ -18,17 +18,13 @@ import { withTenantAccess } from "../tenancy";
 import { withTrashedBy } from "../fields/authoring";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { collectionLabels } from "../admin/labels";
+import { IR_DOCUMENT_TYPE_OPTIONS } from "../irDocumentTypes";
 
 export const IR_VERSIONS_PER_DOCUMENT = 50;
 
-export const IR_DOCUMENT_TYPES = [
-  "annual-report",
-  "financial-statement",
-  "sustainability-report",
-  "public-disclosure",
-  "shareholder-meeting",
-  "prospectus",
-] as const;
+const IR_CELLS = "/admin/components/ir/IrCells";
+
+export { IR_DOCUMENT_TYPES } from "../irDocumentTypes";
 
 export const IrDocuments = withTenantAccess(
   withTrashedBy(
@@ -46,14 +42,27 @@ export const IrDocuments = withTenantAccess(
       admin: {
         group: navGroup("investor"),
         useAsTitle: "title",
-        defaultColumns: ["title", "documentType", "publishedDate", "locale"],
+        description:
+          "Investor-relations PDFs shown on the Investor page. Each file is for one language.",
+        defaultColumns: [
+          "title",
+          "documentType",
+          "publishedDate",
+          "locale",
+          "filesize",
+          "_status",
+        ],
         components: {
+          Description: "/admin/components/lists/ListIntro#ListIntro",
           beforeListTable: [
             "/admin/components/trash/TrashToggle#TrashToggle",
+            "/admin/components/ir/IrToolbar#IrToolbar",
             "/admin/components/trash/TrashTable#TrashTable",
           ],
+          afterListTable: ["/admin/components/ir/IrCells#IrListFooter"],
         },
       },
+      defaultSort: "-publishedDate",
       custom: {
         nav: { icon: "description" },
       },
@@ -65,15 +74,22 @@ export const IrDocuments = withTenantAccess(
           name: "title",
           type: "text",
           required: true,
+          admin: { components: { Cell: `${IR_CELLS}#PdfTitleCell` } },
         },
         {
           name: "documentType",
+          label: "Document type",
           type: "select",
           required: true,
-          options: [...IR_DOCUMENT_TYPES],
+          options: IR_DOCUMENT_TYPE_OPTIONS.map(({ value, label }) => ({
+            value,
+            label,
+          })),
+          admin: { components: { Cell: `${IR_CELLS}#TypeLabelCell` } },
         },
         {
           name: "publishedDate",
+          label: "Published date",
           type: "date",
           required: true,
         },
@@ -85,10 +101,33 @@ export const IrDocuments = withTenantAccess(
         },
         {
           name: "locale",
+          label: "Language",
           type: "select",
           required: true,
           options: [...localization.locales],
           defaultValue: localization.defaultLocale,
+          admin: { components: { Cell: `${IR_CELLS}#LocaleTagCell` } },
+        },
+        {
+          name: "filesize",
+          label: "Size",
+          type: "number",
+          admin: {
+            components: {
+              Cell: "/admin/components/media/MediaCells#FileSizeCell",
+            },
+          },
+        },
+        {
+          name: "_status",
+          label: "Status",
+          type: "select",
+          options: [],
+          admin: {
+            components: {
+              Cell: "/admin/components/ir/IrStatusCell#IrStatusCell",
+            },
+          },
         },
       ],
     }),

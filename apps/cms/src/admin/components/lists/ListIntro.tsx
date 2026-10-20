@@ -73,15 +73,33 @@ async function MediaIntro(props: ViewDescriptionServerProps) {
   );
 }
 
+const BANNERS: Record<string, { title: string; text: string }> = {
+  "ir-documents": {
+    title: "Goes live within minutes.",
+    text: "Saving a document clears the website cache, which keeps disclosures inside the POJK 31/2015 two-business-day window.",
+  },
+};
+
 export function ListIntro(props: ViewDescriptionServerProps) {
   const { collectionSlug, description } = props;
   if (collectionSlug === "consent-logs") return <ConsentIntro {...props} />;
   if (collectionSlug === "media") return <MediaIntro {...props} />;
   const note = collectionSlug ? NOTES[collectionSlug] : undefined;
+  const banner = collectionSlug ? BANNERS[collectionSlug] : undefined;
   return (
     <div className="dil-list-intro">
       {typeof description === "string" && (
         <p className="dil-list-intro__text">{description}</p>
+      )}
+      {banner && (
+        <Banner
+          className="dil-list-intro__banner"
+          icon="bolt"
+          title={banner.title}
+          tone="info"
+        >
+          {banner.text}
+        </Banner>
       )}
       {note && (
         <p className="dil-list-intro__note">

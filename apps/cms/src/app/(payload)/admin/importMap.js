@@ -46,6 +46,12 @@ import { ConsentTypeCell as ConsentTypeCell_57564f7a5c6d0af3318cd0f0c87bc469 } f
 import { ConsentListFooter as ConsentListFooter_2195df2e4953f256d9edd780e394cba6 } from '../../../admin/components/consent/ConsentListFooter'
 import { ConsentToolbar as ConsentToolbar_00f2debf1fef6719308c2f12d1b95fb4 } from '../../../admin/components/consent/ConsentToolbar'
 import { ConsentRecordView as ConsentRecordView_d9cb9c4ad20dcd7a6c2a047bd334a6ce } from '../../../admin/components/consent/ConsentRecordView'
+import { PdfTitleCell as PdfTitleCell_2e85940daa13abc78fa7ceb2f9fe8a7b } from '../../../admin/components/ir/IrCells'
+import { TypeLabelCell as TypeLabelCell_2e85940daa13abc78fa7ceb2f9fe8a7b } from '../../../admin/components/ir/IrCells'
+import { LocaleTagCell as LocaleTagCell_2e85940daa13abc78fa7ceb2f9fe8a7b } from '../../../admin/components/ir/IrCells'
+import { IrStatusCell as IrStatusCell_db25e692b4fff2d00bbcb0ffedf8b889 } from '../../../admin/components/ir/IrStatusCell'
+import { IrListFooter as IrListFooter_2e85940daa13abc78fa7ceb2f9fe8a7b } from '../../../admin/components/ir/IrCells'
+import { IrToolbar as IrToolbar_2d0c7d330abc4ab1a2d16999ba991c53 } from '../../../admin/components/ir/IrToolbar'
 import { ApplicantCell as ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3 } from '../../../admin/components/cells/ApplicantCell'
 import { StatusPill as StatusPill_9934788374c7dcc43b168cee27281175 } from '../../../admin/components/cells/StatusPill'
 import { EmailsLabel as EmailsLabel_7a1351ce5840c4e6fd1ca73b345df968 } from '../../../admin/components/lists/CvColumnLabel'
@@ -159,6 +165,12 @@ export const importMap = {
   "/admin/components/consent/ConsentListFooter#ConsentListFooter": ConsentListFooter_2195df2e4953f256d9edd780e394cba6,
   "/admin/components/consent/ConsentToolbar#ConsentToolbar": ConsentToolbar_00f2debf1fef6719308c2f12d1b95fb4,
   "/admin/components/consent/ConsentRecordView#ConsentRecordView": ConsentRecordView_d9cb9c4ad20dcd7a6c2a047bd334a6ce,
+  "/admin/components/ir/IrCells#PdfTitleCell": PdfTitleCell_2e85940daa13abc78fa7ceb2f9fe8a7b,
+  "/admin/components/ir/IrCells#TypeLabelCell": TypeLabelCell_2e85940daa13abc78fa7ceb2f9fe8a7b,
+  "/admin/components/ir/IrCells#LocaleTagCell": LocaleTagCell_2e85940daa13abc78fa7ceb2f9fe8a7b,
+  "/admin/components/ir/IrStatusCell#IrStatusCell": IrStatusCell_db25e692b4fff2d00bbcb0ffedf8b889,
+  "/admin/components/ir/IrCells#IrListFooter": IrListFooter_2e85940daa13abc78fa7ceb2f9fe8a7b,
+  "/admin/components/ir/IrToolbar#IrToolbar": IrToolbar_2d0c7d330abc4ab1a2d16999ba991c53,
   "/admin/components/cells/ApplicantCell#ApplicantCell": ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3,
   "/admin/components/cells/StatusPill#StatusPill": StatusPill_9934788374c7dcc43b168cee27281175,
   "/admin/components/lists/CvColumnLabel#EmailsLabel": EmailsLabel_7a1351ce5840c4e6fd1ca73b345df968,

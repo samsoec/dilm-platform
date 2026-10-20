@@ -1,0 +1,95 @@
+@layer dil {
+  // Payload classes: .list-controls, .list-header__title-actions (@payloadcms/ui views/List, ListHeader); the IR list filters with chips (2i) and uploads through "Upload PDF"
+  .collection-list--ir-documents .list-controls,
+  .collection-list--ir-documents:not(:has(.dil-trash))
+    .list-header__title-actions {
+    display: none;
+  }
+
+  .list-header__title-and-actions .dil-upload-pdf {
+    margin-left: auto;
+  }
+
+  .dil-ir-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dil-filter-chip {
+    padding: 6px 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: 999px;
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--dil-brand);
+    }
+
+    &[aria-pressed="true"] {
+      border-color: var(--dil-ink);
+      background: var(--dil-ink);
+      color: var(--dil-surface);
+    }
+  }
+
+  .dil-ir-toolbar__language {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+
+    select {
+      padding: 8px 34px 8px 12px;
+      border: 1px solid var(--dil-line);
+      border-radius: var(--dil-radius-s);
+      background: var(--dil-surface);
+      color: var(--dil-ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      appearance: none;
+    }
+
+    .dil-icon {
+      position: absolute;
+      right: 10px;
+      color: var(--dil-muted);
+      font-size: 18px;
+      pointer-events: none;
+    }
+  }
+
+  .dil-pdf-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--dil-ink);
+    font-weight: 600;
+    text-decoration: none;
+
+    .dil-icon {
+      color: var(--dil-danger);
+      font-size: 22px;
+    }
+
+    &:hover span {
+      text-decoration: underline;
+    }
+  }
+}
