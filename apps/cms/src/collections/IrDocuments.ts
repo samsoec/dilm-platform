@@ -9,6 +9,11 @@ import {
   stampFirstPublished,
 } from "../uploads/irFiles";
 import { localization } from "../localization";
+import {
+  captureLiveRow,
+  purgeOnLiveChange,
+  stubPurger,
+} from "../publish/irPurge";
 import { withTenantAccess } from "../tenancy";
 import { withTrashedBy } from "../fields/authoring";
 import { withUpdatedBy } from "../fields/updatedBy";
@@ -35,7 +40,8 @@ export const IrDocuments = withTenantAccess(
       trash: true,
       hooks: {
         beforeOperation: [randomiseUploadName],
-        beforeChange: [stampFirstPublished, keepPublishedFile],
+        beforeChange: [stampFirstPublished, keepPublishedFile, captureLiveRow],
+        afterChange: [purgeOnLiveChange(stubPurger)],
       },
       admin: {
         group: navGroup("investor"),
