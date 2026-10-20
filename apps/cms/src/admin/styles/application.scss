@@ -1,6 +1,11 @@
 @layer dil {
-  // Payload class: .doc-header (@payloadcms/next DocumentHeader); the application view draws its own header
-  .template-default__wrap:has(> .dil-app-form, > .dil-app) > .doc-header {
+  // Payload class: .doc-header (@payloadcms/next DocumentHeader); the application and consent record views draw their own header
+  .template-default__wrap:has(
+      > .dil-app-form,
+      > .dil-app,
+      > .dil-consent-record
+    )
+    > .doc-header {
     display: none;
   }
 
