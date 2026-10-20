@@ -78,3 +78,38 @@ export const stampStatusChange: CollectionBeforeChangeHook = ({
     statusChangedAt: new Date().toISOString(),
   };
 };
+
+export const trashedByField: RelationshipField = {
+  name: "trashedBy",
+  label: "Trashed by",
+  type: "relationship",
+  relationTo: "users",
+  access: systemManagedField,
+  admin: { position: "sidebar", readOnly: true, disableListColumn: true },
+};
+
+export const stampTrashedBy: CollectionBeforeChangeHook = ({
+  data,
+  originalDoc,
+  req,
+}) => {
+  if (!data || !("deletedAt" in data)) return data;
+  if (data.deletedAt && !originalDoc?.deletedAt) {
+    return { ...data, trashedBy: stampsBy(req) ?? null };
+  }
+  if (!data.deletedAt && originalDoc?.deletedAt) {
+    return { ...data, trashedBy: null };
+  }
+  return data;
+};
+
+export function withTrashedBy(collection: CollectionConfig): CollectionConfig {
+  return {
+    ...collection,
+    hooks: {
+      ...collection.hooks,
+      beforeChange: [...(collection.hooks?.beforeChange ?? []), stampTrashedBy],
+    },
+    fields: [...collection.fields, trashedByField],
+  };
+}
