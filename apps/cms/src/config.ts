@@ -10,7 +10,11 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { PRODUCT_NAME } from "./admin/brand";
-import { LOGIN_COMPONENTS, LOGIN_TRANSLATIONS } from "./admin/login";
+import {
+  LOGIN_COMPONENTS,
+  LOGIN_TRANSLATIONS,
+  NATIVE_RESET_ROUTE,
+} from "./admin/login";
 import {
   ADMIN_TOAST,
   appendAdminProviders,
@@ -37,6 +41,7 @@ export async function cmsConfig(client: PayloadClient) {
         baseDir: dirname,
       },
       theme: "all",
+      routes: { reset: NATIVE_RESET_ROUTE },
       avatar: { Component: "/admin/graphics/Avatar#Avatar" },
       components: {
         Nav: "/admin/components/nav/AdminNav#AdminNav",

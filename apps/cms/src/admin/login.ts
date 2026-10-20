@@ -15,8 +15,15 @@ export const LOGIN_COMPONENTS = {
     inactivity: {
       Component: "/admin/components/login/SignOutScreen#SessionExpiredScreen",
     },
+    forgot: { Component: "/admin/components/login/ForgotScreen#ForgotScreen" },
+    resetPassword: {
+      path: "/reset" as const,
+      Component: "/admin/components/login/ResetScreen#ResetScreen",
+    },
   },
 };
+
+export const NATIVE_RESET_ROUTE = "/payload-reset";
 
 export const GROUP_ENTITIES_LOGO = {
   src: "/brand/dil-group-entities.png",
