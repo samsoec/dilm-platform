@@ -332,10 +332,17 @@ export interface IrDocument {
     | 'public-disclosure'
     | 'shareholder-meeting'
     | 'prospectus';
-  publishedDate: string;
   firstPublishedAt?: string | null;
+  /**
+   * One language per file. Upload the English version as its own document.
+   */
   locale: 'en' | 'id';
+  /**
+   * The disclosure date shown on the Investor page. It's not the upload date.
+   */
+  publishedDate: string;
   updatedBy?: (number | null) | User;
+  uploadedBy?: (number | null) | User;
   trashedBy?: (number | null) | User;
   prefix?: string | null;
   _objectKey?: string | null;
@@ -881,10 +888,11 @@ export interface IrDocumentsSelect<T extends boolean = true> {
   tenant?: T;
   title?: T;
   documentType?: T;
-  publishedDate?: T;
   firstPublishedAt?: T;
   locale?: T;
+  publishedDate?: T;
   updatedBy?: T;
+  uploadedBy?: T;
   trashedBy?: T;
   prefix?: T;
   _objectKey?: T;

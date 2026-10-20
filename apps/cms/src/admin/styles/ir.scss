@@ -92,4 +92,321 @@
       text-decoration: underline;
     }
   }
+
+  // Payload classes: .doc-tabs, .doc-controls__meta, .doc-controls__popup, .doc-header__header (@payloadcms/ui elements/DocumentHeader, DocumentControls); the 3b editor shows the status chip by the title, Versions as a drawer and trash in the sidebar
+  .template-default__wrap:has(.collection-edit--ir-documents) {
+    .doc-tabs,
+    .doc-controls__meta,
+    .doc-controls__popup {
+      display: none;
+    }
+
+    .doc-header__header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+    }
+
+    .doc-header__title {
+      flex: 0 1 auto;
+      width: auto;
+    }
+  }
+
+  .dil-ir-status {
+    align-self: center;
+  }
+
+  .dil-ir-note {
+    margin: 4px 0 0;
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 15px;
+  }
+
+  // Payload classes: .document-fields__edit, .document-fields__fields, .document-fields__sidebar-fields (@payloadcms/ui views/Edit, elements/DocumentFields); File and Details become 3b cards
+  .collection-edit--ir-documents {
+    .document-fields__edit {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .document-fields__fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px 24px;
+      padding: 0 20px 24px;
+      border: 1px solid var(--dil-line);
+      border-radius: var(--dil-radius-l);
+      background: var(--dil-surface);
+
+      > * {
+        grid-column: 1 / -1;
+        margin: 0;
+      }
+
+      > #field-documentType,
+      > .dil-ir-language,
+      > .date-time-field {
+        grid-column: auto;
+      }
+    }
+
+    .document-fields__sidebar-fields .render-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .document-fields__sidebar-fields .field-type.relationship,
+    .document-fields__sidebar-fields .field-type.date-time-field {
+      display: none;
+    }
+  }
+
+  .dil-ir-panel {
+    overflow: hidden;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-surface);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-ir-panel__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--dil-line);
+  }
+
+  .document-fields__fields > .dil-ir-details__head {
+    margin: 0 -20px;
+  }
+
+  .dil-ir-panel__title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .dil-ir-panel__aside {
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+
+  .dil-ir-panel__body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 20px;
+  }
+
+  .dil-ir-file__current,
+  .dil-ir-file__progress,
+  .dil-ir-file__error {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .dil-ir-file__icon {
+    flex: none;
+    padding: 8px;
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-danger-bg);
+    color: var(--dil-danger);
+    font-size: 26px;
+  }
+
+  .dil-ir-file__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+
+    b {
+      overflow: hidden;
+      font-size: 15px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    progress {
+      width: 100%;
+      height: 6px;
+      overflow: hidden;
+      border: 0;
+      border-radius: 999px;
+      appearance: none;
+      background: var(--dil-surface-2);
+      accent-color: var(--dil-brand);
+
+      &::-webkit-progress-bar {
+        background: var(--dil-surface-2);
+      }
+
+      &::-webkit-progress-value {
+        background: var(--dil-brand);
+      }
+    }
+  }
+
+  .dil-ir-file__line {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+
+    span {
+      color: var(--dil-muted);
+      font-size: 13px;
+    }
+  }
+
+  .dil-ir-file__meta,
+  .dil-ir-file__note {
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+
+  .dil-ir-file__note {
+    margin: 0;
+  }
+
+  .dil-ir-file__link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-brand-ink);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .dil-ir-file__drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 28px 16px;
+    border: 1px dashed var(--dil-line);
+    border-radius: var(--dil-radius-l);
+    color: var(--dil-muted);
+    font-size: 13px;
+    text-align: center;
+
+    > .dil-icon {
+      font-size: 28px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--dil-ink);
+      font-size: 15px;
+    }
+  }
+
+  .dil-ir-file__drop--over {
+    border-color: var(--dil-brand);
+    background: var(--dil-sel-bg);
+  }
+
+  .dil-ir-file__error {
+    padding: 12px 16px;
+    border: 1px solid var(--dil-danger);
+    border-radius: var(--dil-radius-l);
+
+    > .dil-icon {
+      color: var(--dil-danger);
+      font-size: 22px;
+    }
+
+    .dil-ir-file__text span {
+      font-size: 13px;
+    }
+  }
+
+  .dil-ir-language .dil-segmented-control {
+    width: 100%;
+  }
+
+  .dil-ir-ready {
+    font-family: var(--dil-font-sans);
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-ir-ready__title {
+    margin: 0;
+    color: var(--dil-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .dil-ir-ready__done .dil-icon {
+    color: var(--dil-ok);
+  }
+
+  .dil-ir-ready__missing {
+    color: var(--dil-danger);
+  }
+
+  .dil-ir-timing {
+    padding: 16px;
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+    font-family: var(--dil-font-sans);
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-ir-trash {
+    width: 100%;
+  }
 }

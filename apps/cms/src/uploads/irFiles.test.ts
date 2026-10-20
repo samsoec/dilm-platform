@@ -7,8 +7,11 @@ import { IrDocuments } from "../collections/IrDocuments";
 import { Media } from "../collections/Media";
 import { TenantSettings } from "../collections/TenantSettings";
 import {
+  IR_MAX_UPLOAD_BYTES,
   keepPublishedFile,
+  PDF_TOO_LARGE,
   PUBLISHED_FILE_LOCKED,
+  randomiseUploadName,
   stampFirstPublished,
   unguessableName,
 } from "./irFiles";
@@ -114,5 +117,28 @@ describe("published file guard", () => {
         .firstPublishedAt,
     ).toBeUndefined();
     expect(stamp({ _status: "draft" }, {}).firstPublishedAt).toBeUndefined();
+  });
+});
+
+describe("randomiseUploadName (DILM-92)", () => {
+  const upload = (size: number) => {
+    const req = { file: { name: "Laporan Tahunan.pdf", size } };
+    const args = { data: {} };
+    const result = randomiseUploadName({
+      args,
+      operation: "create",
+      req,
+    } as never);
+    return { req, result, args };
+  };
+
+  it("renames PDFs up to 50 MB", () => {
+    const { req, result, args } = upload(IR_MAX_UPLOAD_BYTES);
+    expect(result).toBe(args);
+    expect(req.file.name).toMatch(/^laporan-tahunan-[0-9a-f]{24}\.pdf$/);
+  });
+
+  it("refuses anything over 50 MB on the server too", () => {
+    expect(() => upload(IR_MAX_UPLOAD_BYTES + 1)).toThrow(PDF_TOO_LARGE);
   });
 });

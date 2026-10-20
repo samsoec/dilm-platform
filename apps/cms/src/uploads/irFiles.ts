@@ -26,12 +26,20 @@ export function unguessableName(
   return `${base}-${random}${extension}`;
 }
 
+export const IR_MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
+export const PDF_TOO_LARGE =
+  "The limit is 50 MB. Compress the PDF and try again.";
+
 export const randomiseUploadName: CollectionBeforeOperationHook = ({
   args,
   operation,
   req,
 }) => {
   if ((operation === "create" || operation === "update") && req.file?.name) {
+    if (req.file.size > IR_MAX_UPLOAD_BYTES) {
+      throw new APIError(PDF_TOO_LARGE, 413, undefined, true);
+    }
     req.file.name = unguessableName(req.file.name);
   }
   return args;

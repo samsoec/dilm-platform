@@ -6,7 +6,9 @@ export function uploadMedia({
   data,
   onProgress,
   signal,
+  method = "POST",
 }: {
+  method?: "POST" | "PATCH";
   url: string;
   file: File;
   data: Record<string, unknown>;
@@ -18,7 +20,7 @@ export function uploadMedia({
     const body = new FormData();
     body.append("file", file);
     body.append("_payload", JSON.stringify(data));
-    request.open("POST", url);
+    request.open(method, url);
     request.withCredentials = true;
     request.responseType = "json";
     request.upload.onprogress = (event) => {

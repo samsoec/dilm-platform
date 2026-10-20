@@ -23,6 +23,7 @@ import {
   PROVIDERS_INSIDE_TENANT_SELECTION,
   TOP_BAR_ACTIONS,
 } from "./admin/shell";
+import { IR_EDITOR_TRANSLATIONS } from "./admin/components/ir/irEditor";
 import { TRASH_TRANSLATIONS } from "./admin/components/trash/trash";
 import { collections, globals } from "./collections";
 import { Users } from "./collections/Users";
@@ -75,8 +76,16 @@ export async function cmsConfig(client: PayloadClient) {
       supportedLanguages: { en, id },
       fallbackLanguage: "en",
       translations: {
-        en: { ...LOGIN_TRANSLATIONS.en, ...TRASH_TRANSLATIONS.en },
-        id: { ...LOGIN_TRANSLATIONS.id, ...TRASH_TRANSLATIONS.id },
+        en: {
+          ...LOGIN_TRANSLATIONS.en,
+          ...TRASH_TRANSLATIONS.en,
+          ...IR_EDITOR_TRANSLATIONS.en,
+        },
+        id: {
+          ...LOGIN_TRANSLATIONS.id,
+          ...TRASH_TRANSLATIONS.id,
+          ...IR_EDITOR_TRANSLATIONS.id,
+        },
       },
     },
     localization,

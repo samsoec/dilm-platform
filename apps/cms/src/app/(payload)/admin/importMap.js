@@ -46,12 +46,21 @@ import { ConsentTypeCell as ConsentTypeCell_57564f7a5c6d0af3318cd0f0c87bc469 } f
 import { ConsentListFooter as ConsentListFooter_2195df2e4953f256d9edd780e394cba6 } from '../../../admin/components/consent/ConsentListFooter'
 import { ConsentToolbar as ConsentToolbar_00f2debf1fef6719308c2f12d1b95fb4 } from '../../../admin/components/consent/ConsentToolbar'
 import { ConsentRecordView as ConsentRecordView_d9cb9c4ad20dcd7a6c2a047bd334a6ce } from '../../../admin/components/consent/ConsentRecordView'
+import { DetailsHeading as DetailsHeading_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
 import { PdfTitleCell as PdfTitleCell_2e85940daa13abc78fa7ceb2f9fe8a7b } from '../../../admin/components/ir/IrCells'
 import { TypeLabelCell as TypeLabelCell_2e85940daa13abc78fa7ceb2f9fe8a7b } from '../../../admin/components/ir/IrCells'
 import { LocaleTagCell as LocaleTagCell_2e85940daa13abc78fa7ceb2f9fe8a7b } from '../../../admin/components/ir/IrCells'
+import { LanguageField as LanguageField_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
+import { PublishChecklist as PublishChecklist_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
+import { DisclosureTiming as DisclosureTiming_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
+import { VersionInfo as VersionInfo_015c9769215da0668226801191ca76fc } from '../../../admin/components/fields/VersionInfo'
+import { IrTrashButton as IrTrashButton_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
 import { IrStatusCell as IrStatusCell_db25e692b4fff2d00bbcb0ffedf8b889 } from '../../../admin/components/ir/IrStatusCell'
 import { IrListFooter as IrListFooter_2e85940daa13abc78fa7ceb2f9fe8a7b } from '../../../admin/components/ir/IrCells'
 import { IrToolbar as IrToolbar_2d0c7d330abc4ab1a2d16999ba991c53 } from '../../../admin/components/ir/IrToolbar'
+import { IrStatusTag as IrStatusTag_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
+import { IrVersionsButton as IrVersionsButton_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
+import { IrFilePanel as IrFilePanel_530373cc4741a6c2fcb7989367a6d3e0 } from '../../../admin/components/ir/IrFilePanel'
 import { ApplicantCell as ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3 } from '../../../admin/components/cells/ApplicantCell'
 import { StatusPill as StatusPill_9934788374c7dcc43b168cee27281175 } from '../../../admin/components/cells/StatusPill'
 import { EmailsLabel as EmailsLabel_7a1351ce5840c4e6fd1ca73b345df968 } from '../../../admin/components/lists/CvColumnLabel'
@@ -64,7 +73,6 @@ import { CvToolbar as CvToolbar_6e7bbbc44355b310e20f11bbdf672e51 } from '../../.
 import { ApplicationView as ApplicationView_dadab5058eb4d2024b8c7d5fc6e34474 } from '../../../admin/components/application/ApplicationView'
 import { LocaleBanner as LocaleBanner_6e922f404c87f00d1c61cd1cda241d71 } from '../../../admin/components/fields/LocaleBanner'
 import { ValidationSummary as ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2 } from '../../../admin/components/fields/ValidationSummary'
-import { VersionInfo as VersionInfo_015c9769215da0668226801191ca76fc } from '../../../admin/components/fields/VersionInfo'
 import { SourcedFromPanel as SourcedFromPanel_5c55509d5c0ba2360d16a128794e5b0d } from '../../../admin/components/fields/SourcedFromPanel'
 import { NavTypeField as NavTypeField_8694bf897a6746ab2199d0709a24c346 } from '../../../admin/components/fields/NavTypeField'
 import { PathPrefix as PathPrefix_ee56f462e1df17b24b760ddd7386e5b7 } from '../../../admin/components/fields/PathPrefix'
@@ -165,12 +173,21 @@ export const importMap = {
   "/admin/components/consent/ConsentListFooter#ConsentListFooter": ConsentListFooter_2195df2e4953f256d9edd780e394cba6,
   "/admin/components/consent/ConsentToolbar#ConsentToolbar": ConsentToolbar_00f2debf1fef6719308c2f12d1b95fb4,
   "/admin/components/consent/ConsentRecordView#ConsentRecordView": ConsentRecordView_d9cb9c4ad20dcd7a6c2a047bd334a6ce,
+  "/admin/components/ir/IrEditorParts#DetailsHeading": DetailsHeading_e05db7d652f5a712500fa0647c5af374,
   "/admin/components/ir/IrCells#PdfTitleCell": PdfTitleCell_2e85940daa13abc78fa7ceb2f9fe8a7b,
   "/admin/components/ir/IrCells#TypeLabelCell": TypeLabelCell_2e85940daa13abc78fa7ceb2f9fe8a7b,
   "/admin/components/ir/IrCells#LocaleTagCell": LocaleTagCell_2e85940daa13abc78fa7ceb2f9fe8a7b,
+  "/admin/components/ir/IrEditorParts#LanguageField": LanguageField_e05db7d652f5a712500fa0647c5af374,
+  "/admin/components/ir/IrEditorParts#PublishChecklist": PublishChecklist_e05db7d652f5a712500fa0647c5af374,
+  "/admin/components/ir/IrEditorParts#DisclosureTiming": DisclosureTiming_e05db7d652f5a712500fa0647c5af374,
+  "/admin/components/fields/VersionInfo#VersionInfo": VersionInfo_015c9769215da0668226801191ca76fc,
+  "/admin/components/ir/IrEditorParts#IrTrashButton": IrTrashButton_e05db7d652f5a712500fa0647c5af374,
   "/admin/components/ir/IrStatusCell#IrStatusCell": IrStatusCell_db25e692b4fff2d00bbcb0ffedf8b889,
   "/admin/components/ir/IrCells#IrListFooter": IrListFooter_2e85940daa13abc78fa7ceb2f9fe8a7b,
   "/admin/components/ir/IrToolbar#IrToolbar": IrToolbar_2d0c7d330abc4ab1a2d16999ba991c53,
+  "/admin/components/ir/IrEditorParts#IrStatusTag": IrStatusTag_e05db7d652f5a712500fa0647c5af374,
+  "/admin/components/ir/IrEditorParts#IrVersionsButton": IrVersionsButton_e05db7d652f5a712500fa0647c5af374,
+  "/admin/components/ir/IrFilePanel#IrFilePanel": IrFilePanel_530373cc4741a6c2fcb7989367a6d3e0,
   "/admin/components/cells/ApplicantCell#ApplicantCell": ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3,
   "/admin/components/cells/StatusPill#StatusPill": StatusPill_9934788374c7dcc43b168cee27281175,
   "/admin/components/lists/CvColumnLabel#EmailsLabel": EmailsLabel_7a1351ce5840c4e6fd1ca73b345df968,
@@ -183,7 +200,6 @@ export const importMap = {
   "/admin/components/application/ApplicationView#ApplicationView": ApplicationView_dadab5058eb4d2024b8c7d5fc6e34474,
   "/admin/components/fields/LocaleBanner#LocaleBanner": LocaleBanner_6e922f404c87f00d1c61cd1cda241d71,
   "/admin/components/fields/ValidationSummary#ValidationSummary": ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2,
-  "/admin/components/fields/VersionInfo#VersionInfo": VersionInfo_015c9769215da0668226801191ca76fc,
   "/admin/components/fields/SourcedFromPanel#SourcedFromPanel": SourcedFromPanel_5c55509d5c0ba2360d16a128794e5b0d,
   "/admin/components/fields/NavTypeField#NavTypeField": NavTypeField_8694bf897a6746ab2199d0709a24c346,
   "/admin/components/fields/PathPrefix#PathPrefix": PathPrefix_ee56f462e1df17b24b760ddd7386e5b7,

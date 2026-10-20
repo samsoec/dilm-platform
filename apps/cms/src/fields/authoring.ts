@@ -26,7 +26,7 @@ export const stampUploadedBy: CollectionBeforeChangeHook = ({
   operation,
   req,
 }) => {
-  if (operation !== "create") return data;
+  if (operation !== "create" && !req.file) return data;
   const author = stampsBy(req);
   return author === undefined ? data : { ...data, uploadedBy: author };
 };
