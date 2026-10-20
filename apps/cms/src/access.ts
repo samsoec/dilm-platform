@@ -60,6 +60,12 @@ export const tenantEditors: Access = ({ req }) =>
 
 export const tenantMembers: Access = ({ req }) => hasAnyRole(req.user);
 
+export const trashByEditorsDeleteBySuperAdmins: Access = (args) => {
+  if (isSuperAdmin(args.req.user)) return true;
+  const data = args.data as { deletedAt?: unknown } | undefined;
+  return data?.deletedAt ? tenantEditors(args) : false;
+};
+
 export const superAdminsOrSelf: Access = ({ req }) => {
   if (isSuperAdmin(req.user)) return true;
   if (!req.user) return false;

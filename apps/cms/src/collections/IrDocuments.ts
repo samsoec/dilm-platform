@@ -1,8 +1,19 @@
+import {
+  systemManagedField,
+  trashByEditorsDeleteBySuperAdmins,
+} from "../access";
 import { navGroup } from "../admin/navGroups";
+import {
+  keepPublishedFile,
+  randomiseUploadName,
+  stampFirstPublished,
+} from "../uploads/irFiles";
 import { localization } from "../localization";
 import { withTenantAccess } from "../tenancy";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { collectionLabels } from "../admin/labels";
+
+export const IR_VERSIONS_PER_DOCUMENT = 50;
 
 export const IR_DOCUMENT_TYPES = [
   "annual-report",
@@ -17,6 +28,13 @@ export const IrDocuments = withTenantAccess(
   withUpdatedBy({
     slug: "ir-documents",
     labels: collectionLabels("ir-documents"),
+    access: { delete: trashByEditorsDeleteBySuperAdmins },
+    versions: { drafts: true, maxPerDoc: IR_VERSIONS_PER_DOCUMENT },
+    trash: true,
+    hooks: {
+      beforeOperation: [randomiseUploadName],
+      beforeChange: [stampFirstPublished, keepPublishedFile],
+    },
     admin: {
       group: navGroup("investor"),
       useAsTitle: "title",
@@ -44,6 +62,12 @@ export const IrDocuments = withTenantAccess(
         name: "publishedDate",
         type: "date",
         required: true,
+      },
+      {
+        name: "firstPublishedAt",
+        type: "date",
+        access: systemManagedField,
+        admin: { readOnly: true, position: "sidebar" },
       },
       {
         name: "locale",

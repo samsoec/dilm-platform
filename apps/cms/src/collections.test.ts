@@ -527,6 +527,7 @@ describe("ir-documents", () => {
       "title",
       "documentType",
       "publishedDate",
+      "firstPublishedAt",
       "locale",
       "updatedBy",
     ]);
