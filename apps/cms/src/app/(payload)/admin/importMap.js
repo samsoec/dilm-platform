@@ -1,5 +1,15 @@
 import { UnsavedChangesReporter as UnsavedChangesReporter_0b686cc068a7e080540f78fe764a5893 } from '../../../admin/components/guard/UnsavedChangesReporter'
+import { CompanyCell as CompanyCell_0a353b7950d55d873cddd18b24ded04f } from '../../../admin/components/companies/CompanyCells'
+import { DomainCell as DomainCell_0a353b7950d55d873cddd18b24ded04f } from '../../../admin/components/companies/CompanyCells'
+import { DomainWarning as DomainWarning_8753662b4f83a5b0809f7805cbde67e3 } from '../../../admin/components/companies/DomainWarning'
+import { LocaleCell as LocaleCell_0a353b7950d55d873cddd18b24ded04f } from '../../../admin/components/companies/CompanyCells'
+import { LocaleField as LocaleField_bcdc2c83cfe69f6317fb79bbd3326adf } from '../../../admin/components/companies/LocaleField'
+import { ColorCell as ColorCell_0a353b7950d55d873cddd18b24ded04f } from '../../../admin/components/companies/CompanyCells'
+import { BrandColorField as BrandColorField_f00acec9c86e0e5439a1aec25060db59 } from '../../../admin/components/companies/BrandColorField'
+import { EditCell as EditCell_0a353b7950d55d873cddd18b24ded04f } from '../../../admin/components/companies/CompanyCells'
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
+import { ListIntro as ListIntro_3758f5318f3bce3eb36c93ddfc96aba0 } from '../../../admin/components/lists/ListIntro'
+import { CompanySaveButton as CompanySaveButton_4120b1509b6b758e788c36cbba11c6cc } from '../../../admin/components/companies/CompanySaveButton'
 import { TenantField as TenantField_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { CompletenessPanel as CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77 } from '../../../admin/components/fields/CompletenessPanel'
 import { MediaPickerField as MediaPickerField_c1a0497f67f40c4b5a41bd7dd6573213 } from '../../../admin/components/media/MediaPickerField'
@@ -21,7 +31,6 @@ import { RelatedRecordCell as RelatedRecordCell_5e01d6438ecbb217a8bcc41717eef230
 import { ConsentTypeCell as ConsentTypeCell_57564f7a5c6d0af3318cd0f0c87bc469 } from '../../../admin/components/consent/ConsentCells'
 import { ConsentListFooter as ConsentListFooter_2195df2e4953f256d9edd780e394cba6 } from '../../../admin/components/consent/ConsentListFooter'
 import { ConsentToolbar as ConsentToolbar_00f2debf1fef6719308c2f12d1b95fb4 } from '../../../admin/components/consent/ConsentToolbar'
-import { ListIntro as ListIntro_3758f5318f3bce3eb36c93ddfc96aba0 } from '../../../admin/components/lists/ListIntro'
 import { ConsentRecordView as ConsentRecordView_d9cb9c4ad20dcd7a6c2a047bd334a6ce } from '../../../admin/components/consent/ConsentRecordView'
 import { ApplicantCell as ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3 } from '../../../admin/components/cells/ApplicantCell'
 import { StatusPill as StatusPill_9934788374c7dcc43b168cee27281175 } from '../../../admin/components/cells/StatusPill'
@@ -81,7 +90,17 @@ import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc056
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/guard/UnsavedChangesReporter#UnsavedChangesReporter": UnsavedChangesReporter_0b686cc068a7e080540f78fe764a5893,
+  "/admin/components/companies/CompanyCells#CompanyCell": CompanyCell_0a353b7950d55d873cddd18b24ded04f,
+  "/admin/components/companies/CompanyCells#DomainCell": DomainCell_0a353b7950d55d873cddd18b24ded04f,
+  "/admin/components/companies/DomainWarning#DomainWarning": DomainWarning_8753662b4f83a5b0809f7805cbde67e3,
+  "/admin/components/companies/CompanyCells#LocaleCell": LocaleCell_0a353b7950d55d873cddd18b24ded04f,
+  "/admin/components/companies/LocaleField#LocaleField": LocaleField_bcdc2c83cfe69f6317fb79bbd3326adf,
+  "/admin/components/companies/CompanyCells#ColorCell": ColorCell_0a353b7950d55d873cddd18b24ded04f,
+  "/admin/components/companies/BrandColorField#BrandColorField": BrandColorField_f00acec9c86e0e5439a1aec25060db59,
+  "/admin/components/companies/CompanyCells#EditCell": EditCell_0a353b7950d55d873cddd18b24ded04f,
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
+  "/admin/components/lists/ListIntro#ListIntro": ListIntro_3758f5318f3bce3eb36c93ddfc96aba0,
+  "/admin/components/companies/CompanySaveButton#CompanySaveButton": CompanySaveButton_4120b1509b6b758e788c36cbba11c6cc,
   "@payloadcms/plugin-multi-tenant/client#TenantField": TenantField_1d0591e3cf4f332c83a86da13a0de59a,
   "/admin/components/fields/CompletenessPanel#CompletenessPanel": CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77,
   "/admin/components/media/MediaPickerField#MediaPickerField": MediaPickerField_c1a0497f67f40c4b5a41bd7dd6573213,
@@ -103,7 +122,6 @@ export const importMap = {
   "/admin/components/consent/ConsentCells#ConsentTypeCell": ConsentTypeCell_57564f7a5c6d0af3318cd0f0c87bc469,
   "/admin/components/consent/ConsentListFooter#ConsentListFooter": ConsentListFooter_2195df2e4953f256d9edd780e394cba6,
   "/admin/components/consent/ConsentToolbar#ConsentToolbar": ConsentToolbar_00f2debf1fef6719308c2f12d1b95fb4,
-  "/admin/components/lists/ListIntro#ListIntro": ListIntro_3758f5318f3bce3eb36c93ddfc96aba0,
   "/admin/components/consent/ConsentRecordView#ConsentRecordView": ConsentRecordView_d9cb9c4ad20dcd7a6c2a047bd334a6ce,
   "/admin/components/cells/ApplicantCell#ApplicantCell": ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3,
   "/admin/components/cells/StatusPill#StatusPill": StatusPill_9934788374c7dcc43b168cee27281175,

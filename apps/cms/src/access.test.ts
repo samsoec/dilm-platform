@@ -10,7 +10,7 @@ import {
 import { Tenants } from "./collections/Tenants";
 import { promoteFirstUserToSuperAdmin, Users } from "./collections/Users";
 import { withTenantAccess } from "./tenancy";
-import { applyMultiTenant } from "./testing";
+import { applyMultiTenant, findField } from "./testing";
 
 function user(roles: Role[], tenantIds: number[] = []) {
   return {
@@ -74,9 +74,9 @@ describe("access through the multi-tenant plugin", () => {
     key: "create" | "update",
     as: object,
   ) {
-    const field = collection.fields.find(
-      (candidate) => "name" in candidate && candidate.name === name,
-    ) as { access: Record<typeof key, FieldAccess> };
+    const field = findField(collection.fields, name) as unknown as {
+      access: Record<typeof key, FieldAccess>;
+    };
     return field.access[key]({
       req: { user: as },
     } as Parameters<FieldAccess>[0]);
@@ -156,12 +156,15 @@ describe("access through the multi-tenant plugin", () => {
     }
   });
 
-  it("reserves tenant management for Super Admins", async () => {
+  it("reserves tenant edits for Super Admins and leaves create/delete to the setup script", async () => {
     const collection = await configured();
 
+    expect(await call(collection("tenants"), "update", superAdmin)).toBe(true);
     for (const key of ["create", "update", "delete"] as const) {
-      expect(await call(collection("tenants"), key, superAdmin)).toBe(true);
       expect(await call(collection("tenants"), key, editor)).toBe(false);
+    }
+    for (const key of ["create", "delete"] as const) {
+      expect(await call(collection("tenants"), key, superAdmin)).toBe(false);
     }
     expect(await call(collection("tenants"), "read", viewer)).toEqual({
       id: { in: [1, 2] },
