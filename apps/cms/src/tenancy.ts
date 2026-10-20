@@ -59,5 +59,6 @@ export function multiTenant(collections: CollectionConfig[]): Plugin {
     userHasAccessToAllTenants: isSuperAdmin,
     usersAccessResultOverride: withSuperAdminAuthors,
     useTenantsListFilter: false,
+    useUsersTenantFilter: false,
   });
 }

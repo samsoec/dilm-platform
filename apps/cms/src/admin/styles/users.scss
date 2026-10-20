@@ -1,0 +1,318 @@
+@layer dil {
+  .dil-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .dil-user__avatar {
+    flex: none;
+  }
+
+  .dil-user__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .dil-user__name {
+    color: var(--dil-ink);
+    font-weight: 700;
+  }
+
+  .dil-user__email {
+    overflow: hidden;
+    max-width: 180px;
+    color: var(--dil-muted);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dil-user__roles,
+  .dil-user__sites {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .dil-role-chip {
+    display: inline-flex;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .dil-role-chip--super-admin {
+    background: var(--dil-ink);
+    color: var(--dil-surface);
+  }
+
+  .dil-role-chip--tenant-viewer {
+    background: var(--dil-surface-2);
+    color: var(--dil-ink-2);
+  }
+
+  .dil-site-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .dil-user__all-sites {
+    color: var(--dil-ink);
+    font-size: 13px;
+  }
+
+  .dil-user__last {
+    color: var(--dil-ink-2);
+    white-space: nowrap;
+  }
+
+  .dil-user-status {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dil-user-status__invited {
+    color: var(--dil-muted);
+  }
+
+  .dil-user-status__action {
+    padding: 3px 8px;
+    border: 1px solid var(--dil-line);
+    border-radius: 6px;
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--dil-surface-2);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: progress;
+    }
+  }
+
+  // Payload classes: .collection-list--users, .collection-list__wrap (@payloadcms/ui views/List); the role explainer sits in a right-hand column beside the table (2j)
+  .collection-list--users .collection-list__wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    column-gap: 28px;
+
+    > * {
+      grid-column: 1;
+    }
+
+    > .dil-roles {
+      grid-column: 2;
+      grid-row: 1 / span 20;
+      align-self: start;
+    }
+
+    @media (max-width: 1100px) {
+      grid-template-columns: minmax(0, 1fr);
+
+      > .dil-roles {
+        grid-column: 1;
+        grid-row: auto;
+      }
+    }
+  }
+
+  .list-header__title-and-actions .dil-invite-button {
+    margin-left: auto;
+  }
+
+  .dil-roles {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 8px;
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-roles__title {
+    margin: 0;
+    color: var(--dil-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .dil-roles__card {
+    padding: 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface);
+
+    p {
+      margin: 8px 0 0;
+      color: var(--dil-ink-2);
+      font-size: 13px;
+    }
+  }
+
+  .dil-roles__matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+
+    th,
+    td {
+      padding: 6px 4px;
+      text-align: center;
+    }
+
+    thead th {
+      color: var(--dil-muted);
+      font-weight: 700;
+    }
+
+    tbody th {
+      color: var(--dil-ink-2);
+      font-weight: 400;
+      text-align: left;
+    }
+
+    td {
+      color: var(--dil-muted);
+
+      .dil-icon {
+        color: var(--dil-ok);
+        font-size: 16px;
+      }
+    }
+  }
+
+  .dil-invite {
+    display: flex;
+    flex-direction: column;
+    width: min(520px, calc(100vw - 32px));
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-surface);
+    box-shadow: 0 24px 60px rgb(17 28 42 / 28%);
+    color: var(--dil-ink);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-invite__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--dil-line);
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+  }
+
+  .dil-invite__body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px 20px;
+  }
+
+  .dil-invite__roles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dil-invite__role {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    font-size: 13px;
+    cursor: pointer;
+
+    span {
+      color: var(--dil-muted);
+      font-size: 12px;
+    }
+
+    &:has(input:focus-visible) {
+      outline: 2px solid var(--dil-brand);
+      outline-offset: 2px;
+    }
+  }
+
+  .dil-invite__role--checked {
+    border-color: var(--dil-brand);
+    background: var(--dil-sel-bg);
+  }
+
+  .dil-invite__hint {
+    color: var(--dil-muted);
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .dil-invite__companies {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--dil-brand-ink);
+    }
+  }
+
+  .dil-invite__all {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface-2);
+    font-size: 14px;
+  }
+
+  .dil-invite__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--dil-line);
+  }
+}
