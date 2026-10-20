@@ -31,10 +31,14 @@ import { CharacterLimit as CharacterLimit_bc9f79672c5648acce074f6515fa86f0 } fro
 import { DocumentStatus as DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732 } from '../../../admin/components/document/DocumentStatus'
 import { VersionsDrawer as VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e } from '../../../admin/components/document/VersionsDrawer'
 import { SaveButton as SaveButton_40f7aaa07144fdaeb435852de88db2db } from '../../../admin/components/document/SaveButton'
+import { AltCell as AltCell_9656b58837406d79c49329c42ffa3641 } from '../../../admin/components/media/MediaCells'
+import { UploadedByCell as UploadedByCell_9656b58837406d79c49329c42ffa3641 } from '../../../admin/components/media/MediaCells'
+import { FileSizeCell as FileSizeCell_9656b58837406d79c49329c42ffa3641 } from '../../../admin/components/media/MediaCells'
 import { TrashToggle as TrashToggle_42d3bcf0bd6f25c849d60879c6373f90 } from '../../../admin/components/trash/TrashToggle'
-import { UploadImagesButton as UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af4d } from '../../../admin/components/media/UploadImagesButton'
+import { MediaToolbar as MediaToolbar_d52bc8009b4e5dfb9f3ddc16ea81a9a2 } from '../../../admin/components/media/MediaToolbar'
 import { TrashTable as TrashTable_57ae9c8c46a4c77f1a4e0c40b9a3ca79 } from '../../../admin/components/trash/TrashTable'
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
+import { MediaGridView as MediaGridView_9a72685bcde21f03c37cfdb4e7994d87 } from '../../../admin/components/media/MediaGridView'
 import { TimestampCell as TimestampCell_57564f7a5c6d0af3318cd0f0c87bc469 } from '../../../admin/components/consent/ConsentCells'
 import { MonoCell as MonoCell_57564f7a5c6d0af3318cd0f0c87bc469 } from '../../../admin/components/consent/ConsentCells'
 import { RelatedRecordCell as RelatedRecordCell_5e01d6438ecbb217a8bcc41717eef230 } from '../../../admin/components/consent/RelatedRecordCell'
@@ -140,10 +144,14 @@ export const importMap = {
   "/admin/components/document/DocumentStatus#DocumentStatus": DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732,
   "/admin/components/document/VersionsDrawer#VersionsDrawer": VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e,
   "/admin/components/document/SaveButton#SaveButton": SaveButton_40f7aaa07144fdaeb435852de88db2db,
+  "/admin/components/media/MediaCells#AltCell": AltCell_9656b58837406d79c49329c42ffa3641,
+  "/admin/components/media/MediaCells#UploadedByCell": UploadedByCell_9656b58837406d79c49329c42ffa3641,
+  "/admin/components/media/MediaCells#FileSizeCell": FileSizeCell_9656b58837406d79c49329c42ffa3641,
   "/admin/components/trash/TrashToggle#TrashToggle": TrashToggle_42d3bcf0bd6f25c849d60879c6373f90,
-  "/admin/components/media/UploadImagesButton#UploadImagesButton": UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af4d,
+  "/admin/components/media/MediaToolbar#MediaToolbar": MediaToolbar_d52bc8009b4e5dfb9f3ddc16ea81a9a2,
   "/admin/components/trash/TrashTable#TrashTable": TrashTable_57ae9c8c46a4c77f1a4e0c40b9a3ca79,
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
+  "/admin/components/media/MediaGridView#MediaGridView": MediaGridView_9a72685bcde21f03c37cfdb4e7994d87,
   "/admin/components/consent/ConsentCells#TimestampCell": TimestampCell_57564f7a5c6d0af3318cd0f0c87bc469,
   "/admin/components/consent/ConsentCells#MonoCell": MonoCell_57564f7a5c6d0af3318cd0f0c87bc469,
   "/admin/components/consent/RelatedRecordCell#RelatedRecordCell": RelatedRecordCell_5e01d6438ecbb217a8bcc41717eef230,

@@ -14,7 +14,11 @@ export const uploadedByField: RelationshipField = {
   type: "relationship",
   relationTo: "users",
   access: systemManagedField,
-  admin: { position: "sidebar", readOnly: true },
+  admin: {
+    position: "sidebar",
+    readOnly: true,
+    components: { Cell: "/admin/components/media/MediaCells#UploadedByCell" },
+  },
 };
 
 export const stampUploadedBy: CollectionBeforeChangeHook = ({
