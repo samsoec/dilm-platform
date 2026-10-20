@@ -130,11 +130,11 @@ describe("access through the multi-tenant plugin", () => {
   it("reserves user management for Super Admins", async () => {
     const collection = await configured();
 
-    for (const key of ["delete"] as const) {
-      expect(await call(collection("users"), key, superAdmin)).toBe(true);
-      expect(await call(collection("users"), key, editor)).toBe(false);
-      expect(await call(collection("users"), key, viewer)).toBe(false);
-    }
+    expect(await call(collection("users"), "delete", superAdmin)).toEqual({
+      id: { not_equals: superAdmin.id },
+    });
+    expect(await call(collection("users"), "delete", editor)).toBe(false);
+    expect(await call(collection("users"), "delete", viewer)).toBe(false);
     expect(await call(collection("users"), "update", editor)).toEqual({
       and: [
         { id: { equals: 99 } },

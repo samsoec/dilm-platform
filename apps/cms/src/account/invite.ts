@@ -279,7 +279,60 @@ export async function resendInvitation(req: PayloadRequest): Promise<Response> {
   return respond(200, { name: user.name ?? user.email });
 }
 
+export async function updateAccess(req: PayloadRequest): Promise<Response> {
+  const refused = superAdminOnly(req);
+  if (refused) return refused;
+  const { payload } = req;
+  const body = ((await req.json?.().catch(() => undefined)) ??
+    {}) as InviteInput & {
+    id?: unknown;
+  };
+  if (typeof body.id !== "number" && typeof body.id !== "string") {
+    return respond(400, { message: "Which user?" });
+  }
+  const {
+    docs: [user],
+  } = await payload.find({
+    collection: "users",
+    where: { id: { equals: body.id } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: false,
+    user: req.user,
+  });
+  if (!user) return respond(404, { message: "That user no longer exists." });
+  const tenants = await loadTenants(payload);
+  const change = parseInvite(
+    { ...body, name: user.name || user.email, email: user.email },
+    tenants.map(({ id }) => id),
+  );
+  if (isProblem(change)) return respond(400, change);
+  try {
+    await payload.update({
+      collection: "users",
+      id: user.id,
+      data: {
+        roles: [change.role],
+        tenants: change.tenants.map((tenant) => ({ tenant: tenant as number })),
+      },
+      overrideAccess: false,
+      user: req.user,
+    });
+  } catch (error) {
+    const status = (error as { status?: number }).status ?? 500;
+    return respond(status, {
+      field: "role",
+      message:
+        status === 403
+          ? (error as Error).message
+          : "Couldn't save the change. Try again.",
+    });
+  }
+  return respond(200, { name: user.name || user.email });
+}
+
 export const inviteEndpoints: Endpoint[] = [
   { path: "/invite", method: "post", handler: inviteUser },
   { path: "/invite/resend", method: "post", handler: resendInvitation },
+  { path: "/access", method: "post", handler: updateAccess },
 ];
