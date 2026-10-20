@@ -529,6 +529,8 @@ describe("ir-documents", () => {
       "publishedDate",
       "firstPublishedAt",
       "locale",
+      "filesize",
+      "_status",
       "updatedBy",
       "trashedBy",
     ]);

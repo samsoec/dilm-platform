@@ -3,6 +3,7 @@ import type { WidgetServerProps } from "payload";
 import { formatAdminURL } from "payload/shared";
 import { Suspense } from "react";
 
+import { irTypeLabel } from "../../../irDocumentTypes";
 import { dashboardScope } from "../../data/dashboard";
 import { StatusChip } from "../kit/StatusChip";
 import { MaterialIcon } from "../MaterialIcon";
@@ -17,11 +18,6 @@ const DATE = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
   timeZone: "Asia/Jakarta",
 });
-
-function typeLabel(value: unknown): string {
-  const text = typeof value === "string" ? value.replace(/-/g, " ") : "";
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
 
 export function LatestIrWidget(props: WidgetServerProps) {
   return (
@@ -121,7 +117,7 @@ async function LatestIr({
                   <span className="dil-ir-list__text">
                     <b>{doc.title}</b>
                     <span>
-                      {typeLabel(doc.documentType)}
+                      {irTypeLabel(doc.documentType)}
                       {doc.publishedDate &&
                         ` · ${DATE.format(new Date(doc.publishedDate)).replace("Sept", "Sep")}`}
                     </span>
