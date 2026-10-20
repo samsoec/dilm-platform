@@ -107,6 +107,10 @@ export interface Config {
   globalsSelect: {};
   locale: 'en' | 'id';
   widgets: {
+    'needs-attention': NeedsAttentionWidget;
+    'translation-progress': TranslationProgressWidget;
+    'site-layout': SiteLayoutWidget;
+    'latest-ir': LatestIrWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -1119,6 +1123,46 @@ export interface PayloadQueryPresetsSelect<T extends boolean = true> {
   isTemp?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "needs-attention_widget".
+ */
+export interface NeedsAttentionWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-progress_widget".
+ */
+export interface TranslationProgressWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-layout_widget".
+ */
+export interface SiteLayoutWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "latest-ir_widget".
+ */
+export interface LatestIrWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'medium';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -84,6 +84,7 @@ import { Icon as Icon_48a75e37b0630d5b8c8066e180c0e6ef } from '../../../admin/gr
 import { Logo as Logo_88541c286955dbac4d90fb5ed606381c } from '../../../admin/graphics/Logo'
 import { TopBarActions as TopBarActions_4c8de44916aff9faf4c4d2c3f1ea8046 } from '../../../admin/components/topbar/TopBarActions'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
+import { DashboardIntro as DashboardIntro_05cfa51ee08164c88fb91c90672ff910 } from '../../../admin/components/dashboard/DashboardIntro'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { ShellCrumbs as ShellCrumbs_2655bbb4d61960264c14c8889231a4e5 } from '../../../admin/components/topbar/ShellCrumbs'
@@ -95,6 +96,10 @@ import { SessionExpiredScreen as SessionExpiredScreen_ccdb22b60be80390756933282f
 import { ForgotScreen as ForgotScreen_39023fe4840fc2cf8a8f39c76b3ae8dc } from '../../../admin/components/login/ForgotScreen'
 import { ResetScreen as ResetScreen_d97d58d07e5d60bb290d849f7a96134d } from '../../../admin/components/login/ResetScreen'
 import { AccountView as AccountView_19c2597698600b855c26411007192717 } from '../../../admin/components/account/AccountView'
+import { NeedsAttentionWidget as NeedsAttentionWidget_ea192f5d98e48dd0016d07dce773fb5d } from '../../../admin/components/dashboard/NeedsAttention'
+import { TranslationWidget as TranslationWidget_f2fa3a2f832d3dee7a4aabf3599be638 } from '../../../admin/components/dashboard/Translation'
+import { SiteLayoutWidget as SiteLayoutWidget_d47b3268301ee6262ea516856058e959 } from '../../../admin/components/dashboard/SiteLayout'
+import { LatestIrWidget as LatestIrWidget_7d30844fb4e083d96810b84b413ef411 } from '../../../admin/components/dashboard/LatestIr'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
@@ -186,6 +191,7 @@ export const importMap = {
   "/admin/graphics/Logo#Logo": Logo_88541c286955dbac4d90fb5ed606381c,
   "/admin/components/topbar/TopBarActions#TopBarActions": TopBarActions_4c8de44916aff9faf4c4d2c3f1ea8046,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
+  "/admin/components/dashboard/DashboardIntro#DashboardIntro": DashboardIntro_05cfa51ee08164c88fb91c90672ff910,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
   "/admin/components/topbar/ShellCrumbs#ShellCrumbs": ShellCrumbs_2655bbb4d61960264c14c8889231a4e5,
@@ -197,6 +203,10 @@ export const importMap = {
   "/admin/components/login/ForgotScreen#ForgotScreen": ForgotScreen_39023fe4840fc2cf8a8f39c76b3ae8dc,
   "/admin/components/login/ResetScreen#ResetScreen": ResetScreen_d97d58d07e5d60bb290d849f7a96134d,
   "/admin/components/account/AccountView#AccountView": AccountView_19c2597698600b855c26411007192717,
+  "/admin/components/dashboard/NeedsAttention#NeedsAttentionWidget": NeedsAttentionWidget_ea192f5d98e48dd0016d07dce773fb5d,
+  "/admin/components/dashboard/Translation#TranslationWidget": TranslationWidget_f2fa3a2f832d3dee7a4aabf3599be638,
+  "/admin/components/dashboard/SiteLayout#SiteLayoutWidget": SiteLayoutWidget_d47b3268301ee6262ea516856058e959,
+  "/admin/components/dashboard/LatestIr#LatestIrWidget": LatestIrWidget_7d30844fb4e083d96810b84b413ef411,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }

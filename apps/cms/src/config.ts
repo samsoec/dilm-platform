@@ -10,6 +10,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { PRODUCT_NAME } from "./admin/brand";
+import { BEFORE_DASHBOARD, DASHBOARD } from "./admin/dashboard";
 import {
   LOGIN_COMPONENTS,
   LOGIN_TRANSLATIONS,
@@ -43,8 +44,10 @@ export async function cmsConfig(client: PayloadClient) {
       theme: "all",
       routes: { reset: NATIVE_RESET_ROUTE },
       avatar: { Component: "/admin/graphics/Avatar#Avatar" },
+      dashboard: DASHBOARD,
       components: {
         Nav: "/admin/components/nav/AdminNav#AdminNav",
+        beforeDashboard: BEFORE_DASHBOARD,
         actions: TOP_BAR_ACTIONS,
         ...LOGIN_COMPONENTS,
         views: {
