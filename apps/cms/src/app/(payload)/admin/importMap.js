@@ -60,6 +60,9 @@ import { IrListFooter as IrListFooter_2e85940daa13abc78fa7ceb2f9fe8a7b } from '.
 import { IrToolbar as IrToolbar_2d0c7d330abc4ab1a2d16999ba991c53 } from '../../../admin/components/ir/IrToolbar'
 import { IrStatusTag as IrStatusTag_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
 import { IrVersionsButton as IrVersionsButton_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
+import { IrPublishControls as IrPublishControls_292ea577884889666b4fcbf708c36925 } from '../../../admin/components/ir/IrPublishControls'
+import { IrSaveDraftButton as IrSaveDraftButton_292ea577884889666b4fcbf708c36925 } from '../../../admin/components/ir/IrPublishControls'
+import { NoUnpublishButton as NoUnpublishButton_292ea577884889666b4fcbf708c36925 } from '../../../admin/components/ir/IrPublishControls'
 import { IrFilePanel as IrFilePanel_530373cc4741a6c2fcb7989367a6d3e0 } from '../../../admin/components/ir/IrFilePanel'
 import { ApplicantCell as ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3 } from '../../../admin/components/cells/ApplicantCell'
 import { StatusPill as StatusPill_9934788374c7dcc43b168cee27281175 } from '../../../admin/components/cells/StatusPill'
@@ -187,6 +190,9 @@ export const importMap = {
   "/admin/components/ir/IrToolbar#IrToolbar": IrToolbar_2d0c7d330abc4ab1a2d16999ba991c53,
   "/admin/components/ir/IrEditorParts#IrStatusTag": IrStatusTag_e05db7d652f5a712500fa0647c5af374,
   "/admin/components/ir/IrEditorParts#IrVersionsButton": IrVersionsButton_e05db7d652f5a712500fa0647c5af374,
+  "/admin/components/ir/IrPublishControls#IrPublishControls": IrPublishControls_292ea577884889666b4fcbf708c36925,
+  "/admin/components/ir/IrPublishControls#IrSaveDraftButton": IrSaveDraftButton_292ea577884889666b4fcbf708c36925,
+  "/admin/components/ir/IrPublishControls#NoUnpublishButton": NoUnpublishButton_292ea577884889666b4fcbf708c36925,
   "/admin/components/ir/IrFilePanel#IrFilePanel": IrFilePanel_530373cc4741a6c2fcb7989367a6d3e0,
   "/admin/components/cells/ApplicantCell#ApplicantCell": ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3,
   "/admin/components/cells/StatusPill#StatusPill": StatusPill_9934788374c7dcc43b168cee27281175,

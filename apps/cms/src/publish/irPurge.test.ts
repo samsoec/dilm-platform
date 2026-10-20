@@ -121,7 +121,7 @@ function fakeReq(
   return {
     context,
     payload: {
-      db: { findOne },
+      db: { findOne, updateOne: vi.fn().mockResolvedValue({}) },
       findByID: vi.fn().mockResolvedValue({ domain: "duniakimia.com" }),
       logger: { info: vi.fn(), error: vi.fn() },
     },
@@ -165,6 +165,27 @@ describe("purge hooks", () => {
     expect(Object.keys(req.context)).toEqual([]);
   });
 
+  it("records a successful purge on the live row and in the saved doc (FR-UI-64)", async () => {
+    const { req, result } = await save(
+      row(),
+      row({ _status: "published", updatedAt: T1 }),
+    );
+    expect(req.payload.db.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: "ir-documents",
+        id: 7,
+        data: { lastPurgeStatus: "ok", lastPurgeAt: expect.any(String) },
+      }),
+    );
+    expect(result).toMatchObject({ lastPurgeStatus: "ok" });
+  });
+
+  it("does not touch the status when nothing went live", async () => {
+    const published = row({ _status: "published" });
+    const { req } = await save(published, { ...published });
+    expect(req.payload.db.updateOne).not.toHaveBeenCalled();
+  });
+
   it("does not purge when a draft is saved over a published document", async () => {
     const published = row({ _status: "published" });
     const { purger } = await save(published, { ...published });
@@ -178,8 +199,13 @@ describe("purge hooks", () => {
       row({ _status: "published", updatedAt: T1 }),
       failing,
     );
-    expect(result).toBe(doc);
+    expect(result).toMatchObject({ ...doc, lastPurgeStatus: "failed" });
     expect(req.payload.logger.error).toHaveBeenCalledTimes(1);
+    expect(req.payload.db.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ lastPurgeStatus: "failed" }),
+      }),
+    );
   });
 
   it("skips system writes that ask not to purge", async () => {

@@ -528,6 +528,8 @@ describe("ir-documents", () => {
       "title",
       "documentType",
       "firstPublishedAt",
+      "lastPurgeStatus",
+      "lastPurgeAt",
       "locale",
       "publishedDate",
       "filesize",

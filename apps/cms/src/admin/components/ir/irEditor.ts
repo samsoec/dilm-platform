@@ -133,6 +133,77 @@ export function requiredToPublish(message: string) {
 }
 
 export const IR_EDITOR_TRANSLATIONS = {
-  en: { version: { saveDraft: "Save draft", publishChanges: "Publish" } },
-  id: { version: { saveDraft: "Save draft", publishChanges: "Publish" } },
+  en: { version: { saveDraft: "Save draft", publishChanges: "Publish…" } },
+  id: { version: { saveDraft: "Save draft", publishChanges: "Publish…" } },
 };
+
+export const LOCKED_NOTE =
+  "Published PDFs can't be replaced. To correct one, upload the fixed PDF as a new document, publish it, then unpublish or trash this one. Title, type, date and language can still be edited.";
+
+export const PUBLISHED_NOTICE = {
+  title: "Published.",
+  body: "The Investor page is being refreshed and will show it within minutes.",
+};
+
+export const UPDATED_NOTICE = {
+  title: "Saved.",
+  body: "The Investor page is being refreshed and will show the changes within minutes.",
+};
+
+export const REFRESH_DELAYED = {
+  title: "Published, but the site refresh is delayed.",
+  body: "The document is public and stays published. The platform administrator has been notified; it will appear once the refresh runs.",
+};
+
+export function companyInitials(name: string | undefined): string {
+  const letters = (name ?? "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => word[0]!.toUpperCase())
+    .join("");
+  return letters || "company";
+}
+
+export function investorURL(
+  domain: string | undefined,
+  locale: unknown,
+): string {
+  const path =
+    typeof locale === "string" && locale ? `/${locale}/investor` : "/investor";
+  return `${domain ?? "the website"}${path}`;
+}
+
+const DISCLOSURE = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "Asia/Jakarta",
+});
+
+export function disclosureText(value: unknown): string {
+  if (typeof value !== "string" || !value) return "Not set";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? "Not set"
+    : DISCLOSURE.format(date).replace("Sept", "Sep");
+}
+
+export function fileStateText({
+  filesize,
+  createdAt,
+  firstPublishedAt,
+  uploader,
+}: {
+  filesize: unknown;
+  createdAt: unknown;
+  firstPublishedAt: unknown;
+  uploader?: string;
+}): string {
+  if (!firstPublishedAt) {
+    return fileMetaText({ filesize, uploadedAt: createdAt, uploader });
+  }
+  const when = uploadedAtText(firstPublishedAt);
+  return [fileSizeText(filesize), when && `published ${when}`]
+    .filter(Boolean)
+    .join(" · ");
+}
