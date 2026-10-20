@@ -15,6 +15,14 @@ import { VersionsDrawer as VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e } fro
 import { SaveButton as SaveButton_40f7aaa07144fdaeb435852de88db2db } from '../../../admin/components/document/SaveButton'
 import { UploadImagesButton as UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af4d } from '../../../admin/components/media/UploadImagesButton'
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
+import { TimestampCell as TimestampCell_57564f7a5c6d0af3318cd0f0c87bc469 } from '../../../admin/components/consent/ConsentCells'
+import { MonoCell as MonoCell_57564f7a5c6d0af3318cd0f0c87bc469 } from '../../../admin/components/consent/ConsentCells'
+import { RelatedRecordCell as RelatedRecordCell_5e01d6438ecbb217a8bcc41717eef230 } from '../../../admin/components/consent/RelatedRecordCell'
+import { ConsentTypeCell as ConsentTypeCell_57564f7a5c6d0af3318cd0f0c87bc469 } from '../../../admin/components/consent/ConsentCells'
+import { ConsentListFooter as ConsentListFooter_2195df2e4953f256d9edd780e394cba6 } from '../../../admin/components/consent/ConsentListFooter'
+import { ConsentToolbar as ConsentToolbar_00f2debf1fef6719308c2f12d1b95fb4 } from '../../../admin/components/consent/ConsentToolbar'
+import { ListIntro as ListIntro_3758f5318f3bce3eb36c93ddfc96aba0 } from '../../../admin/components/lists/ListIntro'
+import { ConsentRecordView as ConsentRecordView_d9cb9c4ad20dcd7a6c2a047bd334a6ce } from '../../../admin/components/consent/ConsentRecordView'
 import { ApplicantCell as ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3 } from '../../../admin/components/cells/ApplicantCell'
 import { StatusPill as StatusPill_9934788374c7dcc43b168cee27281175 } from '../../../admin/components/cells/StatusPill'
 import { EmailsLabel as EmailsLabel_7a1351ce5840c4e6fd1ca73b345df968 } from '../../../admin/components/lists/CvColumnLabel'
@@ -24,7 +32,6 @@ import { SyncCell as SyncCell_13a9042bb703672b7e066a238d36fdc6 } from '../../../
 import { CvListFooter as CvListFooter_f300b501cd0f471866369983ec65666d } from '../../../admin/components/lists/CvListFooter'
 import { StatusTabs as StatusTabs_c467731604d0d3674e06a5e6b3537a04 } from '../../../admin/components/lists/StatusTabs'
 import { CvToolbar as CvToolbar_6e7bbbc44355b310e20f11bbdf672e51 } from '../../../admin/components/lists/CvToolbar'
-import { ListIntro as ListIntro_3758f5318f3bce3eb36c93ddfc96aba0 } from '../../../admin/components/lists/ListIntro'
 import { ApplicationView as ApplicationView_dadab5058eb4d2024b8c7d5fc6e34474 } from '../../../admin/components/application/ApplicationView'
 import { LocaleBanner as LocaleBanner_6e922f404c87f00d1c61cd1cda241d71 } from '../../../admin/components/fields/LocaleBanner'
 import { ValidationSummary as ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2 } from '../../../admin/components/fields/ValidationSummary'
@@ -90,6 +97,14 @@ export const importMap = {
   "/admin/components/document/SaveButton#SaveButton": SaveButton_40f7aaa07144fdaeb435852de88db2db,
   "/admin/components/media/UploadImagesButton#UploadImagesButton": UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af4d,
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
+  "/admin/components/consent/ConsentCells#TimestampCell": TimestampCell_57564f7a5c6d0af3318cd0f0c87bc469,
+  "/admin/components/consent/ConsentCells#MonoCell": MonoCell_57564f7a5c6d0af3318cd0f0c87bc469,
+  "/admin/components/consent/RelatedRecordCell#RelatedRecordCell": RelatedRecordCell_5e01d6438ecbb217a8bcc41717eef230,
+  "/admin/components/consent/ConsentCells#ConsentTypeCell": ConsentTypeCell_57564f7a5c6d0af3318cd0f0c87bc469,
+  "/admin/components/consent/ConsentListFooter#ConsentListFooter": ConsentListFooter_2195df2e4953f256d9edd780e394cba6,
+  "/admin/components/consent/ConsentToolbar#ConsentToolbar": ConsentToolbar_00f2debf1fef6719308c2f12d1b95fb4,
+  "/admin/components/lists/ListIntro#ListIntro": ListIntro_3758f5318f3bce3eb36c93ddfc96aba0,
+  "/admin/components/consent/ConsentRecordView#ConsentRecordView": ConsentRecordView_d9cb9c4ad20dcd7a6c2a047bd334a6ce,
   "/admin/components/cells/ApplicantCell#ApplicantCell": ApplicantCell_7d689808f13b47761e1d62f9f1b09ab3,
   "/admin/components/cells/StatusPill#StatusPill": StatusPill_9934788374c7dcc43b168cee27281175,
   "/admin/components/lists/CvColumnLabel#EmailsLabel": EmailsLabel_7a1351ce5840c4e6fd1ca73b345df968,
@@ -99,7 +114,6 @@ export const importMap = {
   "/admin/components/lists/CvListFooter#CvListFooter": CvListFooter_f300b501cd0f471866369983ec65666d,
   "/admin/components/lists/StatusTabs#StatusTabs": StatusTabs_c467731604d0d3674e06a5e6b3537a04,
   "/admin/components/lists/CvToolbar#CvToolbar": CvToolbar_6e7bbbc44355b310e20f11bbdf672e51,
-  "/admin/components/lists/ListIntro#ListIntro": ListIntro_3758f5318f3bce3eb36c93ddfc96aba0,
   "/admin/components/application/ApplicationView#ApplicationView": ApplicationView_dadab5058eb4d2024b8c7d5fc6e34474,
   "/admin/components/fields/LocaleBanner#LocaleBanner": LocaleBanner_6e922f404c87f00d1c61cd1cda241d71,
   "/admin/components/fields/ValidationSummary#ValidationSummary": ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2,

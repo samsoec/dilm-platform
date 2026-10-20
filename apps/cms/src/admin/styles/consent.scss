@@ -1,0 +1,269 @@
+@layer dil {
+  // Payload classes: .collection-list--consent-logs, .list-controls, #heading-_select, .cell-_select (@payloadcms/ui views/List, elements/Table); the list is read-only for every role, so the native controls row and row checkboxes stay hidden (US-CON-1)
+  .collection-list--consent-logs {
+    .list-controls,
+    #heading-_select,
+    .cell-_select {
+      display: none;
+    }
+  }
+
+  .list-header__title-and-actions .dil-tag {
+    align-self: center;
+    gap: 4px;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
+
+    .dil-icon {
+      font-size: 14px;
+    }
+  }
+
+  .dil-list-intro__banner {
+    margin-top: 10px;
+  }
+
+  .dil-consent__count {
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+  }
+
+  .collection-list--consent-logs .dil-toolbar .dil-popover__button {
+    font-weight: 500;
+
+    b {
+      font-weight: 700;
+    }
+  }
+
+  .dil-consent-range {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .dil-consent-range--active {
+    border: 1px solid var(--dil-brand);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface);
+
+    .dil-popover__button,
+    .dil-popover__button--active {
+      height: 38px;
+      border: 0;
+      background: transparent;
+      color: var(--dil-ink);
+      font-weight: 700;
+    }
+  }
+
+  .dil-consent-range__clear {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+    padding: 2px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    color: var(--dil-muted);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--dil-surface-2);
+      color: var(--dil-ink);
+    }
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+
+  .dil-range {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 300px;
+    padding: 6px;
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-range__presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .dil-range__preset {
+    padding: 4px 10px;
+    border: 1px solid var(--dil-line);
+    border-radius: 999px;
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font-size: 13px;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--dil-surface-2);
+    }
+  }
+
+  .dil-range__preset--active {
+    border-color: transparent;
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+  }
+
+  .dil-range__fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: var(--dil-ink);
+      font-size: 13px;
+    }
+
+    input {
+      height: 40px;
+      padding: 0 10px;
+      border: 1px solid var(--dil-line);
+      border-radius: var(--dil-radius-s);
+      background: var(--dil-surface);
+      color: var(--dil-ink);
+      font: inherit;
+    }
+  }
+
+  .dil-range__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+
+    button {
+      height: 34px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: var(--dil-radius-s);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  }
+
+  .dil-range__clear {
+    background: none;
+    color: var(--dil-brand-ink);
+  }
+
+  .dil-range__apply {
+    background: var(--dil-brand);
+    color: #fff;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .dil-consent__time {
+    color: var(--dil-ink);
+    text-decoration: none;
+  }
+
+  a.dil-consent__time:hover {
+    color: var(--dil-brand-ink);
+    text-decoration: underline;
+  }
+
+  .dil-consent__type {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    .dil-icon {
+      color: var(--dil-muted);
+      font-size: 18px;
+    }
+  }
+
+  .dil-consent__mono {
+    padding: 0;
+    background: none;
+    color: var(--dil-ink);
+    font-family: var(--dil-font-mono);
+    font-size: 12px;
+  }
+
+  .dil-consent__related {
+    color: var(--dil-brand-ink);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .dil-consent-record {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 760px;
+    padding: 24px var(--gutter-h) 48px;
+    font-family: var(--dil-font-sans);
+    color: var(--dil-ink);
+  }
+
+  .dil-consent-record > .dil-app__back {
+    align-self: flex-start;
+  }
+
+  .dil-consent-record__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .dil-tag {
+      gap: 4px;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0;
+
+      .dil-icon {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .dil-consent-record__zone {
+    color: var(--dil-muted);
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .dil-consent-record__note {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--dil-muted);
+    font-size: 13px;
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+}
