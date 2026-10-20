@@ -257,6 +257,7 @@ export interface Media {
   tenant?: (number | null) | Tenant;
   alt: string;
   uploadedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -333,6 +334,7 @@ export interface IrDocument {
   firstPublishedAt?: string | null;
   locale: 'en' | 'id';
   updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
@@ -806,6 +808,7 @@ export interface MediaSelect<T extends boolean = true> {
   tenant?: T;
   alt?: T;
   uploadedBy?: T;
+  trashedBy?: T;
   prefix?: T;
   _objectKey?: T;
   updatedAt?: T;
@@ -880,6 +883,7 @@ export interface IrDocumentsSelect<T extends boolean = true> {
   firstPublishedAt?: T;
   locale?: T;
   updatedBy?: T;
+  trashedBy?: T;
   prefix?: T;
   _objectKey?: T;
   updatedAt?: T;

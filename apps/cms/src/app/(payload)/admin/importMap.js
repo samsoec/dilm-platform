@@ -31,7 +31,9 @@ import { CharacterLimit as CharacterLimit_bc9f79672c5648acce074f6515fa86f0 } fro
 import { DocumentStatus as DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732 } from '../../../admin/components/document/DocumentStatus'
 import { VersionsDrawer as VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e } from '../../../admin/components/document/VersionsDrawer'
 import { SaveButton as SaveButton_40f7aaa07144fdaeb435852de88db2db } from '../../../admin/components/document/SaveButton'
+import { TrashToggle as TrashToggle_42d3bcf0bd6f25c849d60879c6373f90 } from '../../../admin/components/trash/TrashToggle'
 import { UploadImagesButton as UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af4d } from '../../../admin/components/media/UploadImagesButton'
+import { TrashTable as TrashTable_57ae9c8c46a4c77f1a4e0c40b9a3ca79 } from '../../../admin/components/trash/TrashTable'
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { TimestampCell as TimestampCell_57564f7a5c6d0af3318cd0f0c87bc469 } from '../../../admin/components/consent/ConsentCells'
 import { MonoCell as MonoCell_57564f7a5c6d0af3318cd0f0c87bc469 } from '../../../admin/components/consent/ConsentCells'
@@ -138,7 +140,9 @@ export const importMap = {
   "/admin/components/document/DocumentStatus#DocumentStatus": DocumentStatus_450a0cf1caabed90fddbe7dbeb4ae732,
   "/admin/components/document/VersionsDrawer#VersionsDrawer": VersionsDrawer_5d3f1b8eaaa4ae5024848b97e961ab3e,
   "/admin/components/document/SaveButton#SaveButton": SaveButton_40f7aaa07144fdaeb435852de88db2db,
+  "/admin/components/trash/TrashToggle#TrashToggle": TrashToggle_42d3bcf0bd6f25c849d60879c6373f90,
   "/admin/components/media/UploadImagesButton#UploadImagesButton": UploadImagesButton_b42c3e8d946f3e5a3e518b2b7af8af4d,
+  "/admin/components/trash/TrashTable#TrashTable": TrashTable_57ae9c8c46a4c77f1a4e0c40b9a3ca79,
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
   "/admin/components/consent/ConsentCells#TimestampCell": TimestampCell_57564f7a5c6d0af3318cd0f0c87bc469,
   "/admin/components/consent/ConsentCells#MonoCell": MonoCell_57564f7a5c6d0af3318cd0f0c87bc469,

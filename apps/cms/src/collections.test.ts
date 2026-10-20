@@ -530,6 +530,7 @@ describe("ir-documents", () => {
       "firstPublishedAt",
       "locale",
       "updatedBy",
+      "trashedBy",
     ]);
   });
 

@@ -23,6 +23,7 @@ import {
   PROVIDERS_INSIDE_TENANT_SELECTION,
   TOP_BAR_ACTIONS,
 } from "./admin/shell";
+import { TRASH_TRANSLATIONS } from "./admin/components/trash/trash";
 import { collections, globals } from "./collections";
 import { Users } from "./collections/Users";
 import { cmsDatabaseAdapter, type PayloadClient } from "./database";
@@ -73,7 +74,10 @@ export async function cmsConfig(client: PayloadClient) {
     i18n: {
       supportedLanguages: { en, id },
       fallbackLanguage: "en",
-      translations: LOGIN_TRANSLATIONS,
+      translations: {
+        en: { ...LOGIN_TRANSLATIONS.en, ...TRASH_TRANSLATIONS.en },
+        id: { ...LOGIN_TRANSLATIONS.id, ...TRASH_TRANSLATIONS.id },
+      },
     },
     localization,
     secret: runtimeConfig.payloadSecret,

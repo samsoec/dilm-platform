@@ -1,0 +1,148 @@
+@layer dil {
+  // Payload classes: .default-list-view-tabs, .list-controls (@payloadcms/ui elements/DefaultListViewTabs, ListControls); TrashToggle replaces the native list/trash tabs, and the I-01 trash view has no search row
+  .collection-list--ir-documents .default-list-view-tabs,
+  .collection-list--media .default-list-view-tabs,
+  .collection-list:has(.dil-trash) .list-controls,
+  .collection-list:has(.dil-trash) .dil-upload-launch {
+    display: none;
+  }
+
+  // Payload classes: .collection-list__wrap, .list-header (@payloadcms/ui views/List); beforeListTable renders after the search row, so the toggle is reordered to sit under the title
+  .collection-list__wrap:has(> .dil-trash-toggle) {
+    display: flex;
+    flex-direction: column;
+
+    > .list-header {
+      order: -2;
+    }
+
+    > .dil-trash-toggle {
+      order: -1;
+      margin-bottom: 16px;
+    }
+  }
+
+  .dil-trash-toggle .dil-status-tab {
+    gap: 6px;
+
+    .dil-icon {
+      font-size: 17px;
+    }
+  }
+
+  // Payload class: .collection-list__tables (@payloadcms/ui views/List); the trash view draws its own I-01 table instead
+  .collection-list:has(.dil-trash) .collection-list__tables {
+    display: none;
+  }
+
+  .dil-trash {
+    font-family: var(--dil-font-sans);
+    color: var(--dil-ink);
+  }
+
+  .dil-trash__table {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--dil-line);
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-surface);
+    font-size: 14px;
+
+    th {
+      padding: 12px 16px;
+      background: var(--dil-surface-2);
+      color: var(--dil-muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-top: 1px solid var(--dil-line);
+      vertical-align: middle;
+    }
+  }
+
+  .dil-trash__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .dil-trash__icon {
+    color: var(--dil-danger);
+    font-size: 22px;
+  }
+
+  .dil-trash__thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  .dil-trash__locale {
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--dil-surface-2);
+    color: var(--dil-ink-2);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .dil-trash__actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .dil-trash__restore {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--dil-surface-2);
+    }
+
+    .dil-icon {
+      font-size: 18px;
+    }
+  }
+
+  .dil-trash__delete {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-danger);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .dil-trash__note {
+    margin: 12px 0 0;
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+}

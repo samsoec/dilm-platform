@@ -10,6 +10,7 @@ import {
 } from "../uploads/irFiles";
 import { localization } from "../localization";
 import { withTenantAccess } from "../tenancy";
+import { withTrashedBy } from "../fields/authoring";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { collectionLabels } from "../admin/labels";
 
@@ -25,57 +26,65 @@ export const IR_DOCUMENT_TYPES = [
 ] as const;
 
 export const IrDocuments = withTenantAccess(
-  withUpdatedBy({
-    slug: "ir-documents",
-    labels: collectionLabels("ir-documents"),
-    access: { delete: trashByEditorsDeleteBySuperAdmins },
-    versions: { drafts: true, maxPerDoc: IR_VERSIONS_PER_DOCUMENT },
-    trash: true,
-    hooks: {
-      beforeOperation: [randomiseUploadName],
-      beforeChange: [stampFirstPublished, keepPublishedFile],
-    },
-    admin: {
-      group: navGroup("investor"),
-      useAsTitle: "title",
-      defaultColumns: ["title", "documentType", "publishedDate", "locale"],
-    },
-    custom: {
-      nav: { icon: "description" },
-    },
-    upload: {
-      mimeTypes: ["application/pdf"],
-    },
-    fields: [
-      {
-        name: "title",
-        type: "text",
-        required: true,
+  withTrashedBy(
+    withUpdatedBy({
+      slug: "ir-documents",
+      labels: collectionLabels("ir-documents"),
+      access: { delete: trashByEditorsDeleteBySuperAdmins },
+      versions: { drafts: true, maxPerDoc: IR_VERSIONS_PER_DOCUMENT },
+      trash: true,
+      hooks: {
+        beforeOperation: [randomiseUploadName],
+        beforeChange: [stampFirstPublished, keepPublishedFile],
       },
-      {
-        name: "documentType",
-        type: "select",
-        required: true,
-        options: [...IR_DOCUMENT_TYPES],
+      admin: {
+        group: navGroup("investor"),
+        useAsTitle: "title",
+        defaultColumns: ["title", "documentType", "publishedDate", "locale"],
+        components: {
+          beforeListTable: [
+            "/admin/components/trash/TrashToggle#TrashToggle",
+            "/admin/components/trash/TrashTable#TrashTable",
+          ],
+        },
       },
-      {
-        name: "publishedDate",
-        type: "date",
-        required: true,
+      custom: {
+        nav: { icon: "description" },
       },
-      {
-        name: "firstPublishedAt",
-        type: "date",
-        access: systemManagedField,
-        admin: { readOnly: true, position: "sidebar" },
+      upload: {
+        mimeTypes: ["application/pdf"],
       },
-      {
-        name: "locale",
-        type: "select",
-        required: true,
-        options: [...localization.locales],
-        defaultValue: localization.defaultLocale,
-      },
-    ],
-  }),
+      fields: [
+        {
+          name: "title",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "documentType",
+          type: "select",
+          required: true,
+          options: [...IR_DOCUMENT_TYPES],
+        },
+        {
+          name: "publishedDate",
+          type: "date",
+          required: true,
+        },
+        {
+          name: "firstPublishedAt",
+          type: "date",
+          access: systemManagedField,
+          admin: { readOnly: true, position: "sidebar" },
+        },
+        {
+          name: "locale",
+          type: "select",
+          required: true,
+          options: [...localization.locales],
+          defaultValue: localization.defaultLocale,
+        },
+      ],
+    }),
+  ),
 );
