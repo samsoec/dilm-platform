@@ -1,11 +1,15 @@
 export type Nameable = { email?: null | string; name?: null | string };
 
+function words(source: null | string | undefined): string[] {
+  return (source ?? "").split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+}
+
 export function initials({ email, name }: Nameable): string {
-  const source = name?.trim() || email?.split("@")[0] || "";
-  const words = source.split(/[\s._-]+/).filter(Boolean);
+  const parts =
+    words(name).length > 0 ? words(name) : words(email?.split("@")[0]);
   const letters =
-    words.length > 1
-      ? [words[0], words[words.length - 1]].map((word) => word[0])
-      : [...(words[0] ?? "")].slice(0, 2);
+    parts.length > 1
+      ? [parts[0], parts[parts.length - 1]].map((word) => [...word][0])
+      : [...(parts[0] ?? "")].slice(0, 2);
   return letters.join("").toUpperCase() || "?";
 }
