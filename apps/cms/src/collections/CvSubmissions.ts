@@ -1,6 +1,8 @@
 import type { Field } from "payload";
 
 import { nobody, superAdmins, systemManagedField } from "../access";
+import { configuredResumeStorage } from "../cv-resume/s3";
+import { eraseResume, resumeLinkHandler } from "../cv-resume/resume";
 import { navGroup } from "../admin/navGroups";
 import { withTenantAccess } from "../tenancy";
 import {
@@ -83,8 +85,16 @@ export const CvSubmissions = withTenantAccess({
   custom: {
     nav: { icon: "badge", order: 1, badge: "cv-received" },
   },
+  endpoints: [
+    {
+      path: "/:id/resume",
+      method: "get",
+      handler: resumeLinkHandler(configuredResumeStorage),
+    },
+  ],
   hooks: {
     beforeChange: [stampStatusChange],
+    afterDelete: [eraseResume(configuredResumeStorage)],
   },
   fields: [
     systemManaged({

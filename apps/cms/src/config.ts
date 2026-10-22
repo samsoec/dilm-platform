@@ -9,6 +9,7 @@ import { id } from "@payloadcms/translations/languages/id";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
+import { PRIVATE_STORAGE_KEY } from "./cv-resume/s3";
 import { PRODUCT_NAME } from "./admin/brand";
 import { BEFORE_DASHBOARD, DASHBOARD } from "./admin/dashboard";
 import {
@@ -71,7 +72,10 @@ export async function cmsConfig(client: PayloadClient) {
     },
     collections,
     globals,
-    custom: { cvRetentionMonths: runtimeConfig.cvRetentionMonths },
+    custom: {
+      cvRetentionMonths: runtimeConfig.cvRetentionMonths,
+      [PRIVATE_STORAGE_KEY]: runtimeConfig.storage,
+    },
     i18n: {
       supportedLanguages: { en, id },
       fallbackLanguage: "en",
