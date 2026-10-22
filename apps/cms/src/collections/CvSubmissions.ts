@@ -67,6 +67,7 @@ export const CvSubmissions = withTenantAccess({
       beforeListTable: [
         "/admin/components/lists/StatusTabs#StatusTabs",
         "/admin/components/lists/CvToolbar#CvToolbar",
+        "/admin/components/lists/EmptyState#EmptyState",
       ],
       afterListTable: ["/admin/components/lists/CvListFooter#CvListFooter"],
       views: {

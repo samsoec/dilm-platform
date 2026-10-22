@@ -66,6 +66,7 @@ export const IrDocuments = withTenantAccess(
               "/admin/components/trash/TrashToggle#TrashToggle",
               "/admin/components/ir/IrToolbar#IrToolbar",
               "/admin/components/trash/TrashTable#TrashTable",
+              "/admin/components/lists/EmptyState#EmptyState",
             ],
             afterListTable: ["/admin/components/ir/IrCells#IrListFooter"],
             edit: {
