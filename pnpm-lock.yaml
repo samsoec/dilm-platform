@@ -46,6 +46,9 @@ importers:
       '@aws-sdk/client-sesv2':
         specifier: 3.1141.0
         version: 3.1141.0
+      '@aws-sdk/s3-request-presigner':
+        specifier: 3.1141.0
+        version: 3.1141.0
       '@dilm/runtime-config':
         specifier: workspace:*
         version: link:../../packages/runtime-config
