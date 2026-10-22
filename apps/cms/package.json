@@ -17,6 +17,7 @@
     "seed:cv-samples": "pnpm payload run src/seed/seed-cv-samples.ts",
     "seed:layout": "pnpm payload run src/seed/seed-layout.ts",
     "seed:tenants": "pnpm payload run src/seed/seed-tenants.ts",
+    "smoke:overrides": "node scripts/smoke-overrides.mjs",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "verify:cv-intake": "pnpm payload run src/cv-intake/verify-cv-intake.ts",
@@ -58,6 +59,7 @@
     "@types/react-dom": "19.2.3",
     "eslint": "^10.11.0",
     "jsdom": "26.1.0",
+    "playwright-core": "1.48.2",
     "sass": "1.77.4",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"

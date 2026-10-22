@@ -84,6 +84,7 @@ export function UploadImagesButton() {
       </ActionButton>
       <input
         accept={[...ACCEPTED_IMAGE_TYPES, "image/*"].join(",")}
+        aria-label="Choose images to upload"
         className="dil-sr-only"
         multiple
         onChange={(event) => {

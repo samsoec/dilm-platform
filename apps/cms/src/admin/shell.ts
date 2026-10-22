@@ -10,6 +10,7 @@ export const TOP_BAR_ACTIONS = [
 ];
 
 export const PROVIDERS_INSIDE_TENANT_SELECTION = [
+  "/admin/components/a11y/AdminA11y#AdminA11y",
   "/admin/components/topbar/ShellCrumbs#ShellCrumbs",
   "/admin/components/guard/UnsavedChangesProvider#UnsavedChangesProvider",
   "/admin/components/command-palette/CommandPaletteProvider#CommandPaletteProvider",

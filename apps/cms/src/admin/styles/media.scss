@@ -370,8 +370,8 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: var(--dil-brand);
-    color: #ffffff;
+    background: var(--dil-brand-fill);
+    color: var(--dil-on-fill);
 
     .dil-icon {
       font-size: 14px;

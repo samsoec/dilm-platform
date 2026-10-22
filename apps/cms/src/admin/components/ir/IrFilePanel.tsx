@@ -219,6 +219,7 @@ export function IrFilePanel() {
         pick(event.target.files);
         event.target.value = "";
       }}
+      aria-label="Choose a PDF"
       ref={input}
       tabIndex={-1}
       type="file"

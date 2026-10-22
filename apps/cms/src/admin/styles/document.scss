@@ -80,6 +80,11 @@
     &:hover,
     &:focus-within {
       background: var(--dil-sel-bg);
+
+      .dil-versions__text span,
+      .dil-versions__live {
+        color: var(--dil-sel-ink);
+      }
     }
   }
 

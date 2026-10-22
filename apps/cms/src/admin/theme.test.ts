@@ -40,6 +40,7 @@ const TEXT_PAIRS: [string, string][] = [
   ["muted", "bg"],
   ["muted", "surface"],
   ["muted", "surface-2"],
+  ["on-fill", "brand-fill"],
   ["brand-ink", "bg"],
   ["brand-ink", "surface"],
   ["sel-ink", "sel-bg"],
@@ -53,6 +54,7 @@ const TEXT_PAIRS: [string, string][] = [
 ];
 
 const UI_PAIRS: [string, string][] = [
+  ["brand-fill", "surface"],
   ["brand", "surface"],
   ["brand", "bg"],
 ];

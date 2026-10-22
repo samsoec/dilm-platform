@@ -111,6 +111,7 @@ import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e
 import { DashboardIntro as DashboardIntro_05cfa51ee08164c88fb91c90672ff910 } from '../../../admin/components/dashboard/DashboardIntro'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
+import { AdminA11y as AdminA11y_fe79f2123b14d6efc4fe469aad6b6909 } from '../../../admin/components/a11y/AdminA11y'
 import { ShellCrumbs as ShellCrumbs_2655bbb4d61960264c14c8889231a4e5 } from '../../../admin/components/topbar/ShellCrumbs'
 import { UnsavedChangesProvider as UnsavedChangesProvider_c2240fea51188b9603a82f1a295f55a8 } from '../../../admin/components/guard/UnsavedChangesProvider'
 import { CommandPaletteProvider as CommandPaletteProvider_46e3dd79be0b1e4bb9088938f568de80 } from '../../../admin/components/command-palette/CommandPaletteProvider'
@@ -242,6 +243,7 @@ export const importMap = {
   "/admin/components/dashboard/DashboardIntro#DashboardIntro": DashboardIntro_05cfa51ee08164c88fb91c90672ff910,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
+  "/admin/components/a11y/AdminA11y#AdminA11y": AdminA11y_fe79f2123b14d6efc4fe469aad6b6909,
   "/admin/components/topbar/ShellCrumbs#ShellCrumbs": ShellCrumbs_2655bbb4d61960264c14c8889231a4e5,
   "/admin/components/guard/UnsavedChangesProvider#UnsavedChangesProvider": UnsavedChangesProvider_c2240fea51188b9603a82f1a295f55a8,
   "/admin/components/command-palette/CommandPaletteProvider#CommandPaletteProvider": CommandPaletteProvider_46e3dd79be0b1e4bb9088938f568de80,

@@ -269,6 +269,10 @@
   .dil-invite__role--checked {
     border-color: var(--dil-brand);
     background: var(--dil-sel-bg);
+
+    span {
+      color: var(--dil-sel-ink);
+    }
   }
 
   .dil-invite__hint {
