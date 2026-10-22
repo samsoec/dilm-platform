@@ -35,6 +35,7 @@ export const ConsentLogs = withTenantAccess({
       Description: "/admin/components/lists/ListIntro#ListIntro",
       beforeListTable: [
         "/admin/components/consent/ConsentToolbar#ConsentToolbar",
+        "/admin/components/lists/EmptyState#EmptyState",
       ],
       afterListTable: [
         "/admin/components/consent/ConsentListFooter#ConsentListFooter",

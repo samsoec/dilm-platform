@@ -27,6 +27,7 @@ export const Media = withTenantAccess(
             "/admin/components/trash/TrashToggle#TrashToggle",
             "/admin/components/media/MediaToolbar#MediaToolbar",
             "/admin/components/trash/TrashTable#TrashTable",
+            "/admin/components/lists/EmptyState#EmptyState",
           ],
           views: {
             grid: {

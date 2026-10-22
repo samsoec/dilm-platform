@@ -37,6 +37,7 @@ import { FileSizeCell as FileSizeCell_9656b58837406d79c49329c42ffa3641 } from '.
 import { TrashToggle as TrashToggle_42d3bcf0bd6f25c849d60879c6373f90 } from '../../../admin/components/trash/TrashToggle'
 import { MediaToolbar as MediaToolbar_d52bc8009b4e5dfb9f3ddc16ea81a9a2 } from '../../../admin/components/media/MediaToolbar'
 import { TrashTable as TrashTable_57ae9c8c46a4c77f1a4e0c40b9a3ca79 } from '../../../admin/components/trash/TrashTable'
+import { EmptyState as EmptyState_807e9fbf5277c41a4cb7ea97cb0f6dc7 } from '../../../admin/components/lists/EmptyState'
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
 import { MediaGridView as MediaGridView_9a72685bcde21f03c37cfdb4e7994d87 } from '../../../admin/components/media/MediaGridView'
 import { TimestampCell as TimestampCell_57564f7a5c6d0af3318cd0f0c87bc469 } from '../../../admin/components/consent/ConsentCells'
@@ -167,6 +168,7 @@ export const importMap = {
   "/admin/components/trash/TrashToggle#TrashToggle": TrashToggle_42d3bcf0bd6f25c849d60879c6373f90,
   "/admin/components/media/MediaToolbar#MediaToolbar": MediaToolbar_d52bc8009b4e5dfb9f3ddc16ea81a9a2,
   "/admin/components/trash/TrashTable#TrashTable": TrashTable_57ae9c8c46a4c77f1a4e0c40b9a3ca79,
+  "/admin/components/lists/EmptyState#EmptyState": EmptyState_807e9fbf5277c41a4cb7ea97cb0f6dc7,
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
   "/admin/components/media/MediaGridView#MediaGridView": MediaGridView_9a72685bcde21f03c37cfdb4e7994d87,
   "/admin/components/consent/ConsentCells#TimestampCell": TimestampCell_57564f7a5c6d0af3318cd0f0c87bc469,

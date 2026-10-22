@@ -1,0 +1,68 @@
+// Payload class: .no-results (@payloadcms/ui elements/NoListResults); its rules sit outside the dil layer, so the hide has to as well
+.dil-empty ~ .no-results {
+  display: none;
+}
+
+@layer dil {
+  .dil-empty__banner {
+    margin-bottom: 12px;
+
+    a {
+      color: inherit;
+      font-weight: 700;
+    }
+  }
+
+  .dil-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 56px 24px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font-family: var(--dil-font-sans);
+    text-align: center;
+  }
+
+  .dil-empty--dropzone {
+    border: 1px dashed var(--dil-line);
+  }
+
+  .dil-empty__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 4px;
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+
+    .dil-icon {
+      font-size: 28px;
+    }
+  }
+
+  .dil-empty__title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .dil-empty__text {
+    max-width: 420px;
+    margin: 0;
+    color: var(--dil-muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .dil-empty .btn,
+  .dil-empty .dil-tag {
+    margin-top: 8px;
+  }
+}

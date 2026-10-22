@@ -615,6 +615,7 @@ describe("cv-submissions", () => {
     expect(CvSubmissions.admin?.components?.beforeListTable).toEqual([
       expect.stringMatching(/StatusTabs$/),
       expect.stringMatching(/CvToolbar$/),
+      expect.stringMatching(/EmptyState$/),
     ]);
     expect(CvSubmissions.admin?.components?.afterListTable).toEqual([
       expect.stringMatching(/CvListFooter$/),
