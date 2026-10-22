@@ -7,6 +7,8 @@ import {
   momentText,
   recordId,
   retainedUntil,
+  eraseCopy,
+  resumeFailure,
   savedToast,
   submittedText,
 } from "./application";
@@ -117,5 +119,28 @@ describe("listContext (FR-UI-93)", () => {
     });
     expect(backLabel(undefined, 12)).toBe("Career applications (12)");
     expect(backLabel("received", 6)).toBe("Received (6)");
+  });
+});
+
+describe("résumé and erasure copy (R-02, R-04, R-05)", () => {
+  it("explains a removed résumé on 410 and anything else as a retry", () => {
+    expect(resumeFailure(410, 12)).toBe(
+      "Résumé removed after the retention period (12 months).",
+    );
+    expect(resumeFailure(502, 12)).toBe(
+      "Couldn't prepare the link. Try again.",
+    );
+    expect(resumeFailure(undefined, 12)).toBe(
+      "Couldn't prepare the link. Try again.",
+    );
+  });
+
+  it("names the applicant and company in the delete dialog and toast", () => {
+    expect(eraseCopy("Budi Santoso", "Dunia Kimia Utama")).toEqual({
+      title: "Permanently delete Budi Santoso's application?",
+      body: "The record and the résumé file are erased from Dunia Kimia Utama for good. There's no trash and it can't be undone.",
+      done: "Budi Santoso's application was permanently deleted, including the résumé.",
+      failed: "Couldn't delete Budi Santoso's application. Try again.",
+    });
   });
 });
