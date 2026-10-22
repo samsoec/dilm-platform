@@ -77,8 +77,8 @@
     }
 
     &.btn--style-primary {
-      --bg-color: var(--dil-brand);
-      --color: #ffffff;
+      --bg-color: var(--dil-brand-fill);
+      --color: var(--dil-on-fill);
       --hover-bg: var(--bg-color);
       --hover-color: var(--color);
     }

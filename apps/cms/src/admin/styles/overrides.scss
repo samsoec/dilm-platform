@@ -19,9 +19,9 @@
   }
 
   .btn--style-primary:not(.btn--disabled) {
-    --bg-color: var(--dil-brand);
-    --color: #ffffff;
-    --hover-bg: color-mix(in srgb, var(--dil-brand) 85%, #000000);
+    --bg-color: var(--dil-brand-fill);
+    --color: var(--dil-on-fill);
+    --hover-bg: color-mix(in srgb, var(--dil-brand-fill) 85%, #000000);
     --hover-color: #ffffff;
   }
 
@@ -142,7 +142,30 @@
     }
   }
 
-  // Payload class: .tabs-field__tab-button (@payloadcms/ui fields/Tabs/Tab); its ::after is the active underline, data-dil-status and data-dil-icon are set by CompletenessPanel
+  // Payload class: .field-description (@payloadcms/ui forms/FieldDescription); its default elevation-400 colour is under 4.5:1 on the light surfaces
+  .field-description {
+    color: var(--dil-muted);
+  }
+
+  // Payload class: .array-field__add-row (@payloadcms/ui fields/Array); its label reads --btn-color, which defaults to elevation 400 and is under 4.5:1
+  .array-field__add-row.btn {
+    --btn-color: var(--dil-muted);
+
+    &:hover:not(:disabled) {
+      --btn-color: var(--dil-ink);
+    }
+  }
+
+  // Payload class: .tabs-field__tab-button (@payloadcms/ui fields/Tabs/Tab); its ::after is the active underline, data-dil-status and data-dil-icon are set by CompletenessPanel; inactive tabs are dimmed with opacity, which drops them under 4.5:1
+  .tabs-field__tab-button {
+    color: var(--dil-muted);
+    opacity: 1;
+  }
+
+  .tabs-field__tab-button--active {
+    color: var(--dil-ink);
+  }
+
   .tabs-field__tab-button[data-dil-icon] {
     display: inline-flex;
     align-items: center;

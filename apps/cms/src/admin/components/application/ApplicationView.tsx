@@ -31,6 +31,29 @@ function relationID(value: Relation): number | string | undefined {
   return typeof value === "object" ? value.id : value;
 }
 
+function PagerStep({
+  href,
+  icon,
+  label,
+}: {
+  href: string | undefined;
+  icon: "chevron_left" | "chevron_right";
+  label: string;
+}) {
+  if (!href) {
+    return (
+      <span aria-hidden className="dil-app__step" data-disabled>
+        <MaterialIcon name={icon} />
+      </span>
+    );
+  }
+  return (
+    <a aria-label={label} className="dil-app__step" href={href}>
+      <MaterialIcon name={icon} />
+    </a>
+  );
+}
+
 function text(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
@@ -174,22 +197,16 @@ export async function ApplicationView({
               <span>
                 {position + 1} of {ids.length}
               </span>
-              <a
-                aria-disabled={!previousHref}
-                aria-label="Previous application"
-                className="dil-app__step"
+              <PagerStep
                 href={previousHref}
-              >
-                <MaterialIcon name="chevron_left" />
-              </a>
-              <a
-                aria-disabled={!nextHref}
-                aria-label="Next application"
-                className="dil-app__step"
+                icon="chevron_left"
+                label="Previous application"
+              />
+              <PagerStep
                 href={nextHref}
-              >
-                <MaterialIcon name="chevron_right" />
-              </a>
+                icon="chevron_right"
+                label="Next application"
+              />
             </span>
           )}
         </nav>

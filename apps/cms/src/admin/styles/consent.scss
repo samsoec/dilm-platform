@@ -163,8 +163,8 @@
   }
 
   .dil-range__apply {
-    background: var(--dil-brand);
-    color: #fff;
+    background: var(--dil-brand-fill);
+    color: var(--dil-on-fill);
 
     &:disabled {
       opacity: 0.5;
