@@ -3,9 +3,9 @@ import { SetDocumentStepNav } from "@payloadcms/ui";
 import type { DocumentViewServerProps, Where } from "payload";
 import { formatAdminURL } from "payload/shared";
 
+import { isSuperAdmin, type RoleHolder } from "../../../access";
 import { authorName } from "../../authors";
 import { initials } from "../../initials";
-import { ActionButton } from "../kit/ActionButton";
 import { Banner } from "../kit/Banner";
 import { StatusChip } from "../kit/StatusChip";
 import { MaterialIcon } from "../MaterialIcon";
@@ -20,6 +20,8 @@ import {
   submittedText,
 } from "./application";
 import { ApplicationForm } from "./ApplicationForm";
+import { EraseCard } from "./EraseCard";
+import { ResumeAction } from "./ResumeAction";
 import { StatusPanel } from "./StatusPanel";
 
 type Relation = number | string | { id: number | string } | null | undefined;
@@ -60,7 +62,7 @@ export async function ApplicationView({
     ...(tenant === undefined ? [] : [{ tenant: { equals: tenant } }]),
   ];
   const statusSetBy = relationID(doc.statusChangedBy as Relation);
-  const [siblings, setter, settings] = await Promise.all([
+  const [siblings, setter, settings, company] = await Promise.all([
     payload.find({
       collection: "cv-submissions",
       where: inList.length > 0 ? { and: inList } : {},
@@ -92,6 +94,19 @@ export async function ApplicationView({
             limit: 1,
             depth: 0,
             select: { recruiterEmail: true },
+            overrideAccess: false,
+            user,
+          })
+          .then(({ docs }) => docs[0]),
+    tenant === undefined
+      ? Promise.resolve(undefined)
+      : payload
+          .find({
+            collection: "tenants",
+            where: { id: { equals: tenant } },
+            limit: 1,
+            depth: 0,
+            select: { name: true },
             overrideAccess: false,
             user,
           })
@@ -230,16 +245,7 @@ export async function ApplicationView({
                 <>
                   <dt>Résumé</dt>
                   <dd className="dil-app-card__resume">
-                    {/* TODO(DILM-86): request a fresh signed link from GET /api/cv-submissions/:id/resume. */}
-                    <ActionButton
-                      icon="picture_as_pdf"
-                      type="button"
-                      unavailableReason="Résumé download isn't available yet."
-                      variant="secondary"
-                    >
-                      View résumé
-                    </ActionButton>
-                    <span>Private file · each open is logged</span>
+                    <ResumeAction id={id} retentionMonths={retentionMonths} />
                   </dd>
                 </>
               )}
@@ -293,6 +299,14 @@ export async function ApplicationView({
             ({retentionMonths} months)
           </p>
         </section>
+        {isSuperAdmin(user as RoleHolder) && (
+          <EraseCard
+            company={company?.name || "this company"}
+            id={id}
+            name={name}
+            returnHref={`${listPath}${list.query ? `?${list.query}` : ""}`}
+          />
+        )}
       </aside>
     </div>
   );

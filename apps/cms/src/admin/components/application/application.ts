@@ -181,6 +181,26 @@ export function savedToast(
   };
 }
 
+export const RESUME_BUSY = "Preparing secure link…";
+
+export function resumeFailure(
+  status: number | undefined,
+  retentionMonths: number,
+): string {
+  return status === 410
+    ? `Résumé removed after the retention period (${retentionMonths} months).`
+    : "Couldn't prepare the link. Try again.";
+}
+
+export function eraseCopy(name: string, company: string) {
+  return {
+    title: `Permanently delete ${name}'s application?`,
+    body: `The record and the résumé file are erased from ${company} for good. There's no trash and it can't be undone.`,
+    done: `${name}'s application was permanently deleted, including the résumé.`,
+    failed: `Couldn't delete ${name}'s application. Try again.`,
+  };
+}
+
 export const LIST_PARAM = "list";
 
 const SEARCHABLE_FIELDS = ["applicantName", "email"];

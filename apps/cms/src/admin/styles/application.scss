@@ -203,6 +203,12 @@
     }
   }
 
+  .dil-app-card__resume-error {
+    flex-basis: 100%;
+    color: var(--dil-danger);
+    font-size: 13px;
+  }
+
   .dil-app-card__resume {
     display: flex;
     flex-wrap: wrap;
