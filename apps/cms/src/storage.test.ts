@@ -43,6 +43,7 @@ describe("publicBucketStorage", () => {
     expect(options.collections).toEqual({
       media: { prefix: "media" },
       "ir-documents": { prefix: "ir-documents" },
+      documents: { prefix: "documents" },
     });
   });
 

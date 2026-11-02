@@ -73,6 +73,7 @@ export interface Config {
     media: Media;
     'consent-logs': ConsentLog;
     'ir-documents': IrDocument;
+    documents: Document;
     'cv-submissions': CvSubmission;
     header: Header;
     footer: Footer;
@@ -94,6 +95,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     'consent-logs': ConsentLogsSelect<false> | ConsentLogsSelect<true>;
     'ir-documents': IrDocumentsSelect<false> | IrDocumentsSelect<true>;
+    documents: DocumentsSelect<false> | DocumentsSelect<true>;
     'cv-submissions': CvSubmissionsSelect<false> | CvSubmissionsSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
@@ -360,6 +362,37 @@ export interface IrDocument {
   createdAt: string;
   deletedAt?: string | null;
   _status?: ('draft' | 'published') | null;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * PDF data sheets and attachments. Upload a file once, then link it from products and posts.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface Document {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * Visitors download the file under this name, with .pdf added.
+   */
+  title: string;
+  downloadName?: string | null;
+  uploadedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  prefix?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
   url?: string | null;
   thumbnailURL?: string | null;
   filename?: string | null;
@@ -823,6 +856,10 @@ export interface PayloadLockedDocument {
         value: number | IrDocument;
       } | null)
     | ({
+        relationTo: 'documents';
+        value: number | Document;
+      } | null)
+    | ({
         relationTo: 'cv-submissions';
         value: number | CvSubmission;
       } | null)
@@ -1119,6 +1156,31 @@ export interface IrDocumentsSelect<T extends boolean = true> {
   createdAt?: T;
   deletedAt?: T;
   _status?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents_select".
+ */
+export interface DocumentsSelect<T extends boolean = true> {
+  tenant?: T;
+  title?: T;
+  downloadName?: T;
+  uploadedBy?: T;
+  trashedBy?: T;
+  prefix?: T;
+  _objectKey?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
   url?: T;
   thumbnailURL?: T;
   filename?: T;
