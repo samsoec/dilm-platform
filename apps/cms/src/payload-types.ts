@@ -79,6 +79,8 @@ export interface Config {
     footer: Footer;
     pages: Page;
     'shared-pages': SharedPage;
+    products: Product;
+    solutions: Solution;
     routes: Route;
     redirects: Redirect;
     'payload-kv': PayloadKv;
@@ -101,6 +103,8 @@ export interface Config {
     footer: FooterSelect<false> | FooterSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     'shared-pages': SharedPagesSelect<false> | SharedPagesSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    solutions: SolutionsSelect<false> | SolutionsSelect<true>;
     routes: RoutesSelect<false> | RoutesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -742,6 +746,329 @@ export interface SharedPage {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * The last part of the address. Unique across every company's catalog.
+   */
+  slug: string;
+  /**
+   * Worked out from the listing page in Site routing and the slug. The same on every company's website.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  /**
+   * Lower numbers come first in lists you sort by hand.
+   */
+  order?: number | null;
+  name: string;
+  productGroup?: string | null;
+  shortDescription?: string | null;
+  image?: (number | null) | Media;
+  /**
+   * Subscript and superscript only, like H₂SO₄. Pasted bold, italic or links are turned into plain text.
+   */
+  formula?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  casNumber?: string | null;
+  classification?: string | null;
+  pdsFile?: (number | null) | Document;
+  overview?: {
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    image?: (number | null) | Media;
+  };
+  variants?:
+    | {
+        name: string;
+        /**
+         * Leave empty to use the product's formula. Subscript and superscript only.
+         */
+        formula?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Leave empty to use the product's CAS number.
+         */
+        casNumber?: string | null;
+        /**
+         * Leave empty to use the product's classification.
+         */
+        classification?: string | null;
+        packaging?: string | null;
+        specs?:
+          | {
+              parameter: string;
+              method?: string | null;
+              value: string;
+              emphasized?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        pdsFile?: (number | null) | Document;
+        sdsFile?: (number | null) | Document;
+        id?: string | null;
+      }[]
+    | null;
+  applications?:
+    | {
+        /**
+         * SVG or PNG.
+         */
+        icon?: (number | null) | Media;
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  process?: {
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    stat?: {
+      value?: string | null;
+      label?: string | null;
+      description?: string | null;
+      note?: string | null;
+    };
+    steps?:
+      | {
+          title: string;
+          description?: string | null;
+          isThisProduct?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solutions".
+ */
+export interface Solution {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * The last part of the address. Unique across every company's catalog.
+   */
+  slug: string;
+  /**
+   * Worked out from the listing page in Site routing and the slug. The same on every company's website.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  /**
+   * Lower numbers come first in lists you sort by hand.
+   */
+  order?: number | null;
+  name: string;
+  /**
+   * Plain or italic only. Leave empty to use the name.
+   */
+  heroTitle?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  industryLabel?: string | null;
+  shortDescription?: string | null;
+  image?: (number | null) | Media;
+  keyApplications?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  industriesServed?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick from every company's published products. The order here is the order shown.
+   */
+  supportingProducts?: (number | Product)[] | null;
+  /**
+   * Optional. It has to be one of the supporting products. Empty uses the first one.
+   */
+  featuredProduct?: (number | null) | Product;
+  impact?: {
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    points?:
+      | {
+          /**
+           * SVG or PNG.
+           */
+          icon?: (number | null) | Media;
+          title: string;
+          description?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    image?: (number | null) | Media;
+  };
+  applications?:
+    | {
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * The public address of every published page, written by the system when a page is saved.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -763,6 +1090,14 @@ export interface Route {
     | {
         relationTo: 'shared-pages';
         value: number | SharedPage;
+      }
+    | {
+        relationTo: 'products';
+        value: number | Product;
+      }
+    | {
+        relationTo: 'solutions';
+        value: number | Solution;
       };
   refs?:
     | {
@@ -878,6 +1213,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'shared-pages';
         value: number | SharedPage;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'solutions';
+        value: number | Solution;
       } | null)
     | ({
         relationTo: 'routes';
@@ -1413,6 +1756,161 @@ export interface SharedPagesSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  tenant?: T;
+  slug?: T;
+  path?: T;
+  slugFallback?: T;
+  order?: T;
+  name?: T;
+  productGroup?: T;
+  shortDescription?: T;
+  image?: T;
+  formula?: T;
+  casNumber?: T;
+  classification?: T;
+  pdsFile?: T;
+  overview?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        image?: T;
+      };
+  variants?:
+    | T
+    | {
+        name?: T;
+        formula?: T;
+        casNumber?: T;
+        classification?: T;
+        packaging?: T;
+        specs?:
+          | T
+          | {
+              parameter?: T;
+              method?: T;
+              value?: T;
+              emphasized?: T;
+              id?: T;
+            };
+        pdsFile?: T;
+        sdsFile?: T;
+        id?: T;
+      };
+  applications?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  process?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        stat?:
+          | T
+          | {
+              value?: T;
+              label?: T;
+              description?: T;
+              note?: T;
+            };
+        steps?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              isThisProduct?: T;
+              id?: T;
+            };
+      };
+  updatedBy?: T;
+  trashedBy?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solutions_select".
+ */
+export interface SolutionsSelect<T extends boolean = true> {
+  tenant?: T;
+  slug?: T;
+  path?: T;
+  slugFallback?: T;
+  order?: T;
+  name?: T;
+  heroTitle?: T;
+  industryLabel?: T;
+  shortDescription?: T;
+  image?: T;
+  keyApplications?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  industriesServed?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  supportingProducts?: T;
+  featuredProduct?: T;
+  impact?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        points?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+        image?: T;
+      };
+  applications?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  updatedBy?: T;
+  trashedBy?: T;
   meta?:
     | T
     | {

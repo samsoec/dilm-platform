@@ -14,9 +14,14 @@ import { pageBlocks } from "./blocks";
 import type { LinkData } from "./fields/link";
 import { localeCodes, type PageCollection } from "./paths";
 import { refId, scopedReq, servesLayout } from "./pageRules";
+import { RECORD_COLLECTIONS } from "./recordBases";
 
-// TODO(DILM-101): add products, solutions, jobs, posts and categories as their collections land.
-export const ROUTABLE_COLLECTIONS = ["pages", "shared-pages"] as const;
+// TODO(DILM-103): add jobs, posts and categories as their collections land.
+export const ROUTABLE_COLLECTIONS = [
+  "pages",
+  "shared-pages",
+  ...RECORD_COLLECTIONS,
+] as const;
 
 export type RoutableCollection = (typeof ROUTABLE_COLLECTIONS)[number];
 

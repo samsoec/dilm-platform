@@ -8,8 +8,10 @@ import { Header } from "./Header";
 import { IrDocuments } from "./IrDocuments";
 import { Media } from "./Media";
 import { Pages } from "./Pages";
+import { Products } from "./Products";
 import { Routes } from "./Routes";
 import { SharedPages } from "./SharedPages";
+import { Solutions } from "./Solutions";
 import { TenantSettings } from "./TenantSettings";
 import { Tenants } from "./Tenants";
 import { Users } from "./Users";
@@ -27,6 +29,8 @@ export const collections = [
   Footer,
   Pages,
   SharedPages,
+  Products,
+  Solutions,
   Routes,
 ];
 

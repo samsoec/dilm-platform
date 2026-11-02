@@ -9,6 +9,12 @@ import {
 
 import { localization } from "./localization";
 import { refId, scopedReq } from "./pageRules";
+import {
+  RECORD_COLLECTIONS,
+  isRecordCollection,
+  recordBasePaths,
+  type RecordCollection,
+} from "./recordBases";
 
 export const CATEGORY_PREFIX = {
   en: "category",
@@ -30,6 +36,8 @@ export const RESERVED_MESSAGE =
 
 export type PageCollection = "pages" | "shared-pages";
 
+export type PathCollection = PageCollection | RecordCollection;
+
 export type LocalizedSlugs = Record<string, string | null | undefined>;
 
 export type PathProblem = {
@@ -39,7 +47,7 @@ export type PathProblem = {
 };
 
 export type PathInput = {
-  collection: PageCollection;
+  collection: PathCollection;
   id?: number | string | null;
   tenant?: number | string | { id: number | string } | null;
   parent?: number | string | { id: number | string } | null;
@@ -123,9 +131,25 @@ export function samePageMessage(
     : `${path} is already the shared page "${title}". Pick another slug.`;
 }
 
+export function recordClashMessage(
+  collection: RecordCollection,
+  rival: { collection: RecordCollection; name: string; company: string },
+  sites: number,
+): string {
+  const same = rival.collection === collection;
+  const noun = collection === "products" ? "Products" : "Solutions";
+  const other = rival.collection === "products" ? "product" : "solution";
+  const catalog = same
+    ? `${noun} share one catalog across the ${sites} sites`
+    : `Products and solutions share one catalog across the ${sites} sites`;
+  const subject = same ? `"${rival.name}"` : `The ${other} "${rival.name}"`;
+  return `${subject} by ${rival.company} already uses this URL. ${catalog}, so slugs must be unique.`;
+}
+
 type Doc = {
   id: number | string;
   title?: string | null;
+  name?: string | null;
   tenant?: number | string | { id: number | string; name?: string } | null;
   path?: string | null;
 };
@@ -133,7 +157,7 @@ type Doc = {
 async function findAt(
   payload: Payload,
   req: Partial<PayloadRequest> | undefined,
-  collection: PageCollection,
+  collection: PathCollection,
   locale: string,
   where: Where,
 ) {
@@ -204,12 +228,19 @@ export async function computePaths(
   req?: Partial<PayloadRequest>,
 ): Promise<Record<string, string>> {
   const parent = refId(input.parent);
-  const above = parent
-    ? await parentPaths(payload, req, input.collection, parent)
-    : {};
+  const record = isRecordCollection(input.collection);
+  const above = isRecordCollection(input.collection)
+    ? await recordBasePaths(payload, req, input.collection)
+    : parent
+      ? await parentPaths(payload, req, input.collection, parent)
+      : {};
   const paths: Record<string, string> = {};
   for (const locale of localeCodes()) {
     const { slug } = slugForLocale(input.slugs, locale);
+    if (record && !slug) {
+      paths[locale] = "";
+      continue;
+    }
     const parentPath = above[locale] || above[localization.defaultLocale];
     paths[locale] = computePath(parentPath, slug);
   }
@@ -225,12 +256,22 @@ export async function pathProblems(
   const problems: PathProblem[] = [];
   const own = refId(input.id);
   const tenant = refId(input.tenant);
-  const notSelf = (collection: PageCollection): Where[] =>
+  const notSelf = (collection: PathCollection): Where[] =>
     own && collection === input.collection ? [{ id: { not_equals: own } }] : [];
+  const record = isRecordCollection(input.collection);
   let sites: number | undefined;
+  const siteCount = async () =>
+    (sites ??= (
+      await payload.count({
+        collection: "tenants",
+        overrideAccess: true,
+        req: scopedReq(req),
+      })
+    ).totalDocs);
 
   for (const locale of localeCodes()) {
     const path = paths[locale];
+    if (record && !path) continue;
     const reserved = reservedProblem(path);
     if (reserved) {
       problems.push({ locale, path, message: reserved });
@@ -242,20 +283,14 @@ export async function pathProblems(
       and: [matches, ...notSelf("shared-pages")],
     });
     for (const doc of shared) {
-      sites ??= (
-        await payload.count({
-          collection: "tenants",
-          overrideAccess: true,
-          req: scopedReq(req),
-        })
-      ).totalDocs;
+      const count = await siteCount();
       problems.push({
         locale,
         path,
         message:
-          input.collection === "pages"
-            ? sharedPageMessage(path, doc.title ?? "Untitled", sites)
-            : samePageMessage(path, doc.title ?? "Untitled"),
+          input.collection === "shared-pages"
+            ? samePageMessage(path, doc.title ?? "Untitled")
+            : sharedPageMessage(path, doc.title ?? "Untitled", count),
       });
     }
 
@@ -263,7 +298,11 @@ export async function pathProblems(
       input.collection === "pages" && tenant
         ? [{ tenant: { equals: tenant } }]
         : [];
-    if (input.collection === "shared-pages" || tenantFilter.length > 0) {
+    if (
+      input.collection === "shared-pages" ||
+      record ||
+      tenantFilter.length > 0
+    ) {
       const pages = await findAt(payload, req, "pages", locale, {
         and: [matches, ...tenantFilter, ...notSelf("pages")],
       });
@@ -281,10 +320,41 @@ export async function pathProblems(
           locale,
           path,
           message:
-            input.collection === "shared-pages"
+            input.collection === "shared-pages" || record
               ? companyPagesMessage(listed)
               : samePageMessage(path, listed[0].title, listed[0].company),
         });
+      }
+    }
+
+    if (isRecordCollection(input.collection)) {
+      for (const target of RECORD_COLLECTIONS) {
+        const rivals = await findAt(payload, req, target, locale, {
+          and: [matches, ...notSelf(target)],
+        });
+        if (rivals.length === 0) continue;
+        const names = await companyNames(
+          payload,
+          req,
+          rivals.map((doc) => refId(doc.tenant)!).filter(Boolean),
+        );
+        const count = await siteCount();
+        for (const doc of rivals) {
+          problems.push({
+            locale,
+            path,
+            message: recordClashMessage(
+              input.collection,
+              {
+                collection: target,
+                name: doc.name ?? "Untitled",
+                company:
+                  names.get(refId(doc.tenant) ?? "") ?? "another company",
+              },
+              count,
+            ),
+          });
+        }
       }
     }
   }
