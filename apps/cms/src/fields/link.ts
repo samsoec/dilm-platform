@@ -24,7 +24,7 @@ export type LinkFieldOptions = {
   withLabel?: boolean;
 };
 
-type LinkData = {
+export type LinkData = {
   type?: LinkType | null;
   internalPath?: string | null;
   externalUrl?: string | null;
@@ -37,7 +37,7 @@ const TARGET_FIELD: Record<LinkType, "internalPath" | "externalUrl"> = {
   external: "externalUrl",
 };
 
-function hasTarget(link: LinkData | undefined) {
+export function hasTarget(link: LinkData | undefined) {
   const type = link?.type ?? "internal";
   return Boolean(link?.[TARGET_FIELD[type]]);
 }

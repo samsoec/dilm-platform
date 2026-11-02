@@ -5,7 +5,7 @@ import type { CollectionSlug, Field, Plugin } from "payload";
 
 import { redirectsOverrides } from "./redirects";
 
-export const PAGE_COLLECTIONS: CollectionSlug[] = [];
+export const PAGE_COLLECTIONS: CollectionSlug[] = ["pages", "shared-pages"];
 
 export const SEO_LOCALIZED_FIELDS = ["title", "description", "image"] as const;
 

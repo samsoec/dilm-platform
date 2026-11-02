@@ -94,3 +94,6 @@ export const tenantContentAccess = {
   delete: tenantEditors,
   unlock: tenantEditors,
 } satisfies NonNullable<CollectionConfig["access"]>;
+
+export const readPublishedOrMembers: Access = ({ req }) =>
+  hasAnyRole(req.user) ? true : { _status: { equals: "published" } };
