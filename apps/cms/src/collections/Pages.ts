@@ -8,6 +8,7 @@ import { withTrashedBy } from "../fields/authoring";
 import { pageFields, parentField } from "../fields/pageFields";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { keepParentInTenant } from "../pageRules";
+import { removeRoutes, syncRoutes } from "../routeIndex";
 import { withTenantAccess } from "../tenancy";
 
 export const PAGE_VERSIONS_PER_DOCUMENT = 50;
@@ -23,7 +24,11 @@ export const Pages = withTenantAccess(
       },
       versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
       trash: true,
-      hooks: { beforeValidate: [keepParentInTenant] },
+      hooks: {
+        beforeValidate: [keepParentInTenant],
+        afterChange: [syncRoutes],
+        beforeDelete: [removeRoutes],
+      },
       admin: {
         group: navGroup("content"),
         useAsTitle: "title",
