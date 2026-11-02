@@ -7,6 +7,8 @@ export type MediaPickerOptions = {
   chooseLabel?: string;
   preview?: "light" | "dark";
   launchRequired?: boolean;
+  previewSize?: number;
+  mimeTypes?: readonly string[];
 };
 
 export function withMediaPicker<T extends UploadField>(
