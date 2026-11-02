@@ -5,6 +5,7 @@ import { withTrashedBy } from "../fields/authoring";
 import { pageFields, parentField } from "../fields/pageFields";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { keepSingleHome, protectHome } from "../pageRules";
+import { removeRoutes, syncRoutes } from "../routeIndex";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 
 export const SharedPages = withTrashedBy(
@@ -22,7 +23,8 @@ export const SharedPages = withTrashedBy(
     trash: true,
     hooks: {
       beforeValidate: [keepSingleHome],
-      beforeDelete: [protectHome],
+      beforeDelete: [protectHome, removeRoutes],
+      afterChange: [syncRoutes],
     },
     admin: {
       group: navGroup("content"),

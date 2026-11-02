@@ -78,6 +78,7 @@ export interface Config {
     footer: Footer;
     pages: Page;
     'shared-pages': SharedPage;
+    routes: Route;
     redirects: Redirect;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -98,6 +99,7 @@ export interface Config {
     footer: FooterSelect<false> | FooterSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     'shared-pages': SharedPagesSelect<false> | SharedPagesSelect<true>;
+    routes: RoutesSelect<false> | RoutesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -707,6 +709,41 @@ export interface SharedPage {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * The public address of every published page, written by the system when a page is saved.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "routes".
+ */
+export interface Route {
+  id: number;
+  /**
+   * Empty for pages served on every company's website.
+   */
+  tenant?: (number | null) | Tenant;
+  locale: 'en' | 'id';
+  path: string;
+  doc:
+    | {
+        relationTo: 'pages';
+        value: number | Page;
+      }
+    | {
+        relationTo: 'shared-pages';
+        value: number | SharedPage;
+      };
+  refs?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -804,6 +841,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'shared-pages';
         value: number | SharedPage;
+      } | null)
+    | ({
+        relationTo: 'routes';
+        value: number | Route;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1321,6 +1362,19 @@ export interface SharedPagesSelect<T extends boolean = true> {
   createdAt?: T;
   deletedAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "routes_select".
+ */
+export interface RoutesSelect<T extends boolean = true> {
+  tenant?: T;
+  locale?: T;
+  path?: T;
+  doc?: T;
+  refs?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

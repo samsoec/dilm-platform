@@ -7,6 +7,7 @@ import { Header } from "./Header";
 import { IrDocuments } from "./IrDocuments";
 import { Media } from "./Media";
 import { Pages } from "./Pages";
+import { Routes } from "./Routes";
 import { SharedPages } from "./SharedPages";
 import { TenantSettings } from "./TenantSettings";
 import { Tenants } from "./Tenants";
@@ -24,6 +25,7 @@ export const collections = [
   Footer,
   Pages,
   SharedPages,
+  Routes,
 ];
 
 export const globals: GlobalConfig[] = [];
