@@ -601,6 +601,10 @@ export interface Page {
    * Worked out from the parent pages and the slug.
    */
   path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
   redirectTo: {
     type: 'internal' | 'external';
     newTab?: boolean | null;
@@ -659,6 +663,10 @@ export interface SharedPage {
    * Worked out from the parent pages and the slug.
    */
   path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
   redirectTo: {
     type: 'internal' | 'external';
     newTab?: boolean | null;
@@ -1241,6 +1249,7 @@ export interface PagesSelect<T extends boolean = true> {
   slug?: T;
   parent?: T;
   path?: T;
+  slugFallback?: T;
   redirectTo?:
     | T
     | {
@@ -1281,6 +1290,7 @@ export interface SharedPagesSelect<T extends boolean = true> {
   slug?: T;
   parent?: T;
   path?: T;
+  slugFallback?: T;
   redirectTo?:
     | T
     | {

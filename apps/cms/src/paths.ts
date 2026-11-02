@@ -1,0 +1,404 @@
+import {
+  ValidationError,
+  type CollectionSlug,
+  type FieldHook,
+  type Payload,
+  type PayloadRequest,
+  type Where,
+} from "payload";
+
+import { localization } from "./localization";
+import { refId, scopedReq } from "./pageRules";
+
+export const CATEGORY_PREFIX = {
+  en: "category",
+  id: "kategori",
+} as const;
+
+export const RESERVED_SEGMENTS = [
+  ...Object.values(CATEGORY_PREFIX),
+  "api",
+  "admin",
+  "_next",
+  "media",
+  "sitemap.xml",
+  "robots.txt",
+] as const;
+
+export const RESERVED_MESSAGE =
+  "URLs can't start with a reserved word: category, kategori, api, admin, _next, media.";
+
+export type PageCollection = "pages" | "shared-pages";
+
+export type LocalizedSlugs = Record<string, string | null | undefined>;
+
+export type PathProblem = {
+  locale: string;
+  path: string;
+  message: string;
+};
+
+export type PathInput = {
+  collection: PageCollection;
+  id?: number | string | null;
+  tenant?: number | string | { id: number | string } | null;
+  parent?: number | string | { id: number | string } | null;
+  slugs: LocalizedSlugs;
+};
+
+export function localeCodes(): string[] {
+  return (localization.locales as readonly (string | { code: string })[]).map(
+    (locale) => (typeof locale === "string" ? locale : locale.code),
+  );
+}
+
+export function slugForLocale(slugs: LocalizedSlugs, locale: string) {
+  const own = slugs[locale];
+  if (own) return { slug: own, fellBack: false };
+  const fallback = slugs[localization.defaultLocale];
+  return {
+    slug: fallback || "",
+    fellBack: Boolean(fallback) && locale !== localization.defaultLocale,
+  };
+}
+
+export function usesSlugFallback(slugs: LocalizedSlugs): boolean {
+  return localeCodes().some((locale) => slugForLocale(slugs, locale).fellBack);
+}
+
+export function computePath(
+  parentPath: string | null | undefined,
+  slug: string | null | undefined,
+): string {
+  const base = !parentPath || parentPath === "/" ? "" : parentPath;
+  if (!slug) return base || "/";
+  return `${base}/${slug}`;
+}
+
+export function firstSegment(path: string): string {
+  return path.split("/").filter(Boolean)[0] ?? "";
+}
+
+export function reservedProblem(path: string): string | undefined {
+  return (RESERVED_SEGMENTS as readonly string[]).includes(firstSegment(path))
+    ? RESERVED_MESSAGE
+    : undefined;
+}
+
+export function joinNames(names: string[]): string {
+  if (names.length <= 1) return names.join("");
+  return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+}
+
+export function sharedPageMessage(
+  path: string,
+  title: string,
+  sites: number,
+): string {
+  return `${path} is the shared page "${title}", on all ${sites} sites. Pick another slug.`;
+}
+
+export type TenantPage = { title: string; company: string };
+
+export function companyPagesMessage(pages: TenantPage[]): string {
+  const companies = new Set(pages.map((page) => page.company));
+  const titles = [...new Set(pages.map((page) => page.title))];
+  const where = titles.map((title) => {
+    const names = pages
+      .filter((page) => page.title === title)
+      .map((page) => page.company);
+    return `"${title}" on ${joinNames(names)}`;
+  });
+  const count = companies.size;
+  return `Used by ${count} ${count === 1 ? "company" : "companies"}: ${where.join("; ")}.`;
+}
+
+export function samePageMessage(
+  path: string,
+  title: string,
+  company?: string,
+): string {
+  return company
+    ? `${path} is already used by "${title}" on ${company}. Pick another slug.`
+    : `${path} is already the shared page "${title}". Pick another slug.`;
+}
+
+type Doc = {
+  id: number | string;
+  title?: string | null;
+  tenant?: number | string | { id: number | string; name?: string } | null;
+  path?: string | null;
+};
+
+async function findAt(
+  payload: Payload,
+  req: Partial<PayloadRequest> | undefined,
+  collection: PageCollection,
+  locale: string,
+  where: Where,
+) {
+  const { docs } = await payload.find({
+    collection: collection as CollectionSlug,
+    where,
+    locale: locale as "en" | "id",
+    fallbackLocale: localization.defaultLocale,
+    depth: 0,
+    limit: 100,
+    pagination: false,
+    overrideAccess: true,
+    req: scopedReq(req),
+  });
+  return docs as unknown as Doc[];
+}
+
+async function companyNames(
+  payload: Payload,
+  req: Partial<PayloadRequest> | undefined,
+  ids: (number | string)[],
+): Promise<Map<string, string>> {
+  const names = new Map<string, string>();
+  if (ids.length === 0) return names;
+  const { docs } = await payload.find({
+    collection: "tenants",
+    where: { id: { in: ids } },
+    depth: 0,
+    limit: ids.length,
+    pagination: false,
+    overrideAccess: true,
+    req: scopedReq(req),
+  });
+  for (const tenant of docs as unknown as {
+    id: number | string;
+    name: string;
+  }[]) {
+    names.set(String(tenant.id), tenant.name);
+  }
+  return names;
+}
+
+async function parentPaths(
+  payload: Payload,
+  req: Partial<PayloadRequest> | undefined,
+  collection: PageCollection,
+  parent: string,
+): Promise<Record<string, string | null | undefined>> {
+  const found = (await payload.findByID({
+    collection: collection as CollectionSlug,
+    id: parent,
+    locale: "all",
+    fallbackLocale: false,
+    depth: 0,
+    trash: true,
+    overrideAccess: true,
+    req: scopedReq(req),
+  })) as unknown as { path?: Record<string, string | null> | string | null };
+  if (typeof found.path === "string") {
+    return { [localization.defaultLocale]: found.path };
+  }
+  return found.path ?? {};
+}
+
+export async function computePaths(
+  payload: Payload,
+  input: PathInput,
+  req?: Partial<PayloadRequest>,
+): Promise<Record<string, string>> {
+  const parent = refId(input.parent);
+  const above = parent
+    ? await parentPaths(payload, req, input.collection, parent)
+    : {};
+  const paths: Record<string, string> = {};
+  for (const locale of localeCodes()) {
+    const { slug } = slugForLocale(input.slugs, locale);
+    const parentPath = above[locale] || above[localization.defaultLocale];
+    paths[locale] = computePath(parentPath, slug);
+  }
+  return paths;
+}
+
+export async function pathProblems(
+  payload: Payload,
+  input: PathInput,
+  paths: Record<string, string>,
+  req?: Partial<PayloadRequest>,
+): Promise<PathProblem[]> {
+  const problems: PathProblem[] = [];
+  const own = refId(input.id);
+  const tenant = refId(input.tenant);
+  const notSelf = (collection: PageCollection): Where[] =>
+    own && collection === input.collection ? [{ id: { not_equals: own } }] : [];
+  let sites: number | undefined;
+
+  for (const locale of localeCodes()) {
+    const path = paths[locale];
+    const reserved = reservedProblem(path);
+    if (reserved) {
+      problems.push({ locale, path, message: reserved });
+      continue;
+    }
+    const matches: Where = { path: { equals: path } };
+
+    const shared = await findAt(payload, req, "shared-pages", locale, {
+      and: [matches, ...notSelf("shared-pages")],
+    });
+    for (const doc of shared) {
+      sites ??= (
+        await payload.count({
+          collection: "tenants",
+          overrideAccess: true,
+          req: scopedReq(req),
+        })
+      ).totalDocs;
+      problems.push({
+        locale,
+        path,
+        message:
+          input.collection === "pages"
+            ? sharedPageMessage(path, doc.title ?? "Untitled", sites)
+            : samePageMessage(path, doc.title ?? "Untitled"),
+      });
+    }
+
+    const tenantFilter: Where[] =
+      input.collection === "pages" && tenant
+        ? [{ tenant: { equals: tenant } }]
+        : [];
+    if (input.collection === "shared-pages" || tenantFilter.length > 0) {
+      const pages = await findAt(payload, req, "pages", locale, {
+        and: [matches, ...tenantFilter, ...notSelf("pages")],
+      });
+      if (pages.length > 0) {
+        const names = await companyNames(
+          payload,
+          req,
+          pages.map((doc) => refId(doc.tenant)!).filter(Boolean),
+        );
+        const listed = pages.map((doc) => ({
+          title: doc.title ?? "Untitled",
+          company: names.get(refId(doc.tenant) ?? "") ?? "another company",
+        }));
+        problems.push({
+          locale,
+          path,
+          message:
+            input.collection === "shared-pages"
+              ? companyPagesMessage(listed)
+              : samePageMessage(path, listed[0].title, listed[0].company),
+        });
+      }
+    }
+  }
+  const seen = new Set<string>();
+  return problems.filter((problem) => {
+    if (seen.has(problem.message)) return false;
+    seen.add(problem.message);
+    return true;
+  });
+}
+
+export async function validatePageSlug(
+  payload: Payload,
+  input: PathInput,
+  req?: Partial<PayloadRequest>,
+): Promise<{ paths: Record<string, string>; problems: PathProblem[] }> {
+  const paths = await computePaths(payload, input, req);
+  return { paths, problems: await pathProblems(payload, input, paths, req) };
+}
+
+export function problemMessage(
+  problem: PathProblem,
+  requestLocale: string | undefined,
+): string {
+  const label =
+    requestLocale && requestLocale !== "all" && requestLocale !== problem.locale
+      ? `${problem.locale.toUpperCase()} address: `
+      : "";
+  return `${label}${problem.message}`;
+}
+
+type SiblingBag = Record<string, unknown> | undefined;
+
+function asLocaleMap(value: unknown): LocalizedSlugs {
+  return value && typeof value === "object" ? (value as LocalizedSlugs) : {};
+}
+
+export function slugsFrom(
+  submitted: unknown,
+  stored: unknown,
+  requestLocale: string | undefined,
+): LocalizedSlugs {
+  const slugs: LocalizedSlugs = { ...asLocaleMap(stored) };
+  if (submitted && typeof submitted === "object") {
+    return { ...slugs, ...(submitted as LocalizedSlugs) };
+  }
+  if (submitted === undefined) return slugs;
+  const locale =
+    !requestLocale || requestLocale === "all"
+      ? localization.defaultLocale
+      : requestLocale;
+  slugs[locale] = submitted as string | null;
+  return slugs;
+}
+
+export const writePath: FieldHook = async ({
+  collection,
+  data,
+  originalDoc,
+  req,
+  siblingData,
+  siblingDocWithLocales,
+}) => {
+  if (!collection) return undefined;
+  const bag = siblingData as SiblingBag;
+  const stored = (siblingDocWithLocales as SiblingBag)?.slug;
+  const slugs = slugsFrom(bag?.slug, stored, req.locale);
+  const original = (originalDoc ?? {}) as { id?: number | string };
+  const input: PathInput = {
+    collection: collection.slug as PageCollection,
+    id: (data as { id?: number | string } | undefined)?.id ?? original.id,
+    tenant:
+      (data as { tenant?: PathInput["tenant"] } | undefined)?.tenant ??
+      (originalDoc as { tenant?: PathInput["tenant"] } | undefined)?.tenant,
+    parent:
+      data && "parent" in data
+        ? (data as { parent?: PathInput["parent"] }).parent
+        : (originalDoc as { parent?: PathInput["parent"] } | undefined)?.parent,
+    slugs,
+  };
+  const { paths, problems } = await validatePageSlug(req.payload, input, req);
+  if (problems.length > 0) {
+    throw new ValidationError(
+      {
+        collection: collection.slug,
+        errors: problems.map((problem) => ({
+          path: "slug",
+          message: problemMessage(problem, req.locale),
+        })),
+        req,
+      },
+      req.t,
+    );
+  }
+  const requestLocale =
+    !req.locale || req.locale === "all"
+      ? localization.defaultLocale
+      : req.locale;
+  const bagOfPaths = siblingDocWithLocales as SiblingBag;
+  if (bagOfPaths) {
+    bagOfPaths.path = { ...asLocaleMap(bagOfPaths.path), ...paths };
+  }
+  return req.locale === "all" ? paths : paths[requestLocale];
+};
+
+export const writeSlugFallback: FieldHook = ({
+  req,
+  siblingData,
+  siblingDocWithLocales,
+}) => {
+  const slugs = slugsFrom(
+    (siblingData as SiblingBag)?.slug,
+    (siblingDocWithLocales as SiblingBag)?.slug,
+    req.locale,
+  );
+  return usesSlugFallback(slugs);
+};
