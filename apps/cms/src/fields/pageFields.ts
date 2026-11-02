@@ -1,5 +1,6 @@
 import type {
   BlocksField,
+  CheckboxField,
   Field,
   RelationshipField,
   TextField,
@@ -11,6 +12,7 @@ import { systemManagedField } from "../access";
 import { layoutField } from "./layout";
 import { link } from "./link";
 import { hasRedirect, refId } from "../pageRules";
+import { writePath, writeSlugFallback } from "../paths";
 
 export const SLUG_PATTERN = /^[a-z0-9-]+$/;
 
@@ -50,11 +52,27 @@ export const pathField: TextField = {
   type: "text",
   localized: true,
   access: systemManagedField,
+  hooks: { beforeChange: [writePath] },
   admin: {
     readOnly: true,
     position: "sidebar",
     className: "dil-mono-input",
     description: "Worked out from the parent pages and the slug.",
+  },
+};
+
+export const slugFallbackField: CheckboxField = {
+  name: "slugFallback",
+  label: "Using the English slug",
+  type: "checkbox",
+  defaultValue: false,
+  access: systemManagedField,
+  hooks: { beforeChange: [writeSlugFallback] },
+  admin: {
+    readOnly: true,
+    position: "sidebar",
+    description:
+      "On when a language has no slug of its own and its address uses the English slug.",
   },
 };
 
@@ -118,6 +136,7 @@ export function pageFields(
     slugField(slugRequired),
     parent,
     pathField,
+    slugFallbackField,
     link({
       name: "redirectTo",
       label: "Redirect to",

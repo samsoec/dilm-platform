@@ -36,6 +36,12 @@ export function parentTenantProblem(
     : "The parent page belongs to another company. Pick a page of the same company.";
 }
 
+export function scopedReq<T extends object>(
+  req: T | undefined,
+): PayloadRequest {
+  return { ...req } as unknown as PayloadRequest;
+}
+
 function reject(message: string): never {
   throw new APIError(message, 400, undefined, true);
 }
@@ -60,7 +66,7 @@ export const keepParentInTenant: CollectionBeforeValidateHook = async ({
     depth: 0,
     trash: true,
     overrideAccess: true,
-    req,
+    req: scopedReq(req),
   })) as { tenant?: Ref };
   const problem = parentTenantProblem(
     found.tenant,
@@ -92,7 +98,7 @@ async function isHome(req: PayloadRequest, id: Ref): Promise<boolean> {
     depth: 0,
     trash: true,
     overrideAccess: true,
-    req,
+    req: scopedReq(req),
   })) as { slug?: string | null };
   return !doc.slug;
 }
@@ -112,7 +118,7 @@ async function otherHomeExists(req: PayloadRequest, id: Ref) {
     pagination: false,
     trash: true,
     overrideAccess: true,
-    req,
+    req: scopedReq(req),
   });
   return totalDocs > 0;
 }
