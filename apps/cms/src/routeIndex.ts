@@ -48,7 +48,7 @@ export type Referrer = {
   paths: Record<string, string>;
 };
 
-function asId(id: string): number | string {
+export function asId(id: string): number | string {
   return /^\d+$/.test(id) ? Number(id) : id;
 }
 
@@ -160,7 +160,7 @@ export function conflictMessage(path: string, locale: string): string {
   return `${path} is already used by another published page${locale === localeCodes()[0] ? "" : ` in ${locale.toUpperCase()}`}. Pick another slug.`;
 }
 
-type StoredRoute = {
+export type StoredRoute = {
   id: number | string;
   tenant?: Ref;
   locale: string;
@@ -173,7 +173,7 @@ const SELF_DOC = (collection: string, id: number | string): Where => ({
   doc: { equals: { relationTo: collection, value: id } },
 });
 
-async function storedRoutes(
+export async function storedRoutes(
   payload: Payload,
   req: Request,
   where: Where,
@@ -351,18 +351,21 @@ export const removeRoutes: CollectionBeforeDeleteHook = async ({
   );
 };
 
-export async function findReferrers(
+export async function findReferrersOf(
   payload: Payload,
-  collection: string,
-  id: number | string,
+  targets: { collection: string; id: number | string }[],
   req?: Request,
 ): Promise<Referrer[]> {
-  const key = refKey(collection, id);
+  const keys = new Set(
+    targets.map((target) => refKey(target.collection, target.id)),
+  );
   // TODO(DILM-137): narrow with a jsonb containment query once the Used in panel needs it at scale.
   const rows = await storedRoutes(payload, req, { id: { exists: true } });
   const grouped = new Map<string, Referrer>();
   for (const row of rows) {
-    if (!Array.isArray(row.refs) || !row.refs.includes(key)) continue;
+    if (!Array.isArray(row.refs) || !row.refs.some((ref) => keys.has(ref))) {
+      continue;
+    }
     const referrerId = refId(row.doc.value);
     if (!referrerId) continue;
     const mapKey = refKey(row.doc.relationTo, referrerId);
@@ -376,4 +379,13 @@ export async function findReferrers(
     grouped.set(mapKey, entry);
   }
   return [...grouped.values()];
+}
+
+export async function findReferrers(
+  payload: Payload,
+  collection: string,
+  id: number | string,
+  req?: Request,
+): Promise<Referrer[]> {
+  return findReferrersOf(payload, [{ collection, id }], req);
 }

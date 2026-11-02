@@ -4,6 +4,11 @@ import { navGroup } from "../admin/navGroups";
 import { withTrashedBy } from "../fields/authoring";
 import { pageFields, parentField } from "../fields/pageFields";
 import { withUpdatedBy } from "../fields/updatedBy";
+import {
+  cascadePathChange,
+  freshBreadcrumbIds,
+  rejectOversizedCascade,
+} from "../pathCascade";
 import { keepSingleHome, protectHome } from "../pageRules";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
@@ -24,7 +29,8 @@ export const SharedPages = withTrashedBy(
     hooks: {
       beforeValidate: [keepSingleHome],
       beforeDelete: [protectHome, removeRoutes],
-      afterChange: [syncRoutes],
+      beforeChange: [rejectOversizedCascade, freshBreadcrumbIds],
+      afterChange: [cascadePathChange, syncRoutes],
     },
     admin: {
       group: navGroup("content"),
