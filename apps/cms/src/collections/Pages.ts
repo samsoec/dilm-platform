@@ -7,6 +7,11 @@ import { navGroup } from "../admin/navGroups";
 import { withTrashedBy } from "../fields/authoring";
 import { pageFields, parentField } from "../fields/pageFields";
 import { withUpdatedBy } from "../fields/updatedBy";
+import {
+  cascadePathChange,
+  freshBreadcrumbIds,
+  rejectOversizedCascade,
+} from "../pathCascade";
 import { keepParentInTenant } from "../pageRules";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import { withTenantAccess } from "../tenancy";
@@ -26,7 +31,8 @@ export const Pages = withTenantAccess(
       trash: true,
       hooks: {
         beforeValidate: [keepParentInTenant],
-        afterChange: [syncRoutes],
+        beforeChange: [rejectOversizedCascade, freshBreadcrumbIds],
+        afterChange: [cascadePathChange, syncRoutes],
         beforeDelete: [removeRoutes],
       },
       admin: {
