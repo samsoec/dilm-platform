@@ -17,6 +17,7 @@ import * as migration_20261020_090000_dilm_74_trashed_by from './20261020_090000
 import * as migration_20261020_112607_dilm_92_ir_uploaded_by from './20261020_112607_dilm_92_ir_uploaded_by';
 import * as migration_20261020_134510_dilm_93_ir_purge_status from './20261020_134510_dilm_93_ir_purge_status';
 import * as migration_20261102_092158_dilm_95_redirects_plugin from './20261102_092158_dilm_95_redirects_plugin';
+import * as migration_20261102_094442_dilm_97_pages_and_shared_pages from './20261102_094442_dilm_97_pages_and_shared_pages';
 
 export const migrations = [
   {
@@ -112,6 +113,11 @@ export const migrations = [
   {
     up: migration_20261102_092158_dilm_95_redirects_plugin.up,
     down: migration_20261102_092158_dilm_95_redirects_plugin.down,
-    name: '20261102_092158_dilm_95_redirects_plugin'
+    name: '20261102_092158_dilm_95_redirects_plugin',
+  },
+  {
+    up: migration_20261102_094442_dilm_97_pages_and_shared_pages.up,
+    down: migration_20261102_094442_dilm_97_pages_and_shared_pages.down,
+    name: '20261102_094442_dilm_97_pages_and_shared_pages'
   },
 ];

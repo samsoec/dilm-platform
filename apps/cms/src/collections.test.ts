@@ -48,6 +48,7 @@ const TENANT_SCOPED = [
   "cv-submissions",
   "header",
   "footer",
+  "pages",
 ];
 
 const IP_ADDRESS_PATTERN =
@@ -132,7 +133,7 @@ describe("the collections", () => {
     for (const { slug } of ALL) {
       expect(collection(slug).slug).toBe(slug);
     }
-    expect(ALL).toHaveLength(9);
+    expect(ALL).toHaveLength(11);
   });
 
   it("put every content collection under a required tenant", async () => {
@@ -233,6 +234,8 @@ describe("the sidebar navigation (FR-UI-01 to FR-UI-03)", () => {
       "tenant-settings": "tune",
       users: "group",
       tenants: "domain",
+      pages: "article",
+      "shared-pages": "public",
     });
   });
 

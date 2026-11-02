@@ -34,6 +34,14 @@ export const COLLECTION_LABELS = {
     singular: { en: "Company settings", id: "Pengaturan perusahaan" },
     plural: { en: "Company settings", id: "Pengaturan perusahaan" },
   },
+  pages: {
+    singular: { en: "Page", id: "Halaman" },
+    plural: { en: "Pages", id: "Halaman" },
+  },
+  "shared-pages": {
+    singular: { en: "Shared page", id: "Halaman bersama" },
+    plural: { en: "Shared pages", id: "Halaman bersama" },
+  },
   redirects: {
     singular: { en: "Redirect", id: "Pengalihan" },
     plural: { en: "Redirects", id: "Pengalihan" },

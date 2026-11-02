@@ -76,6 +76,8 @@ export interface Config {
     'cv-submissions': CvSubmission;
     header: Header;
     footer: Footer;
+    pages: Page;
+    'shared-pages': SharedPage;
     redirects: Redirect;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -94,6 +96,8 @@ export interface Config {
     'cv-submissions': CvSubmissionsSelect<false> | CvSubmissionsSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    'shared-pages': SharedPagesSelect<false> | SharedPagesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -579,6 +583,123 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  title: string;
+  /**
+   * The last part of the address. It can't be empty.
+   */
+  slug: string;
+  /**
+   * Leave empty for a top-level page. Only pages of this company are offered.
+   */
+  parent?: (number | null) | Page;
+  /**
+   * Worked out from the parent pages and the slug.
+   */
+  path?: string | null;
+  redirectTo: {
+    type: 'internal' | 'external';
+    newTab?: boolean | null;
+    /**
+     * Start with /. The site adds the language.
+     */
+    internalPath?: string | null;
+    /**
+     * A full address starting with https://
+     */
+    externalUrl?: string | null;
+  };
+  /**
+   * A page holds at most 30 sections.
+   */
+  layout?: unknown[] | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Page;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shared-pages".
+ */
+export interface SharedPage {
+  id: number;
+  title: string;
+  /**
+   * The last part of the address. Leave it empty only for Home.
+   */
+  slug?: string | null;
+  /**
+   * Leave empty for a top-level page.
+   */
+  parent?: (number | null) | SharedPage;
+  /**
+   * Worked out from the parent pages and the slug.
+   */
+  path?: string | null;
+  redirectTo: {
+    type: 'internal' | 'external';
+    newTab?: boolean | null;
+    /**
+     * Start with /. The site adds the language.
+     */
+    internalPath?: string | null;
+    /**
+     * A full address starting with https://
+     */
+    externalUrl?: string | null;
+  };
+  /**
+   * A page holds at most 30 sections.
+   */
+  layout?: unknown[] | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | SharedPage;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -667,6 +788,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'footer';
         value: number | Footer;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'shared-pages';
+        value: number | SharedPage;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1101,6 +1230,87 @@ export interface FooterSelect<T extends boolean = true> {
   updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  tenant?: T;
+  title?: T;
+  slug?: T;
+  parent?: T;
+  path?: T;
+  redirectTo?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        internalPath?: T;
+        externalUrl?: T;
+      };
+  layout?: T | {};
+  updatedBy?: T;
+  trashedBy?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shared-pages_select".
+ */
+export interface SharedPagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  parent?: T;
+  path?: T;
+  redirectTo?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        internalPath?: T;
+        externalUrl?: T;
+      };
+  layout?: T | {};
+  updatedBy?: T;
+  trashedBy?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
