@@ -2,6 +2,7 @@ import type { GlobalConfig } from "payload";
 
 import { ConsentLogs } from "./ConsentLogs";
 import { CvSubmissions } from "./CvSubmissions";
+import { Documents } from "./Documents";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { IrDocuments } from "./IrDocuments";
@@ -20,6 +21,7 @@ export const collections = [
   Media,
   ConsentLogs,
   IrDocuments,
+  Documents,
   CvSubmissions,
   Header,
   Footer,

@@ -45,6 +45,7 @@ const TENANT_SCOPED = [
   "media",
   "consent-logs",
   "ir-documents",
+  "documents",
   "cv-submissions",
   "header",
   "footer",
@@ -133,7 +134,7 @@ describe("the collections", () => {
     for (const { slug } of ALL) {
       expect(collection(slug).slug).toBe(slug);
     }
-    expect(ALL).toHaveLength(12);
+    expect(ALL).toHaveLength(13);
   });
 
   it("put every content collection under a required tenant", async () => {
@@ -230,6 +231,7 @@ describe("the sidebar navigation (FR-UI-01 to FR-UI-03)", () => {
       "cv-submissions": "badge",
       "consent-logs": "verified_user",
       "ir-documents": "description",
+      documents: "picture_as_pdf",
       media: "photo_library",
       "tenant-settings": "tune",
       users: "group",
@@ -560,6 +562,26 @@ describe("ir-documents", () => {
       tenant: { in: [1] },
     });
     expect(await call(documents, "create", viewer)).toBe(false);
+  });
+});
+
+describe("documents", () => {
+  it("is editable by Tenant Editors of their own tenant, read-only for Viewers", async () => {
+    const documents = (await configured())("documents");
+
+    expect(await call(documents, "create", editor)).toEqual({
+      tenant: { in: [1] },
+    });
+    expect(await call(documents, "update", editor)).toEqual({
+      tenant: { in: [1] },
+    });
+    expect(await call(documents, "create", viewer)).toBe(false);
+    expect(await call(documents, "update", viewer)).toBe(false);
+    expect(await call(documents, "read", viewer)).toEqual({
+      tenant: { in: [1] },
+    });
+    expect(await call(documents, "create", superAdmin)).toBe(true);
+    expect(await call(documents, "read", superAdmin)).toBe(true);
   });
 });
 

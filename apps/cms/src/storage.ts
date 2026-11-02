@@ -11,6 +11,7 @@ export const IMAGE_SIZES: ImageSize[] = [
 export const PUBLIC_BUCKET_PREFIXES = {
   media: "media",
   "ir-documents": "ir-documents",
+  documents: "documents",
 } as const;
 
 export function publicBucketStorage(storage: StorageConfig): S3StorageOptions {

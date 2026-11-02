@@ -26,6 +26,10 @@ export const COLLECTION_LABELS = {
     singular: { en: "IR document", id: "Dokumen IR" },
     plural: { en: "IR documents", id: "Dokumen IR" },
   },
+  documents: {
+    singular: { en: "Document", id: "Dokumen" },
+    plural: { en: "Documents", id: "Dokumen" },
+  },
   media: {
     singular: { en: "Image", id: "Gambar" },
     plural: { en: "Media library", id: "Pustaka media" },
