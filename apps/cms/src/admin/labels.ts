@@ -34,6 +34,10 @@ export const COLLECTION_LABELS = {
     singular: { en: "Company settings", id: "Pengaturan perusahaan" },
     plural: { en: "Company settings", id: "Pengaturan perusahaan" },
   },
+  redirects: {
+    singular: { en: "Redirect", id: "Pengalihan" },
+    plural: { en: "Redirects", id: "Pengalihan" },
+  },
   tenants: {
     singular: { en: "Company", id: "Perusahaan" },
     plural: { en: "Companies", id: "Perusahaan" },
