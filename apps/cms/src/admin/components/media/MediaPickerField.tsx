@@ -35,7 +35,8 @@ function relationID(value: unknown): number | string | undefined {
 
 export const MediaPickerField: UploadFieldClientComponent = (props) => {
   const { field, path, readOnly } = props;
-  const { chooseLabel, preview, launchRequired } = props as MediaPickerOptions;
+  const { chooseLabel, preview, launchRequired, previewSize, mimeTypes } =
+    props as MediaPickerOptions;
   const fieldPath = path ?? field.name;
   const { value, setValue, showError } = useField<unknown>({ path: fieldPath });
   const tenantValue = useFormFields(([fields]) => fields.tenant?.value);
@@ -97,6 +98,11 @@ export const MediaPickerField: UploadFieldClientComponent = (props) => {
               disabled={readOnly}
               id={buttonId}
               onClick={() => openModal(slug)}
+              style={
+                previewSize
+                  ? { width: previewSize, height: previewSize, padding: 0 }
+                  : undefined
+              }
               type="button"
             >
               {media ? (
@@ -203,6 +209,7 @@ export const MediaPickerField: UploadFieldClientComponent = (props) => {
             setMedia(picked);
             setValue(picked.id);
           }}
+          mimeTypes={mimeTypes}
           selectedId={id}
           slug={slug}
           tenant={tenant}

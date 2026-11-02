@@ -43,12 +43,14 @@ export function MediaPickerDialog({
   title,
   tenant,
   selectedId,
+  mimeTypes,
   onPick,
 }: {
   slug: string;
   title: string;
   tenant: number | string | undefined;
   selectedId?: number | string;
+  mimeTypes?: readonly string[];
   onPick: (media: PickedMedia) => void;
 }) {
   const { closeModal, isModalOpen, openModal } = useModal();
@@ -80,6 +82,9 @@ export function MediaPickerDialog({
         sort: "-createdAt",
         "where[and][0][tenant][equals]": String(tenant),
       });
+      mimeTypes?.forEach((mimeType, index) =>
+        params.set(`where[and][2][mimeType][in][${index}]`, mimeType),
+      );
       const term = query.trim();
       if (term) {
         params.set("where[and][1][or][0][filename][like]", term);
@@ -104,7 +109,7 @@ export function MediaPickerDialog({
       clearTimeout(timer);
       request.abort();
     };
-  }, [open, query, reload, routes.api, serverURL, tenant]);
+  }, [mimeTypes, open, query, reload, routes.api, serverURL, tenant]);
 
   const focusCard = (index: number) => {
     setActive(index);

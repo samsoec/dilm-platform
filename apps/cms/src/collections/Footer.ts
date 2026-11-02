@@ -1,19 +1,6 @@
-import {
-  FixedToolbarFeature,
-  ItalicFeature,
-  lexicalEditor,
-  ParagraphFeature,
-} from "@payloadcms/richtext-lexical";
-import type {
-  Condition,
-  FieldHook,
-  RichTextFieldValidation,
-  TextFieldSingleValidation,
-} from "payload";
-import { richText } from "payload/shared";
+import type { Condition, TextFieldSingleValidation } from "payload";
 
 import { superAdmins } from "../access";
-import { isPlainOrItalic, plainOrItalic } from "../admin/footerSections";
 import { navGroup } from "../admin/navGroups";
 import { LIVE_DOCUMENT_CONTROLS } from "../admin/shell";
 import {
@@ -27,6 +14,10 @@ import {
   versionInfo,
   withSameAsEnTag,
 } from "../fields/layoutEditor";
+import {
+  isItalicOnlyHeading,
+  italicHeadingField,
+} from "../fields/italicHeading";
 import { link } from "../fields/link";
 import { keepRowStructure, lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
@@ -40,18 +31,7 @@ export const MAX_COLUMN_LINKS = 8;
 
 export const COPYRIGHT_TOKENS = ["year", "legalName"] as const;
 
-export const isItalicOnlyHeading: RichTextFieldValidation = async (
-  value,
-  args,
-) => richText(value, args);
-
-const cleanHeading: FieldHook = ({ value }) => {
-  const root = (value as { root?: Parameters<typeof plainOrItalic>[0] } | null)
-    ?.root;
-  return root && !isPlainOrItalic(root)
-    ? { ...(value as object), root: plainOrItalic(root) }
-    : value;
-};
+export { isItalicOnlyHeading };
 
 const KNOWN_TOKENS = new Set<string>(COPYRIGHT_TOKENS);
 
@@ -108,24 +88,7 @@ export const Footer = withTenantAccess(
                 type: "text",
                 localized: true,
               }),
-              {
-                name: "heading",
-                type: "richText",
-                localized: true,
-                validate: isItalicOnlyHeading,
-                hooks: { beforeValidate: [cleanHeading] },
-                editor: lexicalEditor({
-                  features: () => [
-                    ParagraphFeature(),
-                    ItalicFeature(),
-                    FixedToolbarFeature(),
-                  ],
-                }),
-                admin: {
-                  description:
-                    "Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.",
-                },
-              },
+              italicHeadingField({ name: "heading" }),
               link({
                 name: "primaryButton",
                 label: "Primary button",

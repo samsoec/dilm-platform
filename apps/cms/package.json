@@ -7,7 +7,7 @@
     "build": "next build",
     "dev": "next dev",
     "generate:importmap": "pnpm payload generate:importmap",
-    "generate:types": "pnpm payload generate:types",
+    "generate:types": "pnpm payload generate:types && pnpm payload run src/blocks/export-block-types.ts && prettier --write ../../packages/shared-types/src/blocks.generated.ts",
     "grant:super-admin": "pnpm payload run src/seed/grant-super-admin.ts",
     "lint": "eslint .",
     "migrate": "pnpm payload migrate",
