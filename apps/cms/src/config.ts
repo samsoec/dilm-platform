@@ -32,6 +32,7 @@ import { cmsDatabaseAdapter, type PayloadClient } from "./database";
 import { cmsEmailAdapter } from "./email";
 import { localization } from "./localization";
 import { publicBucketStorage } from "./storage";
+import { pageModelPlugins } from "./pageModel";
 import { multiTenant } from "./tenancy";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -109,6 +110,7 @@ export async function cmsConfig(client: PayloadClient) {
     sharp,
     plugins: [
       multiTenant(collections),
+      ...pageModelPlugins,
       s3Storage(publicBucketStorage(runtimeConfig.storage)),
       appendAdminProviders(PROVIDERS_INSIDE_TENANT_SELECTION),
       guardEveryDocument,

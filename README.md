@@ -717,6 +717,28 @@ submissions. Emails use `example.com` and the résumé keys point at no real
 file. It refuses to run unless `RUNTIME_CONFIG_SOURCE=env`, so it can't
 reach staging or production.
 
+## Page model plugins
+
+`apps/cms/src/pageModel.ts` registers the nested-docs, SEO and redirects
+plugins (Architecture Decisions §11). Their `collections` list is
+`PAGE_COLLECTIONS`, empty until the page collections land.
+
+- **SEO.** The `meta` group holds `title`, `description` and `image` (an
+  upload to `media`), each localized. When a page leaves one empty, the read
+  side falls back to the same field on the tenant's `tenant-settings`
+  `defaultSeo` group (`title`, `description`, `ogImage`), in the same locale.
+- **Redirects.** `apps/cms/src/redirects.ts` shapes the `redirects`
+  collection: `from`, `to` (the `link` field without link text), `tenant`
+  (empty means all three sites), `locale` (`en` or `id`) and `origin`
+  (`auto` or `manual`, read-only in the admin). `tenant`, `locale` and `from`
+  are unique together. The collection is deliberately outside the
+  multi-tenant plugin because that plugin makes `tenant` required.
+- **Access (TRD-PM FR-PM-57).** A Tenant Editor creates, updates and deletes
+  only `manual` rows of their own tenant. Rows with no tenant, and `auto`
+  rows, are writable by Super Admins only. Signed-in members read their
+  tenant's rows plus the global ones; signed-out callers read every row,
+  because the public site resolves redirects with no user.
+
 ## Layout
 
 ```
