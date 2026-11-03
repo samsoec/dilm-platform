@@ -146,6 +146,8 @@ export interface Page {
         | SolutionApplicationsBlock
         | JobDetailBlock
         | PostArticleBlock
+        | PublicationHeroBlock
+        | PostListingBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -275,6 +277,8 @@ export interface SharedPage {
         | SolutionApplicationsBlock
         | JobDetailBlock
         | PostArticleBlock
+        | PublicationHeroBlock
+        | PostListingBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -3671,4 +3675,126 @@ export interface PostArticleBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: "postArticle";
+}
+
+export interface PublicationHeroBlock {
+  backgroundImage: number | Media;
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: "center" | "left" | "split";
+  };
+  searchPlaceholder?: string | null;
+  searchLabel?: string | null;
+  allLabel?: string | null;
+  /**
+   * Shown after the All tab, in this order. Drag to reorder. The active tab is the category in context, otherwise All.
+   */
+  categories?: (number | Category)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "publicationHero";
+}
+
+export interface PostListingBlock {
+  /**
+   * Which posts the list is drawn from. "This category" is for the Category template. Anywhere else it shows nothing; it does not stop you saving or publishing.
+   */
+  source: "all" | "currentCategory" | "categories";
+  categories?: (number | Category)[] | null;
+  /**
+   * A published post of this company. Leave empty to feature the newest post. Hidden while a visitor is searching.
+   */
+  featured?: (number | null) | Post;
+  /**
+   * How many posts show per page.
+   */
+  pageSize: number;
+  /**
+   * {count} = number of matching posts, {query} = what the visitor typed. Sample: Showing 12 results for "alum".
+   */
+  resultsLabel?: string | null;
+  emptyState: {
+    /**
+     * {query} = what the visitor typed. No other placeholder works here.
+     */
+    title?: string | null;
+    description?: string | null;
+    button: {
+      type: "internal" | "external" | "reference";
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: "pages";
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: "shared-pages";
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: "products";
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: "solutions";
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: "jobs";
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: "posts";
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: "categories";
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+  };
+  /**
+   * An optional title and up to 5 hand-picked posts, shown as a numbered side list. It stays while a visitor searches.
+   */
+  highlights?: {
+    title?: string | null;
+    /**
+     * Up to 5 published posts of this company.
+     */
+    items?: (number | Post)[] | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "postListing";
 }

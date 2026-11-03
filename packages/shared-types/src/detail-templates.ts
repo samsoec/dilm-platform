@@ -143,26 +143,125 @@ export function renderTokens(
 
 const SKIPPED_KEYS = new Set(["id", "blockType", "blockName"]);
 
-function textsIn(value: unknown, found: string[]): string[] {
+export type ScopedTokenRule = {
+  path: string;
+  allowed: readonly string[];
+  message: (name: string) => string;
+};
+
+export const RESULTS_LABEL_TOKENS = ["count", "query"] as const;
+
+export const EMPTY_TITLE_TOKENS = ["query"] as const;
+
+export const RESULTS_LABEL_PATH = "resultsLabel";
+
+export const EMPTY_TITLE_PATH = "emptyState.title";
+
+export function unknownResultsTokenMessage(name: string): string {
+  return `{${name}} isn't a placeholder. Use {count} or {query}.`;
+}
+
+export function unknownEmptyTitleTokenMessage(): string {
+  return "Only {query} works in this title.";
+}
+
+export const SCOPED_TOKEN_RULES: Readonly<
+  Record<string, readonly ScopedTokenRule[]>
+> = {
+  postListing: [
+    {
+      path: RESULTS_LABEL_PATH,
+      allowed: RESULTS_LABEL_TOKENS,
+      message: unknownResultsTokenMessage,
+    },
+    {
+      path: EMPTY_TITLE_PATH,
+      allowed: EMPTY_TITLE_TOKENS,
+      message: unknownEmptyTitleTokenMessage,
+    },
+  ],
+};
+
+function scopedRules(blockType: unknown): readonly ScopedTokenRule[] {
+  return typeof blockType === "string" &&
+    Object.hasOwn(SCOPED_TOKEN_RULES, blockType)
+    ? SCOPED_TOKEN_RULES[blockType]
+    : [];
+}
+
+export function scopedTokenProblem(
+  text: unknown,
+  rule: Pick<ScopedTokenRule, "allowed" | "message">,
+): string | undefined {
+  const unknown = textsIn(text, [])
+    .flatMap(tokensIn)
+    .find((name) => !rule.allowed.includes(name));
+  return unknown === undefined ? undefined : rule.message(unknown);
+}
+
+function textsIn(
+  value: unknown,
+  found: string[],
+  skip: readonly string[] = [],
+  prefix = "",
+): string[] {
   if (typeof value === "string") found.push(value);
-  else if (Array.isArray(value)) value.forEach((item) => textsIn(item, found));
-  else if (value && typeof value === "object") {
+  else if (Array.isArray(value)) {
+    value.forEach((item) => textsIn(item, found, skip, prefix));
+  } else if (value && typeof value === "object") {
     for (const [key, item] of Object.entries(value)) {
-      if (!SKIPPED_KEYS.has(key)) textsIn(item, found);
+      const path = prefix ? `${prefix}.${key}` : key;
+      if (!SKIPPED_KEYS.has(key) && !skip.includes(path)) {
+        textsIn(item, found, skip, path);
+      }
     }
   }
   return found;
+}
+
+function valueAt(block: unknown, path: string): unknown {
+  let value = block;
+  for (const key of path.split(".")) {
+    if (!value || typeof value !== "object") return undefined;
+    value = (value as Record<string, unknown>)[key];
+  }
+  return value;
+}
+
+function blocksOf(layout: unknown): unknown[] {
+  if (Array.isArray(layout)) return layout;
+  return layout === null || layout === undefined ? [] : [layout];
 }
 
 export function tokenProblem(
   layout: unknown,
   inTemplate: boolean,
 ): string | undefined {
-  const names = textsIn(layout, []).flatMap(tokensIn);
-  if (names.length === 0) return undefined;
-  if (!inTemplate) return TOKENS_OUTSIDE_TEMPLATES;
-  const unknown = names.find(
-    (name) => !(TEMPLATE_TOKENS as readonly string[]).includes(name),
-  );
-  return unknown === undefined ? undefined : unknownTokenMessage(unknown);
+  const names = blocksOf(layout).flatMap((block) => {
+    const rules = scopedRules(
+      (block as { blockType?: unknown } | null)?.blockType,
+    );
+    return textsIn(
+      block,
+      [],
+      rules.map(({ path }) => path),
+    ).flatMap(tokensIn);
+  });
+  if (names.length > 0) {
+    if (!inTemplate) return TOKENS_OUTSIDE_TEMPLATES;
+    const unknown = names.find(
+      (name) => !(TEMPLATE_TOKENS as readonly string[]).includes(name),
+    );
+    if (unknown !== undefined) return unknownTokenMessage(unknown);
+  }
+  for (const block of blocksOf(layout)) {
+    const rules = scopedRules(
+      (block as { blockType?: unknown } | null)?.blockType,
+    );
+    for (const rule of rules) {
+      const problem = scopedTokenProblem(valueAt(block, rule.path), rule);
+      if (problem) return problem;
+    }
+  }
+  return undefined;
 }

@@ -35,6 +35,8 @@ import { solutionImpact } from "./solutionImpact";
 import { solutionApplications } from "./solutionApplications";
 import { jobDetail } from "./jobDetail";
 import { postArticle } from "./postArticle";
+import { publicationHero } from "./publicationHero";
+import { postListing } from "./postListing";
 
 export { bottomCtaField, ctaBannerFields } from "./ctaBanner";
 
@@ -80,4 +82,6 @@ export const pageBlocks: Block[] = [
   solutionApplications,
   jobDetail,
   postArticle,
+  publicationHero,
+  postListing,
 ];

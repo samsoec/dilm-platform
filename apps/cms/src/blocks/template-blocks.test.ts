@@ -79,8 +79,8 @@ const named = (fields: Field[], ...path: string[]): Field => {
 
 describe("the template blocks are registered (FR-PM-28, FR-PM-33)", () => {
   it("appends the eight blocks after the company blocks", () => {
-    expect(pageBlocks.length).toBe(35);
-    expect(pageBlocks.slice(27).map(({ slug }) => slug)).toEqual(
+    expect(pageBlocks.length).toBe(37);
+    expect(pageBlocks.slice(27, 35).map(({ slug }) => slug)).toEqual(
       Object.keys(blocks),
     );
     expect(() => assertRegistry(pageBlocks)).not.toThrow();
@@ -113,7 +113,7 @@ describe("the template blocks are registered (FR-PM-28, FR-PM-33)", () => {
       return dbName({ tableName: "x" }).slice(2);
     });
     expect(new Set(suffixes).size).toBe(pageBlocks.length);
-    expect(suffixes.slice(27)).toEqual([
+    expect(suffixes.slice(27, 35)).toEqual([
       "rhero",
       "povw",
       "pspec",
