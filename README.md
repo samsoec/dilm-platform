@@ -285,7 +285,8 @@ Indonesian copy or publication leaves an English-only draft that later runs
 skip. Required photos hold a generated grey placeholder, Home and Privacy
 Policy stay drafts, and the other two companies get neutral wording instead
 of Dunia Kimia Utama's facts. `apps/cms/scripts/test-seed-pages.sh` runs the
-seed twice on a scratch database and checks it.
+seed twice on a scratch database and checks it, then runs the publish
+revalidation tests (`src/revalidation.db.test.ts`) on a second one.
 
 **Sign-in lockout.** Admin and editor accounts use Payload's built-in
 email/password login. After 5 wrong passwords in a row an account is locked
@@ -756,6 +757,24 @@ plugins (Architecture Decisions §11). Their `collections` list is
   rows, are writable by Super Admins only. Signed-in members read their
   tenant's rows plus the global ones; signed-out callers read every row,
   because the public site resolves redirects with no user.
+
+## Publishing and the site refresh
+
+`apps/cms/src/publishRevalidation.ts` tells the revalidator what a live
+change touched (TRD-PM 4.10 tags and purge targets); until DILM-32 the
+logging stub receives it. A failed refresh never undoes the save: it is
+logged and recorded as `failed` in the hidden `refresh-status` collection,
+which `refreshMessage` turns into the PB-05 wording. That row is written on
+its own connection, outside the editor's transaction, so even a missing table
+or a racing writer cannot roll the save back.
+
+**Always pass `_status` or `draft: true`.** On collections with drafts
+(pages, shared pages, products, solutions, jobs, posts and both template
+collections), a Local API or REST update with neither, on a published
+document that has a newer draft, starts from that draft and so silently
+inherits the draft status and unpublishes the document (Payload 3.90). The
+admin always sends `_status`, so editors are not affected; scripts and
+integrations must send it themselves.
 
 ## Layout
 

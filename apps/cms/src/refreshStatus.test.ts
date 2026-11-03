@@ -68,7 +68,7 @@ describe("refresh messages", () => {
 describe("recording the status", () => {
   it("creates a row the first time", async () => {
     const { payload, create, update } = store();
-    await recordRefreshStatus(payload, undefined, KEY, "ok", ["a.com"]);
+    await recordRefreshStatus(payload, KEY, "ok", ["a.com"]);
     expect(update).not.toHaveBeenCalled();
     expect(create).toHaveBeenCalledTimes(1);
     expect(create.mock.calls[0][0]).toMatchObject({
@@ -80,7 +80,7 @@ describe("recording the status", () => {
 
   it("updates the one row per document afterwards", async () => {
     const { payload, create, update } = store({ id: 12 });
-    await recordRefreshStatus(payload, undefined, KEY, "failed", []);
+    await recordRefreshStatus(payload, KEY, "failed", []);
     expect(create).not.toHaveBeenCalled();
     expect(update.mock.calls[0][0]).toMatchObject({
       id: 12,
@@ -92,7 +92,7 @@ describe("recording the status", () => {
     const { payload, create, logger } = store();
     create.mockRejectedValue(new Error("db down"));
     await expect(
-      recordRefreshStatus(payload, undefined, KEY, "ok", []),
+      recordRefreshStatus(payload, KEY, "ok", []),
     ).resolves.toBeUndefined();
     expect(logger.error).toHaveBeenCalledTimes(1);
   });
@@ -119,12 +119,10 @@ describe("recording the status", () => {
 
   it("clears the row of a deleted document and swallows errors", async () => {
     const { payload, del, logger } = store();
-    await removeRefreshStatus(payload, undefined, KEY);
+    await removeRefreshStatus(payload, KEY);
     expect(del).toHaveBeenCalledTimes(1);
     del.mockRejectedValue(new Error("nope"));
-    await expect(
-      removeRefreshStatus(payload, undefined, KEY),
-    ).resolves.toBeUndefined();
+    await expect(removeRefreshStatus(payload, KEY)).resolves.toBeUndefined();
     expect(logger.error).toHaveBeenCalledTimes(1);
   });
 });

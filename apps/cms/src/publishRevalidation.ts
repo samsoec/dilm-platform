@@ -214,7 +214,6 @@ async function deliver({
   if (!status) return;
   await recordRefreshStatus(
     payload,
-    req,
     status,
     outcome,
     change ? hostsOf(change) : [],
@@ -319,7 +318,7 @@ export function revalidateOnDelete(
         live: false,
         deleted: true,
       });
-      await removeRefreshStatus(payload, req, {
+      await removeRefreshStatus(payload, {
         collection: collection.slug,
         docId: key,
       });
@@ -497,7 +496,7 @@ export function revalidateTemplateOnDelete(
   return async ({ doc, id, req, collection }) => {
     const subject = doc as TemplateDoc;
     try {
-      await removeRefreshStatus(req.payload, req, {
+      await removeRefreshStatus(req.payload, {
         collection: collection.slug,
         docId: String(id),
       });

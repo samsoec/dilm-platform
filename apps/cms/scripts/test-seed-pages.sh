@@ -5,9 +5,12 @@ usage() {
   cat <<'USAGE'
 Usage: scripts/test-seed-pages.sh
 
-Runs the seed:pages integration test (src/seed/pages.db.test.ts) against a
-scratch Postgres database, dilm_seed_test, which is dropped and recreated
-first. The shared dev database is never touched.
+Runs the seed:pages integration test (src/seed/pages.db.test.ts) against the
+scratch Postgres database dilm_seed_test, then the publish revalidation
+integration test (src/revalidation.db.test.ts) against a second one,
+dilm_revalidation_test. Each database is dropped and recreated first, because
+Payload's dev schema push times out on a used one. The shared dev database is
+never touched.
 
 Uses psql when installed, otherwise `docker compose exec postgres psql`.
 The admin connection comes from PGHOST, PGPORT, PGUSER and PGPASSWORD
@@ -35,7 +38,6 @@ if [ -f ../../.env ]; then
   set +a
 fi
 
-SCRATCH=dilm_seed_test
 export PGHOST="${PGHOST:-localhost}"
 export PGPORT="${PGPORT:-5432}"
 export PGUSER="${PGUSER:-postgres}"
@@ -56,13 +58,27 @@ admin_sql() {
   fi
 }
 
-admin_sql
+run_against() {
+  SCRATCH="$1"
+  case "$SCRATCH" in
+    dilm_seed_test | dilm_revalidation_test) ;;
+    *)
+      echo "Refusing to use $SCRATCH." >&2
+      exit 1
+      ;;
+  esac
+  admin_sql
+  (
+    export SEED_TEST_DATABASE="$SCRATCH"
+    export DATABASE_HOST="$PGHOST"
+    export DATABASE_PORT="$PGPORT"
+    export DATABASE_NAME="$SCRATCH"
+    export DATABASE_USER="$OWNER"
+    export DATABASE_PASSWORD="$APP_PASSWORD"
+    cd ../..
+    pnpm exec vitest run "$2"
+  )
+}
 
-export SEED_TEST_DATABASE="$SCRATCH"
-export DATABASE_HOST="$PGHOST"
-export DATABASE_PORT="$PGPORT"
-export DATABASE_NAME="$SCRATCH"
-export DATABASE_USER="$OWNER"
-export DATABASE_PASSWORD="$APP_PASSWORD"
-cd ../..
-exec pnpm exec vitest run apps/cms/src/seed/pages.db.test.ts
+run_against dilm_seed_test apps/cms/src/seed/pages.db.test.ts
+run_against dilm_revalidation_test apps/cms/src/revalidation.db.test.ts

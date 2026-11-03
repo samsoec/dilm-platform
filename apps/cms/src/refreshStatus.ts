@@ -1,6 +1,5 @@
-import type { CollectionSlug, Payload, PayloadRequest } from "payload";
+import type { CollectionSlug, Payload } from "payload";
 
-import { scopedReq } from "./pageRules";
 import { joinNames } from "./paths";
 
 export const REFRESH_STATUS_COLLECTION = "refresh-status";
@@ -10,8 +9,6 @@ export const REFRESH_STATUSES = ["ok", "failed"] as const;
 export type RefreshStatus = (typeof REFRESH_STATUSES)[number];
 
 export type RefreshStatusKey = { collection: string; docId: string };
-
-type Request = Partial<PayloadRequest> | undefined;
 
 export const REFRESH_FAILED_MESSAGE =
   "Published, but the site hasn't refreshed yet. It will retry; the administrator has been told. You don't need to publish again.";
@@ -43,7 +40,6 @@ const slug = REFRESH_STATUS_COLLECTION as CollectionSlug;
 
 async function findRow(
   payload: Payload,
-  req: Request,
   key: RefreshStatusKey,
 ): Promise<StatusRow | undefined> {
   const { docs } = await payload.find({
@@ -58,7 +54,6 @@ async function findRow(
     limit: 1,
     pagination: false,
     overrideAccess: true,
-    req: scopedReq(req),
   });
   return docs[0] as unknown as StatusRow | undefined;
 }
@@ -66,12 +61,11 @@ async function findRow(
 export async function readRefreshStatus(
   payload: Payload,
   key: RefreshStatusKey,
-  req?: Request,
 ): Promise<
   | { status: RefreshStatus; at: string; hosts: string[]; message: string }
   | undefined
 > {
-  const row = await findRow(payload, req, key);
+  const row = await findRow(payload, key);
   if (!row) return undefined;
   const hosts = Array.isArray(row.hosts)
     ? row.hosts.filter((host): host is string => typeof host === "string")
@@ -86,13 +80,12 @@ export async function readRefreshStatus(
 
 export async function recordRefreshStatus(
   payload: Payload,
-  req: Request,
   key: RefreshStatusKey,
   status: RefreshStatus,
   hosts: string[],
 ): Promise<void> {
   try {
-    const row = await findRow(payload, req, key);
+    const row = await findRow(payload, key);
     const data = { ...key, status, hosts, at: new Date().toISOString() };
     if (row) {
       await payload.update({
@@ -100,14 +93,12 @@ export async function recordRefreshStatus(
         id: row.id,
         data: data as never,
         overrideAccess: true,
-        req: scopedReq(req),
       });
     } else {
       await payload.create({
         collection: slug,
         data: data as never,
         overrideAccess: true,
-        req: scopedReq(req),
       });
     }
   } catch (error) {
@@ -120,7 +111,6 @@ export async function recordRefreshStatus(
 
 export async function removeRefreshStatus(
   payload: Payload,
-  req: Request,
   key: RefreshStatusKey,
 ): Promise<void> {
   try {
@@ -133,7 +123,6 @@ export async function removeRefreshStatus(
         ],
       },
       overrideAccess: true,
-      req: scopedReq(req),
     });
   } catch (error) {
     payload.logger.error(

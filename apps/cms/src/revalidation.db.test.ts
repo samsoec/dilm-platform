@@ -1,6 +1,7 @@
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 
+import { sql } from "@payloadcms/db-postgres";
 import type { CollectionSlug, Payload } from "payload";
 import {
   afterAll,
@@ -542,6 +543,58 @@ describe.skipIf(!database)(
         status: "failed",
         message: REFRESH_FAILED_MESSAGE,
       });
+    });
+
+    it("keeps the save when the status row collides with another writer", async () => {
+      const [page] = await find("pages", {
+        tenant: { equals: dunia() },
+        path: { equals: "/sustainability" },
+      });
+      await payload.update({
+        collection: "pages",
+        id: page!.id,
+        data: { slug: "green", _status: "published" } as never,
+      });
+      const realFind = payload.find.bind(payload);
+      vi.spyOn(payload, "find").mockImplementation(((args: {
+        collection: string;
+      }) =>
+        args.collection === "refresh-status"
+          ? Promise.resolve({ docs: [] })
+          : realFind(args as never)) as never);
+      const saved = await payload.update({
+        collection: "pages",
+        id: page!.id,
+        data: { slug: "green-2", _status: "published" } as never,
+      });
+      vi.restoreAllMocks();
+      expect(saved.path).toBe("/green-2");
+      const [stored] = await find("pages", { id: { equals: page!.id } });
+      expect(stored!.path).toBe("/green-2");
+      expect(stored!._status).toBe("published");
+    });
+
+    it("keeps the save when the status table is missing", async () => {
+      await payload.db.drizzle.execute(
+        sql`DROP TABLE "refresh_status" CASCADE`,
+      );
+      const error = vi.spyOn(payload.logger, "error");
+      const [page] = await find("pages", {
+        tenant: { equals: dunia() },
+        path: { equals: "/contact-us-2" },
+      });
+      const saved = await payload.update({
+        collection: "pages",
+        id: page!.id,
+        data: { slug: "contact-us-3", _status: "published" } as never,
+      });
+      expect(saved.path).toBe("/contact-us-3");
+      const [stored] = await find("pages", { id: { equals: page!.id } });
+      expect(stored!.path).toBe("/contact-us-3");
+      expect(error).toHaveBeenCalledWith(
+        expect.objectContaining({ collection: "pages" }),
+        "Couldn't record the site refresh status",
+      );
     });
   },
 );
