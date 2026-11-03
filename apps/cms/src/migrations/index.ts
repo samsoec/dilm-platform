@@ -29,6 +29,7 @@ import * as migration_20261103_045115_dilm_106_site_routing from './20261103_045
 import * as migration_20261103_050051_dilm_107_entity_profile from './20261103_050051_dilm_107_entity_profile';
 import * as migration_20261103_051042_dilm_108_detail_templates from './20261103_051042_dilm_108_detail_templates';
 import * as migration_20261103_052124_dilm_148_site_messages from './20261103_052124_dilm_148_site_messages';
+import * as migration_20261103_075314_jobs_closing_datetime from './20261103_075314_jobs_closing_datetime';
 
 export const migrations = [
   {
@@ -184,6 +185,11 @@ export const migrations = [
   {
     up: migration_20261103_052124_dilm_148_site_messages.up,
     down: migration_20261103_052124_dilm_148_site_messages.down,
-    name: '20261103_052124_dilm_148_site_messages'
+    name: '20261103_052124_dilm_148_site_messages',
+  },
+  {
+    up: migration_20261103_075314_jobs_closing_datetime.up,
+    down: migration_20261103_075314_jobs_closing_datetime.down,
+    name: '20261103_075314_jobs_closing_datetime'
   },
 ];

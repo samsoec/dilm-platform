@@ -123,10 +123,19 @@ export const Jobs = withTenantAccess(
             name: "closingDate",
             label: "Closing date",
             type: "date",
+            timezone: {
+              required: true,
+              defaultTimezone: "Asia/Jakarta",
+              supportedTimezones: [
+                { label: "WIB (Jakarta)", value: "Asia/Jakarta" },
+                { label: "WITA (Makassar)", value: "Asia/Makassar" },
+                { label: "WIT (Jayapura)", value: "Asia/Jayapura" },
+              ],
+            },
             admin: {
-              date: { pickerAppearance: "dayOnly" },
+              date: { pickerAppearance: "dayAndTime", timeIntervals: 15 },
               description:
-                "Optional. The job leaves the listings after this date. Its page stays reachable without the application form.",
+                "Optional. The job leaves the listings at exactly this date and time, in the time zone chosen beside it (WIB by default). Its page stays reachable without the application form.",
             },
           },
           {

@@ -1,4 +1,4 @@
-import { readPublishedOrMembers, superAdmins } from "../access";
+import { readPublishedOrMembers, tenantEditors } from "../access";
 import { collectionLabels } from "../admin/labels";
 import { navGroup } from "../admin/navGroups";
 import {
@@ -17,7 +17,7 @@ export const DetailTemplates = withTenantAccess(
     labels: collectionLabels("detail-templates"),
     access: {
       read: readPublishedOrMembers,
-      delete: superAdmins,
+      delete: tenantEditors,
     },
     versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
     hooks: { beforeValidate: [keepOneTemplatePerType, allowTemplateTokens] },

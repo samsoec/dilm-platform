@@ -193,6 +193,48 @@ describe("cookie banner body rule (MS-01, FR-PM-63)", () => {
       ),
     ).toBe(COOKIE_POLICY_REQUIRED);
   });
+
+  describe("saving all languages at once (locale all)", () => {
+    const blank = {
+      root: {
+        type: "root",
+        version: 1,
+        children: [{ type: "paragraph", version: 1, children: [] }],
+      },
+    };
+
+    it("refuses an empty English body, however the value arrives", async () => {
+      const { req } = fakeReq(live, "all");
+      expect(await check(blank, req)).toBe(COOKIE_POLICY_REQUIRED);
+      expect(await check({ en: blank, id: blank }, req)).toBe(
+        COOKIE_POLICY_REQUIRED,
+      );
+      expect(await check({ en: blank }, req)).toBe(COOKIE_POLICY_REQUIRED);
+      expect(await check({ en: null, id: body(pageLink(4)) }, req)).toBe(
+        COOKIE_POLICY_REQUIRED,
+      );
+    });
+
+    it("refuses English text without the link even when the translation links", async () => {
+      const { req } = fakeReq(live, "all");
+      expect(
+        await check({ en: body(text("Policy")), id: body(pageLink(4)) }, req),
+      ).toBe(COOKIE_POLICY_REQUIRED);
+    });
+
+    it("still lets the translation stay empty", async () => {
+      const { req } = fakeReq(live, "all");
+      expect(await check({ en: body(pageLink(4)), id: blank }, req)).toBe(true);
+      expect(await check(body(pageLink(4)), req)).toBe(true);
+    });
+
+    it("refuses a translation with text but no link", async () => {
+      const { req } = fakeReq(live, "all");
+      expect(
+        await check({ en: body(pageLink(4)), id: body(text("Baca")) }, req),
+      ).toBe(COOKIE_POLICY_REQUIRED);
+    });
+  });
 });
 
 describe("findCookiePolicyLinks", () => {

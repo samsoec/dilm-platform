@@ -36,6 +36,14 @@ describe("which jobs are listed (FR-PM-41)", () => {
     expect(isListed({ ...open, closingDate: PAST }, NOW)).toBe(false);
   });
 
+  it("closes at the exact moment picked in Jakarta time", () => {
+    const picked = "2026-11-20T10:00:00.000Z";
+    const job = { ...open, closingDate: picked };
+    expect(isListed(job, new Date("2026-11-20T09:59:00.000Z"))).toBe(true);
+    expect(isListed(job, new Date("2026-11-20T10:00:00.000Z"))).toBe(false);
+    expect(isListed(job, new Date("2026-11-20T10:01:00.000Z"))).toBe(false);
+  });
+
   it("does not list a closed job, even with a future closing date", () => {
     expect(
       isListed({ ...open, status: "closed", closingDate: FUTURE }, NOW),
@@ -221,6 +229,22 @@ describe("the jobs collection (§4.6.3)", () => {
     ]) {
       expect(findField(Jobs.fields, name), name).toBeDefined();
     }
+  });
+
+  it("takes the closing moment as a date and time in a chosen Indonesian time zone, WIB by default", () => {
+    expect(findField(Jobs.fields, "closingDate")).toMatchObject({
+      type: "date",
+      admin: { date: { pickerAppearance: "dayAndTime" } },
+      timezone: {
+        required: true,
+        defaultTimezone: "Asia/Jakarta",
+        supportedTimezones: [
+          { value: "Asia/Jakarta" },
+          { value: "Asia/Makassar" },
+          { value: "Asia/Jayapura" },
+        ],
+      },
+    });
   });
 
   it("localizes the fields marked L only", () => {
