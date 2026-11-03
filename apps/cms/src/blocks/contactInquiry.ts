@@ -49,6 +49,9 @@ export function isConsentEmpty(value: unknown): boolean {
   return !hasText(root);
 }
 
+export const CONSENT_CHECK_FAILED =
+  "Couldn't check the consent text in the other languages. Try publishing again.";
+
 export function consentMissingMessage(missing: readonly string[]): string {
   const names = new Intl.DisplayNames(["en"], { type: "language" });
   const languages = missing.map((code) => names.of(code) ?? code).join(" and ");
@@ -97,7 +100,7 @@ export const validateConsent: RichTextFieldValidation = async (value, args) => {
           known[code] = block?.form?.consentText?.[code];
         }
       } catch {
-        return true;
+        return CONSENT_CHECK_FAILED;
       }
     }
   }
@@ -146,7 +149,7 @@ const formFields: Field[] = [
     type: "group",
     admin: {
       description:
-        "The five fields are fixed under UU PDP: change their wording, not add, remove or make them optional.",
+        "The fields are fixed under UU PDP (data minimisation). You can change their wording, not add, remove or make them optional.",
     },
     fields: CONTACT_FORM_FIELDS.map(wordingGroup),
   },

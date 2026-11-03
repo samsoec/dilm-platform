@@ -7,7 +7,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
       (SELECT count(*) FROM "shared_detail_templates_hot_hotspots") +
       (SELECT count(*) FROM "__shared_detail_templates_v_hot_v") +
       (SELECT count(*) FROM "__shared_detail_templates_v_hot_v_hotspots") AS total`)
-  if (Number(held.rows[0]?.total) > 0) {
+  const total = Number(held.rows?.[0]?.total)
+  if (!(total === 0)) {
     throw new Error(
       'Hotspot blocks exist on shared detail templates; remove them before this migration',
     )

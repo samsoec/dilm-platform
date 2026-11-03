@@ -3157,7 +3157,7 @@ export interface ContactInquiryBlock {
     title?: string | null;
     description?: string | null;
     /**
-     * The five fields are fixed under UU PDP: change their wording, not add, remove or make them optional.
+     * The fields are fixed under UU PDP (data minimisation). You can change their wording, not add, remove or make them optional.
      */
     fields: {
       /**

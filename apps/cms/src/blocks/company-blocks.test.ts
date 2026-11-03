@@ -35,6 +35,7 @@ import {
 } from "../fields/recordPicks";
 import { findField, subfields } from "../testing";
 import {
+  CONSENT_CHECK_FAILED,
   consentEditor,
   consentMissingMessage,
   isConsentEmpty,
@@ -516,6 +517,36 @@ describe("the consent gate (US-BLD-9.4)", () => {
     expect(await run({ en: lexical("I agree"), id: empty }).result).toBe(
       consentMissingMessage(["id"]),
     );
+  });
+
+  it("refuses to publish when the saved draft can't be read, instead of letting it through", async () => {
+    const result = await validateConsent(
+      lexical("I agree") as never,
+      {
+        id: 7,
+        collectionSlug: "pages",
+        blockData: { id: "blk" },
+        req: {
+          locale: "en",
+          t: (key: string) => key,
+          payload: {
+            findByID: async () => {
+              throw new Error("connection lost");
+            },
+          },
+        },
+      } as never,
+    );
+    expect(result).toBe(CONSENT_CHECK_FAILED);
+  });
+
+  it("under locale all refuses a blank language and accepts two filled ones", async () => {
+    const blank = { en: lexical("I agree"), id: lexical("  ") };
+    const filled = { en: lexical("I agree"), id: lexical("Saya setuju") };
+    expect(await run(blank, { locale: "all" }).result).toBe(
+      consentMissingMessage(["id"]),
+    );
+    expect(await run(filled, { locale: "all" }).result).toBe(true);
   });
 
   it("treats a new page, or a block that was never saved, as missing the other language", async () => {
