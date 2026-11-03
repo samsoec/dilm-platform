@@ -11,6 +11,12 @@ import {
   rejectOversizedCascade,
 } from "../pathCascade";
 import { keepSingleHome, protectHome } from "../pageRules";
+import {
+  beginLiveChange,
+  revalidateOnDelete,
+  revalidateOnLiveChange,
+} from "../publishRevalidation";
+import { stubRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import {
   keepBasePagesOnDelete,
@@ -39,8 +45,18 @@ export const SharedPages = withTrashedBy(
         rejectTokensOutsideTemplates,
       ],
       beforeDelete: [protectHome, keepBasePagesOnDelete, removeRoutes],
-      beforeChange: [rejectOversizedCascade, freshBreadcrumbIds],
-      afterChange: [keepBasePagesPublished, cascadePathChange, syncRoutes],
+      beforeChange: [
+        rejectOversizedCascade,
+        freshBreadcrumbIds,
+        beginLiveChange,
+      ],
+      afterChange: [
+        keepBasePagesPublished,
+        cascadePathChange,
+        syncRoutes,
+        revalidateOnLiveChange(stubRevalidator),
+      ],
+      afterDelete: [revalidateOnDelete(stubRevalidator)],
     },
     admin: {
       group: navGroup("content"),

@@ -30,8 +30,10 @@ function harness(findByID?: (args: { id: number | string }) => unknown) {
         return found;
       }),
   );
+  const find = vi.fn(async () => ({ docs: [] }));
   const req = {
-    payload: { logger, findByID: lookup },
+    payload: { logger, findByID: lookup, find },
+    context: {},
   } as unknown as PayloadRequest;
   const run = (hook: CollectionAfterChangeHook, doc: object, slug = "header") =>
     hook({
@@ -67,6 +69,7 @@ describe("layout tag and purge scope", () => {
     expect(
       layoutChange({ slug: "likutelaga", host: "likutelaga.com" }),
     ).toEqual({
+      reason: "layout",
       tags: ["layout:likutelaga"],
       purge: [
         { host: "likutelaga.com", pathPrefix: "/en/" },
@@ -103,6 +106,7 @@ describe("revalidateTenantLayout", () => {
     expect(revalidate).toHaveBeenCalledTimes(1);
     expect(revalidate).toHaveBeenCalledWith(
       {
+        reason: "layout",
         tags: ["layout:duniakimia"],
         purge: [
           { host: "duniakimia.com", pathPrefix: "/en/" },
@@ -110,6 +114,7 @@ describe("revalidateTenantLayout", () => {
         ],
       },
       logger,
+      { req: expect.objectContaining({ payload: expect.anything() }) },
     );
   });
 
@@ -241,6 +246,7 @@ describe("stub revalidator", () => {
     expect(logger.info).toHaveBeenCalledTimes(1);
     expect(logger.info).toHaveBeenCalledWith(
       {
+        reason: "layout",
         tags: ["layout:indonesianacids"],
         purge: [
           { host: "indonesianacids.com", pathPrefix: "/en/" },
@@ -286,8 +292,8 @@ describe("collection wiring", () => {
     expect(Footer.versions).toEqual({ drafts: false });
   });
 
-  it("keeps the hook last so the routing cascade runs first", () => {
+  it("keeps the revalidation hooks last so the routing cascade runs first", () => {
     expect(hookOf(TenantSettings.hooks!.afterChange)).toBeTypeOf("function");
-    expect(TenantSettings.hooks!.afterChange).toHaveLength(2);
+    expect(TenantSettings.hooks!.afterChange).toHaveLength(3);
   });
 });

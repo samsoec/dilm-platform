@@ -88,6 +88,7 @@ export interface Config {
     'detail-templates': DetailTemplate;
     'shared-detail-templates': SharedDetailTemplate;
     routes: Route;
+    'refresh-status': RefreshStatus;
     redirects: Redirect;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -118,6 +119,7 @@ export interface Config {
     'detail-templates': DetailTemplatesSelect<false> | DetailTemplatesSelect<true>;
     'shared-detail-templates': SharedDetailTemplatesSelect<false> | SharedDetailTemplatesSelect<true>;
     routes: RoutesSelect<false> | RoutesSelect<true>;
+    'refresh-status': RefreshStatusSelect<false> | RefreshStatusSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -4988,6 +4990,30 @@ export interface Route {
   createdAt: string;
 }
 /**
+ * Whether the website was told about the last published change to each page, record or template. Written by the system.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "refresh-status".
+ */
+export interface RefreshStatus {
+  id: number;
+  collection: string;
+  docId: string;
+  status: 'ok' | 'failed';
+  at: string;
+  hosts?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -5157,6 +5183,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'routes';
         value: number | Route;
+      } | null)
+    | ({
+        relationTo: 'refresh-status';
+        value: number | RefreshStatus;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -7640,6 +7670,19 @@ export interface RoutesSelect<T extends boolean = true> {
   path?: T;
   doc?: T;
   refs?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "refresh-status_select".
+ */
+export interface RefreshStatusSelect<T extends boolean = true> {
+  collection?: T;
+  docId?: T;
+  status?: T;
+  at?: T;
+  hosts?: T;
   updatedAt?: T;
   createdAt?: T;
 }

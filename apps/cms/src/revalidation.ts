@@ -1,4 +1,8 @@
-import type { CollectionAfterChangeHook, Payload } from "payload";
+import type {
+  CollectionAfterChangeHook,
+  Payload,
+  PayloadRequest,
+} from "payload";
 
 import { normalizeDomain } from "./fields/linkResolve";
 import { localization } from "./localization";
@@ -19,15 +23,37 @@ type TenantRef =
 export type PurgePrefix = {
   host: string;
   pathPrefix: string;
+  exact?: boolean;
 };
+
+export type RevalidationReason =
+  | "layout"
+  | "publish"
+  | "update"
+  | "move"
+  | "unpublish"
+  | "trash"
+  | "delete"
+  | "template"
+  | "settings";
 
 export type RevalidationChange = {
   tags: string[];
   purge: PurgePrefix[];
+  collection?: string;
+  reason?: RevalidationReason;
+};
+
+export type RevalidationContext = {
+  req?: Partial<PayloadRequest>;
 };
 
 export type Revalidator = {
-  revalidate(change: RevalidationChange, logger: Logger): Promise<void>;
+  revalidate(
+    change: RevalidationChange,
+    logger: Logger,
+    context?: RevalidationContext,
+  ): Promise<void>;
 };
 
 export type TenantIdentity = {
@@ -50,6 +76,7 @@ export function layoutChange(
   locales: readonly string[] = localization.locales,
 ): RevalidationChange {
   return {
+    reason: "layout",
     tags: [layoutTag(tenant.slug)],
     purge: localePrefixes(locales).map((pathPrefix) => ({
       host: tenant.host,
@@ -62,7 +89,12 @@ export function layoutChange(
 export const stubRevalidator: Revalidator = {
   async revalidate(change, logger) {
     logger.info(
-      { tags: change.tags, purge: change.purge },
+      {
+        tags: change.tags,
+        purge: change.purge,
+        collection: change.collection,
+        reason: change.reason,
+      },
       "Revalidation (stubbed until DILM-32)",
     );
   },
@@ -116,7 +148,7 @@ export function revalidateTenantLayout(
       }
       const change = layoutChange(tenant);
       try {
-        await revalidator.revalidate(change, logger);
+        await revalidator.revalidate(change, logger, { req });
       } catch (error) {
         logger.error(
           {
