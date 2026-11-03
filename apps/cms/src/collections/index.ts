@@ -16,6 +16,7 @@ import { Products } from "./Products";
 import { Routes } from "./Routes";
 import { SharedDetailTemplates } from "./SharedDetailTemplates";
 import { SharedPages } from "./SharedPages";
+import { SiteMessages } from "./SiteMessages";
 import { SiteRouting } from "./SiteRouting";
 import { Solutions } from "./Solutions";
 import { TenantSettings } from "./TenantSettings";
@@ -33,6 +34,7 @@ export const collections = [
   CvSubmissions,
   Header,
   Footer,
+  SiteMessages,
   Pages,
   SharedPages,
   Products,

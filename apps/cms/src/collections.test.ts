@@ -49,6 +49,7 @@ const TENANT_SCOPED = [
   "cv-submissions",
   "header",
   "footer",
+  "site-messages",
   "pages",
   "jobs",
   "posts",
@@ -137,7 +138,7 @@ describe("the collections", () => {
     for (const { slug } of ALL) {
       expect(collection(slug).slug).toBe(slug);
     }
-    expect(ALL).toHaveLength(20);
+    expect(ALL).toHaveLength(21);
   });
 
   it("put every content collection under a required tenant", async () => {
@@ -231,6 +232,7 @@ describe("the sidebar navigation (FR-UI-01 to FR-UI-03)", () => {
     ).toEqual({
       header: "web_asset",
       footer: "call_to_action",
+      "site-messages": "notifications",
       "cv-submissions": "badge",
       "consent-logs": "verified_user",
       "ir-documents": "description",

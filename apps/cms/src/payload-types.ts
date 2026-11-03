@@ -77,6 +77,7 @@ export interface Config {
     'cv-submissions': CvSubmission;
     header: Header;
     footer: Footer;
+    'site-messages': SiteMessage;
     pages: Page;
     'shared-pages': SharedPage;
     products: Product;
@@ -106,6 +107,7 @@ export interface Config {
     'cv-submissions': CvSubmissionsSelect<false> | CvSubmissionsSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'site-messages': SiteMessagesSelect<false> | SiteMessagesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     'shared-pages': SharedPagesSelect<false> | SharedPagesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
@@ -1579,6 +1581,96 @@ export interface Footer {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-messages".
+ */
+export interface SiteMessage {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  notFound: {
+    code?: string | null;
+    title: string;
+    description?: string | null;
+    buttons?:
+      | {
+          link: {
+            type: 'internal' | 'external' | 'reference';
+            newTab?: boolean | null;
+            /**
+             * Start with /. The site adds the language.
+             */
+            internalPath?: string | null;
+            /**
+             * A full address starting with https://
+             */
+            externalUrl?: string | null;
+            /**
+             * Follows the page or record if it is renamed or moved. Only published ones are offered.
+             */
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'shared-pages';
+                  value: number | SharedPage;
+                } | null)
+              | ({
+                  relationTo: 'products';
+                  value: number | Product;
+                } | null)
+              | ({
+                  relationTo: 'solutions';
+                  value: number | Solution;
+                } | null)
+              | ({
+                  relationTo: 'jobs';
+                  value: number | Job;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'categories';
+                  value: number | Category;
+                } | null);
+            label?: string | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  cookieBanner: {
+    title: string;
+    /**
+     * Link this text to your Cookie Policy page. It can't be saved without that link.
+     */
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    acceptLabel: string;
+    rejectLabel: string;
+    policyVersion?: string | null;
+  };
+  updatedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * One layout for all of this company's jobs, one for its posts and one for its categories.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1796,6 +1888,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'footer';
         value: number | Footer;
+      } | null)
+    | ({
+        relationTo: 'site-messages';
+        value: number | SiteMessage;
       } | null)
     | ({
         relationTo: 'pages';
@@ -2333,6 +2429,47 @@ export interface FooterSelect<T extends boolean = true> {
             };
       };
   copyright?: T;
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-messages_select".
+ */
+export interface SiteMessagesSelect<T extends boolean = true> {
+  tenant?: T;
+  notFound?:
+    | T
+    | {
+        code?: T;
+        title?: T;
+        description?: T;
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    internalPath?: T;
+                    externalUrl?: T;
+                    reference?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+      };
+  cookieBanner?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        acceptLabel?: T;
+        rejectLabel?: T;
+        policyVersion?: T;
+      };
   updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;
