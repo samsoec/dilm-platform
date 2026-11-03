@@ -1,12 +1,13 @@
 import { readPublishedOrMembers, superAdmins, tenantMembers } from "../access";
 import { collectionLabels } from "../admin/labels";
 import { navGroup } from "../admin/navGroups";
+import { pageBlocks } from "../blocks";
 import {
   allowTemplateTokens,
   keepOneTemplatePerType,
   sharedRecordTypeOptions,
 } from "../detailTemplates";
-import { layoutField } from "../fields/layout";
+import { LAYOUT_EXCLUSIONS, layoutField } from "../fields/layout";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 
@@ -40,6 +41,6 @@ export const SharedDetailTemplates = withUpdatedBy({
       unique: true,
       options: sharedRecordTypeOptions,
     },
-    layoutField(),
+    layoutField(pageBlocks, LAYOUT_EXCLUSIONS["shared-detail-templates"]),
   ],
 });
