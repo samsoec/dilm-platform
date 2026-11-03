@@ -100,3 +100,11 @@ jobs:
             git status --porcelain apps/cms/src/migrations
             exit 1
           fi
+
+      - name: Seed the starting site twice on a scratch database
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: payload_app
+          PGPASSWORD: payload_app
+        run: apps/cms/scripts/test-seed-pages.sh

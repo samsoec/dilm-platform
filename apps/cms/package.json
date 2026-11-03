@@ -16,6 +16,7 @@
     "payload": "node --env-file-if-exists=../../.env node_modules/payload/bin.js",
     "seed:cv-samples": "pnpm payload run src/seed/seed-cv-samples.ts",
     "seed:layout": "pnpm payload run src/seed/seed-layout.ts",
+    "seed:pages": "pnpm payload run src/seed/seed-pages.ts",
     "seed:tenants": "pnpm payload run src/seed/seed-tenants.ts",
     "smoke:overrides": "node scripts/smoke-overrides.mjs",
     "start": "next start",

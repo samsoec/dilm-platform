@@ -269,6 +269,24 @@ is reported as `skipped`, so re-running it keeps every editor change. It
 exits non-zero if any of the three tenants is missing; run `seed:tenants`
 first.
 
+**Seed the pages** after the tenants (and the layout):
+
+```bash
+pnpm --filter cms seed:pages
+```
+
+It builds the starting site from the Figma prototype: the shared pages, the
+three categories, the product, solution, job, post and category templates
+and, per company, 13 pages, the career and publication routing and the site
+messages. It is meant for a fresh, empty site, like the other seeds. Pages
+are matched by path, so a page an editor renamed or moved is created again
+on the next run, and a crash between a page's English draft and its
+Indonesian copy or publication leaves an English-only draft that later runs
+skip. Required photos hold a generated grey placeholder, Home and Privacy
+Policy stay drafts, and the other two companies get neutral wording instead
+of Dunia Kimia Utama's facts. `apps/cms/scripts/test-seed-pages.sh` runs the
+seed twice on a scratch database and checks it.
+
 **Sign-in lockout.** Admin and editor accounts use Payload's built-in
 email/password login. After 5 wrong passwords in a row an account is locked
 for 10 minutes, even for the right password (Backend Spec §7.4). A Super
