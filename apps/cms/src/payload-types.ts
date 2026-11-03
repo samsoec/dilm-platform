@@ -454,7 +454,7 @@ export interface Header {
     | {
         type: 'link' | 'dropdown';
         link?: {
-          type: 'internal' | 'external';
+          type: 'internal' | 'external' | 'reference';
           newTab?: boolean | null;
           /**
            * Start with /. The site adds the language.
@@ -464,13 +464,45 @@ export interface Header {
            * A full address starting with https://
            */
           externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
           label?: string | null;
         };
         label?: string | null;
         children?:
           | {
               link: {
-                type: 'internal' | 'external';
+                type: 'internal' | 'external' | 'reference';
                 newTab?: boolean | null;
                 /**
                  * Start with /. The site adds the language.
@@ -480,6 +512,38 @@ export interface Header {
                  * A full address starting with https://
                  */
                 externalUrl?: string | null;
+                /**
+                 * Follows the page or record if it is renamed or moved. Only published ones are offered.
+                 */
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'shared-pages';
+                      value: number | SharedPage;
+                    } | null)
+                  | ({
+                      relationTo: 'products';
+                      value: number | Product;
+                    } | null)
+                  | ({
+                      relationTo: 'solutions';
+                      value: number | Solution;
+                    } | null)
+                  | ({
+                      relationTo: 'jobs';
+                      value: number | Job;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'categories';
+                      value: number | Category;
+                    } | null);
                 label?: string | null;
               };
               id?: string | null;
@@ -499,7 +563,7 @@ export interface Header {
      */
     enabled?: boolean | null;
     link?: {
-      type: 'internal' | 'external';
+      type: 'internal' | 'external' | 'reference';
       newTab?: boolean | null;
       /**
        * Start with /. The site adds the language.
@@ -509,119 +573,41 @@ export interface Header {
        * A full address starting with https://
        */
       externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
       label?: string | null;
     };
   };
-  updatedBy?: (number | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "footer".
- */
-export interface Footer {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  ctaBand: {
-    eyebrow?: string | null;
-    /**
-     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
-     */
-    heading?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    primaryButton: {
-      type: 'internal' | 'external';
-      newTab?: boolean | null;
-      /**
-       * Start with /. The site adds the language.
-       */
-      internalPath?: string | null;
-      /**
-       * A full address starting with https://
-       */
-      externalUrl?: string | null;
-      label?: string | null;
-    };
-    secondaryButton: {
-      type: 'internal' | 'external';
-      newTab?: boolean | null;
-      /**
-       * Start with /. The site adds the language.
-       */
-      internalPath?: string | null;
-      /**
-       * A full address starting with https://
-       */
-      externalUrl?: string | null;
-      label?: string | null;
-    };
-  };
-  /**
-   * Drag to reorder.
-   */
-  linkColumns?:
-    | {
-        title: string;
-        links?:
-          | {
-              link: {
-                type: 'internal' | 'external';
-                newTab?: boolean | null;
-                /**
-                 * Start with /. The site adds the language.
-                 */
-                internalPath?: string | null;
-                /**
-                 * A full address starting with https://
-                 */
-                externalUrl?: string | null;
-                label?: string | null;
-              };
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  partOf?: {
-    /**
-     * Hidden on the site. Turn on to show a parent-company logo.
-     */
-    enabled?: boolean | null;
-    label?: string | null;
-    logo?: (number | null) | Media;
-    link?: {
-      type: 'internal' | 'external';
-      newTab?: boolean | null;
-      /**
-       * Start with /. The site adds the language.
-       */
-      internalPath?: string | null;
-      /**
-       * A full address starting with https://
-       */
-      externalUrl?: string | null;
-      label?: string | null;
-    };
-  };
-  /**
-   * Use {year} for the current year and {legalName} for the company's legal name from Company settings, e.g. Copyright © {year} {legalName}. All Rights Reserved.
-   */
-  copyright?: string | null;
   updatedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -651,7 +637,7 @@ export interface Page {
    */
   slugFallback?: boolean | null;
   redirectTo: {
-    type: 'internal' | 'external';
+    type: 'internal' | 'external' | 'reference';
     newTab?: boolean | null;
     /**
      * Start with /. The site adds the language.
@@ -661,6 +647,38 @@ export interface Page {
      * A full address starting with https://
      */
     externalUrl?: string | null;
+    /**
+     * Follows the page or record if it is renamed or moved. Only published ones are offered.
+     */
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'shared-pages';
+          value: number | SharedPage;
+        } | null)
+      | ({
+          relationTo: 'products';
+          value: number | Product;
+        } | null)
+      | ({
+          relationTo: 'solutions';
+          value: number | Solution;
+        } | null)
+      | ({
+          relationTo: 'jobs';
+          value: number | Job;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'categories';
+          value: number | Category;
+        } | null);
   };
   /**
    * A page holds at most 30 sections.
@@ -713,7 +731,7 @@ export interface SharedPage {
    */
   slugFallback?: boolean | null;
   redirectTo: {
-    type: 'internal' | 'external';
+    type: 'internal' | 'external' | 'reference';
     newTab?: boolean | null;
     /**
      * Start with /. The site adds the language.
@@ -723,6 +741,38 @@ export interface SharedPage {
      * A full address starting with https://
      */
     externalUrl?: string | null;
+    /**
+     * Follows the page or record if it is renamed or moved. Only published ones are offered.
+     */
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'shared-pages';
+          value: number | SharedPage;
+        } | null)
+      | ({
+          relationTo: 'products';
+          value: number | Product;
+        } | null)
+      | ({
+          relationTo: 'solutions';
+          value: number | Solution;
+        } | null)
+      | ({
+          relationTo: 'jobs';
+          value: number | Job;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'categories';
+          value: number | Category;
+        } | null);
   };
   /**
    * A page holds at most 30 sections.
@@ -1233,6 +1283,244 @@ export interface Category {
   createdAt: string;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  ctaBand: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    heading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    primaryButton: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+    secondaryButton: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+  };
+  /**
+   * Drag to reorder.
+   */
+  linkColumns?:
+    | {
+        title: string;
+        links?:
+          | {
+              link: {
+                type: 'internal' | 'external' | 'reference';
+                newTab?: boolean | null;
+                /**
+                 * Start with /. The site adds the language.
+                 */
+                internalPath?: string | null;
+                /**
+                 * A full address starting with https://
+                 */
+                externalUrl?: string | null;
+                /**
+                 * Follows the page or record if it is renamed or moved. Only published ones are offered.
+                 */
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'shared-pages';
+                      value: number | SharedPage;
+                    } | null)
+                  | ({
+                      relationTo: 'products';
+                      value: number | Product;
+                    } | null)
+                  | ({
+                      relationTo: 'solutions';
+                      value: number | Solution;
+                    } | null)
+                  | ({
+                      relationTo: 'jobs';
+                      value: number | Job;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'categories';
+                      value: number | Category;
+                    } | null);
+                label?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  partOf?: {
+    /**
+     * Hidden on the site. Turn on to show a parent-company logo.
+     */
+    enabled?: boolean | null;
+    label?: string | null;
+    logo?: (number | null) | Media;
+    link?: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+  };
+  /**
+   * Use {year} for the current year and {legalName} for the company's legal name from Company settings, e.g. Copyright © {year} {legalName}. All Rights Reserved.
+   */
+  copyright?: string | null;
+  updatedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * The public address of every published page, written by the system when a page is saved.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1298,7 +1586,7 @@ export interface Redirect {
    */
   from: string;
   to: {
-    type: 'internal' | 'external';
+    type: 'internal' | 'external' | 'reference';
     newTab?: boolean | null;
     /**
      * Start with /. The site adds the language.
@@ -1308,6 +1596,38 @@ export interface Redirect {
      * A full address starting with https://
      */
     externalUrl?: string | null;
+    /**
+     * Follows the page or record if it is renamed or moved. Only published ones are offered.
+     */
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'shared-pages';
+          value: number | SharedPage;
+        } | null)
+      | ({
+          relationTo: 'products';
+          value: number | Product;
+        } | null)
+      | ({
+          relationTo: 'solutions';
+          value: number | Solution;
+        } | null)
+      | ({
+          relationTo: 'jobs';
+          value: number | Job;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'categories';
+          value: number | Category;
+        } | null);
   };
   /**
    * Leave empty to apply to all three sites.
@@ -1763,6 +2083,7 @@ export interface HeaderSelect<T extends boolean = true> {
               newTab?: T;
               internalPath?: T;
               externalUrl?: T;
+              reference?: T;
               label?: T;
             };
         label?: T;
@@ -1776,6 +2097,7 @@ export interface HeaderSelect<T extends boolean = true> {
                     newTab?: T;
                     internalPath?: T;
                     externalUrl?: T;
+                    reference?: T;
                     label?: T;
                   };
               id?: T;
@@ -1795,6 +2117,7 @@ export interface HeaderSelect<T extends boolean = true> {
               newTab?: T;
               internalPath?: T;
               externalUrl?: T;
+              reference?: T;
               label?: T;
             };
       };
@@ -1820,6 +2143,7 @@ export interface FooterSelect<T extends boolean = true> {
               newTab?: T;
               internalPath?: T;
               externalUrl?: T;
+              reference?: T;
               label?: T;
             };
         secondaryButton?:
@@ -1829,6 +2153,7 @@ export interface FooterSelect<T extends boolean = true> {
               newTab?: T;
               internalPath?: T;
               externalUrl?: T;
+              reference?: T;
               label?: T;
             };
       };
@@ -1846,6 +2171,7 @@ export interface FooterSelect<T extends boolean = true> {
                     newTab?: T;
                     internalPath?: T;
                     externalUrl?: T;
+                    reference?: T;
                     label?: T;
                   };
               id?: T;
@@ -1865,6 +2191,7 @@ export interface FooterSelect<T extends boolean = true> {
               newTab?: T;
               internalPath?: T;
               externalUrl?: T;
+              reference?: T;
               label?: T;
             };
       };
@@ -1891,6 +2218,7 @@ export interface PagesSelect<T extends boolean = true> {
         newTab?: T;
         internalPath?: T;
         externalUrl?: T;
+        reference?: T;
       };
   layout?: T | {};
   updatedBy?: T;
@@ -1932,6 +2260,7 @@ export interface SharedPagesSelect<T extends boolean = true> {
         newTab?: T;
         internalPath?: T;
         externalUrl?: T;
+        reference?: T;
       };
   layout?: T | {};
   updatedBy?: T;
@@ -2215,6 +2544,7 @@ export interface RedirectsSelect<T extends boolean = true> {
         newTab?: T;
         internalPath?: T;
         externalUrl?: T;
+        reference?: T;
       };
   tenant?: T;
   locale?: T;

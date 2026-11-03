@@ -39,6 +39,10 @@ export const NavTypeField: RadioFieldClientComponent = ({
   const externalUrl = useFormFields(
     ([fields]) => fields[`${row}.link.externalUrl`]?.value as string | null,
   );
+  const reference = useFormFields(
+    ([fields]) =>
+      fields[`${row}.link.reference`]?.value as LinkValue["reference"],
+  );
   const linkLabel = useFormFields(
     ([fields]) => fields[`${row}.link.label`]?.value as string | undefined,
   );
@@ -53,6 +57,7 @@ export const NavTypeField: RadioFieldClientComponent = ({
     type: linkType,
     internalPath,
     externalUrl,
+    reference,
     label: linkLabel,
   };
   const { openModal } = useModal();
@@ -73,6 +78,11 @@ export const NavTypeField: RadioFieldClientComponent = ({
       dispatch({
         type: "UPDATE",
         path: `${row}.link.externalUrl`,
+        value: null,
+      });
+      dispatch({
+        type: "UPDATE",
+        path: `${row}.link.reference`,
         value: null,
       });
     } else {
