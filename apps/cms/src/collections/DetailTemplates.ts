@@ -9,6 +9,12 @@ import {
 import { layoutField } from "../fields/layout";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { withTenantAccess } from "../tenancy";
+import {
+  captureTemplateRow,
+  revalidateTemplate,
+  revalidateTemplateOnDelete,
+} from "../publishRevalidation";
+import { stubRevalidator } from "../revalidation";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 
 export const DetailTemplates = withTenantAccess(
@@ -20,7 +26,12 @@ export const DetailTemplates = withTenantAccess(
       delete: tenantEditors,
     },
     versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
-    hooks: { beforeValidate: [keepOneTemplatePerType, allowTemplateTokens] },
+    hooks: {
+      beforeValidate: [keepOneTemplatePerType, allowTemplateTokens],
+      beforeChange: [captureTemplateRow],
+      afterChange: [revalidateTemplate("tenant", stubRevalidator)],
+      afterDelete: [revalidateTemplateOnDelete("tenant", stubRevalidator)],
+    },
     indexes: [{ fields: ["tenant", "recordType"], unique: true }],
     admin: {
       group: navGroup("content"),

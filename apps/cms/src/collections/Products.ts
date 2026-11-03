@@ -16,6 +16,12 @@ import { withMediaPicker } from "../fields/mediaPicker";
 import { recordAddressFields } from "../fields/recordFields";
 import { keepRowStructure, lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
+import {
+  beginLiveChange,
+  revalidateOnDelete,
+  revalidateOnLiveChange,
+} from "../publishRevalidation";
+import { stubRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import { requireBase } from "../siteRouting";
 import { CATALOG_SCOPE, withTenantAccess } from "../tenancy";
@@ -181,8 +187,13 @@ export const Products = withTenantAccess(
       versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
       trash: true,
       hooks: {
-        beforeChange: [requireBase("products"), keepRowStructure],
-        afterChange: [syncRoutes],
+        beforeChange: [
+          requireBase("products"),
+          keepRowStructure,
+          beginLiveChange,
+        ],
+        afterChange: [syncRoutes, revalidateOnLiveChange(stubRevalidator)],
+        afterDelete: [revalidateOnDelete(stubRevalidator)],
         beforeDelete: [removeRoutes],
       },
       admin: {

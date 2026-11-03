@@ -13,6 +13,7 @@ import { Media } from "./Media";
 import { Pages } from "./Pages";
 import { Posts } from "./Posts";
 import { Products } from "./Products";
+import { RefreshStatus } from "./RefreshStatus";
 import { Routes } from "./Routes";
 import { SharedDetailTemplates } from "./SharedDetailTemplates";
 import { SharedPages } from "./SharedPages";
@@ -45,6 +46,7 @@ export const collections = [
   DetailTemplates,
   SharedDetailTemplates,
   Routes,
+  RefreshStatus,
 ];
 
 export const globals: GlobalConfig[] = [SiteRouting];

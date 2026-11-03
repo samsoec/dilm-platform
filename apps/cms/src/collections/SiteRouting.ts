@@ -2,6 +2,8 @@ import type { GlobalConfig } from "payload";
 
 import { superAdmins, tenantMembers } from "../access";
 import { navGroup } from "../admin/navGroups";
+import { revalidateRoutingMoves } from "../publishRevalidation";
+import { stubRevalidator } from "../revalidation";
 import {
   cascadeSiteRouting,
   checkSiteRouting,
@@ -16,7 +18,7 @@ export const SiteRouting: GlobalConfig = {
   custom: { nav: { icon: "link", order: 2 } },
   hooks: {
     beforeChange: [checkSiteRouting],
-    afterChange: [cascadeSiteRouting],
+    afterChange: [cascadeSiteRouting, revalidateRoutingMoves(stubRevalidator)],
   },
   fields: [
     {

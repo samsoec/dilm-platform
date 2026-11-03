@@ -82,6 +82,10 @@ export const COLLECTION_LABELS = {
     singular: { en: "Route", id: "Rute" },
     plural: { en: "Routes", id: "Rute" },
   },
+  "refresh-status": {
+    singular: { en: "Site refresh", id: "Penyegaran situs" },
+    plural: { en: "Site refreshes", id: "Penyegaran situs" },
+  },
   redirects: {
     singular: { en: "Redirect", id: "Pengalihan" },
     plural: { en: "Redirects", id: "Pengalihan" },

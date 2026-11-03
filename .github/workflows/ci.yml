@@ -101,7 +101,7 @@ jobs:
             exit 1
           fi
 
-      - name: Seed the starting site twice on a scratch database
+      - name: Seed the starting site twice and run the revalidation tests on scratch databases
         env:
           PGHOST: localhost
           PGPORT: 5432

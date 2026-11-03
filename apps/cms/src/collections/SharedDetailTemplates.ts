@@ -9,6 +9,12 @@ import {
 } from "../detailTemplates";
 import { LAYOUT_EXCLUSIONS, layoutField } from "../fields/layout";
 import { withUpdatedBy } from "../fields/updatedBy";
+import {
+  captureTemplateRow,
+  revalidateTemplate,
+  revalidateTemplateOnDelete,
+} from "../publishRevalidation";
+import { stubRevalidator } from "../revalidation";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 
 export const SharedDetailTemplates = withUpdatedBy({
@@ -22,7 +28,12 @@ export const SharedDetailTemplates = withUpdatedBy({
     delete: superAdmins,
   },
   versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
-  hooks: { beforeValidate: [keepOneTemplatePerType, allowTemplateTokens] },
+  hooks: {
+    beforeValidate: [keepOneTemplatePerType, allowTemplateTokens],
+    beforeChange: [captureTemplateRow],
+    afterChange: [revalidateTemplate("shared", stubRevalidator)],
+    afterDelete: [revalidateTemplateOnDelete("shared", stubRevalidator)],
+  },
   admin: {
     group: navGroup("content"),
     useAsTitle: "recordType",

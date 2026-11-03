@@ -222,12 +222,66 @@ function sameRefs(a: unknown, b: string[]): boolean {
   );
 }
 
+export const ROUTE_CHANGES_KEY = "routeChanges";
+
+export type RouteSnapshot = {
+  tenant: string | null;
+  locale: string;
+  path: string;
+};
+
+export type NotedRouteChange = {
+  collection: RoutableCollection;
+  id: string;
+  before: RouteSnapshot[];
+  after: RouteSnapshot[];
+};
+
+function snapshot(row: {
+  tenant?: Ref | string | null;
+  locale: string;
+  path: string;
+}): RouteSnapshot {
+  return {
+    tenant: refId(row.tenant as Ref) ?? null,
+    locale: row.locale,
+    path: row.path,
+  };
+}
+
+function noteRouteChange(
+  req: Request,
+  collection: RoutableCollection,
+  id: number | string,
+  before: StoredRoute[],
+  after: RouteRow[],
+): void {
+  const context = req?.context;
+  if (!context) return;
+  const list = (context[ROUTE_CHANGES_KEY] ??= []) as NotedRouteChange[];
+  list.push({
+    collection,
+    id: String(id),
+    before: before.map(snapshot),
+    after: after.map(snapshot),
+  });
+}
+
 export async function removeRouteRows(
   payload: Payload,
   collection: RoutableCollection,
   id: number | string,
   req?: Request,
 ): Promise<void> {
+  if (req?.context) {
+    noteRouteChange(
+      req,
+      collection,
+      id,
+      await storedRoutes(payload, req, SELF_DOC(collection, id)),
+      [],
+    );
+  }
   await payload.delete({
     collection: "routes",
     where: SELF_DOC(collection, id),
@@ -271,6 +325,7 @@ export async function writeRouteRows(
     }
   }
 
+  noteRouteChange(req, collection, id, existing, rows);
   const wanted = new Set(rows.map((row) => row.locale));
   for (const stale of existing) {
     if (!wanted.has(stale.locale)) {

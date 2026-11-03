@@ -13,6 +13,12 @@ import {
   categoryNameField,
 } from "../fields/recordFields";
 import { lockStructure } from "../fields/structure";
+import {
+  beginLiveChange,
+  revalidateOnDelete,
+  revalidateOnLiveChange,
+} from "../publishRevalidation";
+import { stubRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 
 export const Categories: CollectionConfig = {
@@ -25,7 +31,14 @@ export const Categories: CollectionConfig = {
     delete: superAdmins,
   },
   hooks: {
-    afterChange: [redirectMovedPath, syncRoutes, cascadePostPaths],
+    beforeChange: [beginLiveChange],
+    afterChange: [
+      redirectMovedPath,
+      syncRoutes,
+      cascadePostPaths,
+      revalidateOnLiveChange(stubRevalidator),
+    ],
+    afterDelete: [revalidateOnDelete(stubRevalidator)],
     beforeDelete: [keepCategoriesWithPosts, removeRoutes],
   },
   admin: {

@@ -21,6 +21,7 @@ import {
   checkCompanyRouting,
   publishedPagesOfCompany,
 } from "../siteRouting";
+import { revalidateEntityReferrers } from "../publishRevalidation";
 import { revalidateTenantLayout, stubRevalidator } from "../revalidation";
 import { withTenantAccess } from "../tenancy";
 import {
@@ -110,6 +111,7 @@ export const TenantSettings = withTenantAccess(
       afterChange: [
         cascadeCompanyRouting,
         revalidateTenantLayout(stubRevalidator),
+        revalidateEntityReferrers(stubRevalidator),
       ],
     },
     custom: {

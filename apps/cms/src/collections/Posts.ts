@@ -11,6 +11,12 @@ import { postBodyField } from "../fields/postBody";
 import { postAddressFields } from "../fields/recordFields";
 import { lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
+import {
+  beginLiveChange,
+  revalidateOnDelete,
+  revalidateOnLiveChange,
+} from "../publishRevalidation";
+import { stubRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import { withTenantAccess } from "../tenancy";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
@@ -29,7 +35,13 @@ export const Posts = withTenantAccess(
       versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
       trash: true,
       hooks: {
-        afterChange: [redirectMovedPath, syncRoutes],
+        beforeChange: [beginLiveChange],
+        afterChange: [
+          redirectMovedPath,
+          syncRoutes,
+          revalidateOnLiveChange(stubRevalidator),
+        ],
+        afterDelete: [revalidateOnDelete(stubRevalidator)],
         beforeDelete: [removeRoutes],
       },
       admin: {

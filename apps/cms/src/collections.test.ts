@@ -138,7 +138,7 @@ describe("the collections", () => {
     for (const { slug } of ALL) {
       expect(collection(slug).slug).toBe(slug);
     }
-    expect(ALL).toHaveLength(21);
+    expect(ALL).toHaveLength(22);
   });
 
   it("put every content collection under a required tenant", async () => {
@@ -251,6 +251,7 @@ describe("the sidebar navigation (FR-UI-01 to FR-UI-03)", () => {
       "shared-detail-templates": "space_dashboard",
       "detail-templates": "space_dashboard",
       routes: "link",
+      "refresh-status": "link",
     });
   });
 
