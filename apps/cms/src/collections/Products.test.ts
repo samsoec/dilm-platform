@@ -279,9 +279,19 @@ describe("ownership of products and solutions (FR-PM-37, §4.12)", () => {
     expect(fieldOf(collection, "tenant")).toMatchObject({
       type: "relationship",
       relationTo: "tenants",
-      required: true,
       validate: expect.any(Function),
     });
+    const validate = (
+      fieldOf(collection, "tenant") as {
+        validate: (...args: unknown[]) => unknown;
+      }
+    ).validate;
+    expect(
+      await validate(undefined, {
+        req: { t: (key: string) => key },
+        required: true,
+      }),
+    ).not.toBe(true);
   });
 });
 
