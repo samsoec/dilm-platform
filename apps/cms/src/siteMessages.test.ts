@@ -215,6 +215,23 @@ describe("cookie banner body rule (MS-01, FR-PM-63)", () => {
       );
     });
 
+    it("refuses a map with no English body on create, but allows it on update", async () => {
+      const { req } = fakeReq(live, "all");
+      expect(await check({ id: body(pageLink(4)) }, req)).toBe(
+        COOKIE_POLICY_REQUIRED,
+      );
+      expect(
+        await check({ id: body(pageLink(4)) }, req, { tenant: 1 }, 9),
+      ).toBe(true);
+    });
+
+    it("refuses a map with a key that isn't a language", async () => {
+      const { req } = fakeReq(live, "all");
+      expect(await check({ en: blank, foo: body(pageLink(4)) }, req)).toBe(
+        COOKIE_POLICY_REQUIRED,
+      );
+    });
+
     it("refuses English text without the link even when the translation links", async () => {
       const { req } = fakeReq(live, "all");
       expect(

@@ -126,13 +126,9 @@ async function checkBody(
   return COOKIE_POLICY_REQUIRED;
 }
 
-function isLocaleMap(value: unknown): value is Record<string, unknown> {
-  return (
-    isRecord(value) &&
-    Object.keys(value).length > 0 &&
-    Object.keys(value).every((key) =>
-      (localization.locales as readonly string[]).includes(key),
-    )
+function hasOnlyLocaleKeys(value: Record<string, unknown>): boolean {
+  return Object.keys(value).every((key) =>
+    (localization.locales as readonly string[]).includes(key),
   );
 }
 
@@ -148,11 +144,14 @@ export const requireCookiePolicyLink: RichTextFieldValidation = async (
     id?: Ref;
   };
   const requested = req?.locale ?? localization.defaultLocale;
-  if (requested === "all" && isLocaleMap(value)) {
+  if (requested === "all" && isRecord(value) && !("root" in value)) {
+    if (!hasOnlyLocaleKeys(value)) return COOKIE_POLICY_REQUIRED;
     for (const [locale, body] of Object.entries(value)) {
       const result = await checkBody(body, locale, data, id, req);
       if (result !== true) return result;
     }
+    const hasDefault = localization.defaultLocale in value;
+    if (!hasDefault && idOf(id) === undefined) return COOKIE_POLICY_REQUIRED;
     return true;
   }
   const locale = requested === "all" ? localization.defaultLocale : requested;
