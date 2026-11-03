@@ -2,6 +2,7 @@ import {
   systemManagedField,
   trashByEditorsDeleteBySuperAdmins,
 } from "../access";
+import { keepLinkedDocuments, keepLinkedDocumentsOnDelete } from "../catalog";
 import { navGroup } from "../admin/navGroups";
 import { collectionLabels } from "../admin/labels";
 import { withTrashedBy, withUploadedBy } from "../fields/authoring";
@@ -21,6 +22,8 @@ export const Documents = withTenantAccess(
       trash: true,
       hooks: {
         beforeOperation: [checkDocumentUpload],
+        beforeValidate: [keepLinkedDocuments],
+        beforeDelete: [keepLinkedDocumentsOnDelete],
       },
       admin: {
         group: navGroup("media"),

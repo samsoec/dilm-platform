@@ -134,7 +134,7 @@ describe("the collections", () => {
     for (const { slug } of ALL) {
       expect(collection(slug).slug).toBe(slug);
     }
-    expect(ALL).toHaveLength(13);
+    expect(ALL).toHaveLength(15);
   });
 
   it("put every content collection under a required tenant", async () => {
@@ -238,6 +238,8 @@ describe("the sidebar navigation (FR-UI-01 to FR-UI-03)", () => {
       tenants: "domain",
       pages: "article",
       "shared-pages": "public",
+      products: "science",
+      solutions: "dashboard_customize",
       routes: "link",
     });
   });

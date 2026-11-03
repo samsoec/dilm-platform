@@ -4,10 +4,12 @@ import type {
   AccessResult,
   CollectionConfig,
   CollectionSlug,
+  Field,
   Plugin,
+  RelationshipField,
 } from "payload";
 
-import { isSuperAdmin, tenantContentAccess } from "./access";
+import { hasAnyRole, isSuperAdmin, tenantContentAccess } from "./access";
 import { Tenants } from "./collections/Tenants";
 
 export type TenantScope = NonNullable<
@@ -39,6 +41,59 @@ export function tenantScopedCollections(
   );
 }
 
+export const readAcrossCompanies: NonNullable<
+  TenantScope["accessResultOverride"]
+> = ({ accessKey, accessResult, req }) =>
+  (accessKey === "read" || accessKey === "readVersions") &&
+  accessResult !== false &&
+  hasAnyRole(req.user)
+    ? true
+    : accessResult;
+
+export const CATALOG_SCOPE: TenantScope = {
+  useBaseFilter: false,
+  accessResultOverride: readAcrossCompanies,
+};
+
+const UNSCOPED_FILTER_KEY = "unscopedFilterOptions";
+
+export function unscopedRelationship<T extends RelationshipField>(field: T): T {
+  return {
+    ...field,
+    custom: {
+      ...field.custom,
+      [UNSCOPED_FILTER_KEY]: field.filterOptions ?? true,
+    },
+  };
+}
+
+export function restoreUnscopedFilters(fields: Field[]): Field[] {
+  return fields.map((field) => {
+    if (field.type === "relationship" && field.custom?.[UNSCOPED_FILTER_KEY]) {
+      return {
+        ...field,
+        filterOptions: field.custom[UNSCOPED_FILTER_KEY],
+      } as Field;
+    }
+    if (field.type === "tabs") {
+      return {
+        ...field,
+        tabs: field.tabs.map((tab) => ({
+          ...tab,
+          fields: restoreUnscopedFilters(tab.fields),
+        })),
+      };
+    }
+    if ("fields" in field) {
+      return {
+        ...field,
+        fields: restoreUnscopedFilters(field.fields),
+      } as Field;
+    }
+    return field;
+  });
+}
+
 export function withSuperAdminAuthors({
   accessKey,
   accessResult,
@@ -53,7 +108,7 @@ export function withSuperAdminAuthors({
 }
 
 export function multiTenant(collections: CollectionConfig[]): Plugin {
-  return multiTenantPlugin({
+  const plugin = multiTenantPlugin({
     tenantsSlug: Tenants.slug,
     collections: tenantScopedCollections(collections),
     userHasAccessToAllTenants: isSuperAdmin,
@@ -61,4 +116,14 @@ export function multiTenant(collections: CollectionConfig[]): Plugin {
     useTenantsListFilter: false,
     useUsersTenantFilter: false,
   });
+  return async (config) => {
+    const configured = await plugin(config);
+    return {
+      ...configured,
+      collections: configured.collections?.map((collection) => ({
+        ...collection,
+        fields: restoreUnscopedFilters(collection.fields),
+      })),
+    };
+  };
 }
