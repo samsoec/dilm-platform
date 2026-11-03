@@ -11,6 +11,7 @@ import { lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { JOB_STATUSES, jobSuggestionsHandler } from "../jobs";
 import { removeRoutes, syncRoutes } from "../routeIndex";
+import { requireBase } from "../siteRouting";
 import { withTenantAccess } from "../tenancy";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 
@@ -41,7 +42,11 @@ export const Jobs = withTenantAccess(
       },
       versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
       trash: true,
-      hooks: { afterChange: [syncRoutes], beforeDelete: [removeRoutes] },
+      hooks: {
+        beforeChange: [requireBase("jobs")],
+        afterChange: [syncRoutes],
+        beforeDelete: [removeRoutes],
+      },
       endpoints: [
         {
           path: "/suggestions",

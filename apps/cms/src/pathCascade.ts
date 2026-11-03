@@ -66,7 +66,6 @@ export type RecordMoveSource = (args: {
   pages: MovedPage[];
 }) => Promise<RecordMove[]>;
 
-// TODO(DILM-106): register the site-routing and career-page sources once those settings exist.
 export const recordMoveSources: RecordMoveSource[] = [];
 
 export type PathChange = { slugs?: LocalizedSlugs; parent?: Ref };

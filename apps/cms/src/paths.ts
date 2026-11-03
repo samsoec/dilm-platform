@@ -154,6 +154,15 @@ export function recordClashMessage(
   return `${subject} by ${rival.company} already uses this URL. ${catalog}, so slugs must be unique.`;
 }
 
+export function catalogJobClashMessage(
+  path: string,
+  kind: "product" | "solution" | "job",
+  name: string,
+  company: string,
+): string {
+  return `${path} is already used by the ${kind} "${name}" on ${company}. Pick another slug.`;
+}
+
 export function categoryClashMessage(path: string, name: string): string {
   return `${path} is already the category "${name}". Pick another slug.`;
 }
@@ -460,6 +469,39 @@ export async function pathProblems(
               path,
               doc.title ?? "Untitled",
               names.get(refId(doc.tenant) ?? "") ?? "this company",
+            ),
+          });
+        }
+      }
+    }
+
+    if (job || record) {
+      const targets: ("products" | "solutions" | "jobs")[] = job
+        ? [...RECORD_COLLECTIONS]
+        : ["jobs"];
+      for (const target of targets) {
+        const rivals = await findAt(payload, req, target, locale, {
+          and: [matches],
+        });
+        if (rivals.length === 0) continue;
+        const names = await companyNames(
+          payload,
+          req,
+          rivals.map((doc) => refId(doc.tenant)!).filter(Boolean),
+        );
+        for (const doc of rivals) {
+          problems.push({
+            locale,
+            path,
+            message: catalogJobClashMessage(
+              path,
+              target === "products"
+                ? "product"
+                : target === "solutions"
+                  ? "solution"
+                  : "job",
+              doc.name ?? doc.title ?? "Untitled",
+              names.get(refId(doc.tenant) ?? "") ?? "another company",
             ),
           });
         }

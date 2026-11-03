@@ -14,6 +14,7 @@ import { Posts } from "./Posts";
 import { Products } from "./Products";
 import { Routes } from "./Routes";
 import { SharedPages } from "./SharedPages";
+import { SiteRouting } from "./SiteRouting";
 import { Solutions } from "./Solutions";
 import { TenantSettings } from "./TenantSettings";
 import { Tenants } from "./Tenants";
@@ -40,4 +41,4 @@ export const collections = [
   Routes,
 ];
 
-export const globals: GlobalConfig[] = [];
+export const globals: GlobalConfig[] = [SiteRouting];

@@ -9,7 +9,7 @@ import {
   listedWhere,
 } from "./jobs";
 import { validatePageSlug, computePaths } from "./paths";
-import { jobBaseSources } from "./recordBases";
+import { jobBaseSources, recordBaseSources } from "./recordBases";
 import { ROUTABLE_COLLECTIONS, routeRows } from "./routeIndex";
 import { accessAs, applyMultiTenant, findField, testUser } from "./testing";
 import { Documents } from "./collections/Documents";
@@ -447,5 +447,54 @@ describe("job paths", () => {
         })
       ).problems,
     ).toEqual([]);
+  });
+
+  it("rejects a job path a product or solution already uses", async () => {
+    careerBase();
+    const payload = fakePayload([
+      {
+        collection: "products",
+        id: 9,
+        name: "Sulfuric Acid",
+        tenant: 2,
+        path: { en: "/careers/acid", id: "/karier/acid" },
+      },
+    ] as unknown as Row[]);
+    const { problems } = await validatePageSlug(payload, {
+      collection: "jobs",
+      id: 6,
+      tenant: 1,
+      slugs: { en: "acid" },
+    });
+    expect(problems.map((problem) => problem.message)).toEqual([
+      '/careers/acid is already used by the product "Sulfuric Acid" on IndoAcid. Pick another slug.',
+      '/karier/acid is already used by the product "Sulfuric Acid" on IndoAcid. Pick another slug.',
+    ]);
+  });
+
+  it("rejects a product path a job already uses", async () => {
+    const payload = fakePayload([
+      {
+        collection: "jobs",
+        id: 5,
+        title: "Data Analyst",
+        tenant: 1,
+        path: { en: "/catalog/analyst", id: "/katalog/analyst" },
+      },
+    ]);
+    recordBaseSources.products = async () => ({
+      en: "/catalog",
+      id: "/katalog",
+    });
+    const { problems } = await validatePageSlug(payload, {
+      collection: "products",
+      id: 9,
+      slugs: { en: "analyst" },
+    });
+    delete recordBaseSources.products;
+    expect(problems.map((problem) => problem.message)).toEqual([
+      '/catalog/analyst is already used by the job "Data Analyst" on DKU. Pick another slug.',
+      '/katalog/analyst is already used by the job "Data Analyst" on DKU. Pick another slug.',
+    ]);
   });
 });

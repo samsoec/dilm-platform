@@ -16,6 +16,11 @@ import { navGroup } from "../admin/navGroups";
 import { LIVE_DOCUMENT_CONTROLS } from "../admin/shell";
 import { withMediaPicker } from "../fields/mediaPicker";
 import { withUpdatedBy } from "../fields/updatedBy";
+import {
+  cascadeCompanyRouting,
+  checkCompanyRouting,
+  publishedPagesOfCompany,
+} from "../siteRouting";
 import { withTenantAccess } from "../tenancy";
 import {
   isGa4MeasurementId,
@@ -97,6 +102,10 @@ export const TenantSettings = withTenantAccess(
     versions: {
       drafts: false,
     },
+    hooks: {
+      beforeChange: [checkCompanyRouting],
+      afterChange: [cascadeCompanyRouting],
+    },
     custom: {
       nav: { icon: "tune" },
     },
@@ -123,6 +132,36 @@ export const TenantSettings = withTenantAccess(
                 type: "text",
                 required: true,
                 localized: true,
+              },
+              {
+                name: "routing",
+                type: "group",
+                label: false,
+                admin: { hideGutter: true, className: "dil-flat-group" },
+                fields: [
+                  {
+                    name: "careerPage",
+                    label: "Career page",
+                    type: "relationship",
+                    relationTo: "pages",
+                    filterOptions: publishedPagesOfCompany,
+                    admin: {
+                      description:
+                        "Every job's URL is this page's URL plus the job's slug.",
+                    },
+                  },
+                  {
+                    name: "publicationPage",
+                    label: "Publication page",
+                    type: "relationship",
+                    relationTo: "pages",
+                    filterOptions: publishedPagesOfCompany,
+                    admin: {
+                      description:
+                        "Used by the navbar search, the All tab on the post listing and the post breadcrumb. It can't be trashed or unpublished while it is set here.",
+                    },
+                  },
+                ],
               },
             ],
           },

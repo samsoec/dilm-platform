@@ -14,6 +14,11 @@ import {
 } from "../pathCascade";
 import { keepParentInTenant } from "../pageRules";
 import { removeRoutes, syncRoutes } from "../routeIndex";
+import {
+  keepBasePagesOnDelete,
+  keepBasePagesOutOfTheTrash,
+  keepBasePagesPublished,
+} from "../siteRouting";
 import { withTenantAccess } from "../tenancy";
 
 export const PAGE_VERSIONS_PER_DOCUMENT = 50;
@@ -30,10 +35,10 @@ export const Pages = withTenantAccess(
       versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
       trash: true,
       hooks: {
-        beforeValidate: [keepParentInTenant],
+        beforeValidate: [keepParentInTenant, keepBasePagesOutOfTheTrash],
         beforeChange: [rejectOversizedCascade, freshBreadcrumbIds],
-        afterChange: [cascadePathChange, syncRoutes],
-        beforeDelete: [removeRoutes],
+        afterChange: [keepBasePagesPublished, cascadePathChange, syncRoutes],
+        beforeDelete: [keepBasePagesOnDelete, removeRoutes],
       },
       admin: {
         group: navGroup("content"),

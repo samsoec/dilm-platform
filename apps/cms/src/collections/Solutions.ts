@@ -16,6 +16,7 @@ import { recordAddressFields } from "../fields/recordFields";
 import { keepRowStructure, lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { removeRoutes, syncRoutes } from "../routeIndex";
+import { requireBase } from "../siteRouting";
 import {
   CATALOG_SCOPE,
   unscopedRelationship,
@@ -108,7 +109,7 @@ export const Solutions = withTenantAccess(
       versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
       trash: true,
       hooks: {
-        beforeChange: [keepRowStructure],
+        beforeChange: [requireBase("solutions"), keepRowStructure],
         afterChange: [syncRoutes],
         beforeDelete: [removeRoutes],
       },
