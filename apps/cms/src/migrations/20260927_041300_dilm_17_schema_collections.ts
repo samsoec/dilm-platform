@@ -146,30 +146,30 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "consent_logs" CASCADE;
   DROP TABLE "ir_documents" CASCADE;
   DROP TABLE "cv_submissions" CASCADE;
-  ALTER TABLE "media" DROP CONSTRAINT "media_tenant_id_tenants_id_fk";
+  ALTER TABLE "media" DROP CONSTRAINT IF EXISTS "media_tenant_id_tenants_id_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_tenant_settings_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_tenant_settings_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_consent_logs_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_consent_logs_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_ir_documents_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_ir_documents_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_cv_submissions_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_cv_submissions_fk";
   
-  DROP INDEX "media_tenant_idx";
-  DROP INDEX "payload_locked_documents_rels_tenant_settings_id_idx";
-  DROP INDEX "payload_locked_documents_rels_consent_logs_id_idx";
-  DROP INDEX "payload_locked_documents_rels_ir_documents_id_idx";
-  DROP INDEX "payload_locked_documents_rels_cv_submissions_id_idx";
-  ALTER TABLE "media" DROP COLUMN "tenant_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "tenant_settings_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "consent_logs_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "ir_documents_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "cv_submissions_id";
-  DROP TYPE "public"."enum_tenant_settings_social_links_platform";
-  DROP TYPE "public"."enum_consent_logs_consent_type";
-  DROP TYPE "public"."enum_ir_documents_document_type";
-  DROP TYPE "public"."enum_ir_documents_locale";
-  DROP TYPE "public"."enum_cv_submissions_status";
-  DROP TYPE "public"."enum_cv_submissions_external_sync_status";`)
+  DROP INDEX IF EXISTS "media_tenant_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_tenant_settings_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_consent_logs_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_ir_documents_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_cv_submissions_id_idx";
+  ALTER TABLE "media" DROP COLUMN IF EXISTS "tenant_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "tenant_settings_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "consent_logs_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "ir_documents_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "cv_submissions_id";
+  DROP TYPE IF EXISTS "public"."enum_tenant_settings_social_links_platform";
+  DROP TYPE IF EXISTS "public"."enum_consent_logs_consent_type";
+  DROP TYPE IF EXISTS "public"."enum_ir_documents_document_type";
+  DROP TYPE IF EXISTS "public"."enum_ir_documents_locale";
+  DROP TYPE IF EXISTS "public"."enum_cv_submissions_status";
+  DROP TYPE IF EXISTS "public"."enum_cv_submissions_external_sync_status";`)
 }

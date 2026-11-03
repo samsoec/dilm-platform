@@ -166,23 +166,23 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "_posts_v_locales" CASCADE;
   DROP TABLE "categories" CASCADE;
   DROP TABLE "categories_locales" CASCADE;
-  ALTER TABLE "routes_rels" DROP CONSTRAINT "routes_rels_posts_fk";
+  ALTER TABLE "routes_rels" DROP CONSTRAINT IF EXISTS "routes_rels_posts_fk";
   
-  ALTER TABLE "routes_rels" DROP CONSTRAINT "routes_rels_categories_fk";
+  ALTER TABLE "routes_rels" DROP CONSTRAINT IF EXISTS "routes_rels_categories_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_posts_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_posts_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_categories_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_categories_fk";
   
-  DROP INDEX "routes_rels_posts_id_idx";
-  DROP INDEX "routes_rels_categories_id_idx";
-  DROP INDEX "payload_locked_documents_rels_posts_id_idx";
-  DROP INDEX "payload_locked_documents_rels_categories_id_idx";
-  ALTER TABLE "routes_rels" DROP COLUMN "posts_id";
-  ALTER TABLE "routes_rels" DROP COLUMN "categories_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "posts_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "categories_id";
-  DROP TYPE "public"."enum_posts_status";
-  DROP TYPE "public"."enum__posts_v_version_status";
-  DROP TYPE "public"."enum__posts_v_published_locale";`)
+  DROP INDEX IF EXISTS "routes_rels_posts_id_idx";
+  DROP INDEX IF EXISTS "routes_rels_categories_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_posts_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_categories_id_idx";
+  ALTER TABLE "routes_rels" DROP COLUMN IF EXISTS "posts_id";
+  ALTER TABLE "routes_rels" DROP COLUMN IF EXISTS "categories_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "posts_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "categories_id";
+  DROP TYPE IF EXISTS "public"."enum_posts_status";
+  DROP TYPE IF EXISTS "public"."enum__posts_v_version_status";
+  DROP TYPE IF EXISTS "public"."enum__posts_v_published_locale";`)
 }

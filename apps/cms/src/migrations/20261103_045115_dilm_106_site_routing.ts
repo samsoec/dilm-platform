@@ -32,20 +32,20 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   await db.execute(sql`
    ALTER TABLE "site_routing" DISABLE ROW LEVEL SECURITY;
   DROP TABLE "site_routing" CASCADE;
-  ALTER TABLE "tenant_settings" DROP CONSTRAINT "tenant_settings_routing_career_page_id_pages_id_fk";
+  ALTER TABLE "tenant_settings" DROP CONSTRAINT IF EXISTS "tenant_settings_routing_career_page_id_pages_id_fk";
   
-  ALTER TABLE "tenant_settings" DROP CONSTRAINT "tenant_settings_routing_publication_page_id_pages_id_fk";
+  ALTER TABLE "tenant_settings" DROP CONSTRAINT IF EXISTS "tenant_settings_routing_publication_page_id_pages_id_fk";
   
-  ALTER TABLE "_tenant_settings_v" DROP CONSTRAINT "_tenant_settings_v_version_routing_career_page_id_pages_id_fk";
+  ALTER TABLE "_tenant_settings_v" DROP CONSTRAINT IF EXISTS "_tenant_settings_v_version_routing_career_page_id_pages_id_fk";
   
-  ALTER TABLE "_tenant_settings_v" DROP CONSTRAINT "_tenant_settings_v_version_routing_publication_page_id_pages_id_fk";
+  ALTER TABLE "_tenant_settings_v" DROP CONSTRAINT IF EXISTS "_tenant_settings_v_version_routing_publication_page_id_pages_id_fk";
   
-  DROP INDEX "tenant_settings_routing_routing_career_page_idx";
-  DROP INDEX "tenant_settings_routing_routing_publication_page_idx";
-  DROP INDEX "_tenant_settings_v_version_routing_version_routing_caree_idx";
-  DROP INDEX "_tenant_settings_v_version_routing_version_routing_publi_idx";
-  ALTER TABLE "tenant_settings" DROP COLUMN "routing_career_page_id";
-  ALTER TABLE "tenant_settings" DROP COLUMN "routing_publication_page_id";
-  ALTER TABLE "_tenant_settings_v" DROP COLUMN "version_routing_career_page_id";
-  ALTER TABLE "_tenant_settings_v" DROP COLUMN "version_routing_publication_page_id";`)
+  DROP INDEX IF EXISTS "tenant_settings_routing_routing_career_page_idx";
+  DROP INDEX IF EXISTS "tenant_settings_routing_routing_publication_page_idx";
+  DROP INDEX IF EXISTS "_tenant_settings_v_version_routing_version_routing_caree_idx";
+  DROP INDEX IF EXISTS "_tenant_settings_v_version_routing_version_routing_publi_idx";
+  ALTER TABLE "tenant_settings" DROP COLUMN IF EXISTS "routing_career_page_id";
+  ALTER TABLE "tenant_settings" DROP COLUMN IF EXISTS "routing_publication_page_id";
+  ALTER TABLE "_tenant_settings_v" DROP COLUMN IF EXISTS "version_routing_career_page_id";
+  ALTER TABLE "_tenant_settings_v" DROP COLUMN IF EXISTS "version_routing_publication_page_id";`)
 }

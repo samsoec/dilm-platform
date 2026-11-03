@@ -734,26 +734,26 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "_solutions_v" CASCADE;
   DROP TABLE "_solutions_v_locales" CASCADE;
   DROP TABLE "_solutions_v_rels" CASCADE;
-  ALTER TABLE "routes_rels" DROP CONSTRAINT "routes_rels_products_fk";
+  ALTER TABLE "routes_rels" DROP CONSTRAINT IF EXISTS "routes_rels_products_fk";
   
-  ALTER TABLE "routes_rels" DROP CONSTRAINT "routes_rels_solutions_fk";
+  ALTER TABLE "routes_rels" DROP CONSTRAINT IF EXISTS "routes_rels_solutions_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_products_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_products_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_solutions_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_solutions_fk";
   
-  DROP INDEX "routes_rels_products_id_idx";
-  DROP INDEX "routes_rels_solutions_id_idx";
-  DROP INDEX "payload_locked_documents_rels_products_id_idx";
-  DROP INDEX "payload_locked_documents_rels_solutions_id_idx";
-  ALTER TABLE "routes_rels" DROP COLUMN "products_id";
-  ALTER TABLE "routes_rels" DROP COLUMN "solutions_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "products_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "solutions_id";
-  DROP TYPE "public"."enum_products_status";
-  DROP TYPE "public"."enum__products_v_version_status";
-  DROP TYPE "public"."enum__products_v_published_locale";
-  DROP TYPE "public"."enum_solutions_status";
-  DROP TYPE "public"."enum__solutions_v_version_status";
-  DROP TYPE "public"."enum__solutions_v_published_locale";`)
+  DROP INDEX IF EXISTS "routes_rels_products_id_idx";
+  DROP INDEX IF EXISTS "routes_rels_solutions_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_products_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_solutions_id_idx";
+  ALTER TABLE "routes_rels" DROP COLUMN IF EXISTS "products_id";
+  ALTER TABLE "routes_rels" DROP COLUMN IF EXISTS "solutions_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "products_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "solutions_id";
+  DROP TYPE IF EXISTS "public"."enum_products_status";
+  DROP TYPE IF EXISTS "public"."enum__products_v_version_status";
+  DROP TYPE IF EXISTS "public"."enum__products_v_published_locale";
+  DROP TYPE IF EXISTS "public"."enum_solutions_status";
+  DROP TYPE IF EXISTS "public"."enum__solutions_v_version_status";
+  DROP TYPE IF EXISTS "public"."enum__solutions_v_published_locale";`)
 }

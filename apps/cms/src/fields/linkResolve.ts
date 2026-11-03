@@ -1,4 +1,4 @@
-import { TENANT_DOMAINS, type TenantSlug } from "@dilm/shared-types";
+import type { Payload, PayloadRequest } from "payload";
 
 import { localization } from "../localization";
 import { TENANT_OWNED, type LinkData } from "./link";
@@ -10,12 +10,62 @@ type TenantRef =
   | null
   | undefined;
 
+export type TenantDomains = Record<string, string>;
+
 export type ResolveOptions = {
   tenant?: TenantRef;
   locale?: string;
-  domains?: Record<string, string>;
+  domains?: TenantDomains;
+  payload?: Payload;
+  req?: PayloadRequest;
   warn?: (message: string) => void;
 };
+
+const DOMAIN_CACHE_MS = 60_000;
+
+const domainCache = new WeakMap<
+  object,
+  { at: number; domains: Promise<TenantDomains> }
+>();
+
+export function normalizeDomain(value: string): string {
+  return value
+    .trim()
+    .replace(/^[a-z][a-z0-9+.-]*:\/\//i, "")
+    .replace(/\/.*$/, "")
+    .toLowerCase();
+}
+
+export function loadTenantDomains(
+  payload: Payload,
+  req?: PayloadRequest,
+): Promise<TenantDomains> {
+  const key: object = req ?? payload;
+  const cached = domainCache.get(key);
+  if (cached && Date.now() - cached.at < DOMAIN_CACHE_MS) {
+    return cached.domains;
+  }
+  const domains = payload
+    .find({
+      collection: "tenants",
+      depth: 0,
+      limit: 0,
+      pagination: false,
+      overrideAccess: true,
+      select: { domain: true },
+      ...(req ? { req } : {}),
+    })
+    .then(({ docs }) => {
+      const map: TenantDomains = {};
+      for (const doc of docs) {
+        if (doc.domain) map[String(doc.id)] = normalizeDomain(doc.domain);
+      }
+      return map;
+    });
+  domainCache.set(key, { at: Date.now(), domains });
+  domains.catch(() => domainCache.delete(key));
+  return domains;
+}
 
 type TargetDoc = {
   id?: number | string;
@@ -36,28 +86,24 @@ function pathIn(path: TargetDoc["path"], locale: string): string | undefined {
   return path[locale] || path[localization.defaultLocale] || undefined;
 }
 
-function domainOf(
-  owner: NonNullable<TenantRef>,
-  domains: Record<string, string> | undefined,
-): string | undefined {
-  if (typeof owner === "object") {
-    if (owner.domain) return owner.domain;
-    if (owner.slug && owner.slug in TENANT_DOMAINS) {
-      return TENANT_DOMAINS[owner.slug as TenantSlug];
-    }
+function populatedDomain(owner: NonNullable<TenantRef>): string | undefined {
+  if (typeof owner === "object" && owner.domain) {
+    return normalizeDomain(owner.domain);
   }
-  return domains?.[String(typeof owner === "object" ? owner.id : owner)];
+  return undefined;
 }
 
-export function resolveLink(
+export async function resolveLink(
   link: LinkData | null | undefined,
   {
     tenant,
     locale = localization.defaultLocale,
     domains,
+    payload,
+    req,
     warn,
   }: ResolveOptions = {},
-): string | null {
+): Promise<string | null> {
   if (!link) return null;
   const type = link.type ?? "internal";
   if (type === "internal") return link.internalPath || null;
@@ -97,7 +143,11 @@ export function resolveLink(
   ) {
     return path;
   }
-  const domain = domainOf(target.tenant as NonNullable<TenantRef>, domains);
+  const ownerRef = target.tenant as NonNullable<TenantRef>;
+  let domain = populatedDomain(ownerRef) ?? domains?.[owner];
+  if (!domain && payload) {
+    domain = (await loadTenantDomains(payload, req))[owner];
+  }
   if (!domain) {
     log(
       `Link target ${label} belongs to company ${owner} with no known domain; showing the label only.`,

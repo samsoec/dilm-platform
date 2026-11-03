@@ -308,22 +308,22 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "_shared_pages_v_version_breadcrumbs" CASCADE;
   DROP TABLE "_shared_pages_v" CASCADE;
   DROP TABLE "_shared_pages_v_locales" CASCADE;
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_pages_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_pages_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_shared_pages_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_shared_pages_fk";
   
-  DROP INDEX "payload_locked_documents_rels_pages_id_idx";
-  DROP INDEX "payload_locked_documents_rels_shared_pages_id_idx";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "pages_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "shared_pages_id";
-  DROP TYPE "public"."enum_pages_redirect_to_type";
-  DROP TYPE "public"."enum_pages_status";
-  DROP TYPE "public"."enum__pages_v_version_redirect_to_type";
-  DROP TYPE "public"."enum__pages_v_version_status";
-  DROP TYPE "public"."enum__pages_v_published_locale";
-  DROP TYPE "public"."enum_shared_pages_redirect_to_type";
-  DROP TYPE "public"."enum_shared_pages_status";
-  DROP TYPE "public"."enum__shared_pages_v_version_redirect_to_type";
-  DROP TYPE "public"."enum__shared_pages_v_version_status";
-  DROP TYPE "public"."enum__shared_pages_v_published_locale";`)
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_pages_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_shared_pages_id_idx";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "pages_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "shared_pages_id";
+  DROP TYPE IF EXISTS "public"."enum_pages_redirect_to_type";
+  DROP TYPE IF EXISTS "public"."enum_pages_status";
+  DROP TYPE IF EXISTS "public"."enum__pages_v_version_redirect_to_type";
+  DROP TYPE IF EXISTS "public"."enum__pages_v_version_status";
+  DROP TYPE IF EXISTS "public"."enum__pages_v_published_locale";
+  DROP TYPE IF EXISTS "public"."enum_shared_pages_redirect_to_type";
+  DROP TYPE IF EXISTS "public"."enum_shared_pages_status";
+  DROP TYPE IF EXISTS "public"."enum__shared_pages_v_version_redirect_to_type";
+  DROP TYPE IF EXISTS "public"."enum__shared_pages_v_version_status";
+  DROP TYPE IF EXISTS "public"."enum__shared_pages_v_published_locale";`)
 }

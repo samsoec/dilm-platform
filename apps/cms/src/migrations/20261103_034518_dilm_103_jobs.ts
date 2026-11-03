@@ -137,20 +137,20 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "jobs_locales" CASCADE;
   DROP TABLE "_jobs_v" CASCADE;
   DROP TABLE "_jobs_v_locales" CASCADE;
-  ALTER TABLE "routes_rels" DROP CONSTRAINT "routes_rels_jobs_fk";
+  ALTER TABLE "routes_rels" DROP CONSTRAINT IF EXISTS "routes_rels_jobs_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_jobs_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_jobs_fk";
   
-  DROP INDEX "routes_rels_jobs_id_idx";
-  DROP INDEX "payload_locked_documents_rels_jobs_id_idx";
-  ALTER TABLE "routes_rels" DROP COLUMN "jobs_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "jobs_id";
-  DROP TYPE "public"."enum_jobs_experience_level";
-  DROP TYPE "public"."enum_jobs_job_type";
-  DROP TYPE "public"."jobs_listing_status";
-  DROP TYPE "public"."enum_jobs_status";
-  DROP TYPE "public"."enum__jobs_v_version_experience_level";
-  DROP TYPE "public"."enum__jobs_v_version_job_type";
-  DROP TYPE "public"."enum__jobs_v_version_status";
-  DROP TYPE "public"."enum__jobs_v_published_locale";`)
+  DROP INDEX IF EXISTS "routes_rels_jobs_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_jobs_id_idx";
+  ALTER TABLE "routes_rels" DROP COLUMN IF EXISTS "jobs_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "jobs_id";
+  DROP TYPE IF EXISTS "public"."enum_jobs_experience_level";
+  DROP TYPE IF EXISTS "public"."enum_jobs_job_type";
+  DROP TYPE IF EXISTS "public"."jobs_listing_status";
+  DROP TYPE IF EXISTS "public"."enum_jobs_status";
+  DROP TYPE IF EXISTS "public"."enum__jobs_v_version_experience_level";
+  DROP TYPE IF EXISTS "public"."enum__jobs_v_version_job_type";
+  DROP TYPE IF EXISTS "public"."enum__jobs_v_version_status";
+  DROP TYPE IF EXISTS "public"."enum__jobs_v_published_locale";`)
 }
