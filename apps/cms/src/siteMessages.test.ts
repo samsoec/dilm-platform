@@ -1,14 +1,11 @@
-import type { Payload, PayloadRequest } from "payload";
+import type { Payload } from "payload";
 import { describe, expect, it, vi } from "vitest";
 
 import {
   COOKIE_POLICY_REQUIRED,
   findCookiePolicyLinks,
-  layoutTag,
-  type LayoutRevalidator,
   linkedPageIds,
   requireCookiePolicyLink,
-  revalidateLayout,
 } from "./siteMessages";
 
 function text(value: string) {
@@ -295,40 +292,5 @@ describe("findCookiePolicyLinks", () => {
     ]);
     expect(await findCookiePolicyLinks(8, { payload })).toEqual([]);
     expect(await findCookiePolicyLinks(undefined, { payload })).toEqual([]);
-  });
-});
-
-describe("layout revalidation (FR-CS-26)", () => {
-  function run(revalidate: LayoutRevalidator) {
-    const logger = { info: vi.fn(), error: vi.fn() };
-    const req = { payload: { logger } } as unknown as PayloadRequest;
-    const hook = revalidateLayout(revalidate);
-    return {
-      logger,
-      done: (doc: object) => hook({ doc, req, operation: "update" } as never),
-    };
-  }
-
-  it("names the layout tag after the company", () => {
-    expect(layoutTag(2)).toBe("layout:2");
-    expect(layoutTag({ id: 7 })).toBe("layout:7");
-  });
-
-  it("revalidates layout:<tenant> after a save", async () => {
-    const revalidate = vi.fn(async () => {});
-    const { done } = run(revalidate);
-    await done({ id: 1, tenant: 3 });
-    expect(revalidate).toHaveBeenCalledWith("layout:3", expect.anything());
-  });
-
-  it("keeps the save when revalidation fails", async () => {
-    const { done, logger } = run(async () => {
-      throw new Error("down");
-    });
-    await expect(done({ id: 1, tenant: 3 })).resolves.toEqual({
-      id: 1,
-      tenant: 3,
-    });
-    expect(logger.error).toHaveBeenCalled();
   });
 });

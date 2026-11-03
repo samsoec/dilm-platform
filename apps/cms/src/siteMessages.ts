@@ -1,9 +1,4 @@
-import type {
-  CollectionAfterChangeHook,
-  Payload,
-  PayloadRequest,
-  RichTextFieldValidation,
-} from "payload";
+import type { Payload, PayloadRequest, RichTextFieldValidation } from "payload";
 import { richText } from "payload/shared";
 
 import { localization } from "./localization";
@@ -206,36 +201,4 @@ export async function findCookiePolicyLinks(
           },
         ];
   });
-}
-
-export function layoutTag(tenant: Ref): string {
-  return `layout:${idOf(tenant)}`;
-}
-
-export type LayoutRevalidator = (
-  tag: string,
-  logger: Payload["logger"],
-) => Promise<void>;
-
-// TODO(DILM-32): swap for the apps/web revalidateTag call once the site can receive it.
-export const stubRevalidator: LayoutRevalidator = async (tag, logger) => {
-  logger.info({ tag }, "Layout revalidation (stubbed until DILM-32)");
-};
-
-export function revalidateLayout(
-  revalidate: LayoutRevalidator,
-): CollectionAfterChangeHook {
-  return async ({ doc, req }) => {
-    const tenant = (doc as { tenant?: Ref })?.tenant;
-    if (idOf(tenant) === undefined) return doc;
-    try {
-      await revalidate(layoutTag(tenant), req.payload.logger);
-    } catch (error) {
-      req.payload.logger.error(
-        { err: error, tag: layoutTag(tenant) },
-        "Layout revalidation failed; the save stands and the site refreshes when the cache expires",
-      );
-    }
-    return doc;
-  };
 }
