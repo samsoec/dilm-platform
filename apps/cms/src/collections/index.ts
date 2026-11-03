@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 
+import { Categories } from "./Categories";
 import { ConsentLogs } from "./ConsentLogs";
 import { CvSubmissions } from "./CvSubmissions";
 import { Documents } from "./Documents";
@@ -9,6 +10,7 @@ import { IrDocuments } from "./IrDocuments";
 import { Jobs } from "./Jobs";
 import { Media } from "./Media";
 import { Pages } from "./Pages";
+import { Posts } from "./Posts";
 import { Products } from "./Products";
 import { Routes } from "./Routes";
 import { SharedPages } from "./SharedPages";
@@ -33,6 +35,8 @@ export const collections = [
   Products,
   Solutions,
   Jobs,
+  Posts,
+  Categories,
   Routes,
 ];
 

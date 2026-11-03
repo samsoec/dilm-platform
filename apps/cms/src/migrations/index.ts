@@ -23,6 +23,7 @@ import * as migration_20261102_101955_dilm_99_routes_index from './20261102_1019
 import * as migration_20261102_153707_dilm_101_documents from './20261102_153707_dilm_101_documents';
 import * as migration_20261102_234849_dilm_102_products_solutions from './20261102_234849_dilm_102_products_solutions';
 import * as migration_20261103_034518_dilm_103_jobs from './20261103_034518_dilm_103_jobs';
+import * as migration_20261103_035813_dilm_104_posts_categories from './20261103_035813_dilm_104_posts_categories';
 
 export const migrations = [
   {
@@ -148,6 +149,11 @@ export const migrations = [
   {
     up: migration_20261103_034518_dilm_103_jobs.up,
     down: migration_20261103_034518_dilm_103_jobs.down,
-    name: '20261103_034518_dilm_103_jobs'
+    name: '20261103_034518_dilm_103_jobs',
+  },
+  {
+    up: migration_20261103_035813_dilm_104_posts_categories.up,
+    down: migration_20261103_035813_dilm_104_posts_categories.down,
+    name: '20261103_035813_dilm_104_posts_categories'
   },
 ];
