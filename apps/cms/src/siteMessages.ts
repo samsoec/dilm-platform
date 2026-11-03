@@ -105,18 +105,13 @@ async function isLivePageOf(
   );
 }
 
-export const requireCookiePolicyLink: RichTextFieldValidation = async (
-  value,
-  args,
-) => {
-  const invalid = await richText(value, args);
-  if (invalid !== true) return invalid;
-  const { req, data, id } = args as unknown as {
-    req: PayloadRequest;
-    data?: { tenant?: Ref };
-    id?: Ref;
-  };
-  const locale = req?.locale ?? localization.defaultLocale;
+async function checkBody(
+  value: unknown,
+  locale: string,
+  data: { tenant?: Ref } | undefined,
+  id: Ref,
+  req: PayloadRequest,
+): Promise<true | string> {
   const ids = linkedPageIds(value);
   if (ids.length === 0) {
     const untranslated =
@@ -129,6 +124,38 @@ export const requireCookiePolicyLink: RichTextFieldValidation = async (
     if (await isLivePageOf(pageId, tenant, req)) return true;
   }
   return COOKIE_POLICY_REQUIRED;
+}
+
+function hasOnlyLocaleKeys(value: Record<string, unknown>): boolean {
+  return Object.keys(value).every((key) =>
+    (localization.locales as readonly string[]).includes(key),
+  );
+}
+
+export const requireCookiePolicyLink: RichTextFieldValidation = async (
+  value,
+  args,
+) => {
+  const invalid = await richText(value, args);
+  if (invalid !== true) return invalid;
+  const { req, data, id } = args as unknown as {
+    req: PayloadRequest;
+    data?: { tenant?: Ref };
+    id?: Ref;
+  };
+  const requested = req?.locale ?? localization.defaultLocale;
+  if (requested === "all" && isRecord(value) && !("root" in value)) {
+    if (!hasOnlyLocaleKeys(value)) return COOKIE_POLICY_REQUIRED;
+    for (const [locale, body] of Object.entries(value)) {
+      const result = await checkBody(body, locale, data, id, req);
+      if (result !== true) return result;
+    }
+    const hasDefault = localization.defaultLocale in value;
+    if (!hasDefault && idOf(id) === undefined) return COOKIE_POLICY_REQUIRED;
+    return true;
+  }
+  const locale = requested === "all" ? localization.defaultLocale : requested;
+  return checkBody(value, locale, data, id, req);
 };
 
 function hasText(node: unknown): boolean {

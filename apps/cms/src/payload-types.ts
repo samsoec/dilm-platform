@@ -948,9 +948,10 @@ export interface Job {
   location?: string | null;
   postedDate?: string | null;
   /**
-   * Optional. The job leaves the listings after this date. Its page stays reachable without the application form.
+   * Optional. The job leaves the listings at exactly this date and time, in the time zone chosen beside it (WIB by default). Its page stays reachable without the application form.
    */
   closingDate?: string | null;
+  closingDate_tz: 'Asia/Jakarta' | 'Asia/Makassar' | 'Asia/Jayapura';
   /**
    * Closed jobs leave the Career listing and job sections. Their page stays reachable, without the application form, so shared links still work.
    */
@@ -2732,6 +2733,7 @@ export interface JobsSelect<T extends boolean = true> {
   location?: T;
   postedDate?: T;
   closingDate?: T;
+  closingDate_tz?: T;
   status?: T;
   body?: T;
   updatedBy?: T;

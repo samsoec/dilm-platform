@@ -135,9 +135,20 @@ describe("company detail templates (FR-PM-45)", () => {
     });
   });
 
-  it("keeps deleting a template to Super Admins", () => {
+  it("lets Tenant Editors and Super Admins delete; a viewer can't", () => {
     expect(accessAs(DetailTemplates, "delete", superAdmin)).toBe(true);
-    expect(accessAs(DetailTemplates, "delete", editor)).toBe(false);
+    expect(accessAs(DetailTemplates, "delete", editor)).toBe(true);
+    expect(accessAs(DetailTemplates, "delete", viewer)).toBe(false);
+    expect(accessAs(DetailTemplates, "delete", null)).toBe(false);
+  });
+
+  it("scopes deletes to the editor's own companies through the multi-tenant plugin", async () => {
+    const configured = (
+      await applyMultiTenant([Users, Tenants, DetailTemplates])
+    )("detail-templates");
+    expect(await accessAs(configured, "delete", editor)).toEqual({
+      tenant: { in: [1] },
+    });
   });
 
   it("scopes reads to the user's companies through the multi-tenant plugin", async () => {
