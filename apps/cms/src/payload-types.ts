@@ -420,6 +420,14 @@ export interface Page {
         | EntityContactsBlock
         | ContactInquiryBlock
         | LocationMapBlock
+        | RecordHeroBlock
+        | ProductOverviewBlock
+        | ProductSpecificationsBlock
+        | ProductApplicationsBlock
+        | SolutionImpactBlock
+        | SolutionApplicationsBlock
+        | JobDetailBlock
+        | PostArticleBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -544,6 +552,14 @@ export interface SharedPage {
         | EntityContactsBlock
         | ContactInquiryBlock
         | LocationMapBlock
+        | RecordHeroBlock
+        | ProductOverviewBlock
+        | ProductSpecificationsBlock
+        | ProductApplicationsBlock
+        | SolutionImpactBlock
+        | SolutionApplicationsBlock
+        | JobDetailBlock
+        | PostArticleBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -3624,6 +3640,453 @@ export interface LocationMapBlock {
   blockType: 'locationMap';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RecordHeroBlock".
+ */
+export interface RecordHeroBlock {
+  /**
+   * The last crumb, for example Detail Product. The first crumb is the record's list page; on posts it is the Publication page.
+   */
+  currentLabel?: string | null;
+  /**
+   * One label for each fact in the row. Each record type shows its own facts; the facts themselves come from the record.
+   */
+  metaLabels?: {
+    formula?: string | null;
+    casNumber?: string | null;
+    totalVariants?: string | null;
+    classification?: string | null;
+    keyApplications?: string | null;
+    supportingProducts?: string | null;
+    industriesServed?: string | null;
+    department?: string | null;
+    experience?: string | null;
+    jobType?: string | null;
+    location?: string | null;
+    postedDate?: string | null;
+    category?: string | null;
+    publishedDate?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'recordHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductOverviewBlock".
+ */
+export interface ProductOverviewBlock {
+  eyebrow?: string | null;
+  buttons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Hidden when the product has no data sheet.
+   */
+  pdsLabel?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'productOverview';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductSpecificationsBlock".
+ */
+export interface ProductSpecificationsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  columnLabels?: {
+    parameter?: string | null;
+    method?: string | null;
+    value?: string | null;
+  };
+  sideLabels?: {
+    formula?: string | null;
+    casNumber?: string | null;
+    classification?: string | null;
+    packaging?: string | null;
+  };
+  /**
+   * Leave the link empty to hide the button.
+   */
+  contact: {
+    link: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+    style: 'primary' | 'light' | 'text';
+  };
+  pdsLabel?: string | null;
+  sdsLabel?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'productSpecifications';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductApplicationsBlock".
+ */
+export interface ProductApplicationsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'productApplications';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionImpactBlock".
+ */
+export interface SolutionImpactBlock {
+  eyebrow?: string | null;
+  buttons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'solutionImpact';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionApplicationsBlock".
+ */
+export interface SolutionApplicationsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  productsHeading?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  featuredLabels?: {
+    productName?: string | null;
+    formula?: string | null;
+    casNumber?: string | null;
+    variants?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'solutionApplications';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "JobDetailBlock".
+ */
+export interface JobDetailBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  form: {
+    eyebrow?: string | null;
+    title?: string | null;
+    description?: string | null;
+    /**
+     * The fields are fixed under UU PDP (data minimisation). You can change their wording, not add, remove or make them optional.
+     */
+    fields: {
+      /**
+       * The field stays on the form and stays required.
+       */
+      fullName: {
+        label: string;
+        placeholder?: string | null;
+      };
+      /**
+       * The field stays on the form and stays required.
+       */
+      email: {
+        label: string;
+        placeholder?: string | null;
+      };
+      /**
+       * The field stays on the form and stays required.
+       */
+      phone: {
+        label: string;
+        placeholder?: string | null;
+      };
+      /**
+       * The field stays on the form and stays required.
+       */
+      coverLetter: {
+        label: string;
+        placeholder?: string | null;
+      };
+      /**
+       * The field stays on the form and stays required.
+       */
+      resume: {
+        label: string;
+        placeholder?: string | null;
+      };
+    };
+    /**
+     * Shown beside the checkbox visitors must tick. Must link to the company's Privacy Policy (UU PDP). Needed in every language to publish; saving a draft works without it.
+     */
+    consentText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    submitLabel?: string | null;
+    successMessage?: string | null;
+    errorMessage?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'jobDetail';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostArticleBlock".
+ */
+export interface PostArticleBlock {
+  /**
+   * The same list shows on every post of the company. The post being read is left out of it.
+   */
+  highlights?: {
+    title?: string | null;
+    /**
+     * Up to 5 published posts of this company.
+     */
+    items?: (number | Post)[] | null;
+  };
+  previousLabel?: string | null;
+  nextLabel?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'postArticle';
+}
+/**
  * UU PDP consent audit trail, written by the system. Holds no IP addresses.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4263,6 +4726,14 @@ export interface DetailTemplate {
         | EntityContactsBlock
         | ContactInquiryBlock
         | LocationMapBlock
+        | RecordHeroBlock
+        | ProductOverviewBlock
+        | ProductSpecificationsBlock
+        | ProductApplicationsBlock
+        | SolutionImpactBlock
+        | SolutionApplicationsBlock
+        | JobDetailBlock
+        | PostArticleBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -4310,6 +4781,14 @@ export interface SharedDetailTemplate {
         | EntityContactsBlock
         | ContactInquiryBlock
         | LocationMapBlock
+        | RecordHeroBlock
+        | ProductOverviewBlock
+        | ProductSpecificationsBlock
+        | ProductApplicationsBlock
+        | SolutionImpactBlock
+        | SolutionApplicationsBlock
+        | JobDetailBlock
+        | PostArticleBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -5134,6 +5613,14 @@ export interface PagesSelect<T extends boolean = true> {
         entityContacts?: T | EntityContactsBlockSelect<T>;
         contactInquiry?: T | ContactInquiryBlockSelect<T>;
         locationMap?: T | LocationMapBlockSelect<T>;
+        recordHero?: T | RecordHeroBlockSelect<T>;
+        productOverview?: T | ProductOverviewBlockSelect<T>;
+        productSpecifications?: T | ProductSpecificationsBlockSelect<T>;
+        productApplications?: T | ProductApplicationsBlockSelect<T>;
+        solutionImpact?: T | SolutionImpactBlockSelect<T>;
+        solutionApplications?: T | SolutionApplicationsBlockSelect<T>;
+        jobDetail?: T | JobDetailBlockSelect<T>;
+        postArticle?: T | PostArticleBlockSelect<T>;
       };
   updatedBy?: T;
   trashedBy?: T;
@@ -6282,6 +6769,255 @@ export interface LocationMapBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RecordHeroBlock_select".
+ */
+export interface RecordHeroBlockSelect<T extends boolean = true> {
+  currentLabel?: T;
+  metaLabels?:
+    | T
+    | {
+        formula?: T;
+        casNumber?: T;
+        totalVariants?: T;
+        classification?: T;
+        keyApplications?: T;
+        supportingProducts?: T;
+        industriesServed?: T;
+        department?: T;
+        experience?: T;
+        jobType?: T;
+        location?: T;
+        postedDate?: T;
+        category?: T;
+        publishedDate?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductOverviewBlock_select".
+ */
+export interface ProductOverviewBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  pdsLabel?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductSpecificationsBlock_select".
+ */
+export interface ProductSpecificationsBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  columnLabels?:
+    | T
+    | {
+        parameter?: T;
+        method?: T;
+        value?: T;
+      };
+  sideLabels?:
+    | T
+    | {
+        formula?: T;
+        casNumber?: T;
+        classification?: T;
+        packaging?: T;
+      };
+  contact?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+      };
+  pdsLabel?: T;
+  sdsLabel?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductApplicationsBlock_select".
+ */
+export interface ProductApplicationsBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionImpactBlock_select".
+ */
+export interface SolutionImpactBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionApplicationsBlock_select".
+ */
+export interface SolutionApplicationsBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  productsHeading?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
+  featuredLabels?:
+    | T
+    | {
+        productName?: T;
+        formula?: T;
+        casNumber?: T;
+        variants?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "JobDetailBlock_select".
+ */
+export interface JobDetailBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  form?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        fields?:
+          | T
+          | {
+              fullName?:
+                | T
+                | {
+                    label?: T;
+                    placeholder?: T;
+                  };
+              email?:
+                | T
+                | {
+                    label?: T;
+                    placeholder?: T;
+                  };
+              phone?:
+                | T
+                | {
+                    label?: T;
+                    placeholder?: T;
+                  };
+              coverLetter?:
+                | T
+                | {
+                    label?: T;
+                    placeholder?: T;
+                  };
+              resume?:
+                | T
+                | {
+                    label?: T;
+                    placeholder?: T;
+                  };
+            };
+        consentText?: T;
+        submitLabel?: T;
+        successMessage?: T;
+        errorMessage?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostArticleBlock_select".
+ */
+export interface PostArticleBlockSelect<T extends boolean = true> {
+  highlights?:
+    | T
+    | {
+        title?: T;
+        items?: T;
+      };
+  previousLabel?: T;
+  nextLabel?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "shared-pages_select".
  */
 export interface SharedPagesSelect<T extends boolean = true> {
@@ -6329,6 +7065,14 @@ export interface SharedPagesSelect<T extends boolean = true> {
         entityContacts?: T | EntityContactsBlockSelect<T>;
         contactInquiry?: T | ContactInquiryBlockSelect<T>;
         locationMap?: T | LocationMapBlockSelect<T>;
+        recordHero?: T | RecordHeroBlockSelect<T>;
+        productOverview?: T | ProductOverviewBlockSelect<T>;
+        productSpecifications?: T | ProductSpecificationsBlockSelect<T>;
+        productApplications?: T | ProductApplicationsBlockSelect<T>;
+        solutionImpact?: T | SolutionImpactBlockSelect<T>;
+        solutionApplications?: T | SolutionApplicationsBlockSelect<T>;
+        jobDetail?: T | JobDetailBlockSelect<T>;
+        postArticle?: T | PostArticleBlockSelect<T>;
       };
   updatedBy?: T;
   trashedBy?: T;
@@ -6623,6 +7367,14 @@ export interface DetailTemplatesSelect<T extends boolean = true> {
         entityContacts?: T | EntityContactsBlockSelect<T>;
         contactInquiry?: T | ContactInquiryBlockSelect<T>;
         locationMap?: T | LocationMapBlockSelect<T>;
+        recordHero?: T | RecordHeroBlockSelect<T>;
+        productOverview?: T | ProductOverviewBlockSelect<T>;
+        productSpecifications?: T | ProductSpecificationsBlockSelect<T>;
+        productApplications?: T | ProductApplicationsBlockSelect<T>;
+        solutionImpact?: T | SolutionImpactBlockSelect<T>;
+        solutionApplications?: T | SolutionApplicationsBlockSelect<T>;
+        jobDetail?: T | JobDetailBlockSelect<T>;
+        postArticle?: T | PostArticleBlockSelect<T>;
       };
   updatedBy?: T;
   updatedAt?: T;
@@ -6664,6 +7416,14 @@ export interface SharedDetailTemplatesSelect<T extends boolean = true> {
         entityContacts?: T | EntityContactsBlockSelect<T>;
         contactInquiry?: T | ContactInquiryBlockSelect<T>;
         locationMap?: T | LocationMapBlockSelect<T>;
+        recordHero?: T | RecordHeroBlockSelect<T>;
+        productOverview?: T | ProductOverviewBlockSelect<T>;
+        productSpecifications?: T | ProductSpecificationsBlockSelect<T>;
+        productApplications?: T | ProductApplicationsBlockSelect<T>;
+        solutionImpact?: T | SolutionImpactBlockSelect<T>;
+        solutionApplications?: T | SolutionApplicationsBlockSelect<T>;
+        jobDetail?: T | JobDetailBlockSelect<T>;
+        postArticle?: T | PostArticleBlockSelect<T>;
       };
   updatedBy?: T;
   updatedAt?: T;

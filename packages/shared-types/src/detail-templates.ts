@@ -37,6 +37,64 @@ export const TEMPLATE_BLOCK_RECORD_TYPES: Readonly<
   postArticle: ["post"],
 };
 
+export const DETAIL_TYPE_LABELS: Record<DetailRecordType, string> = {
+  product: "Product",
+  solution: "Solution",
+  job: "Job",
+  post: "Post",
+  category: "Category",
+};
+
+export const TEMPLATE_ONLY_NOTE = "Works on detail templates only";
+
+function joinNames(names: readonly string[]): string {
+  return names.length > 1
+    ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`
+    : (names[0] ?? "");
+}
+
+export function templateBlockRecordTypes(
+  blockSlug: string,
+): readonly DetailRecordType[] | undefined {
+  return Object.hasOwn(TEMPLATE_BLOCK_RECORD_TYPES, blockSlug)
+    ? TEMPLATE_BLOCK_RECORD_TYPES[blockSlug]
+    : undefined;
+}
+
+export function availabilityNote(types: readonly DetailRecordType[]): string {
+  return `${TEMPLATE_ONLY_NOTE} · ${types.map((type) => DETAIL_TYPE_LABELS[type]).join(", ")}`;
+}
+
+export function wrongContextMessage(
+  types: readonly DetailRecordType[],
+): string {
+  const names = types.map((type) => DETAIL_TYPE_LABELS[type].toLowerCase());
+  return `This section only shows on ${joinNames(names)} pages. It won't appear here.`;
+}
+
+export const MAX_HIGHLIGHTS = 5;
+
+export const HERO_ATTRIBUTES = {
+  product: ["formula", "casNumber", "totalVariants", "classification"],
+  solution: ["keyApplications", "supportingProducts", "industriesServed"],
+  job: ["department", "experience", "jobType", "location", "postedDate"],
+  post: ["category", "publishedDate"],
+} as const satisfies Partial<Record<DetailRecordType, readonly string[]>>;
+
+export type HeroRecordType = keyof typeof HERO_ATTRIBUTES;
+
+export const HERO_ATTRIBUTE_KEYS = Object.values(HERO_ATTRIBUTES).flat();
+
+export const JOB_FORM_FIELDS = [
+  "fullName",
+  "email",
+  "phone",
+  "coverLetter",
+  "resume",
+] as const;
+
+export type JobFormField = (typeof JOB_FORM_FIELDS)[number];
+
 export type RecordContext = { recordType?: DetailRecordType | null };
 
 export function isBlockInContext(

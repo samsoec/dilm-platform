@@ -69,7 +69,7 @@ const t = { t: (key: string) => key };
 
 describe("the company blocks are registered (FR-PM-33)", () => {
   it("appends the five blocks after the record blocks", () => {
-    expect(pageBlocks.slice(22).map(({ slug }) => slug)).toEqual(
+    expect(pageBlocks.slice(22, 27).map(({ slug }) => slug)).toEqual(
       Object.keys(blocks),
     );
     expect(() => assertRegistry(pageBlocks)).not.toThrow();

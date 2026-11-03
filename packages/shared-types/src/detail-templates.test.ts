@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  HERO_ATTRIBUTES,
+  HERO_ATTRIBUTE_KEYS,
   TEMPLATE_BLOCK_RECORD_TYPES,
   TOKENS_OUTSIDE_TEMPLATES,
+  availabilityNote,
   isBlockInContext,
   renderTokens,
   tokenProblem,
   tokensIn,
+  templateBlockRecordTypes,
   unknownTokenMessage,
+  wrongContextMessage,
 } from "./detail-templates";
 
 describe("renderTokens (FR-PM-28)", () => {
@@ -180,5 +185,41 @@ describe("isBlockInContext (FR-PM-29)", () => {
       "solutionApplications",
       "solutionImpact",
     ]);
+  });
+});
+
+describe("template block wording (SC-03, SE-13)", () => {
+  it("names where a block works, in the catalog's words", () => {
+    expect(availabilityNote(["product"])).toBe(
+      "Works on detail templates only · Product",
+    );
+    expect(availabilityNote(["product", "solution", "job", "post"])).toBe(
+      "Works on detail templates only · Product, Solution, Job, Post",
+    );
+  });
+
+  it("warns in the admin's words, for one record type or several", () => {
+    expect(wrongContextMessage(["job"])).toBe(
+      "This section only shows on job pages. It won't appear here.",
+    );
+    expect(wrongContextMessage(["product", "solution"])).toBe(
+      "This section only shows on product and solution pages. It won't appear here.",
+    );
+    expect(wrongContextMessage(["product", "solution", "job", "post"])).toBe(
+      "This section only shows on product, solution, job and post pages. It won't appear here.",
+    );
+  });
+
+  it("looks a block's record types up without mistaking inherited keys", () => {
+    expect(templateBlockRecordTypes("postArticle")).toEqual(["post"]);
+    expect(templateBlockRecordTypes("richText")).toBeUndefined();
+    expect(templateBlockRecordTypes("constructor")).toBeUndefined();
+  });
+
+  it("gives every hero fact a distinct key, and facts only to the types that show them", () => {
+    expect(new Set(HERO_ATTRIBUTE_KEYS).size).toBe(HERO_ATTRIBUTE_KEYS.length);
+    expect(Object.keys(HERO_ATTRIBUTES).sort()).toEqual(
+      [...(TEMPLATE_BLOCK_RECORD_TYPES.recordHero as string[])].sort(),
+    );
   });
 });
