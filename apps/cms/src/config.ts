@@ -33,12 +33,14 @@ import { cmsEmailAdapter } from "./email";
 import { localization } from "./localization";
 import { publicBucketStorage } from "./storage";
 import { pageModelPlugins } from "./pageModel";
+import { registerSiteRouting } from "./siteRouting";
 import { multiTenant } from "./tenancy";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export async function cmsConfig(client: PayloadClient) {
   const runtimeConfig = await getRuntimeConfig();
+  registerSiteRouting();
   return buildConfig({
     admin: {
       user: Users.slug,

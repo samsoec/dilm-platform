@@ -11,6 +11,11 @@ import {
 } from "../pathCascade";
 import { keepSingleHome, protectHome } from "../pageRules";
 import { removeRoutes, syncRoutes } from "../routeIndex";
+import {
+  keepBasePagesOnDelete,
+  keepBasePagesOutOfTheTrash,
+  keepBasePagesPublished,
+} from "../siteRouting";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 
 export const SharedPages = withTrashedBy(
@@ -27,10 +32,10 @@ export const SharedPages = withTrashedBy(
     versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
     trash: true,
     hooks: {
-      beforeValidate: [keepSingleHome],
-      beforeDelete: [protectHome, removeRoutes],
+      beforeValidate: [keepSingleHome, keepBasePagesOutOfTheTrash],
+      beforeDelete: [protectHome, keepBasePagesOnDelete, removeRoutes],
       beforeChange: [rejectOversizedCascade, freshBreadcrumbIds],
-      afterChange: [cascadePathChange, syncRoutes],
+      afterChange: [keepBasePagesPublished, cascadePathChange, syncRoutes],
     },
     admin: {
       group: navGroup("content"),

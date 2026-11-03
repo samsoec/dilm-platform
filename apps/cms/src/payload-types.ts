@@ -123,8 +123,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'id') | ('en' | 'id')[];
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-routing': SiteRouting;
+  };
+  globalsSelect: {
+    'site-routing': SiteRoutingSelect<false> | SiteRoutingSelect<true>;
+  };
   locale: 'en' | 'id';
   widgets: {
     'needs-attention': NeedsAttentionWidget;
@@ -219,6 +223,16 @@ export interface TenantSetting {
   id: number;
   tenant?: (number | null) | Tenant;
   siteName: string;
+  routing?: {
+    /**
+     * Every job's URL is this page's URL plus the job's slug.
+     */
+    careerPage?: (number | null) | Page;
+    /**
+     * Used by the navbar search, the All tab on the post listing and the post breadcrumb. It can't be trashed or unpublished while it is set here.
+     */
+    publicationPage?: (number | null) | Page;
+  };
   brand?: {
     /**
      * Header on white, footer on light.
@@ -264,350 +278,6 @@ export interface TenantSetting {
     ogImage?: (number | null) | Media;
   };
   analyticsId?: string | null;
-  updatedBy?: (number | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  alt: string;
-  uploadedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
-  prefix?: string | null;
-  _objectKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    'social-share'?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
- * UU PDP consent audit trail, written by the system. Holds no IP addresses.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "consent-logs".
- */
-export interface ConsentLog {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  timestamp: string;
-  policyVersion: string;
-  relatedRecordId: string;
-  consentType: 'career-application' | 'contact-form';
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Investor-relations PDFs shown on the Investor page. Each file is for one language.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ir-documents".
- */
-export interface IrDocument {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  title: string;
-  documentType:
-    | 'annual-report'
-    | 'financial-statement'
-    | 'sustainability-report'
-    | 'public-disclosure'
-    | 'shareholder-meeting'
-    | 'prospectus';
-  firstPublishedAt?: string | null;
-  lastPurgeStatus?: ('ok' | 'failed') | null;
-  lastPurgeAt?: string | null;
-  /**
-   * One language per file. Upload the English version as its own document.
-   */
-  locale: 'en' | 'id';
-  /**
-   * The disclosure date shown on the Investor page. It's not the upload date.
-   */
-  publishedDate: string;
-  updatedBy?: (number | null) | User;
-  uploadedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
-  prefix?: string | null;
-  _objectKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ('draft' | 'published') | null;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * PDF data sheets and attachments. Upload a file once, then link it from products and posts.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents".
- */
-export interface Document {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  /**
-   * Visitors download the file under this name, with .pdf added.
-   */
-  title: string;
-  downloadName?: string | null;
-  uploadedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
-  prefix?: string | null;
-  _objectKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * Applications sent from the careers page. Open one to read it and set its status as you review.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "cv-submissions".
- */
-export interface CvSubmission {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  submissionId: string;
-  applicantName: string;
-  email: string;
-  phone: string;
-  position: string;
-  /**
-   * S3 key of the résumé in the private CV bucket.
-   */
-  resumeFileKey: string;
-  submittedAt: string;
-  status: 'received' | 'reviewed' | 'shortlisted' | 'rejected';
-  statusChangedBy?: (number | null) | User;
-  statusChangedAt?: string | null;
-  applicantNotifiedAt?: string | null;
-  recruiterNotifiedAt?: string | null;
-  externalSyncStatus: 'pending' | 'synced' | 'failed';
-  externalSyncAttempts: number;
-  externalSyncTriedAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "header".
- */
-export interface Header {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  navItems?:
-    | {
-        type: 'link' | 'dropdown';
-        link?: {
-          type: 'internal' | 'external' | 'reference';
-          newTab?: boolean | null;
-          /**
-           * Start with /. The site adds the language.
-           */
-          internalPath?: string | null;
-          /**
-           * A full address starting with https://
-           */
-          externalUrl?: string | null;
-          /**
-           * Follows the page or record if it is renamed or moved. Only published ones are offered.
-           */
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'shared-pages';
-                value: number | SharedPage;
-              } | null)
-            | ({
-                relationTo: 'products';
-                value: number | Product;
-              } | null)
-            | ({
-                relationTo: 'solutions';
-                value: number | Solution;
-              } | null)
-            | ({
-                relationTo: 'jobs';
-                value: number | Job;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null)
-            | ({
-                relationTo: 'categories';
-                value: number | Category;
-              } | null);
-          label?: string | null;
-        };
-        label?: string | null;
-        children?:
-          | {
-              link: {
-                type: 'internal' | 'external' | 'reference';
-                newTab?: boolean | null;
-                /**
-                 * Start with /. The site adds the language.
-                 */
-                internalPath?: string | null;
-                /**
-                 * A full address starting with https://
-                 */
-                externalUrl?: string | null;
-                /**
-                 * Follows the page or record if it is renamed or moved. Only published ones are offered.
-                 */
-                reference?:
-                  | ({
-                      relationTo: 'pages';
-                      value: number | Page;
-                    } | null)
-                  | ({
-                      relationTo: 'shared-pages';
-                      value: number | SharedPage;
-                    } | null)
-                  | ({
-                      relationTo: 'products';
-                      value: number | Product;
-                    } | null)
-                  | ({
-                      relationTo: 'solutions';
-                      value: number | Solution;
-                    } | null)
-                  | ({
-                      relationTo: 'jobs';
-                      value: number | Job;
-                    } | null)
-                  | ({
-                      relationTo: 'posts';
-                      value: number | Post;
-                    } | null)
-                  | ({
-                      relationTo: 'categories';
-                      value: number | Category;
-                    } | null);
-                label?: string | null;
-              };
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Only shows the icon. Site search isn't available yet.
-   */
-  showSearch?: boolean | null;
-  showLanguageSwitcher?: boolean | null;
-  cta?: {
-    /**
-     * Off: no button on the navbar. Turn on to set its text and link.
-     */
-    enabled?: boolean | null;
-    link?: {
-      type: 'internal' | 'external' | 'reference';
-      newTab?: boolean | null;
-      /**
-       * Start with /. The site adds the language.
-       */
-      internalPath?: string | null;
-      /**
-       * A full address starting with https://
-       */
-      externalUrl?: string | null;
-      /**
-       * Follows the page or record if it is renamed or moved. Only published ones are offered.
-       */
-      reference?:
-        | ({
-            relationTo: 'pages';
-            value: number | Page;
-          } | null)
-        | ({
-            relationTo: 'shared-pages';
-            value: number | SharedPage;
-          } | null)
-        | ({
-            relationTo: 'products';
-            value: number | Product;
-          } | null)
-        | ({
-            relationTo: 'solutions';
-            value: number | Solution;
-          } | null)
-        | ({
-            relationTo: 'jobs';
-            value: number | Job;
-          } | null)
-        | ({
-            relationTo: 'posts';
-            value: number | Post;
-          } | null)
-        | ({
-            relationTo: 'categories';
-            value: number | Category;
-          } | null);
-      label?: string | null;
-    };
-  };
   updatedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -992,6 +662,88 @@ export interface Product {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  alt: string;
+  uploadedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  prefix?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    'social-share'?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * PDF data sheets and attachments. Upload a file once, then link it from products and posts.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface Document {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * Visitors download the file under this name, with .pdf added.
+   */
+  title: string;
+  downloadName?: string | null;
+  uploadedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  prefix?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "solutions".
  */
 export interface Solution {
@@ -1279,6 +1031,268 @@ export interface Category {
   name?: string | null;
   description?: string | null;
   coverImage?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * UU PDP consent audit trail, written by the system. Holds no IP addresses.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-logs".
+ */
+export interface ConsentLog {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  timestamp: string;
+  policyVersion: string;
+  relatedRecordId: string;
+  consentType: 'career-application' | 'contact-form';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Investor-relations PDFs shown on the Investor page. Each file is for one language.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ir-documents".
+ */
+export interface IrDocument {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  title: string;
+  documentType:
+    | 'annual-report'
+    | 'financial-statement'
+    | 'sustainability-report'
+    | 'public-disclosure'
+    | 'shareholder-meeting'
+    | 'prospectus';
+  firstPublishedAt?: string | null;
+  lastPurgeStatus?: ('ok' | 'failed') | null;
+  lastPurgeAt?: string | null;
+  /**
+   * One language per file. Upload the English version as its own document.
+   */
+  locale: 'en' | 'id';
+  /**
+   * The disclosure date shown on the Investor page. It's not the upload date.
+   */
+  publishedDate: string;
+  updatedBy?: (number | null) | User;
+  uploadedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  prefix?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Applications sent from the careers page. Open one to read it and set its status as you review.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cv-submissions".
+ */
+export interface CvSubmission {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  submissionId: string;
+  applicantName: string;
+  email: string;
+  phone: string;
+  position: string;
+  /**
+   * S3 key of the résumé in the private CV bucket.
+   */
+  resumeFileKey: string;
+  submittedAt: string;
+  status: 'received' | 'reviewed' | 'shortlisted' | 'rejected';
+  statusChangedBy?: (number | null) | User;
+  statusChangedAt?: string | null;
+  applicantNotifiedAt?: string | null;
+  recruiterNotifiedAt?: string | null;
+  externalSyncStatus: 'pending' | 'synced' | 'failed';
+  externalSyncAttempts: number;
+  externalSyncTriedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header".
+ */
+export interface Header {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  navItems?:
+    | {
+        type: 'link' | 'dropdown';
+        link?: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        label?: string | null;
+        children?:
+          | {
+              link: {
+                type: 'internal' | 'external' | 'reference';
+                newTab?: boolean | null;
+                /**
+                 * Start with /. The site adds the language.
+                 */
+                internalPath?: string | null;
+                /**
+                 * A full address starting with https://
+                 */
+                externalUrl?: string | null;
+                /**
+                 * Follows the page or record if it is renamed or moved. Only published ones are offered.
+                 */
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'shared-pages';
+                      value: number | SharedPage;
+                    } | null)
+                  | ({
+                      relationTo: 'products';
+                      value: number | Product;
+                    } | null)
+                  | ({
+                      relationTo: 'solutions';
+                      value: number | Solution;
+                    } | null)
+                  | ({
+                      relationTo: 'jobs';
+                      value: number | Job;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'categories';
+                      value: number | Category;
+                    } | null);
+                label?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Only shows the icon. Site search isn't available yet.
+   */
+  showSearch?: boolean | null;
+  showLanguageSwitcher?: boolean | null;
+  cta?: {
+    /**
+     * Off: no button on the navbar. Turn on to set its text and link.
+     */
+    enabled?: boolean | null;
+    link?: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+  };
+  updatedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -1882,6 +1896,12 @@ export interface TenantsSelect<T extends boolean = true> {
 export interface TenantSettingsSelect<T extends boolean = true> {
   tenant?: T;
   siteName?: T;
+  routing?:
+    | T
+    | {
+        careerPage?: T;
+        publicationPage?: T;
+      };
   brand?:
     | T
     | {
@@ -2628,6 +2648,34 @@ export interface PayloadQueryPresetsSelect<T extends boolean = true> {
   isTemp?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-routing".
+ */
+export interface SiteRouting {
+  id: number;
+  /**
+   * Every product's URL is this page's URL plus the product's slug, on all companies' websites.
+   */
+  productsPage?: (number | null) | SharedPage;
+  /**
+   * Every solution's URL is this page's URL plus the solution's slug, on all companies' websites.
+   */
+  solutionsPage?: (number | null) | SharedPage;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-routing_select".
+ */
+export interface SiteRoutingSelect<T extends boolean = true> {
+  productsPage?: T;
+  solutionsPage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
