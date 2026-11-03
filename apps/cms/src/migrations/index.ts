@@ -36,6 +36,7 @@ import * as migration_20261103_124400_dilm_111_record_blocks from './20261103_12
 import * as migration_20261103_130320_hotspot_not_on_shared_templates from './20261103_130320_hotspot_not_on_shared_templates';
 import * as migration_20261103_132133_dilm_112_company_blocks from './20261103_132133_dilm_112_company_blocks';
 import * as migration_20261103_134436_dilm_113_template_blocks from './20261103_134436_dilm_113_template_blocks';
+import * as migration_20261103_145749_dilm_149_publication_blocks from './20261103_145749_dilm_149_publication_blocks';
 
 export const migrations = [
   {
@@ -226,6 +227,11 @@ export const migrations = [
   {
     up: migration_20261103_134436_dilm_113_template_blocks.up,
     down: migration_20261103_134436_dilm_113_template_blocks.down,
-    name: '20261103_134436_dilm_113_template_blocks'
+    name: '20261103_134436_dilm_113_template_blocks',
+  },
+  {
+    up: migration_20261103_145749_dilm_149_publication_blocks.up,
+    down: migration_20261103_145749_dilm_149_publication_blocks.down,
+    name: '20261103_145749_dilm_149_publication_blocks'
   },
 ];
