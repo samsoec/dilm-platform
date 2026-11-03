@@ -30,6 +30,7 @@ import * as migration_20261103_050051_dilm_107_entity_profile from './20261103_0
 import * as migration_20261103_051042_dilm_108_detail_templates from './20261103_051042_dilm_108_detail_templates';
 import * as migration_20261103_052124_dilm_148_site_messages from './20261103_052124_dilm_148_site_messages';
 import * as migration_20261103_075314_jobs_closing_datetime from './20261103_075314_jobs_closing_datetime';
+import * as migration_20261103_092154_dilm_109_hero_content_blocks from './20261103_092154_dilm_109_hero_content_blocks';
 
 export const migrations = [
   {
@@ -190,6 +191,11 @@ export const migrations = [
   {
     up: migration_20261103_075314_jobs_closing_datetime.up,
     down: migration_20261103_075314_jobs_closing_datetime.down,
-    name: '20261103_075314_jobs_closing_datetime'
+    name: '20261103_075314_jobs_closing_datetime',
+  },
+  {
+    up: migration_20261103_092154_dilm_109_hero_content_blocks.up,
+    down: migration_20261103_092154_dilm_109_hero_content_blocks.down,
+    name: '20261103_092154_dilm_109_hero_content_blocks'
   },
 ];

@@ -391,7 +391,9 @@ export interface Page {
   /**
    * A page holds at most 30 sections.
    */
-  layout?: unknown[] | null;
+  layout?:
+    | (HeroCarouselBlock | PageHeroBlock | MediaTextBlock | FeatureGridBlock | VisionMissionBlock | TimelineBlock)[]
+    | null;
   updatedBy?: (number | null) | User;
   trashedBy?: (number | null) | User;
   breadcrumbs?:
@@ -485,7 +487,9 @@ export interface SharedPage {
   /**
    * A page holds at most 30 sections.
    */
-  layout?: unknown[] | null;
+  layout?:
+    | (HeroCarouselBlock | PageHeroBlock | MediaTextBlock | FeatureGridBlock | VisionMissionBlock | TimelineBlock)[]
+    | null;
   updatedBy?: (number | null) | User;
   trashedBy?: (number | null) | User;
   breadcrumbs?:
@@ -1072,6 +1076,607 @@ export interface Category {
   coverImage?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroCarouselBlock".
+ */
+export interface HeroCarouselBlock {
+  slides: {
+    backgroundImage: number | Media;
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    buttons?:
+      | {
+          link: {
+            type: 'internal' | 'external' | 'reference';
+            newTab?: boolean | null;
+            /**
+             * Start with /. The site adds the language.
+             */
+            internalPath?: string | null;
+            /**
+             * A full address starting with https://
+             */
+            externalUrl?: string | null;
+            /**
+             * Follows the page or record if it is renamed or moved. Only published ones are offered.
+             */
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'shared-pages';
+                  value: number | SharedPage;
+                } | null)
+              | ({
+                  relationTo: 'products';
+                  value: number | Product;
+                } | null)
+              | ({
+                  relationTo: 'solutions';
+                  value: number | Solution;
+                } | null)
+              | ({
+                  relationTo: 'jobs';
+                  value: number | Job;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'categories';
+                  value: number | Category;
+                } | null);
+            label?: string | null;
+          };
+          style: 'primary' | 'light' | 'text';
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  stats?:
+    | {
+        value: string;
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Seconds each slide stays. 0 turns autoplay off.
+   */
+  autoplaySeconds: number;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'heroCarousel';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PageHeroBlock".
+ */
+export interface PageHeroBlock {
+  backgroundImage: number | Media;
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pageHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaTextBlock".
+ */
+export interface MediaTextBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  images: {
+    image: number | Media;
+    id?: string | null;
+  }[];
+  imageLayout: 'single' | 'staggered';
+  imagePosition: 'right' | 'left';
+  stats?:
+    | {
+        value: string;
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  points?:
+    | {
+        /**
+         * SVG or PNG.
+         */
+        icon?: (number | null) | Media;
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  pointsLayout: 'inline' | 'grid';
+  buttons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  appearance: {
+    background: 'default' | 'muted' | 'dark' | 'image';
+    backgroundImage?: (number | null) | Media;
+    /**
+     * Optional in-page anchor: lowercase letters, numbers and hyphens.
+     */
+    anchorId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaText';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureGridBlock".
+ */
+export interface FeatureGridBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  headingButtons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  topImage?: (number | null) | Media;
+  /**
+   * Limit reached: the grid fits 12 items. Numbers (01, 02…) are computed from the order, so there's no marker field.
+   */
+  items: {
+    /**
+     * SVG or PNG.
+     */
+    icon?: (number | null) | Media;
+    marker?: string | null;
+    eyebrow?: string | null;
+    title: string;
+    description?: string | null;
+    id?: string | null;
+  }[];
+  markerStyle: 'icon' | 'number' | 'letter' | 'none';
+  cardStyle: 'card' | 'plain';
+  columns: '3' | '4';
+  bottomImage?: (number | null) | Media;
+  /**
+   * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+   */
+  quote?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  footerButtons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  appearance: {
+    background: 'default' | 'muted' | 'dark' | 'image';
+    backgroundImage?: (number | null) | Media;
+    /**
+     * Optional in-page anchor: lowercase letters, numbers and hyphens.
+     */
+    anchorId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VisionMissionBlock".
+ */
+export interface VisionMissionBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  vision?: {
+    title?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    statement?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  mission: {
+    title?: string | null;
+    items: {
+      text: string;
+      id?: string | null;
+    }[];
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'visionMission';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TimelineBlock".
+ */
+export interface TimelineBlock {
+  variant: 'summary' | 'detailed';
+  heading?: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  banner?: {
+    eyebrow?: string | null;
+    title?: string | null;
+    description?: string | null;
+    periodLabel?: string | null;
+  };
+  entries: {
+    year: string;
+    title?: string | null;
+    description?: string | null;
+    events?:
+      | {
+          dateLabel: string;
+          description: string;
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  buttons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'timeline';
 }
 /**
  * UU PDP consent audit trail, written by the system. Holds no IP addresses.
@@ -1684,7 +2289,9 @@ export interface DetailTemplate {
   /**
    * A page holds at most 30 sections.
    */
-  layout?: unknown[] | null;
+  layout?:
+    | (HeroCarouselBlock | PageHeroBlock | MediaTextBlock | FeatureGridBlock | VisionMissionBlock | TimelineBlock)[]
+    | null;
   updatedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -1702,7 +2309,9 @@ export interface SharedDetailTemplate {
   /**
    * A page holds at most 30 sections.
    */
-  layout?: unknown[] | null;
+  layout?:
+    | (HeroCarouselBlock | PageHeroBlock | MediaTextBlock | FeatureGridBlock | VisionMissionBlock | TimelineBlock)[]
+    | null;
   updatedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -2495,7 +3104,16 @@ export interface PagesSelect<T extends boolean = true> {
         externalUrl?: T;
         reference?: T;
       };
-  layout?: T | {};
+  layout?:
+    | T
+    | {
+        heroCarousel?: T | HeroCarouselBlockSelect<T>;
+        pageHero?: T | PageHeroBlockSelect<T>;
+        mediaText?: T | MediaTextBlockSelect<T>;
+        featureGrid?: T | FeatureGridBlockSelect<T>;
+        visionMission?: T | VisionMissionBlockSelect<T>;
+        timeline?: T | TimelineBlockSelect<T>;
+      };
   updatedBy?: T;
   trashedBy?: T;
   breadcrumbs?:
@@ -2520,6 +3138,288 @@ export interface PagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroCarouselBlock_select".
+ */
+export interface HeroCarouselBlockSelect<T extends boolean = true> {
+  slides?:
+    | T
+    | {
+        backgroundImage?: T;
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    internalPath?: T;
+                    externalUrl?: T;
+                    reference?: T;
+                    label?: T;
+                  };
+              style?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  autoplaySeconds?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PageHeroBlock_select".
+ */
+export interface PageHeroBlockSelect<T extends boolean = true> {
+  backgroundImage?: T;
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaTextBlock_select".
+ */
+export interface MediaTextBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  body?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  imageLayout?: T;
+  imagePosition?: T;
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        id?: T;
+      };
+  points?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  pointsLayout?: T;
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  appearance?:
+    | T
+    | {
+        background?: T;
+        backgroundImage?: T;
+        anchorId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureGridBlock_select".
+ */
+export interface FeatureGridBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  headingButtons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  topImage?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        marker?: T;
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  markerStyle?: T;
+  cardStyle?: T;
+  columns?: T;
+  bottomImage?: T;
+  quote?: T;
+  footerButtons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  appearance?:
+    | T
+    | {
+        background?: T;
+        backgroundImage?: T;
+        anchorId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VisionMissionBlock_select".
+ */
+export interface VisionMissionBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  vision?:
+    | T
+    | {
+        title?: T;
+        statement?: T;
+      };
+  mission?:
+    | T
+    | {
+        title?: T;
+        items?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TimelineBlock_select".
+ */
+export interface TimelineBlockSelect<T extends boolean = true> {
+  variant?: T;
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  banner?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        periodLabel?: T;
+      };
+  entries?:
+    | T
+    | {
+        year?: T;
+        title?: T;
+        description?: T;
+        events?:
+          | T
+          | {
+              dateLabel?: T;
+              description?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "shared-pages_select".
  */
 export interface SharedPagesSelect<T extends boolean = true> {
@@ -2537,7 +3437,16 @@ export interface SharedPagesSelect<T extends boolean = true> {
         externalUrl?: T;
         reference?: T;
       };
-  layout?: T | {};
+  layout?:
+    | T
+    | {
+        heroCarousel?: T | HeroCarouselBlockSelect<T>;
+        pageHero?: T | PageHeroBlockSelect<T>;
+        mediaText?: T | MediaTextBlockSelect<T>;
+        featureGrid?: T | FeatureGridBlockSelect<T>;
+        visionMission?: T | VisionMissionBlockSelect<T>;
+        timeline?: T | TimelineBlockSelect<T>;
+      };
   updatedBy?: T;
   trashedBy?: T;
   breadcrumbs?:
@@ -2801,7 +3710,16 @@ export interface CategoriesSelect<T extends boolean = true> {
 export interface DetailTemplatesSelect<T extends boolean = true> {
   tenant?: T;
   recordType?: T;
-  layout?: T | {};
+  layout?:
+    | T
+    | {
+        heroCarousel?: T | HeroCarouselBlockSelect<T>;
+        pageHero?: T | PageHeroBlockSelect<T>;
+        mediaText?: T | MediaTextBlockSelect<T>;
+        featureGrid?: T | FeatureGridBlockSelect<T>;
+        visionMission?: T | VisionMissionBlockSelect<T>;
+        timeline?: T | TimelineBlockSelect<T>;
+      };
   updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2813,7 +3731,16 @@ export interface DetailTemplatesSelect<T extends boolean = true> {
  */
 export interface SharedDetailTemplatesSelect<T extends boolean = true> {
   recordType?: T;
-  layout?: T | {};
+  layout?:
+    | T
+    | {
+        heroCarousel?: T | HeroCarouselBlockSelect<T>;
+        pageHero?: T | PageHeroBlockSelect<T>;
+        mediaText?: T | MediaTextBlockSelect<T>;
+        featureGrid?: T | FeatureGridBlockSelect<T>;
+        visionMission?: T | VisionMissionBlockSelect<T>;
+        timeline?: T | TimelineBlockSelect<T>;
+      };
   updatedBy?: T;
   updatedAt?: T;
   createdAt?: T;
