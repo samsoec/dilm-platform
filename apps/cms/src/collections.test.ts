@@ -545,6 +545,8 @@ describe("ir-documents", () => {
       "lastPurgeAt",
       "locale",
       "publishedDate",
+      "coverImage",
+      "summary",
       "filesize",
       "_status",
       "updatedBy",

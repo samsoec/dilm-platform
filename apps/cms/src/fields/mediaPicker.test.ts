@@ -19,7 +19,7 @@ describe("media picker (F-05, FR-UI-78)", () => {
     [
       "tenant-settings",
       TenantSettings,
-      ["logoOnLight", "logoOnDark", "ogImage"],
+      ["logoOnLight", "logoOnDark", "coverImage", "ogImage"],
     ],
   ] as const)(
     "is the field component for every image on %s",

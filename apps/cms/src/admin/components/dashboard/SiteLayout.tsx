@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { dashboardScope, englishOnly, layoutDocs } from "../../data/dashboard";
 import {
   type CompletenessInput,
+  requiredStatuses,
   settingsCompleteness,
 } from "../../data/completeness";
 import type { IconName } from "../../icons";
@@ -113,8 +114,8 @@ async function SiteLayout({
             ? `/collections/${slug}`
             : `/collections/${slug}/${id}`,
       });
-    const missing = settingsCompleteness(
-      englishOnly(settings) as CompletenessInput,
+    const missing = requiredStatuses(
+      settingsCompleteness(englishOnly(settings) as CompletenessInput),
     ).reduce((sum, { missing: gaps }) => sum + gaps.length, 0);
     const cards: Card[] = [
       {
