@@ -14,6 +14,10 @@ export const COLLECTION_LABELS = {
     singular: { en: "Footer", id: "Footer" },
     plural: { en: "Footer", id: "Footer" },
   },
+  "site-messages": {
+    singular: { en: "Site messages", id: "Pesan situs" },
+    plural: { en: "Site messages", id: "Pesan situs" },
+  },
   "cv-submissions": {
     singular: { en: "Career application", id: "Lamaran kerja" },
     plural: { en: "Career applications", id: "Lamaran kerja" },
