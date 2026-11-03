@@ -1,6 +1,7 @@
 import type {
   ArrayField,
   Block,
+  BlocksField,
   CollectionConfig,
   Field,
   FilterOptions,
@@ -25,7 +26,11 @@ import { SharedPages } from "../collections/SharedPages";
 import { Solutions } from "../collections/Solutions";
 import { Tenants } from "../collections/Tenants";
 import { Users } from "../collections/Users";
-import { assertRegistry, layoutField } from "../fields/layout";
+import {
+  assertRegistry,
+  LAYOUT_EXCLUSIONS,
+  layoutField,
+} from "../fields/layout";
 import { PICK_NOT_OFFERED, validatePicks } from "../fields/recordPicks";
 import { IR_DOCUMENT_TYPES } from "../irDocumentTypes";
 import { applyMultiTenant, findField, subfields } from "../testing";
@@ -68,6 +73,18 @@ const shown = (field: Field, blockData: object) =>
       condition: (data: object, sibling: object, options: object) => boolean;
     }
   ).condition({}, blockData, { blockData });
+
+const NEAR_LIMIT_ALIASES = [
+  "_detail_templates_v__blocks_certifications_items_certificateImages (66)",
+  "_shared_detail_templates_v__blocks_certifications_items_certificateImages (73)",
+  "_shared_detail_templates_v__blocks_featureGrid_footerButtons (60)",
+  "_shared_detail_templates_v__blocks_featureGrid_headingButtons (61)",
+  "_shared_detail_templates_v__blocks_heroCarousel_slides_buttons (62)",
+  "_shared_detail_templates_v__blocks_visionMission_mission_items (62)",
+  "_shared_pages_v__blocks_certifications_items_certificateImages (62)",
+  "detail_templates__blocks_certifications_items_certificateImages (63)",
+  "shared_detail_templates__blocks_certifications_items_certificateImages (70)",
+];
 
 const t = { t: (key: string) => key };
 
@@ -117,32 +134,49 @@ describe("the record blocks are registered (FR-PM-27, FR-PM-33)", () => {
     ]);
   });
 
-  it("keeps every table alias Payload builds for these blocks distinct within Postgres's 63 characters", () => {
-    const prefixes = [
-      "pages",
-      "shared_pages",
-      "detail_templates",
-      "shared_detail_templates",
-    ].flatMap((name) => [name, `_${name}_v`]);
+  it("keeps every table alias Payload builds for every layout block distinct within Postgres's 63 characters", () => {
+    const layouts = [
+      Pages,
+      SharedPages,
+      DetailTemplates,
+      SharedDetailTemplates,
+    ];
     const localized = (fields: Field[]): boolean =>
       fields.some(
         (field) =>
           field.type !== "array" &&
           field.type !== "blocks" &&
           (("localized" in field && field.localized === true) ||
-            ("fields" in field && localized(field.fields))),
+            ("fields" in field && localized(field.fields)) ||
+            (field.type === "tabs" &&
+              field.tabs.some(
+                (tab) =>
+                  ("localized" in tab && tab.localized === true) ||
+                  localized(tab.fields),
+              ))),
       );
     const clashes: string[] = [];
-    for (const prefix of prefixes) {
-      for (const block of Object.values(blocks)) {
+    const nearLimit: string[] = [];
+    let checked = 0;
+    for (const collection of layouts) {
+      const offered = (findField(collection.fields, "layout") as BlocksField)
+        .blocks;
+      const table = collection.slug.replaceAll("-", "_");
+      for (const prefix of [table, `_${table}_v`]) {
         const seen = new Map<string, string>();
         const add = (alias: string, hasLocales: boolean) => {
           for (const name of hasLocales
             ? [alias, `${alias}__locales`]
             : [alias]) {
             const cut = name.slice(0, 63);
-            if (seen.has(cut)) clashes.push(`${seen.get(cut)} / ${name}`);
+            if (seen.has(cut)) {
+              clashes.push(`${collection.slug}: ${seen.get(cut)} / ${name}`);
+            }
             seen.set(cut, name);
+            checked += 1;
+            if (!name.endsWith("__locales") && name.length >= 60) {
+              nearLimit.push(`${name} (${name.length})`);
+            }
           }
         };
         const walk = (fields: Field[], alias: string) => {
@@ -153,15 +187,46 @@ describe("the record blocks are registered (FR-PM-27, FR-PM-33)", () => {
               walk(field.fields, next);
             } else if (field.type === "group" && "name" in field) {
               walk(field.fields, `${alias}_${field.name}`);
+            } else if (field.type === "tabs") {
+              for (const tab of field.tabs) {
+                walk(
+                  tab.fields,
+                  "name" in tab ? `${alias}_${tab.name}` : alias,
+                );
+              }
+            } else if ("fields" in field) {
+              walk(field.fields, alias);
             }
           }
         };
-        const base = `${prefix}__blocks_${block.slug}`;
-        add(base, localized(block.fields));
-        walk(block.fields, base);
+        for (const block of offered) {
+          const base = `${prefix}__blocks_${block.slug}`;
+          add(base, localized(block.fields));
+          walk(block.fields, base);
+        }
       }
     }
+    expect(checked).toBeGreaterThan(500);
     expect(clashes).toEqual([]);
+    expect(nearLimit.sort()).toEqual(NEAR_LIMIT_ALIASES);
+  });
+
+  it("offers every block in every layout except the declared exclusions", () => {
+    const slugs = (collection: CollectionConfig) =>
+      (findField(collection.fields, "layout") as BlocksField).blocks.map(
+        ({ slug }) => slug,
+      );
+    const all = pageBlocks.map(({ slug }) => slug);
+    for (const collection of [Pages, SharedPages, DetailTemplates]) {
+      expect(slugs(collection), collection.slug).toEqual(all);
+    }
+    expect(slugs(SharedDetailTemplates)).toEqual(
+      all.filter((slug) => slug !== "hotspotIllustration"),
+    );
+    expect(LAYOUT_EXCLUSIONS["shared-detail-templates"]).toEqual([
+      "hotspotIllustration",
+    ]);
+    expect(() => layoutField(pageBlocks, ["nope"])).toThrow(/unknown block/);
   });
 
   it("passes the detail-template token scan with nothing a token could match", () => {

@@ -3944,7 +3944,6 @@ export interface SharedDetailTemplate {
         | AwardsBlock
         | ImageCarouselBlock
         | TestimonialsBlock
-        | HotspotIllustrationBlock
         | CtaBannerBlock
         | RichTextBlock
         | ArticleHeaderBlock
@@ -6107,7 +6106,6 @@ export interface SharedDetailTemplatesSelect<T extends boolean = true> {
         awards?: T | AwardsBlockSelect<T>;
         imageCarousel?: T | ImageCarouselBlockSelect<T>;
         testimonials?: T | TestimonialsBlockSelect<T>;
-        hotspotIllustration?: T | HotspotIllustrationBlockSelect<T>;
         ctaBanner?: T | CtaBannerBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         articleHeader?: T | ArticleHeaderBlockSelect<T>;

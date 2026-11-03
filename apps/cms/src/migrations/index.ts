@@ -33,6 +33,7 @@ import * as migration_20261103_075314_jobs_closing_datetime from './20261103_075
 import * as migration_20261103_092154_dilm_109_hero_content_blocks from './20261103_092154_dilm_109_hero_content_blocks';
 import * as migration_20261103_094657_dilm_110_content_blocks_2 from './20261103_094657_dilm_110_content_blocks_2';
 import * as migration_20261103_124400_dilm_111_record_blocks from './20261103_124400_dilm_111_record_blocks';
+import * as migration_20261103_130320_hotspot_not_on_shared_templates from './20261103_130320_hotspot_not_on_shared_templates';
 
 export const migrations = [
   {
@@ -208,6 +209,11 @@ export const migrations = [
   {
     up: migration_20261103_124400_dilm_111_record_blocks.up,
     down: migration_20261103_124400_dilm_111_record_blocks.down,
-    name: '20261103_124400_dilm_111_record_blocks'
+    name: '20261103_124400_dilm_111_record_blocks',
+  },
+  {
+    up: migration_20261103_130320_hotspot_not_on_shared_templates.up,
+    down: migration_20261103_130320_hotspot_not_on_shared_templates.down,
+    name: '20261103_130320_hotspot_not_on_shared_templates'
   },
 ];
