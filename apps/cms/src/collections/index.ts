@@ -3,6 +3,7 @@ import type { GlobalConfig } from "payload";
 import { Categories } from "./Categories";
 import { ConsentLogs } from "./ConsentLogs";
 import { CvSubmissions } from "./CvSubmissions";
+import { DetailTemplates } from "./DetailTemplates";
 import { Documents } from "./Documents";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
@@ -13,6 +14,7 @@ import { Pages } from "./Pages";
 import { Posts } from "./Posts";
 import { Products } from "./Products";
 import { Routes } from "./Routes";
+import { SharedDetailTemplates } from "./SharedDetailTemplates";
 import { SharedPages } from "./SharedPages";
 import { SiteRouting } from "./SiteRouting";
 import { Solutions } from "./Solutions";
@@ -38,6 +40,8 @@ export const collections = [
   Jobs,
   Posts,
   Categories,
+  DetailTemplates,
+  SharedDetailTemplates,
   Routes,
 ];
 

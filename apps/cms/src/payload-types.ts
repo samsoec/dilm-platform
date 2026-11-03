@@ -84,6 +84,8 @@ export interface Config {
     jobs: Job;
     posts: Post;
     categories: Category;
+    'detail-templates': DetailTemplate;
+    'shared-detail-templates': SharedDetailTemplate;
     routes: Route;
     redirects: Redirect;
     'payload-kv': PayloadKv;
@@ -111,6 +113,8 @@ export interface Config {
     jobs: JobsSelect<false> | JobsSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    'detail-templates': DetailTemplatesSelect<false> | DetailTemplatesSelect<true>;
+    'shared-detail-templates': SharedDetailTemplatesSelect<false> | SharedDetailTemplatesSelect<true>;
     routes: RoutesSelect<false> | RoutesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -1575,6 +1579,43 @@ export interface Footer {
   createdAt: string;
 }
 /**
+ * One layout for all of this company's jobs, one for its posts and one for its categories.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "detail-templates".
+ */
+export interface DetailTemplate {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  recordType: 'job' | 'post' | 'category';
+  /**
+   * A page holds at most 30 sections.
+   */
+  layout?: unknown[] | null;
+  updatedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * One layout for every product and one for every solution, on all three websites. Only Super Admins change them.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shared-detail-templates".
+ */
+export interface SharedDetailTemplate {
+  id: number;
+  recordType: 'product' | 'solution';
+  /**
+   * A page holds at most 30 sections.
+   */
+  layout?: unknown[] | null;
+  updatedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * The public address of every published page, written by the system when a page is saved.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1783,6 +1824,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'detail-templates';
+        value: number | DetailTemplate;
+      } | null)
+    | ({
+        relationTo: 'shared-detail-templates';
+        value: number | SharedDetailTemplate;
       } | null)
     | ({
         relationTo: 'routes';
@@ -2605,6 +2654,31 @@ export interface CategoriesSelect<T extends boolean = true> {
   coverImage?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "detail-templates_select".
+ */
+export interface DetailTemplatesSelect<T extends boolean = true> {
+  tenant?: T;
+  recordType?: T;
+  layout?: T | {};
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shared-detail-templates_select".
+ */
+export interface SharedDetailTemplatesSelect<T extends boolean = true> {
+  recordType?: T;
+  layout?: T | {};
+  updatedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
