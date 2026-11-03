@@ -1,5 +1,6 @@
 import {
   MAX_LAYOUT_BLOCKS,
+  TENANT_NAMES,
   TENANT_SLUGS,
   tokenProblem,
   type TenantSlug,
@@ -170,6 +171,56 @@ describe("seeded layouts follow the Figma section order", () => {
         expect(registered.has(blockType)).toBe(true);
       }
     }
+  });
+});
+
+describe("company facts stay with the company they describe", () => {
+  const facts = [
+    "1978",
+    "50+",
+    "350+",
+    "24+",
+    "sulfuric",
+    "Sulfat",
+    "Freeport",
+  ];
+  const text = (tenant: TenantSlug) =>
+    JSON.stringify([
+      overviewLayout(ctx(tenant)),
+      journeyLayout(ctx(tenant)),
+      awardsLayout(ctx(tenant)),
+    ]);
+
+  it("keeps Dunia Kimia Utama's facts on its own pages", () => {
+    for (const fact of ["1978", "50+", "Freeport", "Sulfat"]) {
+      expect(text("duniakimia")).toContain(fact);
+    }
+  });
+
+  it.each(["indoacid", "likutelaga"] as const)(
+    "gives %s neutral wording with no founding year, products or numbers",
+    (tenant) => {
+      for (const fact of facts) expect(text(tenant)).not.toContain(fact);
+      expect(text(tenant)).toContain(TENANT_NAMES[tenant]);
+      expect(types(overviewLayout(ctx(tenant)))).toEqual(
+        types(overviewLayout(ctx("duniakimia"))),
+      );
+      expect(types(awardsLayout(ctx(tenant)))).toEqual(
+        types(awardsLayout(ctx("duniakimia"))),
+      );
+    },
+  );
+
+  it("keeps facts off the pages every company shares", () => {
+    const shared = JSON.stringify([
+      homeLayout(ctx()),
+      productsLayout(ctx()),
+      solutionsLayout(ctx()),
+    ]);
+    for (const fact of ["50+", "350+", "99%", "1978"]) {
+      expect(shared).not.toContain(fact);
+    }
+    expect(shared).not.toContain("lautanluas.co.id");
   });
 });
 

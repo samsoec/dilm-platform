@@ -174,10 +174,6 @@ function link(label: string, path: string): Link {
   return { type: "internal", newTab: false, internalPath: path, label };
 }
 
-function external(label: string, url: string): Link {
-  return { type: "external", newTab: false, externalUrl: url, label };
-}
-
 function button(label: string, path: string, style: ButtonStyle = "primary") {
   return { link: link(label, path), style };
 }
@@ -236,10 +232,7 @@ function certificationLogos(ctx: SeedContext): PageBlock {
     ],
     variant: "logos",
     layout: "grid",
-    items: ["ISO 9001", "ISO 14001", "ISO 45001", "SMK3"].map((title) => ({
-      logo: ctx.image,
-      title,
-    })),
+    items: [{ logo: ctx.image }, { logo: ctx.image }, { logo: ctx.image }],
     appearance: PLAIN,
   };
 }
@@ -335,19 +328,13 @@ export function homeLayout(ctx: SeedContext): PageBlock[] {
           ],
         },
       ],
-      stats: [
-        { value: "50+", label: "Years of industry experience" },
-        { value: "350+", label: "Supported industries" },
-        { value: "24+", label: "Regions linked by our network" },
-        { value: "99%", label: "Client satisfaction" },
-      ],
       autoplaySeconds: 6,
     },
     {
       blockType: "mediaText",
       heading: head(
         "Why Choose Us",
-        "50+ Years of Precision and Industrial Reliability",
+        "Precision and Industrial Reliability",
         "We are an innovative chemical company committed to quality products and effective solutions, prioritizing safety and collaboration to meet today's industrial needs.",
         "left",
       ),
@@ -629,10 +616,7 @@ export function solutionsLayout(ctx: SeedContext): PageBlock[] {
         title: "Explore more chemical solutions",
         description:
           "Discover a wider range of chemical products and distribution solutions through Lautan Luas.",
-        first: external(
-          "Explore Other Distribution",
-          "https://lautanluas.co.id",
-        ),
+        first: { type: "internal", newTab: false },
         firstStyle: "primary",
         second: { type: "internal", newTab: false },
         secondStyle: "text",
@@ -665,6 +649,7 @@ export function solutionsLayout(ctx: SeedContext): PageBlock[] {
 
 export function overviewLayout(ctx: SeedContext): PageBlock[] {
   const name = TENANT_NAMES[ctx.tenant!];
+  const dku = ctx.tenant === "duniakimia";
   return [
     hero(
       ctx,
@@ -675,18 +660,28 @@ export function overviewLayout(ctx: SeedContext): PageBlock[] {
     {
       blockType: "mediaText",
       heading: head("Overview", `Who We Are ${name}`, undefined, "left"),
-      body: paragraphs([
-        `PT ${name} is a chemical manufacturer and supplier with a long-standing presence in Indonesia since 1978. The company provides essential chemical products including sulfuric acid, sodium silicate, and aluminium sulfate to support a wide range of industrial applications.`,
-        `With a focus on product quality, reliable supply, and continuous improvement, ${name} serves industries across water treatment, infrastructure, manufacturing, and other essential sectors.`,
-      ]),
+      body: paragraphs(
+        dku
+          ? [
+              `PT ${name} is a chemical manufacturer and supplier with a long-standing presence in Indonesia since 1978. The company provides essential chemical products including sulfuric acid, sodium silicate, and aluminium sulfate to support a wide range of industrial applications.`,
+              `With a focus on product quality, reliable supply, and continuous improvement, ${name} serves industries across water treatment, infrastructure, manufacturing, and other essential sectors.`,
+            ]
+          : [
+              `${name} is a chemical company and part of the Lautan Luas group.`,
+            ],
+      ),
       images: [{ image: ctx.image }],
       imageLayout: "single",
       imagePosition: "right",
-      stats: [
-        { value: "50+", label: "Years of industry experience" },
-        { value: "350+", label: "Supported industries" },
-        { value: "24+", label: "Regions linked by our network" },
-      ],
+      ...(dku
+        ? {
+            stats: [
+              { value: "50+", label: "Years of industry experience" },
+              { value: "350+", label: "Supported industries" },
+              { value: "24+", label: "Regions linked by our network" },
+            ],
+          }
+        : {}),
       pointsLayout: "inline",
       appearance: PLAIN,
     },
@@ -730,18 +725,22 @@ export function overviewLayout(ctx: SeedContext): PageBlock[] {
       vision: {
         title: "Our Vision",
         statement: plain(
-          "To become a manufacturing company that provides comprehensive solutions, continuous innovation and added value to become the preferred choice for our partners.",
+          dku
+            ? "To become a manufacturing company that provides comprehensive solutions, continuous innovation and added value to become the preferred choice for our partners."
+            : `The vision of ${name} will be added here.`,
         ),
       },
       mission: {
         title: "Our Mission",
-        items: [
-          {
-            text: "Menjadi pemain global terkemuka dalam industri Aluminium Sulfat dan Sodium Silikat.",
-          },
-          { text: "Menjadi partner penting dalam industri Asam Sulfat." },
-          { text: "Menuju industri ramah lingkungan dan hemat energi." },
-        ],
+        items: dku
+          ? [
+              {
+                text: "Menjadi pemain global terkemuka dalam industri Aluminium Sulfat dan Sodium Silikat.",
+              },
+              { text: "Menjadi partner penting dalam industri Asam Sulfat." },
+              { text: "Menuju industri ramah lingkungan dan hemat energi." },
+            ]
+          : [{ text: `The mission of ${name} will be added here.` }],
       },
     },
     {
@@ -757,26 +756,28 @@ export function overviewLayout(ctx: SeedContext): PageBlock[] {
         description:
           "Focused on building a stronger foundation for sustainable growth while responding to changing customer and industry needs.",
       },
-      entries: [
-        {
-          year: "2026",
-          title: "Building the Next Chapter",
-          description:
-            "Building on decades of experience, we continue to strengthen our capabilities, expand our reach, and create greater value.",
-        },
-        {
-          year: "2025",
-          title: "Expanding Capabilities and Market Reach",
-          description:
-            "Continued to develop our capabilities while strengthening relationships across the industries and markets we serve.",
-        },
-        {
-          year: "2024",
-          title: "Expanding Capabilities and Market Reach",
-          description:
-            "Continued to develop our capabilities while strengthening relationships across the industries and markets we serve.",
-        },
-      ],
+      entries: dku
+        ? [
+            {
+              year: "2026",
+              title: "Building the Next Chapter",
+              description:
+                "Building on decades of experience, we continue to strengthen our capabilities, expand our reach, and create greater value.",
+            },
+            {
+              year: "2025",
+              title: "Expanding Capabilities and Market Reach",
+              description:
+                "Continued to develop our capabilities while strengthening relationships across the industries and markets we serve.",
+            },
+            {
+              year: "2024",
+              title: "Expanding Capabilities and Market Reach",
+              description:
+                "Continued to develop our capabilities while strengthening relationships across the industries and markets we serve.",
+            },
+          ]
+        : neutralEntries(name),
       buttons: [button("Discover Our Milestones", "/about-us/our-journey")],
     },
     {
@@ -794,12 +795,7 @@ export function overviewLayout(ctx: SeedContext): PageBlock[] {
       ],
       variant: "cards",
       layout: "grid",
-      items: CERTIFICATES.map(([code, title, description]) => ({
-        logo: ctx.image,
-        code,
-        title,
-        description,
-      })),
+      items: certificateCards(ctx, dku),
       appearance: PLAIN,
     },
     groupShowcase(ctx),
@@ -829,6 +825,22 @@ const CERTIFICATES = [
   ],
 ] as const;
 
+function certificateCards(ctx: SeedContext, dku: boolean) {
+  return dku
+    ? CERTIFICATES.map(([code, title, description]) => ({
+        logo: ctx.image,
+        code,
+        title,
+        description,
+      }))
+    : [
+        {
+          logo: ctx.image,
+          title: `The certifications of ${TENANT_NAMES[ctx.tenant!]} will be added here.`,
+        },
+      ];
+}
+
 const MILESTONE_A =
   "Change of major shareholder : PT Freeport Indonesia 66.02% and Mitsubishi Materials Corporation 33.98%";
 
@@ -836,6 +848,7 @@ const MILESTONE_B =
   "Continued to develop our capabilities while strengthening relationships across the industries and markets we serve.";
 
 export function journeyLayout(ctx: SeedContext): PageBlock[] {
+  const dku = ctx.tenant === "duniakimia";
   return [
     hero(
       ctx,
@@ -851,39 +864,41 @@ export function journeyLayout(ctx: SeedContext): PageBlock[] {
         "Building the Next Chapter",
         "Building on decades of experience, we continue to strengthen our capabilities, expand our reach, and create greater value for our customers and the industries we serve.",
       ),
-      entries: [
-        {
-          year: "2026 - Beyond",
-          events: [
-            { dateLabel: "30 june 2025", description: MILESTONE_A },
-            { dateLabel: "30 june 2025", description: MILESTONE_B },
+      entries: !dku
+        ? neutralEntries(TENANT_NAMES[ctx.tenant!])
+        : [
+            {
+              year: "2026 - Beyond",
+              events: [
+                { dateLabel: "30 june 2025", description: MILESTONE_A },
+                { dateLabel: "30 june 2025", description: MILESTONE_B },
+              ],
+            },
+            {
+              year: "2025",
+              title: "Expanding Capabilities and Market Reach",
+              description: MILESTONE_B,
+              events: [
+                { dateLabel: "30 june 2025", description: MILESTONE_A },
+                { dateLabel: "30 june 2024", description: MILESTONE_B },
+              ],
+            },
+            {
+              year: "2024",
+              title: "Expanding Capabilities and Market Reach",
+              description: MILESTONE_B,
+              events: [
+                { dateLabel: "30 june 2023", description: MILESTONE_A },
+                { dateLabel: "30 june 2023", description: MILESTONE_B },
+              ],
+            },
+            {
+              year: "2023",
+              title: "Building Stronger Partnerships",
+              description:
+                "Focused on deepening customer relationships and creating greater value through reliable products, services, and industry support.",
+            },
           ],
-        },
-        {
-          year: "2025",
-          title: "Expanding Capabilities and Market Reach",
-          description: MILESTONE_B,
-          events: [
-            { dateLabel: "30 june 2025", description: MILESTONE_A },
-            { dateLabel: "30 june 2024", description: MILESTONE_B },
-          ],
-        },
-        {
-          year: "2024",
-          title: "Expanding Capabilities and Market Reach",
-          description: MILESTONE_B,
-          events: [
-            { dateLabel: "30 june 2023", description: MILESTONE_A },
-            { dateLabel: "30 june 2023", description: MILESTONE_B },
-          ],
-        },
-        {
-          year: "2023",
-          title: "Building Stronger Partnerships",
-          description:
-            "Focused on deepening customer relationships and creating greater value through reliable products, services, and industry support.",
-        },
-      ],
     },
   ];
 }
@@ -940,6 +955,7 @@ const AWARDS = [
 ] as const;
 
 export function awardsLayout(ctx: SeedContext): PageBlock[] {
+  const dku = ctx.tenant === "duniakimia";
   return [
     hero(
       ctx,
@@ -956,12 +972,7 @@ export function awardsLayout(ctx: SeedContext): PageBlock[] {
       ),
       variant: "cards",
       layout: "carousel",
-      items: CERTIFICATES.map(([code, title, description]) => ({
-        logo: ctx.image,
-        code,
-        title,
-        description,
-      })),
+      items: certificateCards(ctx, dku),
       appearance: onImage(ctx.image),
     },
     {
@@ -980,12 +991,18 @@ export function awardsLayout(ctx: SeedContext): PageBlock[] {
         "Recognized for Our Commitment",
         "Recognition from industry organizations and partners reflects the dedication of our people and our continued commitment to creating value.",
       ),
-      items: AWARDS.map(([year, title, description, issuer]) => ({
-        year,
-        title,
-        description,
-        issuer: `Issued by ${issuer}`,
-      })),
+      items: dku
+        ? AWARDS.map(([year, title, description, issuer]) => ({
+            year,
+            title,
+            description,
+            issuer: `Issued by ${issuer}`,
+          }))
+        : [
+            {
+              title: `The awards of ${TENANT_NAMES[ctx.tenant!]} will be added here.`,
+            },
+          ],
       pageSize: AWARDS.length,
     },
   ];
@@ -1048,6 +1065,16 @@ const COMMITMENTS = [
     "Oppose corruption and unethical practices in all our operations.",
   ],
 ] as const;
+
+function neutralEntries(name: string) {
+  return [
+    {
+      year: "Our journey",
+      title: "Milestones",
+      description: `The milestones of ${name} will be added here.`,
+    },
+  ];
+}
 
 function numbered(rows: readonly (readonly [string, string])[]) {
   return rows.map(([title, description], index) => ({
