@@ -21,6 +21,7 @@ import {
   checkCompanyRouting,
   publishedPagesOfCompany,
 } from "../siteRouting";
+import { revalidateTenantLayout, stubRevalidator } from "../revalidation";
 import { withTenantAccess } from "../tenancy";
 import {
   isGa4MeasurementId,
@@ -106,7 +107,10 @@ export const TenantSettings = withTenantAccess(
     },
     hooks: {
       beforeChange: [checkCompanyRouting],
-      afterChange: [cascadeCompanyRouting],
+      afterChange: [
+        cascadeCompanyRouting,
+        revalidateTenantLayout(stubRevalidator),
+      ],
     },
     custom: {
       nav: { icon: "tune" },

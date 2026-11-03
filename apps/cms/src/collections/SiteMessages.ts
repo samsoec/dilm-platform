@@ -18,11 +18,8 @@ import {
 } from "../fields/layoutEditor";
 import { link } from "../fields/link";
 import { withUpdatedBy } from "../fields/updatedBy";
-import {
-  requireCookiePolicyLink,
-  revalidateLayout,
-  stubRevalidator,
-} from "../siteMessages";
+import { revalidateTenantLayout, stubRevalidator } from "../revalidation";
+import { requireCookiePolicyLink } from "../siteMessages";
 import { withTenantAccess } from "../tenancy";
 
 export const MAX_NOT_FOUND_BUTTONS = 2;
@@ -52,7 +49,7 @@ export const SiteMessages = withTenantAccess(
       drafts: false,
     },
     hooks: {
-      afterChange: [revalidateLayout(stubRevalidator)],
+      afterChange: [revalidateTenantLayout(stubRevalidator)],
     },
     fields: [
       localeBanner,

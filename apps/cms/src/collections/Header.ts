@@ -15,6 +15,7 @@ import {
 import { link } from "../fields/link";
 import { keepRowStructure, lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
+import { revalidateTenantLayout, stubRevalidator } from "../revalidation";
 import { withTenantAccess } from "../tenancy";
 import { collectionLabels } from "../admin/labels";
 
@@ -64,6 +65,7 @@ export const Header = withTenantAccess(
     },
     hooks: {
       beforeChange: [keepRowStructure],
+      afterChange: [revalidateTenantLayout(stubRevalidator)],
     },
     fields: [
       localeBanner,
