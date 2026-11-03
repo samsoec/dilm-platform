@@ -274,11 +274,12 @@ describe("ownership of products and solutions (FR-PM-37, §4.12)", () => {
     expect(collection.admin?.baseListFilter).toBeUndefined();
   });
 
-  it("makes the tenant field the owner", async () => {
+  it("makes the required tenant field the owner", async () => {
     const collection = await configured("products");
     expect(fieldOf(collection, "tenant")).toMatchObject({
       type: "relationship",
       relationTo: "tenants",
+      required: true,
       validate: expect.any(Function),
     });
   });
