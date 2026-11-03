@@ -79,7 +79,7 @@ const hidden = (field: Field, blockData: object, siblingData = blockData) =>
 
 describe("the remaining content blocks are registered (FR-PM-27, FR-PM-33)", () => {
   it("appends the nine blocks of §4.5.7 to §4.5.14 and §4.5.38 after the first six", () => {
-    expect(pageBlocks.slice(6).map(({ slug }) => slug)).toEqual([
+    expect(pageBlocks.slice(6, 15).map(({ slug }) => slug)).toEqual([
       "certifications",
       "certificateGallery",
       "awards",
@@ -146,7 +146,7 @@ describe("the remaining content blocks are registered (FR-PM-27, FR-PM-33)", () 
       return dbName({ tableName: "x" }).slice(2);
     });
     expect(new Set(suffixes).size).toBe(pageBlocks.length);
-    expect(suffixes.slice(6)).toEqual([
+    expect(suffixes.slice(6, 15)).toEqual([
       "cf",
       "cgal",
       "awd",
@@ -452,23 +452,29 @@ describe("ctaBanner (§4.5.13)", () => {
     });
   });
 
-  it("exports the same fields as a group for the record blocks' bottomCta", () => {
+  it("exports a group with the same title and description and two optional buttons for the record blocks' bottomCta", () => {
     const group = bottomCtaField();
     expect(group).toMatchObject({ type: "group", name: "bottomCta" });
-    expect(names(group.fields)).toEqual(names(ctaBanner.fields));
+    expect(names(group.fields)).toEqual([
+      "title",
+      "description",
+      "first",
+      "firstStyle",
+      "second",
+      "secondStyle",
+    ]);
     expect(names(ctaBannerFields())).toEqual(names(ctaBanner.fields));
     expect(bottomCtaField({ name: "footer" }).name).toBe("footer");
   });
 
-  it("lets a record block name the buttons table to stay under Postgres's identifier limit", () => {
-    const buttons = findField(
-      bottomCtaField({ buttonsTableName: "cta_btn" }).fields,
-      "buttons",
-    ) as ArrayField;
-    const dbName = buttons.dbName as (args: { tableName: string }) => string;
-    expect(dbName({ tableName: "pages_blocks_x" })).toBe(
-      "pages_blocks_x_cta_btn",
-    );
+  it("keeps the bottom bar's two buttons out of an array, because a localized array under a group makes Payload's version query collide on Postgres's 63-character alias limit", () => {
+    const group = bottomCtaField();
+    expect(JSON.stringify(group)).not.toContain('"type":"array"');
+    expect(findField(group.fields, "first")).toMatchObject({ type: "group" });
+    expect(findField(group.fields, "secondStyle")).toMatchObject({
+      type: "select",
+      defaultValue: "primary",
+    });
   });
 });
 

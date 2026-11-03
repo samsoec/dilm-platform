@@ -15,6 +15,13 @@ import { hotspotIllustration } from "./hotspotIllustration";
 import { ctaBanner } from "./ctaBanner";
 import { richText } from "./richText";
 import { articleHeader } from "./articleHeader";
+import { productsSolutionsTabs } from "./productsSolutionsTabs";
+import { productShowcase } from "./productShowcase";
+import { solutionShowcase } from "./solutionShowcase";
+import { postShowcase } from "./postShowcase";
+import { jobListing } from "./jobListing";
+import { jobShowcase } from "./jobShowcase";
+import { irDocuments } from "./irDocuments";
 
 export { bottomCtaField, ctaBannerFields } from "./ctaBanner";
 
@@ -40,4 +47,11 @@ export const pageBlocks: Block[] = [
   ctaBanner,
   richText,
   articleHeader,
+  productsSolutionsTabs,
+  productShowcase,
+  solutionShowcase,
+  postShowcase,
+  jobListing,
+  jobShowcase,
+  irDocuments,
 ];
