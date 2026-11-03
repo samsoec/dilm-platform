@@ -5,7 +5,7 @@ import type {
   TextField,
   TextFieldSingleValidation,
 } from "payload";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { fieldNames } from "../testing";
 import {
@@ -14,7 +14,7 @@ import {
   link,
   referenceFilter,
 } from "./link";
-import { resolveLink } from "./linkResolve";
+import { loadTenantDomains, normalizeDomain, resolveLink } from "./linkResolve";
 
 function find(fields: Field[], name: string): Field {
   for (const field of fields) {
@@ -408,109 +408,181 @@ describe("resolveLink", () => {
     reference: { relationTo, value: value as never },
   });
 
-  it("leaves internal and external links untouched", () => {
-    expect(resolveLink({ internalPath: "/about" })).toBe("/about");
-    expect(resolveLink({ type: "internal", internalPath: "/about" })).toBe(
-      "/about",
-    );
+  it("leaves internal and external links untouched", async () => {
+    expect(await resolveLink({ internalPath: "/about" })).toBe("/about");
     expect(
-      resolveLink({ type: "external", externalUrl: "https://x.co/a" }),
+      await resolveLink({ type: "internal", internalPath: "/about" }),
+    ).toBe("/about");
+    expect(
+      await resolveLink({ type: "external", externalUrl: "https://x.co/a" }),
     ).toBe("https://x.co/a");
-    expect(resolveLink({ type: "internal" })).toBeNull();
-    expect(resolveLink(null)).toBeNull();
+    expect(await resolveLink({ type: "internal" })).toBeNull();
+    expect(await resolveLink(null)).toBeNull();
   });
 
-  it("returns the current path of a same-company target", () => {
+  it("returns the current path of a same-company target", async () => {
     const doc = { id: 1, _status: "published", tenant: 2, path: "/about/team" };
-    expect(resolveLink(to("pages", doc), { tenant: 2 })).toBe("/about/team");
-    expect(resolveLink(to("pages", doc), { tenant: { id: 2 } })).toBe(
+    expect(await resolveLink(to("pages", doc), { tenant: 2 })).toBe(
+      "/about/team",
+    );
+    expect(await resolveLink(to("pages", doc), { tenant: { id: 2 } })).toBe(
       "/about/team",
     );
   });
 
-  it("picks the path of the locale and falls back to English", () => {
+  it("picks the path of the locale and falls back to English", async () => {
     const doc = {
       id: 1,
       _status: "published",
       path: { en: "/about", id: "/tentang" },
     };
-    expect(resolveLink(to("shared-pages", doc), { locale: "id" })).toBe(
+    expect(await resolveLink(to("shared-pages", doc), { locale: "id" })).toBe(
       "/tentang",
     );
     const partial = { ...doc, path: { en: "/about", id: null } };
-    expect(resolveLink(to("shared-pages", partial), { locale: "id" })).toBe(
-      "/about",
-    );
+    expect(
+      await resolveLink(to("shared-pages", partial), { locale: "id" }),
+    ).toBe("/about");
   });
 
-  it("serves shared pages and categories as relative paths", () => {
+  it("serves shared pages and categories as relative paths", async () => {
     expect(
-      resolveLink(
+      await resolveLink(
         to("shared-pages", { _status: "published", path: "/privacy" }),
         { tenant: 1 },
       ),
     ).toBe("/privacy");
     expect(
-      resolveLink(to("categories", { path: "/category/news" }), { tenant: 1 }),
+      await resolveLink(to("categories", { path: "/category/news" }), {
+        tenant: 1,
+      }),
     ).toBe("/category/news");
   });
 
-  it("opens the owner's domain for another company's page, job or post", () => {
+  it("opens the owner's domain for another company's page, job or post", async () => {
     const doc = {
       id: 9,
       _status: "published",
       tenant: { id: 1, slug: "indoacid", domain: "indonesianacids.com" },
       path: "/about",
     };
-    expect(resolveLink(to("pages", doc), { tenant: 2 })).toBe(
+    expect(await resolveLink(to("pages", doc), { tenant: 2 })).toBe(
       "https://indonesianacids.com/about",
     );
-    expect(resolveLink(to("pages", doc), { tenant: 1 })).toBe("/about");
-    const job = { ...doc, tenant: { id: 3, slug: "likutelaga" } };
-    expect(resolveLink(to("jobs", job), { tenant: 2 })).toBe(
+    expect(await resolveLink(to("pages", doc), { tenant: 1 })).toBe("/about");
+    const job = {
+      ...doc,
+      tenant: { id: 3, slug: "likutelaga", domain: "likutelaga.com" },
+    };
+    expect(await resolveLink(to("jobs", job), { tenant: 2 })).toBe(
       "https://likutelaga.com/about",
     );
     expect(
-      resolveLink(to("posts", { ...doc, tenant: 3 }), {
+      await resolveLink(to("posts", { ...doc, tenant: 3 }), {
         tenant: 2,
         domains: { "3": "likutelaga.com" },
       }),
     ).toBe("https://likutelaga.com/about");
   });
 
-  it("keeps another company's product or solution on the same domain", () => {
+  it("keeps another company's product or solution on the same domain", async () => {
     const doc = {
       id: 9,
       _status: "published",
       tenant: { id: 1, slug: "indoacid", domain: "indonesianacids.com" },
       path: "/products/sulfuric-acid",
     };
-    expect(resolveLink(to("products", doc), { tenant: 2 })).toBe(
+    expect(await resolveLink(to("products", doc), { tenant: 2 })).toBe(
       "/products/sulfuric-acid",
     );
     expect(
-      resolveLink(to("solutions", { ...doc, tenant: 1 }), { tenant: 2 }),
+      await resolveLink(to("solutions", { ...doc, tenant: 1 }), { tenant: 2 }),
     ).toBe("/products/sulfuric-acid");
   });
 
-  it("returns null and logs when the owner's domain is unknown", () => {
+  it("looks the owner's domain up in the tenants collection when it is not populated", async () => {
+    const find = vi.fn().mockResolvedValue({
+      docs: [
+        { id: 1, domain: "indonesianacids.com" },
+        { id: 3, domain: "https://WWW.likutelaga.com/" },
+      ],
+    });
+    const payload = { find } as never;
+    const doc = { _status: "published", tenant: 3, path: "/careers" };
+    expect(await resolveLink(to("jobs", doc), { tenant: 2, payload })).toBe(
+      "https://www.likutelaga.com/careers",
+    );
+    expect(
+      await resolveLink(to("posts", { ...doc, tenant: 1 }), {
+        tenant: 2,
+        payload,
+      }),
+    ).toBe("https://indonesianacids.com/careers");
+    expect(find).toHaveBeenCalledTimes(1);
+    expect(find.mock.calls[0]?.[0]).toMatchObject({
+      collection: "tenants",
+      overrideAccess: true,
+    });
+  });
+
+  it("prefers a populated tenant or a supplied map over querying", async () => {
+    const find = vi.fn();
+    const payload = { find } as never;
+    const populated = {
+      _status: "published",
+      tenant: { id: 3, domain: "likutelaga.com" },
+      path: "/x",
+    };
+    expect(
+      await resolveLink(to("pages", populated), { tenant: 2, payload }),
+    ).toBe("https://likutelaga.com/x");
+    expect(
+      await resolveLink(
+        to("pages", { _status: "published", tenant: 3, path: "/x" }),
+        { tenant: 2, payload, domains: { "3": "likutelaga.com" } },
+      ),
+    ).toBe("https://likutelaga.com/x");
+    expect(find).not.toHaveBeenCalled();
+  });
+
+  it("caches the tenant lookup and retries after a failure", async () => {
+    const find = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("db down"))
+      .mockResolvedValue({ docs: [{ id: 3, domain: "likutelaga.com" }] });
+    const payload = { find } as never;
+    await expect(loadTenantDomains(payload)).rejects.toThrow("db down");
+    expect(await loadTenantDomains(payload)).toEqual({ "3": "likutelaga.com" });
+    await loadTenantDomains(payload);
+    expect(find).toHaveBeenCalledTimes(2);
+  });
+
+  it("normalises stored domains", () => {
+    expect(normalizeDomain("https://Example.com/")).toBe("example.com");
+    expect(normalizeDomain("duniakimia.com")).toBe("duniakimia.com");
+    expect(normalizeDomain("http://www.x.id/a/b")).toBe("www.x.id");
+  });
+
+  it("returns null and logs when the owner's domain is unknown", async () => {
     const { messages, warn: log } = warn();
     const doc = { _status: "published", tenant: 3, path: "/x" };
-    expect(resolveLink(to("jobs", doc), { tenant: 2, warn: log })).toBeNull();
+    expect(
+      await resolveLink(to("jobs", doc), { tenant: 2, warn: log }),
+    ).toBeNull();
     expect(messages).toHaveLength(1);
   });
 
-  it("returns null and logs for unpublished, trashed and missing targets", () => {
+  it("returns null and logs for unpublished, trashed and missing targets", async () => {
     const { messages, warn: log } = warn();
     const options = { tenant: 2, warn: log };
     expect(
-      resolveLink(
+      await resolveLink(
         to("pages", { _status: "draft", tenant: 2, path: "/a" }),
         options,
       ),
     ).toBeNull();
     expect(
-      resolveLink(
+      await resolveLink(
         to("pages", {
           _status: "published",
           deletedAt: "2026-01-01",
@@ -519,11 +591,14 @@ describe("resolveLink", () => {
         options,
       ),
     ).toBeNull();
-    expect(resolveLink(to("pages", 12), options)).toBeNull();
-    expect(resolveLink(to("pages", null), options)).toBeNull();
-    expect(resolveLink({ type: "reference" }, options)).toBeNull();
+    expect(await resolveLink(to("pages", 12), options)).toBeNull();
+    expect(await resolveLink(to("pages", null), options)).toBeNull();
+    expect(await resolveLink({ type: "reference" }, options)).toBeNull();
     expect(
-      resolveLink(to("pages", { _status: "published", tenant: 2 }), options),
+      await resolveLink(
+        to("pages", { _status: "published", tenant: 2 }),
+        options,
+      ),
     ).toBeNull();
     expect(messages).toHaveLength(6);
   });

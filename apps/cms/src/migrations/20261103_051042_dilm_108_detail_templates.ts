@@ -120,20 +120,20 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "_detail_templates_v" CASCADE;
   DROP TABLE "shared_detail_templates" CASCADE;
   DROP TABLE "_shared_detail_templates_v" CASCADE;
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_detail_templates_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_detail_templates_fk";
   
-  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT "payload_locked_documents_rels_shared_detail_templates_fk";
+  ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_shared_detail_templates_fk";
   
-  DROP INDEX "payload_locked_documents_rels_detail_templates_id_idx";
-  DROP INDEX "payload_locked_documents_rels_shared_detail_templates_id_idx";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "detail_templates_id";
-  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN "shared_detail_templates_id";
-  DROP TYPE "public"."detail_templates_record_type";
-  DROP TYPE "public"."enum_detail_templates_status";
-  DROP TYPE "public"."enum__detail_templates_v_version_status";
-  DROP TYPE "public"."enum__detail_templates_v_published_locale";
-  DROP TYPE "public"."shared_detail_templates_record_type";
-  DROP TYPE "public"."enum_shared_detail_templates_status";
-  DROP TYPE "public"."enum__shared_detail_templates_v_version_status";
-  DROP TYPE "public"."enum__shared_detail_templates_v_published_locale";`)
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_detail_templates_id_idx";
+  DROP INDEX IF EXISTS "payload_locked_documents_rels_shared_detail_templates_id_idx";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "detail_templates_id";
+  ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "shared_detail_templates_id";
+  DROP TYPE IF EXISTS "public"."detail_templates_record_type";
+  DROP TYPE IF EXISTS "public"."enum_detail_templates_status";
+  DROP TYPE IF EXISTS "public"."enum__detail_templates_v_version_status";
+  DROP TYPE IF EXISTS "public"."enum__detail_templates_v_published_locale";
+  DROP TYPE IF EXISTS "public"."shared_detail_templates_record_type";
+  DROP TYPE IF EXISTS "public"."enum_shared_detail_templates_status";
+  DROP TYPE IF EXISTS "public"."enum__shared_detail_templates_v_version_status";
+  DROP TYPE IF EXISTS "public"."enum__shared_detail_templates_v_published_locale";`)
 }
