@@ -104,6 +104,8 @@ import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1e
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { OrderedListFeatureClient as OrderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { TableFeatureClient as TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { QueryPresetsAccessCell as QueryPresetsAccessCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { QueryPresetsWhereCell as QueryPresetsWhereCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { QueryPresetsWhereField as QueryPresetsWhereField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
@@ -245,6 +247,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#OrderedListFeatureClient": OrderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#TableFeatureClient": TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#UploadFeatureClient": UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/next/client#QueryPresetsAccessCell": QueryPresetsAccessCell_2b8867833a34864a02ddf429b0728a40,
   "@payloadcms/next/client#QueryPresetsWhereCell": QueryPresetsWhereCell_2b8867833a34864a02ddf429b0728a40,
   "@payloadcms/next/client#QueryPresetsWhereField": QueryPresetsWhereField_2b8867833a34864a02ddf429b0728a40,

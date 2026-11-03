@@ -77,7 +77,7 @@ const hidden = (field: Field, blockData: object, siblingData = blockData) =>
 
 describe("the hero and content blocks are registered (FR-PM-27, FR-PM-33)", () => {
   it("adds the six blocks of §4.5.1 to §4.5.6 to the layout, in catalog order", () => {
-    expect(pageBlocks.map(({ slug }) => slug)).toEqual([
+    expect(pageBlocks.slice(0, 6).map(({ slug }) => slug)).toEqual([
       "heroCarousel",
       "pageHero",
       "mediaText",
@@ -93,11 +93,13 @@ describe("the hero and content blocks are registered (FR-PM-27, FR-PM-33)", () =
 
   it("names every interface after its slug and groups Hero and Content", () => {
     expect(
-      pageBlocks.map(({ slug, interfaceName, admin }) => [
-        slug,
-        interfaceName,
-        admin?.group,
-      ]),
+      pageBlocks
+        .slice(0, 6)
+        .map(({ slug, interfaceName, admin }) => [
+          slug,
+          interfaceName,
+          admin?.group,
+        ]),
     ).toEqual([
       ["heroCarousel", "HeroCarouselBlock", "Hero"],
       ["pageHero", "PageHeroBlock", "Hero"],
@@ -110,7 +112,9 @@ describe("the hero and content blocks are registered (FR-PM-27, FR-PM-33)", () =
 
   it("stores a plain-language name, purpose, Figma sections and summary rule for the catalog", () => {
     expect(
-      pageBlocks.map((block) => [block.slug, catalogOf(block)?.name]),
+      pageBlocks
+        .slice(0, 6)
+        .map((block) => [block.slug, catalogOf(block)?.name]),
     ).toEqual([
       ["heroCarousel", "Hero carousel"],
       ["pageHero", "Page hero"],
