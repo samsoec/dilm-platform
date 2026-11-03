@@ -16,13 +16,19 @@ async function defaultLocaleValues({
     id,
     depth: 0,
     locale: localization.defaultLocale,
-    select: { siteName: true, defaultSeo: { title: true } },
+    select: {
+      siteName: true,
+      defaultSeo: { title: true },
+      profile: { hubLabel: true, shortDescription: true },
+    },
     overrideAccess: false,
     user: req.user,
   });
   return {
     siteName: settings.siteName ?? null,
     "defaultSeo.title": settings.defaultSeo?.title ?? null,
+    "profile.hubLabel": settings.profile?.hubLabel ?? null,
+    "profile.shortDescription": settings.profile?.shortDescription ?? null,
   };
 }
 

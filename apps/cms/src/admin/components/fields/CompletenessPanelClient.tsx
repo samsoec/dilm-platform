@@ -8,6 +8,8 @@ import {
   completenessFromValues,
   type LaunchItem,
   launchItems,
+  optionalSummaries,
+  requiredStatuses,
   type LocalizedCompletenessValues,
   SETTINGS_TABS,
   settingsCompleteness,
@@ -98,8 +100,10 @@ export function CompletenessPanelClient({
     }, 50);
   }
 
-  const required = statuses.length;
-  const done = statuses.filter(({ complete }) => complete).length;
+  const requiredList = requiredStatuses(statuses);
+  const required = requiredList.length;
+  const done = requiredList.filter(({ complete }) => complete).length;
+  const optional = optionalSummaries(statuses);
 
   return (
     <section
@@ -138,6 +142,15 @@ export function CompletenessPanelClient({
           </span>
         </p>
       )}
+      {optional.map(({ section, label, done: filled, total, missing }) => (
+        <p className="dil-completeness__note" key={section}>
+          <b>
+            {label} · {filled} of {total}
+          </b>
+          {missing.length > 0 ? ` · Missing: ${missing.join(", ")}.` : ""}{" "}
+          Optional.
+        </p>
+      ))}
       <p className="dil-completeness__used">
         <b>Used by</b> {SETTINGS_USED_BY}
       </p>

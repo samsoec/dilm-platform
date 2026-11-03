@@ -31,6 +31,8 @@ import {
 
 export { SOCIAL_PLATFORMS };
 
+export const PROFILE_MAX_REGIONS = 10;
+
 type SocialLinkRow = { platform?: string | null };
 
 export const isUniquePlatform: SelectFieldSingleValidation = async (
@@ -306,6 +308,128 @@ export const TenantSettings = withTenantAccess(
                       "/admin/components/fields/LaunchRequiredLabel#LaunchRequiredLabel",
                   },
                 },
+              },
+            ],
+          },
+          {
+            label: `${settingsTabLabel("profile")} · optional`,
+            fields: [
+              {
+                name: "profile",
+                type: "group",
+                label: false,
+                admin: { hideGutter: true, className: "dil-flat-group" },
+                fields: [
+                  {
+                    name: "hubLabel",
+                    label: "Hub label",
+                    type: "text",
+                    localized: true,
+                    admin: {
+                      description:
+                        "Small heading above the company on the map, like Chemical hub in Sumatra.",
+                    },
+                  },
+                  {
+                    name: "shortDescription",
+                    label: "Short description",
+                    type: "textarea",
+                    localized: true,
+                    admin: { rows: 3 },
+                  },
+                  withMediaPicker({
+                    name: "coverImage",
+                    label: "Cover image",
+                    type: "upload",
+                    relationTo: "media",
+                  }),
+                  {
+                    name: "regions",
+                    label: "Regions served",
+                    type: "array",
+                    maxRows: PROFILE_MAX_REGIONS,
+                    labels: { singular: "Region", plural: "Regions" },
+                    fields: [
+                      {
+                        name: "name",
+                        type: "text",
+                        required: true,
+                        localized: true,
+                        admin: { placeholder: "All Sumatra" },
+                      },
+                    ],
+                  },
+                  {
+                    name: "mapPin",
+                    label: "Map pin",
+                    type: "group",
+                    admin: {
+                      description:
+                        "Position of the company dot on the site's dot map, as a percentage from the top-left corner.",
+                    },
+                    fields: [
+                      {
+                        type: "row",
+                        fields: [
+                          {
+                            name: "x",
+                            type: "number",
+                            min: 0,
+                            max: 100,
+                            admin: { width: "50%" },
+                          },
+                          {
+                            name: "y",
+                            type: "number",
+                            min: 0,
+                            max: 100,
+                            admin: { width: "50%" },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    name: "mapLocation",
+                    label: "Map location",
+                    type: "group",
+                    admin: {
+                      description: "Real-world position for the location map.",
+                    },
+                    fields: [
+                      {
+                        type: "row",
+                        fields: [
+                          {
+                            name: "latitude",
+                            type: "number",
+                            min: -90,
+                            max: 90,
+                            admin: { width: "50%" },
+                          },
+                          {
+                            name: "longitude",
+                            type: "number",
+                            min: -180,
+                            max: 180,
+                            admin: { width: "50%" },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    name: "googleMapsUrl",
+                    label: "Google Maps link",
+                    type: "text",
+                    validate: isHttpsUrl,
+                    admin: {
+                      className: "dil-mono-input",
+                      placeholder: "https://",
+                      description: 'Opened by the "Open Google Map" button.',
+                    },
+                  },
+                ],
               },
             ],
           },

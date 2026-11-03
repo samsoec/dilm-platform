@@ -18,6 +18,7 @@ import {
 import { withTenantAccess } from "../tenancy";
 import { withTrashedBy, withUploadedBy } from "../fields/authoring";
 import { requiredToPublish } from "../admin/components/ir/irEditor";
+import { withMediaPicker } from "../fields/mediaPicker";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { collectionLabels } from "../admin/labels";
 import { IR_DOCUMENT_TYPE_OPTIONS } from "../irDocumentTypes";
@@ -170,6 +171,23 @@ export const IrDocuments = withTenantAccess(
             admin: {
               description:
                 "The disclosure date shown on the Investor page. It's not the upload date.",
+            },
+          },
+          withMediaPicker({
+            name: "coverImage",
+            label: "Cover image",
+            type: "upload",
+            relationTo: "media",
+            admin: {
+              description: "No cover: the list shows this document-type icon.",
+            },
+          }),
+          {
+            name: "summary",
+            type: "textarea",
+            admin: {
+              description: "Shown under the title in the Investor list.",
+              rows: 3,
             },
           },
           {

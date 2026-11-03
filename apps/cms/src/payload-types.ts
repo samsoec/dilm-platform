@@ -262,6 +262,38 @@ export interface TenantSetting {
    * Changes apply to applications received after you save.
    */
   recruiterEmail?: string | null;
+  profile?: {
+    /**
+     * Small heading above the company on the map, like Chemical hub in Sumatra.
+     */
+    hubLabel?: string | null;
+    shortDescription?: string | null;
+    coverImage?: (number | null) | Media;
+    regions?:
+      | {
+          name: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Position of the company dot on the site's dot map, as a percentage from the top-left corner.
+     */
+    mapPin?: {
+      x?: number | null;
+      y?: number | null;
+    };
+    /**
+     * Real-world position for the location map.
+     */
+    mapLocation?: {
+      latitude?: number | null;
+      longitude?: number | null;
+    };
+    /**
+     * Opened by the "Open Google Map" button.
+     */
+    googleMapsUrl?: string | null;
+  };
   /**
    * Each platform once per company. Used platforms stay listed but can't be picked.
    */
@@ -1078,6 +1110,14 @@ export interface IrDocument {
    * The disclosure date shown on the Investor page. It's not the upload date.
    */
   publishedDate: string;
+  /**
+   * No cover: the list shows this document-type icon.
+   */
+  coverImage?: (number | null) | Media;
+  /**
+   * Shown under the title in the Investor list.
+   */
+  summary?: string | null;
   updatedBy?: (number | null) | User;
   uploadedBy?: (number | null) | User;
   trashedBy?: (number | null) | User;
@@ -1915,6 +1955,32 @@ export interface TenantSettingsSelect<T extends boolean = true> {
   contactPhone?: T;
   waLink?: T;
   recruiterEmail?: T;
+  profile?:
+    | T
+    | {
+        hubLabel?: T;
+        shortDescription?: T;
+        coverImage?: T;
+        regions?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
+        mapPin?:
+          | T
+          | {
+              x?: T;
+              y?: T;
+            };
+        mapLocation?:
+          | T
+          | {
+              latitude?: T;
+              longitude?: T;
+            };
+        googleMapsUrl?: T;
+      };
   socialLinks?:
     | T
     | {
@@ -2018,6 +2084,8 @@ export interface IrDocumentsSelect<T extends boolean = true> {
   lastPurgeAt?: T;
   locale?: T;
   publishedDate?: T;
+  coverImage?: T;
+  summary?: T;
   updatedBy?: T;
   uploadedBy?: T;
   trashedBy?: T;
