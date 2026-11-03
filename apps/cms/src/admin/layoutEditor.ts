@@ -1,8 +1,9 @@
 export type LinkValue = {
-  type?: "internal" | "external" | null;
+  type?: "internal" | "external" | "reference" | null;
   newTab?: boolean | null;
   internalPath?: string | null;
   externalUrl?: string | null;
+  reference?: { relationTo?: string; value?: unknown } | null;
   label?: string | null;
 };
 
@@ -37,6 +38,9 @@ export function rowNumberText(rowNumber: number | undefined): string {
 
 export function linkTarget(link: LinkValue | null | undefined): string {
   if (!link) return "";
+  if (link.type === "reference") {
+    return link.reference?.value ? "A page or record" : "";
+  }
   if ((link.type ?? "internal") === "external") {
     return (link.externalUrl ?? "").replace(/^https?:\/\//i, "");
   }

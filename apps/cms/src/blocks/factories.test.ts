@@ -402,6 +402,14 @@ describe("assembled sample block", () => {
           slug: "pages",
           fields: [layoutField([sample])],
         },
+        ...[
+          "shared-pages",
+          "products",
+          "solutions",
+          "jobs",
+          "posts",
+          "categories",
+        ].map((slug) => ({ slug, fields: [] })),
       ],
     } as never);
     const pages = config.collections.find(

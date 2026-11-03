@@ -5,6 +5,7 @@ type FieldLike = { valid?: boolean; rows?: unknown[]; errorMessage?: string };
 const FIELD_NAMES: Record<string, string> = {
   internalPath: "Page path",
   externalUrl: "Web address",
+  reference: "Page or record",
   label: "Label",
   title: "Title",
   children: "Dropdown links",

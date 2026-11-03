@@ -2,7 +2,12 @@ import type { CollectionConfig } from "payload";
 import { describe, expect, it } from "vitest";
 
 import { Tenants } from "./collections/Tenants";
-import { tenantScopedCollections, withTenantAccess } from "./tenancy";
+import {
+  restoreUnscopedFilters,
+  tenantScopedCollections,
+  unscopedRelationship,
+  withTenantAccess,
+} from "./tenancy";
 import { applyMultiTenant } from "./testing";
 
 const users: CollectionConfig = { slug: "users", auth: true, fields: [] };
@@ -58,5 +63,43 @@ describe("multiTenant", () => {
     expect(
       collection("users").fields.map((field) => "name" in field && field.name),
     ).toContain("tenants");
+  });
+});
+
+describe("restoreUnscopedFilters", () => {
+  const original = () => true;
+  const marked = unscopedRelationship({
+    name: "pick",
+    type: "relationship",
+    relationTo: "pages",
+    filterOptions: original,
+  });
+
+  it("puts the original filter back inside blocks, arrays and groups", () => {
+    const [blocks] = restoreUnscopedFilters([
+      {
+        name: "layout",
+        type: "blocks",
+        blocks: [
+          {
+            slug: "cta",
+            fields: [
+              {
+                name: "buttons",
+                type: "array",
+                fields: [{ name: "link", type: "group", fields: [marked] }],
+              },
+            ],
+          },
+        ],
+      },
+    ]) as unknown as {
+      blocks: {
+        fields: { fields: { fields: { filterOptions: unknown }[] }[] }[];
+      }[];
+    }[];
+    expect(blocks.blocks[0].fields[0].fields[0].fields[0].filterOptions).toBe(
+      original,
+    );
   });
 });

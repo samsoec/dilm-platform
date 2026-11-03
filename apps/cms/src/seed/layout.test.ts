@@ -13,7 +13,7 @@ import { isHttpsUrl, isInternalPath } from "../validation";
 import { layoutSeed, seedLayout, type LayoutSeed } from "./layout";
 
 type Link = {
-  type: "internal" | "external";
+  type: "internal" | "external" | "reference";
   internalPath?: string | null;
   externalUrl?: string | null;
   label?: string | null;
