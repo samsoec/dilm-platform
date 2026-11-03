@@ -1,5 +1,6 @@
 export const VIDEO_URL_MESSAGE = "Use a YouTube or Vimeo link.";
 
+// TODO(DILM-35): add these frame sources to the site CSP once it exists.
 export const VIDEO_FRAME_SOURCES = [
   "https://www.youtube-nocookie.com",
   "https://player.vimeo.com",

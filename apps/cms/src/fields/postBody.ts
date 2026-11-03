@@ -11,11 +11,45 @@ import {
   ParagraphFeature,
   UnorderedListFeature,
 } from "@payloadcms/richtext-lexical";
-import type { Block, RichTextField, TextFieldSingleValidation } from "payload";
+import type {
+  Block,
+  RichTextField,
+  TextFieldSingleValidation,
+  UploadFieldSingleValidation,
+} from "payload";
+import { upload } from "payload/shared";
 
 import { VIDEO_URL_MESSAGE, isSupportedVideoUrl } from "@dilm/shared-types";
 
 import { sameCompanyDocuments } from "../catalog";
+import { refId } from "../pageRules";
+
+export const DOCUMENT_OTHER_COMPANY =
+  "This document belongs to another company. Pick one of this company's documents.";
+
+export const validateSameCompanyDocument: UploadFieldSingleValidation = async (
+  value,
+  options,
+) => {
+  const base = await upload(value, options);
+  if (base !== true) return base;
+  const id = refId(value as Parameters<typeof refId>[0]);
+  if (!id) return true;
+  const tenant = refId(
+    (options.data as { tenant?: Parameters<typeof refId>[0] } | undefined)
+      ?.tenant,
+  );
+  if (!tenant) return true;
+  const found = (await options.req.payload.findByID({
+    collection: "documents",
+    id,
+    depth: 0,
+    trash: true,
+    overrideAccess: true,
+    req: options.req,
+  })) as { tenant?: Parameters<typeof refId>[0] };
+  return refId(found.tenant) === tenant ? true : DOCUMENT_OTHER_COMPANY;
+};
 
 export const validateVideoUrl: TextFieldSingleValidation = (value) =>
   isSupportedVideoUrl(value) ? true : VIDEO_URL_MESSAGE;
@@ -64,6 +98,7 @@ export const attachmentBlock: Block = {
       relationTo: "documents",
       required: true,
       filterOptions: sameCompanyDocuments(),
+      validate: validateSameCompanyDocument,
     },
   ],
 };

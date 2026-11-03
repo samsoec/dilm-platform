@@ -14,9 +14,11 @@ import {
 } from "./catalog";
 import {
   POST_BODY_BLOCKS,
+  DOCUMENT_OTHER_COMPANY,
   attachmentBlock,
   imageBlock,
   postBodyField,
+  validateSameCompanyDocument,
   validateVideoUrl,
   videoBlock,
 } from "./fields/postBody";
@@ -433,5 +435,40 @@ describe("post routes belong to one company (FR-PM-23)", () => {
     expect(problems[0].message).toBe(
       '/category/sustainability/al-falah is already used by "Al Falah" on DKU. Pick another slug.',
     );
+  });
+});
+
+describe("an attachment from another company", () => {
+  const run = (documentTenant: number, postTenant: number | undefined) =>
+    (
+      validateSameCompanyDocument as (
+        value: unknown,
+        options: unknown,
+      ) => Promise<unknown>
+    )(7, {
+      event: "submit",
+      required: true,
+      data: { tenant: postTenant },
+      relationTo: "documents",
+      req: {
+        t: (key: string) => key,
+        payload: {
+          collections: { documents: { config: { slug: "documents" } } },
+          db: { defaultIDType: "number" },
+          findByID: async () => ({ id: 7, tenant: documentTenant }),
+        },
+      },
+    });
+
+  it("is refused on the server with a clear message", async () => {
+    expect(await run(1, 2)).toBe(DOCUMENT_OTHER_COMPANY);
+  });
+
+  it("is accepted from the post's own company", async () => {
+    expect(await run(2, 2)).toBe(true);
+  });
+
+  it("is not checked until the post has a company", async () => {
+    expect(await run(1, undefined)).toBe(true);
   });
 });
