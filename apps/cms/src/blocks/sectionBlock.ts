@@ -1,5 +1,5 @@
 import type { Block, Field } from "payload";
-import type { PageBlockGroup } from "@dilm/shared-types";
+import type { DetailRecordType, PageBlockGroup } from "@dilm/shared-types";
 
 import { tableNamed } from "./factories";
 
@@ -17,6 +17,7 @@ export type SectionBlockConfig = {
   label?: string;
   tableName?: string;
   catalog?: BlockCatalog;
+  recordTypes?: readonly DetailRecordType[];
   fields: Field[];
 };
 
@@ -25,6 +26,7 @@ export function sectionBlock({
   label,
   catalog,
   tableName,
+  recordTypes,
   ...block
 }: SectionBlockConfig): Block {
   const singular = catalog?.name ?? label;
@@ -41,7 +43,14 @@ export function sectionBlock({
       : {}),
     admin: {
       group,
-      ...(catalog ? { custom: { catalog: { ...catalog } } } : {}),
+      ...(catalog || recordTypes
+        ? {
+            custom: {
+              ...(catalog ? { catalog: { ...catalog } } : {}),
+              ...(recordTypes ? { recordTypes: [...recordTypes] } : {}),
+            },
+          }
+        : {}),
     },
   };
 }

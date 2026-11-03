@@ -6,6 +6,7 @@ import {
   type Where,
 } from "payload";
 import {
+  DETAIL_TYPE_LABELS,
   type DetailRecordType,
   SHARED_TEMPLATE_RECORD_TYPES,
   TENANT_TEMPLATE_RECORD_TYPES,
@@ -20,13 +21,7 @@ type Request = Partial<PayloadRequest> | undefined;
 
 export type TemplateCollection = "shared-detail-templates" | "detail-templates";
 
-export const RECORD_TYPE_LABELS: Record<DetailRecordType, string> = {
-  product: "Product",
-  solution: "Solution",
-  job: "Job",
-  post: "Post",
-  category: "Category",
-};
+export const RECORD_TYPE_LABELS = DETAIL_TYPE_LABELS;
 
 export function recordTypeOptions(types: readonly DetailRecordType[]) {
   return types.map((value) => ({ value, label: RECORD_TYPE_LABELS[value] }));

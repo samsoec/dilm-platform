@@ -27,6 +27,14 @@ import { groupShowcase } from "./groupShowcase";
 import { entityContacts } from "./entityContacts";
 import { contactInquiry } from "./contactInquiry";
 import { locationMap } from "./locationMap";
+import { recordHero } from "./recordHero";
+import { productOverview } from "./productOverview";
+import { productSpecifications } from "./productSpecifications";
+import { productApplications } from "./productApplications";
+import { solutionImpact } from "./solutionImpact";
+import { solutionApplications } from "./solutionApplications";
+import { jobDetail } from "./jobDetail";
+import { postArticle } from "./postArticle";
 
 export { bottomCtaField, ctaBannerFields } from "./ctaBanner";
 
@@ -64,4 +72,12 @@ export const pageBlocks: Block[] = [
   entityContacts,
   contactInquiry,
   locationMap,
+  recordHero,
+  productOverview,
+  productSpecifications,
+  productApplications,
+  solutionImpact,
+  solutionApplications,
+  jobDetail,
+  postArticle,
 ];

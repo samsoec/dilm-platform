@@ -137,7 +137,7 @@ export async function postItemCards(
 export type RecordQuery = {
   collection: RecordCollection;
   where: Where;
-  sort: string;
+  sort: string | string[];
   limit: number;
   page: number;
   depth: number;
