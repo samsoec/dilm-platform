@@ -48,8 +48,18 @@ export function lockStructure(fields: Field[]): Field[] {
 
 type RowTree = { id: unknown; children: Record<string, RowTree> }[];
 
+function isRichText(value: object): boolean {
+  const root = (value as { root?: unknown }).root;
+  return Boolean(root) && typeof root === "object";
+}
+
+function isRichTextNodes(rows: Record<string, unknown>[]): boolean {
+  return rows.every((row) => row.id === undefined && "type" in row);
+}
+
 function rowTree(value: unknown): Record<string, RowTree> {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  if (isRichText(value)) return {};
   return Object.fromEntries(
     Object.entries(value).flatMap(([key, child]) => {
       if (Array.isArray(child)) {
@@ -57,6 +67,7 @@ function rowTree(value: unknown): Record<string, RowTree> {
           (row): row is Record<string, unknown> =>
             Boolean(row) && typeof row === "object",
         );
+        if (rows.length > 0 && isRichTextNodes(rows)) return [];
         return [
           [key, rows.map((row) => ({ id: row.id, children: rowTree(row) }))],
         ];

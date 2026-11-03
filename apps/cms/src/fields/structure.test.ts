@@ -130,3 +130,104 @@ describe("row structure guard", () => {
     expect(run("en", reordered)).toBe(reordered);
   });
 });
+
+describe("row structure guard and rich text", () => {
+  const span = (text: string, format = 0) => ({
+    type: "text",
+    text,
+    format,
+    version: 1,
+  });
+  const heading = (...children: unknown[]) => ({
+    root: {
+      type: "root",
+      version: 1,
+      children: [{ type: "heading", tag: "h2", version: 1, children }],
+    },
+  });
+  const original = {
+    ctaBand: { heading: heading(span("Build "), span("better", 2)) },
+    navItems: [
+      { id: "a", label: "About", body: heading(span("x")), children: [] },
+      { id: "b", label: "News", children: [{ id: "b1" }] },
+    ],
+  };
+  const run = (
+    locale: string,
+    data: Record<string, unknown>,
+    originalDoc: Record<string, unknown> = original,
+  ) =>
+    keepRowStructure({
+      data,
+      operation: "update",
+      originalDoc,
+      req: { locale } as PayloadRequest,
+    } as Parameters<typeof keepRowStructure>[0]);
+
+  it("allows italic spans to split differently in another locale", () => {
+    const data = {
+      ctaBand: {
+        heading: heading(span("Bangun "), span("lebih", 2), span(" baik")),
+      },
+    };
+    expect(run("id", data)).toBe(data);
+  });
+
+  it("allows a rich text value that the stored document does not have yet", () => {
+    const data = { ctaBand: { heading: heading(span("Halo", 2)) } };
+    expect(run("id", data, { ctaBand: {}, navItems: original.navItems })).toBe(
+      data,
+    );
+    expect(changedRowStructure({ navItems: original.navItems }, {})).toEqual([
+      "navItems",
+    ]);
+  });
+
+  it("still refuses added, removed and reordered rows around rich text", () => {
+    const [a, b] = original.navItems;
+    expect(changedRowStructure({ navItems: [a] }, original)).toEqual([
+      "navItems",
+    ]);
+    expect(
+      changedRowStructure({ navItems: [a, b, { id: "c" }] }, original),
+    ).toEqual(["navItems"]);
+    expect(changedRowStructure({ navItems: [b, a] }, original)).toEqual([
+      "navItems",
+    ]);
+    expect(() => run("id", { navItems: [b, a] })).toThrow(
+      /only be added, removed or reordered in English/,
+    );
+  });
+
+  it("still refuses a row nested in a group or another array", () => {
+    expect(
+      changedRowStructure(
+        {
+          navItems: [
+            original.navItems[0],
+            { ...original.navItems[1], children: [{ id: "b1" }, { id: "b2" }] },
+          ],
+        },
+        original,
+      ),
+    ).toEqual(["navItems"]);
+    expect(
+      changedRowStructure(
+        { group: { items: [{ id: "x" }] } },
+        { group: { items: [] } },
+      ),
+    ).toEqual(["group.items"]);
+  });
+
+  it("compares only the array rows when a row holds rich text", () => {
+    const [a, b] = original.navItems;
+    const retitled = {
+      navItems: [
+        { ...a, label: "Tentang", body: heading(span("y"), span("z", 2)) },
+        b,
+      ],
+    };
+    expect(changedRowStructure(retitled, original)).toEqual([]);
+    expect(run("id", retitled)).toBe(retitled);
+  });
+});
