@@ -39,3 +39,27 @@ export function recordAddressFields(): Field[] {
     orderField,
   ];
 }
+
+export function jobAddressFields(): Field[] {
+  const slug = slugField(true);
+  return [
+    {
+      ...slug,
+      admin: {
+        ...slug.admin,
+        description:
+          "The last part of the address, under the career page. Unique within this company.",
+      },
+    },
+    {
+      ...pathField,
+      admin: {
+        ...pathField.admin,
+        description:
+          "Worked out from the career page in Site routing and the slug.",
+      },
+    },
+    slugFallbackField,
+    orderField,
+  ];
+}

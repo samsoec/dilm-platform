@@ -12,6 +12,7 @@ import { refId, scopedReq } from "./pageRules";
 import {
   RECORD_COLLECTIONS,
   isRecordCollection,
+  jobBasePaths,
   recordBasePaths,
   type RecordCollection,
 } from "./recordBases";
@@ -36,7 +37,7 @@ export const RESERVED_MESSAGE =
 
 export type PageCollection = "pages" | "shared-pages";
 
-export type PathCollection = PageCollection | RecordCollection;
+export type PathCollection = PageCollection | RecordCollection | "jobs";
 
 export type LocalizedSlugs = Record<string, string | null | undefined>;
 
@@ -228,12 +229,15 @@ export async function computePaths(
   req?: Partial<PayloadRequest>,
 ): Promise<Record<string, string>> {
   const parent = refId(input.parent);
-  const record = isRecordCollection(input.collection);
+  const job = input.collection === "jobs";
+  const record = isRecordCollection(input.collection) || job;
   const above = isRecordCollection(input.collection)
     ? await recordBasePaths(payload, req, input.collection)
-    : parent
-      ? await parentPaths(payload, req, input.collection, parent)
-      : {};
+    : input.collection === "jobs"
+      ? await jobBasePaths(payload, req, refId(input.tenant))
+      : parent
+        ? await parentPaths(payload, req, input.collection, parent)
+        : {};
   const paths: Record<string, string> = {};
   for (const locale of localeCodes()) {
     const { slug } = slugForLocale(input.slugs, locale);
@@ -259,6 +263,7 @@ export async function pathProblems(
   const notSelf = (collection: PathCollection): Where[] =>
     own && collection === input.collection ? [{ id: { not_equals: own } }] : [];
   const record = isRecordCollection(input.collection);
+  const job = input.collection === "jobs";
   let sites: number | undefined;
   const siteCount = async () =>
     (sites ??= (
@@ -271,7 +276,7 @@ export async function pathProblems(
 
   for (const locale of localeCodes()) {
     const path = paths[locale];
-    if (record && !path) continue;
+    if ((record || job) && !path) continue;
     const reserved = reservedProblem(path);
     if (reserved) {
       problems.push({ locale, path, message: reserved });
@@ -295,7 +300,7 @@ export async function pathProblems(
     }
 
     const tenantFilter: Where[] =
-      input.collection === "pages" && tenant
+      (input.collection === "pages" || job) && tenant
         ? [{ tenant: { equals: tenant } }]
         : [];
     if (
@@ -324,6 +329,34 @@ export async function pathProblems(
               ? companyPagesMessage(listed)
               : samePageMessage(path, listed[0].title, listed[0].company),
         });
+      }
+    }
+
+    if (job) {
+      const rivals = await findAt(payload, req, "jobs", locale, {
+        and: [
+          matches,
+          ...(tenant ? [{ tenant: { equals: tenant } }] : []),
+          ...notSelf("jobs"),
+        ],
+      });
+      if (rivals.length > 0) {
+        const names = await companyNames(
+          payload,
+          req,
+          rivals.map((doc) => refId(doc.tenant)!).filter(Boolean),
+        );
+        for (const doc of rivals) {
+          problems.push({
+            locale,
+            path,
+            message: samePageMessage(
+              path,
+              doc.title ?? "Untitled",
+              names.get(refId(doc.tenant) ?? "") ?? "this company",
+            ),
+          });
+        }
       }
     }
 

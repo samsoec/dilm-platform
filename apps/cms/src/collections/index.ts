@@ -6,6 +6,7 @@ import { Documents } from "./Documents";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { IrDocuments } from "./IrDocuments";
+import { Jobs } from "./Jobs";
 import { Media } from "./Media";
 import { Pages } from "./Pages";
 import { Products } from "./Products";
@@ -31,6 +32,7 @@ export const collections = [
   SharedPages,
   Products,
   Solutions,
+  Jobs,
   Routes,
 ];
 

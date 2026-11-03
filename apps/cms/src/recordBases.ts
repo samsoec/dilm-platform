@@ -30,3 +30,21 @@ export async function recordBasePaths(
   const source = recordBaseSources[collection];
   return (await source?.({ payload, req })) ?? {};
 }
+
+export type JobBaseSource = (args: {
+  payload: Payload;
+  req: Partial<PayloadRequest> | undefined;
+  tenant: string;
+}) => Promise<BasePaths | undefined>;
+
+// TODO(DILM-106): register the career page source from tenant-settings.routing.careerPage.path.
+export const jobBaseSources: { career?: JobBaseSource } = {};
+
+export async function jobBasePaths(
+  payload: Payload,
+  req: Partial<PayloadRequest> | undefined,
+  tenant: string | undefined,
+): Promise<BasePaths> {
+  if (!tenant) return {};
+  return (await jobBaseSources.career?.({ payload, req, tenant })) ?? {};
+}
