@@ -105,7 +105,6 @@ const referenceOptions: FilterOptions = ({ relationTo, data, id }) => {
 };
 
 type ValidateContext = {
-  previousValue?: LinkReference | null;
   collectionSlug?: string;
   id?: Ref;
 };
@@ -114,7 +113,6 @@ async function storedPick(
   context: ValidateContext,
   args: { req: PayloadRequest; path?: (string | number)[] | string[] },
 ): Promise<LinkReference | null | undefined> {
-  if (context.previousValue) return context.previousValue;
   if (!context.collectionSlug || context.id === undefined || !args.path) {
     return undefined;
   }
@@ -123,11 +121,13 @@ async function storedPick(
       collection: context.collectionSlug as CollectionSlug,
       id: context.id as number | string,
       depth: 0,
-      draft: true,
+      draft: false,
       fallbackLocale: false,
       overrideAccess: true,
       req: args.req,
     });
+    const status = (stored as { _status?: string | null })._status;
+    if (status !== undefined && status !== "published") return undefined;
     return args.path.reduce<unknown>(
       (node, key) => (node as Record<string, unknown> | undefined)?.[key],
       stored,
@@ -173,6 +173,7 @@ function referenceTarget(required: boolean): RelationshipField {
     }
     const context = args as unknown as ValidateContext;
     if (
+      String(args.path?.[0]) === "redirectTo" &&
       context.collectionSlug === picked.relationTo &&
       context.id !== undefined &&
       idOf(context.id) === idOf(picked.value)

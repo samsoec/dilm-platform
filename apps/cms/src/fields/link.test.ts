@@ -246,51 +246,79 @@ describe("reference links", () => {
     });
   });
 
-  it("rejects a page linking to itself and skips the filter for an unchanged pick", async () => {
-    const validate = reference().validate as unknown as (
+  const validateFn = () =>
+    reference().validate as unknown as (
       value: unknown,
       args: unknown,
     ) => Promise<unknown>;
-    const pick = { relationTo: "pages", value: 7 };
-    const siblingData = { type: "reference" };
+  const pick = { relationTo: "pages", value: 7 };
+  const siblingData = { type: "reference" };
+
+  it("rejects a page redirecting to itself but lets a button link to its own page", async () => {
+    const validate = validateFn();
     expect(
       await validate(pick, {
         siblingData,
         collectionSlug: "pages",
         id: 7,
+        path: ["redirectTo", "reference"],
       }),
     ).toBe("A page can't link to itself.");
+    const req = {
+      payload: {
+        findByID: async () => ({
+          _status: "published",
+          layout: [{ buttons: [{ link: { reference: pick } }] }],
+        }),
+      },
+    };
     expect(
       await validate(pick, {
         siblingData,
-        collectionSlug: "header",
+        collectionSlug: "pages",
         id: 7,
-        previousValue: { relationTo: "pages", value: 7 },
+        path: ["layout", "0", "buttons", "0", "link", "reference"],
+        req,
       }),
     ).toBe(true);
   });
 
-  it("reads the stored pick when Payload gives no previous value", async () => {
-    const validate = reference().validate as unknown as (
-      value: unknown,
-      args: unknown,
-    ) => Promise<unknown>;
-    const stored = {
-      navItems: [{ link: { reference: { relationTo: "pages", value: 7 } } }],
-    };
-    const req = { payload: { findByID: async () => stored } };
-    expect(
-      await validate(
-        { relationTo: "pages", value: 7 },
-        {
-          siblingData: { type: "reference" },
-          collectionSlug: "header",
-          id: 1,
-          path: ["navItems", "0", "link", "reference"],
-          req,
-        },
-      ),
-    ).toBe(true);
+  const stored = (status: string | undefined, calls: unknown[] = []) => ({
+    payload: {
+      findByID: async (args: unknown) => {
+        calls.push(args);
+        return {
+          ...(status ? { _status: status } : {}),
+          navItems: [{ link: { reference: pick } }],
+        };
+      },
+    },
+  });
+  const args = (req: unknown) => ({
+    siblingData,
+    collectionSlug: "header",
+    id: 1,
+    path: ["navItems", "0", "link", "reference"],
+    req,
+  });
+
+  it("keeps an unchanged pick of a published document savable", async () => {
+    const calls: { draft?: boolean }[] = [];
+    expect(await validateFn()(pick, args(stored("published", calls)))).toBe(
+      true,
+    );
+    expect(calls[0].draft).toBe(false);
+    expect(await validateFn()(pick, args(stored(undefined)))).toBe(true);
+  });
+
+  it("checks the filter when the stored document is only a draft", async () => {
+    let outcome: unknown;
+    try {
+      outcome = await validateFn()(pick, args(stored("draft")));
+    } catch (error) {
+      outcome = error;
+    }
+    expect(outcome).not.toBe(true);
   });
 
   it("applies the filter through the field", async () => {
