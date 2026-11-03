@@ -81,6 +81,7 @@ export interface Config {
     'shared-pages': SharedPage;
     products: Product;
     solutions: Solution;
+    jobs: Job;
     routes: Route;
     redirects: Redirect;
     'payload-kv': PayloadKv;
@@ -105,6 +106,7 @@ export interface Config {
     'shared-pages': SharedPagesSelect<false> | SharedPagesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     solutions: SolutionsSelect<false> | SolutionsSelect<true>;
+    jobs: JobsSelect<false> | JobsSelect<true>;
     routes: RoutesSelect<false> | RoutesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -1069,6 +1071,77 @@ export interface Solution {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "jobs".
+ */
+export interface Job {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * The last part of the address, under the career page. Unique within this company.
+   */
+  slug: string;
+  /**
+   * Worked out from the career page in Site routing and the slug.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  /**
+   * Lower numbers come first in lists you sort by hand.
+   */
+  order?: number | null;
+  title: string;
+  summary?: string | null;
+  department?: string | null;
+  experienceLevel?: ('entry' | 'mid' | 'senior' | 'lead') | null;
+  jobType?: ('full-time' | 'part-time' | 'contract' | 'internship') | null;
+  /**
+   * For example Jakarta, Indonesia.
+   */
+  location?: string | null;
+  postedDate?: string | null;
+  /**
+   * Optional. The job leaves the listings after this date. Its page stays reachable without the application form.
+   */
+  closingDate?: string | null;
+  /**
+   * Closed jobs leave the Career listing and job sections. Their page stays reachable, without the application form, so shared links still work.
+   */
+  status: 'open' | 'closed';
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * The public address of every published page, written by the system when a page is saved.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1090,6 +1163,10 @@ export interface Route {
     | {
         relationTo: 'shared-pages';
         value: number | SharedPage;
+      }
+    | {
+        relationTo: 'jobs';
+        value: number | Job;
       }
     | {
         relationTo: 'products';
@@ -1221,6 +1298,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'solutions';
         value: number | Solution;
+      } | null)
+    | ({
+        relationTo: 'jobs';
+        value: number | Job;
       } | null)
     | ({
         relationTo: 'routes';
@@ -1909,6 +1990,40 @@ export interface SolutionsSelect<T extends boolean = true> {
         description?: T;
         id?: T;
       };
+  updatedBy?: T;
+  trashedBy?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "jobs_select".
+ */
+export interface JobsSelect<T extends boolean = true> {
+  tenant?: T;
+  slug?: T;
+  path?: T;
+  slugFallback?: T;
+  order?: T;
+  title?: T;
+  summary?: T;
+  department?: T;
+  experienceLevel?: T;
+  jobType?: T;
+  location?: T;
+  postedDate?: T;
+  closingDate?: T;
+  status?: T;
+  body?: T;
   updatedBy?: T;
   trashedBy?: T;
   meta?:

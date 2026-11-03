@@ -16,10 +16,11 @@ import { localeCodes, type PageCollection } from "./paths";
 import { refId, scopedReq, servesLayout } from "./pageRules";
 import { RECORD_COLLECTIONS } from "./recordBases";
 
-// TODO(DILM-103): add jobs, posts and categories as their collections land.
+// TODO(DILM-104): add posts and categories as their collections land.
 export const ROUTABLE_COLLECTIONS = [
   "pages",
   "shared-pages",
+  "jobs",
   ...RECORD_COLLECTIONS,
 ] as const;
 
@@ -151,7 +152,10 @@ export function routeRows(
   blocks: readonly Block[] = pageBlocks,
 ): RouteRow[] {
   if (doc._status !== "published" || doc.deletedAt) return [];
-  const tenant = collection === "pages" ? (refId(doc.tenant) ?? null) : null;
+  const tenant =
+    collection === "pages" || collection === "jobs"
+      ? (refId(doc.tenant) ?? null)
+      : null;
   const refs = servesLayout(doc) ? extractRefs(doc.layout, blocks) : [];
   const paths =
     typeof doc.path === "string" ? { [localeCodes()[0]]: doc.path } : doc.path;
