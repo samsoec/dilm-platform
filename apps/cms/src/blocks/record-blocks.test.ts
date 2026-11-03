@@ -90,7 +90,7 @@ const t = { t: (key: string) => key };
 
 describe("the record blocks are registered (FR-PM-27, FR-PM-33)", () => {
   it("appends the seven Records blocks of DILM-111 after the content blocks", () => {
-    expect(pageBlocks.slice(15).map(({ slug }) => slug)).toEqual(
+    expect(pageBlocks.slice(15, 22).map(({ slug }) => slug)).toEqual(
       Object.keys(blocks),
     );
     expect(() => assertRegistry(pageBlocks)).not.toThrow();
@@ -123,7 +123,7 @@ describe("the record blocks are registered (FR-PM-27, FR-PM-33)", () => {
       return dbName({ tableName: "x" }).slice(2);
     });
     expect(new Set(suffixes).size).toBe(pageBlocks.length);
-    expect(suffixes.slice(15)).toEqual([
+    expect(suffixes.slice(15, 22)).toEqual([
       "pt",
       "ps",
       "ss",

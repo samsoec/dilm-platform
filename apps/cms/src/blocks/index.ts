@@ -22,6 +22,11 @@ import { postShowcase } from "./postShowcase";
 import { jobListing } from "./jobListing";
 import { jobShowcase } from "./jobShowcase";
 import { irDocuments } from "./irDocuments";
+import { entityMap } from "./entityMap";
+import { groupShowcase } from "./groupShowcase";
+import { entityContacts } from "./entityContacts";
+import { contactInquiry } from "./contactInquiry";
+import { locationMap } from "./locationMap";
 
 export { bottomCtaField, ctaBannerFields } from "./ctaBanner";
 
@@ -54,4 +59,9 @@ export const pageBlocks: Block[] = [
   jobListing,
   jobShowcase,
   irDocuments,
+  entityMap,
+  groupShowcase,
+  entityContacts,
+  contactInquiry,
+  locationMap,
 ];

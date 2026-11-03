@@ -75,3 +75,19 @@ export const MAX_JOB_ITEMS = 6;
 export const DEFAULT_JOB_LIMIT = 3;
 
 export const MAX_RECORD_QUERY = 100;
+
+export const MAX_ENTITY_ITEMS = 6;
+
+export const ENTITY_CONTACT_SOURCES = ["others", "manual"] as const;
+
+export type EntityContactSource = (typeof ENTITY_CONTACT_SOURCES)[number];
+
+export const CONTACT_FORM_FIELDS = [
+  "fullName",
+  "company",
+  "workEmail",
+  "phone",
+  "message",
+] as const;
+
+export type ContactFormField = (typeof CONTACT_FORM_FIELDS)[number];
