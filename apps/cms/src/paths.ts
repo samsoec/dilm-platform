@@ -22,6 +22,11 @@ export const CATEGORY_PREFIX = {
   id: "kategori",
 } as const;
 
+export const CATEGORY_PREFIX_PATHS: Record<string, string> = {
+  en: `/${CATEGORY_PREFIX.en}`,
+  id: `/${CATEGORY_PREFIX.id}`,
+};
+
 export const RESERVED_SEGMENTS = [
   ...Object.values(CATEGORY_PREFIX),
   "api",
@@ -37,7 +42,8 @@ export const RESERVED_MESSAGE =
 
 export type PageCollection = "pages" | "shared-pages";
 
-export type PathCollection = PageCollection | RecordCollection | "jobs";
+export type PathCollection =
+  PageCollection | RecordCollection | "jobs" | "posts" | "categories";
 
 export type LocalizedSlugs = Record<string, string | null | undefined>;
 
@@ -52,6 +58,7 @@ export type PathInput = {
   id?: number | string | null;
   tenant?: number | string | { id: number | string } | null;
   parent?: number | string | { id: number | string } | null;
+  category?: number | string | { id: number | string } | null;
   slugs: LocalizedSlugs;
 };
 
@@ -147,6 +154,10 @@ export function recordClashMessage(
   return `${subject} by ${rival.company} already uses this URL. ${catalog}, so slugs must be unique.`;
 }
 
+export function categoryClashMessage(path: string, name: string): string {
+  return `${path} is already the category "${name}". Pick another slug.`;
+}
+
 type Doc = {
   id: number | string;
   title?: string | null;
@@ -223,6 +234,30 @@ async function parentPaths(
   return found.path ?? {};
 }
 
+async function categoryPathsOf(
+  payload: Payload,
+  req: Partial<PayloadRequest> | undefined,
+  category: string,
+): Promise<Record<string, string | null | undefined>> {
+  try {
+    const found = (await payload.findByID({
+      collection: "categories" as CollectionSlug,
+      id: category,
+      locale: "all",
+      fallbackLocale: false,
+      depth: 0,
+      overrideAccess: true,
+      req: scopedReq(req),
+    })) as unknown as { path?: Record<string, string | null> | string | null };
+    if (typeof found.path === "string") {
+      return { [localization.defaultLocale]: found.path };
+    }
+    return found.path ?? {};
+  } catch {
+    return {};
+  }
+}
+
 export async function computePaths(
   payload: Payload,
   input: PathInput,
@@ -230,18 +265,29 @@ export async function computePaths(
 ): Promise<Record<string, string>> {
   const parent = refId(input.parent);
   const job = input.collection === "jobs";
-  const record = isRecordCollection(input.collection) || job;
+  const category = refId(input.category);
+  const record =
+    isRecordCollection(input.collection) ||
+    job ||
+    input.collection === "posts" ||
+    input.collection === "categories";
   const above = isRecordCollection(input.collection)
     ? await recordBasePaths(payload, req, input.collection)
     : input.collection === "jobs"
       ? await jobBasePaths(payload, req, refId(input.tenant))
-      : parent
-        ? await parentPaths(payload, req, input.collection, parent)
-        : {};
+      : input.collection === "categories"
+        ? CATEGORY_PREFIX_PATHS
+        : input.collection === "posts"
+          ? category
+            ? await categoryPathsOf(payload, req, category)
+            : undefined
+          : parent
+            ? await parentPaths(payload, req, input.collection, parent)
+            : {};
   const paths: Record<string, string> = {};
   for (const locale of localeCodes()) {
     const { slug } = slugForLocale(input.slugs, locale);
-    if (record && !slug) {
+    if ((record && !slug) || !above) {
       paths[locale] = "";
       continue;
     }
@@ -249,6 +295,50 @@ export async function computePaths(
     paths[locale] = computePath(parentPath, slug);
   }
   return paths;
+}
+
+async function categoryTreeProblems(
+  payload: Payload,
+  req: Partial<PayloadRequest> | undefined,
+  input: PathInput,
+  locale: string,
+  path: string,
+  tenant: string | undefined,
+  notSelf: (collection: PathCollection) => Where[],
+): Promise<PathProblem[]> {
+  const matches: Where = { path: { equals: path } };
+  if (input.collection === "categories") {
+    const rivals = await findAt(payload, req, "categories", locale, {
+      and: [matches, ...notSelf("categories")],
+    });
+    return rivals.map((doc) => ({
+      locale,
+      path,
+      message: categoryClashMessage(path, doc.name ?? "Untitled"),
+    }));
+  }
+  const rivals = await findAt(payload, req, "posts", locale, {
+    and: [
+      matches,
+      ...(tenant ? [{ tenant: { equals: tenant } }] : []),
+      ...notSelf("posts"),
+    ],
+  });
+  if (rivals.length === 0) return [];
+  const names = await companyNames(
+    payload,
+    req,
+    rivals.map((doc) => refId(doc.tenant)!).filter(Boolean),
+  );
+  return rivals.map((doc) => ({
+    locale,
+    path,
+    message: samePageMessage(
+      path,
+      doc.title ?? "Untitled",
+      names.get(refId(doc.tenant) ?? "") ?? "this company",
+    ),
+  }));
 }
 
 export async function pathProblems(
@@ -264,6 +354,8 @@ export async function pathProblems(
     own && collection === input.collection ? [{ id: { not_equals: own } }] : [];
   const record = isRecordCollection(input.collection);
   const job = input.collection === "jobs";
+  const post = input.collection === "posts";
+  const category = input.collection === "categories";
   let sites: number | undefined;
   const siteCount = async () =>
     (sites ??= (
@@ -276,7 +368,21 @@ export async function pathProblems(
 
   for (const locale of localeCodes()) {
     const path = paths[locale];
-    if ((record || job) && !path) continue;
+    if ((record || job || post || category) && !path) continue;
+    if (post || category) {
+      problems.push(
+        ...(await categoryTreeProblems(
+          payload,
+          req,
+          input,
+          locale,
+          path,
+          tenant,
+          notSelf,
+        )),
+      );
+      continue;
+    }
     const reserved = reservedProblem(path);
     if (reserved) {
       problems.push({ locale, path, message: reserved });
@@ -466,6 +572,13 @@ export const writePath: FieldHook = async ({
       data && "parent" in data
         ? (data as { parent?: PathInput["parent"] }).parent
         : (originalDoc as { parent?: PathInput["parent"] } | undefined)?.parent,
+    category:
+      data && "primaryCategory" in data
+        ? (data as { primaryCategory?: PathInput["category"] }).primaryCategory
+        : (
+            originalDoc as
+              { primaryCategory?: PathInput["category"] } | undefined
+          )?.primaryCategory,
     slugs,
   };
   const { paths, problems } = await validatePageSlug(req.payload, input, req);

@@ -11,16 +11,18 @@ import {
 } from "payload";
 
 import { pageBlocks } from "./blocks";
+import { attachedDocumentIds } from "./postAttachments";
 import type { LinkData } from "./fields/link";
 import { localeCodes, type PageCollection } from "./paths";
 import { refId, scopedReq, servesLayout } from "./pageRules";
 import { RECORD_COLLECTIONS } from "./recordBases";
 
-// TODO(DILM-104): add posts and categories as their collections land.
 export const ROUTABLE_COLLECTIONS = [
   "pages",
   "shared-pages",
   "jobs",
+  "posts",
+  "categories",
   ...RECORD_COLLECTIONS,
 ] as const;
 
@@ -37,6 +39,7 @@ type PageDoc = {
   tenant?: Ref;
   path?: Record<string, string | null | undefined> | string | null;
   layout?: unknown;
+  body?: unknown;
   redirectTo?: LinkData | null;
 };
 
@@ -151,12 +154,20 @@ export function routeRows(
   doc: PageDoc,
   blocks: readonly Block[] = pageBlocks,
 ): RouteRow[] {
-  if (doc._status !== "published" || doc.deletedAt) return [];
+  const live = collection === "categories" || doc._status === "published";
+  if (!live || doc.deletedAt) return [];
   const tenant =
-    collection === "pages" || collection === "jobs"
+    collection === "pages" || collection === "jobs" || collection === "posts"
       ? (refId(doc.tenant) ?? null)
       : null;
-  const refs = servesLayout(doc) ? extractRefs(doc.layout, blocks) : [];
+  const refs =
+    collection === "posts"
+      ? attachedDocumentIds(doc.body)
+          .map((id) => refKey("documents", id))
+          .sort()
+      : servesLayout(doc)
+        ? extractRefs(doc.layout, blocks)
+        : [];
   const paths =
     typeof doc.path === "string" ? { [localeCodes()[0]]: doc.path } : doc.path;
   return localeCodes().flatMap((locale) => {

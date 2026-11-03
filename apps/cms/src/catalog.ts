@@ -12,6 +12,7 @@ import { relationship } from "payload/shared";
 
 import { localization } from "./localization";
 import { refId, scopedReq } from "./pageRules";
+import { findReferrers } from "./routeIndex";
 
 type Ref = Parameters<typeof refId>[0];
 
@@ -59,7 +60,11 @@ type LinkingProduct = {
   variants?: Variant[] | null;
 };
 
-export type DocumentUse = { product: string; places: string[] };
+export type DocumentUse = {
+  product: string;
+  places: string[];
+  kind?: "product" | "post";
+};
 
 export function documentUses(
   products: LinkingProduct[],
@@ -89,7 +94,12 @@ export function documentInUseMessage(
   const listed = uses
     .map((use) => `${use.product} (${use.places.join(", ")})`)
     .join("; ");
-  return `Can't ${verb} "${title}". Published products link it: ${listed}. Unlink it or replace the file instead.`;
+  const hasPosts = uses.some((use) => use.kind === "post");
+  const hasProducts = uses.some((use) => use.kind !== "post");
+  const owners = [hasProducts && "products", hasPosts && "posts"]
+    .filter(Boolean)
+    .join(" and ");
+  return `Can't ${verb} "${title}". Published ${owners} link it: ${listed}. Unlink it or replace the file instead.`;
 }
 
 export async function publishedProductsLinking(
@@ -122,6 +132,39 @@ export async function publishedProductsLinking(
   return documentUses(docs as unknown as LinkingProduct[], documentId);
 }
 
+export async function publishedPostsAttaching(
+  payload: Payload,
+  req: Request,
+  documentId: number | string,
+): Promise<DocumentUse[]> {
+  const referrers = (await findReferrers(payload, "documents", documentId, req))
+    .filter((referrer) => referrer.collection === "posts")
+    .map((referrer) => referrer.id);
+  if (referrers.length === 0) return [];
+  const { docs } = await payload.find({
+    collection: "posts",
+    where: { id: { in: referrers } },
+    locale: localization.defaultLocale,
+    fallbackLocale: false,
+    depth: 0,
+    limit: 0,
+    pagination: false,
+    trash: true,
+    overrideAccess: true,
+    req: scopedReq(req),
+  });
+  const titles = new Map(
+    (docs as unknown as { id: number | string; title?: string | null }[]).map(
+      (post) => [String(post.id), post.title],
+    ),
+  );
+  return referrers.map((id) => ({
+    product: titles.get(id) || "Untitled post",
+    places: ["attachment"],
+    kind: "post" as const,
+  }));
+}
+
 async function reject(
   verb: "trash" | "delete",
   payload: Payload,
@@ -129,7 +172,10 @@ async function reject(
   id: number | string,
   title: string | null | undefined,
 ): Promise<void> {
-  const uses = await publishedProductsLinking(payload, req, id);
+  const uses = [
+    ...(await publishedProductsLinking(payload, req, id)),
+    ...(await publishedPostsAttaching(payload, req, id)),
+  ];
   if (uses.length > 0) {
     throw new APIError(
       documentInUseMessage(verb, title || "this document", uses),
@@ -140,7 +186,6 @@ async function reject(
   }
 }
 
-// TODO(DILM-104): include published posts that attach the document in the body.
 export const keepLinkedDocuments: CollectionBeforeValidateHook = async ({
   data,
   originalDoc,

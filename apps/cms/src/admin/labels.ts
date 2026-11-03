@@ -58,6 +58,14 @@ export const COLLECTION_LABELS = {
     singular: { en: "Job", id: "Lowongan" },
     plural: { en: "Jobs", id: "Lowongan" },
   },
+  posts: {
+    singular: { en: "Post", id: "Kiriman" },
+    plural: { en: "Posts", id: "Kiriman" },
+  },
+  categories: {
+    singular: { en: "Category", id: "Kategori" },
+    plural: { en: "Categories", id: "Kategori" },
+  },
   routes: {
     singular: { en: "Route", id: "Rute" },
     plural: { en: "Routes", id: "Rute" },

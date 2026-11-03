@@ -82,6 +82,8 @@ export interface Config {
     products: Product;
     solutions: Solution;
     jobs: Job;
+    posts: Post;
+    categories: Category;
     routes: Route;
     redirects: Redirect;
     'payload-kv': PayloadKv;
@@ -107,6 +109,8 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     solutions: SolutionsSelect<false> | SolutionsSelect<true>;
     jobs: JobsSelect<false> | JobsSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
     routes: RoutesSelect<false> | RoutesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -1142,6 +1146,93 @@ export interface Job {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * The last part of the address, after the category. Unique within this company.
+   */
+  slug: string;
+  /**
+   * Worked out from the primary category and the slug. It changes when either changes.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  /**
+   * Lower numbers come first in lists you sort by hand.
+   */
+  order?: number | null;
+  title: string;
+  /**
+   * The post's address follows its category. Changing it moves the post and leaves a redirect from the old address.
+   */
+  primaryCategory: number | Category;
+  publishedAt?: string | null;
+  coverImage?: (number | null) | Media;
+  excerpt?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * The groups posts are filed under. Shared by all three companies; only Super Admins change them.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  /**
+   * The last part of the address, after the category prefix. Unique across categories.
+   */
+  slug?: string | null;
+  /**
+   * The category prefix and the slug. The same on every company's website.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  name?: string | null;
+  description?: string | null;
+  coverImage?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * The public address of every published page, written by the system when a page is saved.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1167,6 +1258,14 @@ export interface Route {
     | {
         relationTo: 'jobs';
         value: number | Job;
+      }
+    | {
+        relationTo: 'posts';
+        value: number | Post;
+      }
+    | {
+        relationTo: 'categories';
+        value: number | Category;
       }
     | {
         relationTo: 'products';
@@ -1302,6 +1401,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'jobs';
         value: number | Job;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'categories';
+        value: number | Category;
       } | null)
     | ({
         relationTo: 'routes';
@@ -2037,6 +2144,50 @@ export interface JobsSelect<T extends boolean = true> {
   createdAt?: T;
   deletedAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  tenant?: T;
+  slug?: T;
+  path?: T;
+  slugFallback?: T;
+  order?: T;
+  title?: T;
+  primaryCategory?: T;
+  publishedAt?: T;
+  coverImage?: T;
+  excerpt?: T;
+  body?: T;
+  updatedBy?: T;
+  trashedBy?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  slug?: T;
+  path?: T;
+  slugFallback?: T;
+  name?: T;
+  description?: T;
+  coverImage?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
