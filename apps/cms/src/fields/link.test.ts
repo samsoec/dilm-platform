@@ -212,6 +212,87 @@ describe("reference links", () => {
     }
   });
 
+  it("leaves out the document itself", () => {
+    const self = { collection: "pages", id: 7 };
+    expect(referenceFilter("pages", 2, self)).toEqual({
+      and: [
+        { id: { not_equals: "7" } },
+        published,
+        { tenant: { equals: "2" } },
+      ],
+    });
+    expect(referenceFilter("shared-pages", 2, self)).toEqual(published);
+  });
+
+  it("leaves out a page from its own redirect picker", async () => {
+    const filter = reference().filterOptions as (args: unknown) => unknown;
+    expect(
+      await filter({
+        relationTo: "pages",
+        id: 7,
+        data: { tenant: 2, redirectTo: {} },
+      }),
+    ).toEqual({
+      and: [
+        { id: { not_equals: "7" } },
+        published,
+        { tenant: { equals: "2" } },
+      ],
+    });
+    expect(
+      await filter({ relationTo: "pages", id: 7, data: { tenant: 2 } }),
+    ).toEqual({
+      and: [published, { tenant: { equals: "2" } }],
+    });
+  });
+
+  it("rejects a page linking to itself and skips the filter for an unchanged pick", async () => {
+    const validate = reference().validate as unknown as (
+      value: unknown,
+      args: unknown,
+    ) => Promise<unknown>;
+    const pick = { relationTo: "pages", value: 7 };
+    const siblingData = { type: "reference" };
+    expect(
+      await validate(pick, {
+        siblingData,
+        collectionSlug: "pages",
+        id: 7,
+      }),
+    ).toBe("A page can't link to itself.");
+    expect(
+      await validate(pick, {
+        siblingData,
+        collectionSlug: "header",
+        id: 7,
+        previousValue: { relationTo: "pages", value: 7 },
+      }),
+    ).toBe(true);
+  });
+
+  it("reads the stored pick when Payload gives no previous value", async () => {
+    const validate = reference().validate as unknown as (
+      value: unknown,
+      args: unknown,
+    ) => Promise<unknown>;
+    const stored = {
+      navItems: [{ link: { reference: { relationTo: "pages", value: 7 } } }],
+    };
+    const req = { payload: { findByID: async () => stored } };
+    expect(
+      await validate(
+        { relationTo: "pages", value: 7 },
+        {
+          siblingData: { type: "reference" },
+          collectionSlug: "header",
+          id: 1,
+          path: ["navItems", "0", "link", "reference"],
+          req,
+        },
+      ),
+    ).toBe(true);
+  });
+
   it("applies the filter through the field", async () => {
     const filter = reference().filterOptions as (args: unknown) => unknown;
     expect(await filter({ relationTo: "pages", data: { tenant: 3 } })).toEqual({
@@ -346,7 +427,30 @@ describe("resolveLink", () => {
     ).toBe("/category/news");
   });
 
-  it("opens the owner's domain for another company's target", () => {
+  it("opens the owner's domain for another company's page, job or post", () => {
+    const doc = {
+      id: 9,
+      _status: "published",
+      tenant: { id: 1, slug: "indoacid", domain: "indonesianacids.com" },
+      path: "/about",
+    };
+    expect(resolveLink(to("pages", doc), { tenant: 2 })).toBe(
+      "https://indonesianacids.com/about",
+    );
+    expect(resolveLink(to("pages", doc), { tenant: 1 })).toBe("/about");
+    const job = { ...doc, tenant: { id: 3, slug: "likutelaga" } };
+    expect(resolveLink(to("jobs", job), { tenant: 2 })).toBe(
+      "https://likutelaga.com/about",
+    );
+    expect(
+      resolveLink(to("posts", { ...doc, tenant: 3 }), {
+        tenant: 2,
+        domains: { "3": "likutelaga.com" },
+      }),
+    ).toBe("https://likutelaga.com/about");
+  });
+
+  it("keeps another company's product or solution on the same domain", () => {
     const doc = {
       id: 9,
       _status: "published",
@@ -354,22 +458,11 @@ describe("resolveLink", () => {
       path: "/products/sulfuric-acid",
     };
     expect(resolveLink(to("products", doc), { tenant: 2 })).toBe(
-      "https://indonesianacids.com/products/sulfuric-acid",
-    );
-    expect(resolveLink(to("products", doc), { tenant: 1 })).toBe(
       "/products/sulfuric-acid",
     );
-    const bySlug = { ...doc, tenant: { id: 3, slug: "likutelaga" } };
-    expect(resolveLink(to("products", bySlug), { tenant: 2 })).toBe(
-      "https://likutelaga.com/products/sulfuric-acid",
-    );
-    const byMap = { ...doc, tenant: 3 };
     expect(
-      resolveLink(to("products", byMap), {
-        tenant: 2,
-        domains: { "3": "likutelaga.com" },
-      }),
-    ).toBe("https://likutelaga.com/products/sulfuric-acid");
+      resolveLink(to("solutions", { ...doc, tenant: 1 }), { tenant: 2 }),
+    ).toBe("/products/sulfuric-acid");
   });
 
   it("returns null and logs when the owner's domain is unknown", () => {

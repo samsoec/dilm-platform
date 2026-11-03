@@ -1,5 +1,7 @@
 import type {
+  CollectionSlug,
   FieldHook,
+  PayloadRequest,
   FilterOptions,
   NamedGroupField,
   RelationshipField,
@@ -28,9 +30,11 @@ export const REFERENCE_COLLECTIONS = [
 
 export type ReferenceCollection = (typeof REFERENCE_COLLECTIONS)[number];
 
-const TENANT_OWNED: readonly string[] = ["pages", "jobs", "posts"];
+export const TENANT_OWNED: readonly string[] = ["pages", "jobs", "posts"];
 
 const ALWAYS_LIVE: readonly string[] = ["categories"];
+
+export const SELF_REFERENCE = "A page can't link to itself.";
 
 export const REFERENCE_MISSING = "Pick the page or record this link goes to.";
 
@@ -68,11 +72,17 @@ function idOf(value: Ref): string | undefined {
   return String(typeof value === "object" ? value.id : value);
 }
 
+export type SelfDocument = { collection: string; id: Ref };
+
 export function referenceFilter(
   relationTo: string,
   owner: Ref,
+  self?: SelfDocument,
 ): Where | boolean {
   const clauses: Where[] = [];
+  const own =
+    self && self.collection === relationTo ? idOf(self.id) : undefined;
+  if (own) clauses.push({ id: { not_equals: own } });
   if (!ALWAYS_LIVE.includes(relationTo)) {
     clauses.push({ _status: { equals: "published" } });
   }
@@ -84,13 +94,56 @@ export function referenceFilter(
   return clauses.length === 1 ? clauses[0] : { and: clauses };
 }
 
-const referenceOptions: FilterOptions = ({ relationTo, data }) =>
-  relationTo
-    ? referenceFilter(
-        relationTo,
-        (data as { tenant?: Ref } | undefined)?.tenant,
-      )
-    : true;
+const referenceOptions: FilterOptions = ({ relationTo, data, id }) => {
+  if (!relationTo) return true;
+  const doc = data as { tenant?: Ref; redirectTo?: unknown } | undefined;
+  const self =
+    doc && "redirectTo" in doc
+      ? { collection: idOf(doc.tenant) ? "pages" : "shared-pages", id }
+      : undefined;
+  return referenceFilter(relationTo, doc?.tenant, self);
+};
+
+type ValidateContext = {
+  previousValue?: LinkReference | null;
+  collectionSlug?: string;
+  id?: Ref;
+};
+
+async function storedPick(
+  context: ValidateContext,
+  args: { req: PayloadRequest; path?: (string | number)[] | string[] },
+): Promise<LinkReference | null | undefined> {
+  if (context.previousValue) return context.previousValue;
+  if (!context.collectionSlug || context.id === undefined || !args.path) {
+    return undefined;
+  }
+  try {
+    const stored = await args.req.payload.findByID({
+      collection: context.collectionSlug as CollectionSlug,
+      id: context.id as number | string,
+      depth: 0,
+      draft: true,
+      fallbackLocale: false,
+      overrideAccess: true,
+      req: args.req,
+    });
+    return args.path.reduce<unknown>(
+      (node, key) => (node as Record<string, unknown> | undefined)?.[key],
+      stored,
+    ) as LinkReference | undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function samePick(a: LinkReference | null | undefined, b: LinkReference) {
+  return (
+    Boolean(a) &&
+    a!.relationTo === b.relationTo &&
+    idOf(a!.value) === idOf(b.value)
+  );
+}
 
 const PATH_PREFIX = "/admin/components/fields/PathPrefix#PathPrefix";
 
@@ -115,7 +168,18 @@ function referenceTarget(required: boolean): RelationshipField {
   const validate: RelationshipFieldSingleValidation = async (value, args) => {
     if (!isActive(args.siblingData as LinkData)) return true;
     const picked = value as LinkReference | null | undefined;
-    if (!idOf(picked?.value)) return required ? REFERENCE_MISSING : true;
+    if (!picked || !idOf(picked.value)) {
+      return required ? REFERENCE_MISSING : true;
+    }
+    const context = args as unknown as ValidateContext;
+    if (
+      context.collectionSlug === picked.relationTo &&
+      context.id !== undefined &&
+      idOf(context.id) === idOf(picked.value)
+    ) {
+      return SELF_REFERENCE;
+    }
+    if (samePick(await storedPick(context, args), picked)) return true;
     return relationship(value, args);
   };
 

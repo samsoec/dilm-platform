@@ -1,7 +1,7 @@
 import { TENANT_DOMAINS, type TenantSlug } from "@dilm/shared-types";
 
 import { localization } from "../localization";
-import type { LinkData } from "./link";
+import { TENANT_OWNED, type LinkData } from "./link";
 
 type TenantRef =
   | number
@@ -90,7 +90,13 @@ export function resolveLink(
     return null;
   }
   const owner = tenantId(target.tenant);
-  if (!owner || owner === tenantId(tenant)) return path;
+  if (
+    !owner ||
+    !TENANT_OWNED.includes(reference.relationTo) ||
+    owner === tenantId(tenant)
+  ) {
+    return path;
+  }
   const domain = domainOf(target.tenant as NonNullable<TenantRef>, domains);
   if (!domain) {
     log(
