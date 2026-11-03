@@ -415,6 +415,11 @@ export interface Page {
         | JobListingBlock
         | JobShowcaseBlock
         | IrDocumentsBlock
+        | EntityMapBlock
+        | GroupShowcaseBlock
+        | EntityContactsBlock
+        | ContactInquiryBlock
+        | LocationMapBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -534,6 +539,11 @@ export interface SharedPage {
         | JobListingBlock
         | JobShowcaseBlock
         | IrDocumentsBlock
+        | EntityMapBlock
+        | GroupShowcaseBlock
+        | EntityContactsBlock
+        | ContactInquiryBlock
+        | LocationMapBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -3278,6 +3288,342 @@ export interface IrDocumentsBlock {
   blockType: 'irDocuments';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EntityMapBlock".
+ */
+export interface EntityMapBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  items: {
+    /**
+     * Leave empty for a free card. With a company, anything you leave empty below is filled from that company's Profile.
+     */
+    entity?: (number | null) | Tenant;
+    image?: (number | null) | Media;
+    label?: string | null;
+    title?: string | null;
+    description?: string | null;
+    regions?:
+      | {
+          name: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Position on the dot map as a percentage from the top-left corner.
+     */
+    pin?: {
+      x?: number | null;
+      y?: number | null;
+    };
+    buttons?:
+      | {
+          link: {
+            type: 'internal' | 'external' | 'reference';
+            newTab?: boolean | null;
+            /**
+             * Start with /. The site adds the language.
+             */
+            internalPath?: string | null;
+            /**
+             * A full address starting with https://
+             */
+            externalUrl?: string | null;
+            /**
+             * Follows the page or record if it is renamed or moved. Only published ones are offered.
+             */
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'shared-pages';
+                  value: number | SharedPage;
+                } | null)
+              | ({
+                  relationTo: 'products';
+                  value: number | Product;
+                } | null)
+              | ({
+                  relationTo: 'solutions';
+                  value: number | Solution;
+                } | null)
+              | ({
+                  relationTo: 'jobs';
+                  value: number | Job;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'categories';
+                  value: number | Category;
+                } | null);
+            label?: string | null;
+          };
+          style: 'primary' | 'light' | 'text';
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'entityMap';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GroupShowcaseBlock".
+ */
+export interface GroupShowcaseBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  mainImage?: (number | null) | Media;
+  mainLogo?: (number | null) | Media;
+  mainLink: {
+    type: 'internal' | 'external' | 'reference';
+    newTab?: boolean | null;
+    /**
+     * Start with /. The site adds the language.
+     */
+    internalPath?: string | null;
+    /**
+     * A full address starting with https://
+     */
+    externalUrl?: string | null;
+    /**
+     * Follows the page or record if it is renamed or moved. Only published ones are offered.
+     */
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'shared-pages';
+          value: number | SharedPage;
+        } | null)
+      | ({
+          relationTo: 'products';
+          value: number | Product;
+        } | null)
+      | ({
+          relationTo: 'solutions';
+          value: number | Solution;
+        } | null)
+      | ({
+          relationTo: 'jobs';
+          value: number | Job;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'categories';
+          value: number | Category;
+        } | null);
+    label?: string | null;
+  };
+  /**
+   * In the order shown. Each tile uses the company's cover image and light logo; names use its legal name. Edit those in Company settings.
+   */
+  entities: (number | Tenant)[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'groupShowcase';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EntityContactsBlock".
+ */
+export interface EntityContactsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  source: 'others' | 'manual';
+  entities?: (number | Tenant)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'entityContacts';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactInquiryBlock".
+ */
+export interface ContactInquiryBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  form: {
+    eyebrow?: string | null;
+    title?: string | null;
+    description?: string | null;
+    /**
+     * The five fields are fixed under UU PDP: change their wording, not add, remove or make them optional.
+     */
+    fields: {
+      /**
+       * The field stays on the form and stays required.
+       */
+      fullName: {
+        label: string;
+        placeholder?: string | null;
+      };
+      /**
+       * The field stays on the form and stays required.
+       */
+      company: {
+        label: string;
+        placeholder?: string | null;
+      };
+      /**
+       * The field stays on the form and stays required.
+       */
+      workEmail: {
+        label: string;
+        placeholder?: string | null;
+      };
+      /**
+       * The field stays on the form and stays required.
+       */
+      phone: {
+        label: string;
+        placeholder?: string | null;
+      };
+      /**
+       * The field stays on the form and stays required.
+       */
+      message: {
+        label: string;
+        placeholder?: string | null;
+      };
+    };
+    /**
+     * Shown beside the checkbox visitors must tick. Must link to the company's Privacy Policy (UU PDP). Needed in every language to publish; saving a draft works without it.
+     */
+    consentText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    submitLabel?: string | null;
+    successMessage?: string | null;
+    errorMessage?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactInquiry';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationMapBlock".
+ */
+export interface LocationMapBlock {
+  /**
+   * Leave empty to show the company of the site the page is viewed on.
+   */
+  entity?: (number | null) | Tenant;
+  linkLabel?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'locationMap';
+}
+/**
  * UU PDP consent audit trail, written by the system. Holds no IP addresses.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3912,6 +4258,11 @@ export interface DetailTemplate {
         | JobListingBlock
         | JobShowcaseBlock
         | IrDocumentsBlock
+        | EntityMapBlock
+        | GroupShowcaseBlock
+        | EntityContactsBlock
+        | ContactInquiryBlock
+        | LocationMapBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -3954,6 +4305,11 @@ export interface SharedDetailTemplate {
         | JobListingBlock
         | JobShowcaseBlock
         | IrDocumentsBlock
+        | EntityMapBlock
+        | GroupShowcaseBlock
+        | EntityContactsBlock
+        | ContactInquiryBlock
+        | LocationMapBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -4773,6 +5129,11 @@ export interface PagesSelect<T extends boolean = true> {
         jobListing?: T | JobListingBlockSelect<T>;
         jobShowcase?: T | JobShowcaseBlockSelect<T>;
         irDocuments?: T | IrDocumentsBlockSelect<T>;
+        entityMap?: T | EntityMapBlockSelect<T>;
+        groupShowcase?: T | GroupShowcaseBlockSelect<T>;
+        entityContacts?: T | EntityContactsBlockSelect<T>;
+        contactInquiry?: T | ContactInquiryBlockSelect<T>;
+        locationMap?: T | LocationMapBlockSelect<T>;
       };
   updatedBy?: T;
   trashedBy?: T;
@@ -5749,6 +6110,178 @@ export interface IrDocumentsBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EntityMapBlock_select".
+ */
+export interface EntityMapBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  items?:
+    | T
+    | {
+        entity?: T;
+        image?: T;
+        label?: T;
+        title?: T;
+        description?: T;
+        regions?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
+        pin?:
+          | T
+          | {
+              x?: T;
+              y?: T;
+            };
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    internalPath?: T;
+                    externalUrl?: T;
+                    reference?: T;
+                    label?: T;
+                  };
+              style?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GroupShowcaseBlock_select".
+ */
+export interface GroupShowcaseBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  mainImage?: T;
+  mainLogo?: T;
+  mainLink?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        internalPath?: T;
+        externalUrl?: T;
+        reference?: T;
+        label?: T;
+      };
+  entities?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EntityContactsBlock_select".
+ */
+export interface EntityContactsBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  source?: T;
+  entities?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactInquiryBlock_select".
+ */
+export interface ContactInquiryBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  form?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        fields?:
+          | T
+          | {
+              fullName?:
+                | T
+                | {
+                    label?: T;
+                    placeholder?: T;
+                  };
+              company?:
+                | T
+                | {
+                    label?: T;
+                    placeholder?: T;
+                  };
+              workEmail?:
+                | T
+                | {
+                    label?: T;
+                    placeholder?: T;
+                  };
+              phone?:
+                | T
+                | {
+                    label?: T;
+                    placeholder?: T;
+                  };
+              message?:
+                | T
+                | {
+                    label?: T;
+                    placeholder?: T;
+                  };
+            };
+        consentText?: T;
+        submitLabel?: T;
+        successMessage?: T;
+        errorMessage?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationMapBlock_select".
+ */
+export interface LocationMapBlockSelect<T extends boolean = true> {
+  entity?: T;
+  linkLabel?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "shared-pages_select".
  */
 export interface SharedPagesSelect<T extends boolean = true> {
@@ -5791,6 +6324,11 @@ export interface SharedPagesSelect<T extends boolean = true> {
         jobListing?: T | JobListingBlockSelect<T>;
         jobShowcase?: T | JobShowcaseBlockSelect<T>;
         irDocuments?: T | IrDocumentsBlockSelect<T>;
+        entityMap?: T | EntityMapBlockSelect<T>;
+        groupShowcase?: T | GroupShowcaseBlockSelect<T>;
+        entityContacts?: T | EntityContactsBlockSelect<T>;
+        contactInquiry?: T | ContactInquiryBlockSelect<T>;
+        locationMap?: T | LocationMapBlockSelect<T>;
       };
   updatedBy?: T;
   trashedBy?: T;
@@ -6080,6 +6618,11 @@ export interface DetailTemplatesSelect<T extends boolean = true> {
         jobListing?: T | JobListingBlockSelect<T>;
         jobShowcase?: T | JobShowcaseBlockSelect<T>;
         irDocuments?: T | IrDocumentsBlockSelect<T>;
+        entityMap?: T | EntityMapBlockSelect<T>;
+        groupShowcase?: T | GroupShowcaseBlockSelect<T>;
+        entityContacts?: T | EntityContactsBlockSelect<T>;
+        contactInquiry?: T | ContactInquiryBlockSelect<T>;
+        locationMap?: T | LocationMapBlockSelect<T>;
       };
   updatedBy?: T;
   updatedAt?: T;
@@ -6116,6 +6659,11 @@ export interface SharedDetailTemplatesSelect<T extends boolean = true> {
         jobListing?: T | JobListingBlockSelect<T>;
         jobShowcase?: T | JobShowcaseBlockSelect<T>;
         irDocuments?: T | IrDocumentsBlockSelect<T>;
+        entityMap?: T | EntityMapBlockSelect<T>;
+        groupShowcase?: T | GroupShowcaseBlockSelect<T>;
+        entityContacts?: T | EntityContactsBlockSelect<T>;
+        contactInquiry?: T | ContactInquiryBlockSelect<T>;
+        locationMap?: T | LocationMapBlockSelect<T>;
       };
   updatedBy?: T;
   updatedAt?: T;
