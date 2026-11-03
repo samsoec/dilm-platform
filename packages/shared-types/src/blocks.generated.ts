@@ -117,6 +117,15 @@ export interface Page {
         | FeatureGridBlock
         | VisionMissionBlock
         | TimelineBlock
+        | CertificationsBlock
+        | CertificateGalleryBlock
+        | AwardsBlock
+        | ImageCarouselBlock
+        | TestimonialsBlock
+        | HotspotIllustrationBlock
+        | CtaBannerBlock
+        | RichTextBlock
+        | ArticleHeaderBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -217,6 +226,15 @@ export interface SharedPage {
         | FeatureGridBlock
         | VisionMissionBlock
         | TimelineBlock
+        | CertificationsBlock
+        | CertificateGalleryBlock
+        | AwardsBlock
+        | ImageCarouselBlock
+        | TestimonialsBlock
+        | HotspotIllustrationBlock
+        | CtaBannerBlock
+        | RichTextBlock
+        | ArticleHeaderBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -1364,4 +1382,494 @@ export interface TimelineBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: "timeline";
+}
+
+export interface CertificationsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: "center" | "left" | "split";
+  };
+  buttons?:
+    | {
+        link: {
+          type: "internal" | "external" | "reference";
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: "pages";
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: "shared-pages";
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: "products";
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: "solutions";
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: "jobs";
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: "posts";
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: "categories";
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: "primary" | "light" | "text";
+        id?: string | null;
+      }[]
+    | null;
+  variant: "logos" | "cards";
+  layout: "grid" | "carousel";
+  items: {
+    logo: number | Media;
+    code?: string | null;
+    title?: string | null;
+    description?: string | null;
+    certificateImages?:
+      | {
+          image: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  appearance: {
+    background: "default" | "muted" | "dark" | "image";
+    backgroundImage?: (number | null) | Media;
+    /**
+     * Optional in-page anchor: lowercase letters, numbers and hyphens.
+     */
+    anchorId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "certifications";
+}
+
+export interface CertificateGalleryBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: "center" | "left" | "split";
+  };
+  badge?: (number | null) | Media;
+  items: {
+    image: number | Media;
+    caption?: string | null;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "certificateGallery";
+}
+
+export interface AwardsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: "center" | "left" | "split";
+  };
+  items: {
+    image?: (number | null) | Media;
+    year?: string | null;
+    title: string;
+    description?: string | null;
+    issuer?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * How many awards show before the page buttons.
+   */
+  pageSize: number;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "awards";
+}
+
+export interface ImageCarouselBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: "center" | "left" | "split";
+  };
+  items: {
+    image: number | Media;
+    label: string;
+    link: {
+      type: "internal" | "external" | "reference";
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: "pages";
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: "shared-pages";
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: "products";
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: "solutions";
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: "jobs";
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: "posts";
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: "categories";
+            value: number | Category;
+          } | null);
+    };
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "imageCarousel";
+}
+
+export interface TestimonialsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: "center" | "left" | "split";
+  };
+  logos?:
+    | {
+        image: number | Media;
+        /**
+         * Read aloud as the logo's alt text.
+         */
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  items?:
+    | {
+        quote: string;
+        name: string;
+        role?: string | null;
+        avatar?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "testimonials";
+}
+
+export interface HotspotIllustrationBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: "center" | "left" | "split";
+  };
+  image: number | Media;
+  hotspots: {
+    tone: "green" | "orange" | "navy";
+    /**
+     * Distance from the left edge, 0 to 100 (%).
+     */
+    x: number;
+    /**
+     * Distance from the top edge, 0 to 100 (%).
+     */
+    y: number;
+    eyebrow?: string | null;
+    title: string;
+    description?: string | null;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "hotspotIllustration";
+}
+
+export interface CtaBannerBlock {
+  title?: string | null;
+  description?: string | null;
+  buttons?:
+    | {
+        link: {
+          type: "internal" | "external" | "reference";
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: "pages";
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: "shared-pages";
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: "products";
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: "solutions";
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: "jobs";
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: "posts";
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: "categories";
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: "primary" | "light" | "text";
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "ctaBanner";
+}
+
+export interface RichTextBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: "center" | "left" | "split";
+  };
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ("ltr" | "rtl") | null;
+      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Built from the main (H2) headings of the text.
+   */
+  showTableOfContents?: boolean | null;
+  tocTitle?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "richText";
+}
+
+export interface ArticleHeaderBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: "center" | "left" | "split";
+  };
+  metaLabel?: string | null;
+  lastUpdatedLabel?: string | null;
+  lastUpdated?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: "articleHeader";
 }

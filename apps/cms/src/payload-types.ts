@@ -392,7 +392,23 @@ export interface Page {
    * A page holds at most 30 sections.
    */
   layout?:
-    | (HeroCarouselBlock | PageHeroBlock | MediaTextBlock | FeatureGridBlock | VisionMissionBlock | TimelineBlock)[]
+    | (
+        | HeroCarouselBlock
+        | PageHeroBlock
+        | MediaTextBlock
+        | FeatureGridBlock
+        | VisionMissionBlock
+        | TimelineBlock
+        | CertificationsBlock
+        | CertificateGalleryBlock
+        | AwardsBlock
+        | ImageCarouselBlock
+        | TestimonialsBlock
+        | HotspotIllustrationBlock
+        | CtaBannerBlock
+        | RichTextBlock
+        | ArticleHeaderBlock
+      )[]
     | null;
   updatedBy?: (number | null) | User;
   trashedBy?: (number | null) | User;
@@ -488,7 +504,23 @@ export interface SharedPage {
    * A page holds at most 30 sections.
    */
   layout?:
-    | (HeroCarouselBlock | PageHeroBlock | MediaTextBlock | FeatureGridBlock | VisionMissionBlock | TimelineBlock)[]
+    | (
+        | HeroCarouselBlock
+        | PageHeroBlock
+        | MediaTextBlock
+        | FeatureGridBlock
+        | VisionMissionBlock
+        | TimelineBlock
+        | CertificationsBlock
+        | CertificateGalleryBlock
+        | AwardsBlock
+        | ImageCarouselBlock
+        | TestimonialsBlock
+        | HotspotIllustrationBlock
+        | CtaBannerBlock
+        | RichTextBlock
+        | ArticleHeaderBlock
+      )[]
     | null;
   updatedBy?: (number | null) | User;
   trashedBy?: (number | null) | User;
@@ -1679,6 +1711,523 @@ export interface TimelineBlock {
   blockType: 'timeline';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CertificationsBlock".
+ */
+export interface CertificationsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  buttons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  variant: 'logos' | 'cards';
+  layout: 'grid' | 'carousel';
+  items: {
+    logo: number | Media;
+    code?: string | null;
+    title?: string | null;
+    description?: string | null;
+    certificateImages?:
+      | {
+          image: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  appearance: {
+    background: 'default' | 'muted' | 'dark' | 'image';
+    backgroundImage?: (number | null) | Media;
+    /**
+     * Optional in-page anchor: lowercase letters, numbers and hyphens.
+     */
+    anchorId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'certifications';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CertificateGalleryBlock".
+ */
+export interface CertificateGalleryBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  badge?: (number | null) | Media;
+  items: {
+    image: number | Media;
+    caption?: string | null;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'certificateGallery';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AwardsBlock".
+ */
+export interface AwardsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  items: {
+    image?: (number | null) | Media;
+    year?: string | null;
+    title: string;
+    description?: string | null;
+    issuer?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * How many awards show before the page buttons.
+   */
+  pageSize: number;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'awards';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageCarouselBlock".
+ */
+export interface ImageCarouselBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  items: {
+    image: number | Media;
+    label: string;
+    link: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+    };
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'imageCarousel';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock".
+ */
+export interface TestimonialsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  logos?:
+    | {
+        image: number | Media;
+        /**
+         * Read aloud as the logo's alt text.
+         */
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  items?:
+    | {
+        quote: string;
+        name: string;
+        role?: string | null;
+        avatar?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'testimonials';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HotspotIllustrationBlock".
+ */
+export interface HotspotIllustrationBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  image: number | Media;
+  hotspots: {
+    tone: 'green' | 'orange' | 'navy';
+    /**
+     * Distance from the left edge, 0 to 100 (%).
+     */
+    x: number;
+    /**
+     * Distance from the top edge, 0 to 100 (%).
+     */
+    y: number;
+    eyebrow?: string | null;
+    title: string;
+    description?: string | null;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'hotspotIllustration';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaBannerBlock".
+ */
+export interface CtaBannerBlock {
+  title?: string | null;
+  description?: string | null;
+  buttons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ctaBanner';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock".
+ */
+export interface RichTextBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Built from the main (H2) headings of the text.
+   */
+  showTableOfContents?: boolean | null;
+  tocTitle?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'richText';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ArticleHeaderBlock".
+ */
+export interface ArticleHeaderBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  metaLabel?: string | null;
+  lastUpdatedLabel?: string | null;
+  lastUpdated?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'articleHeader';
+}
+/**
  * UU PDP consent audit trail, written by the system. Holds no IP addresses.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2290,7 +2839,23 @@ export interface DetailTemplate {
    * A page holds at most 30 sections.
    */
   layout?:
-    | (HeroCarouselBlock | PageHeroBlock | MediaTextBlock | FeatureGridBlock | VisionMissionBlock | TimelineBlock)[]
+    | (
+        | HeroCarouselBlock
+        | PageHeroBlock
+        | MediaTextBlock
+        | FeatureGridBlock
+        | VisionMissionBlock
+        | TimelineBlock
+        | CertificationsBlock
+        | CertificateGalleryBlock
+        | AwardsBlock
+        | ImageCarouselBlock
+        | TestimonialsBlock
+        | HotspotIllustrationBlock
+        | CtaBannerBlock
+        | RichTextBlock
+        | ArticleHeaderBlock
+      )[]
     | null;
   updatedBy?: (number | null) | User;
   updatedAt: string;
@@ -2310,7 +2875,23 @@ export interface SharedDetailTemplate {
    * A page holds at most 30 sections.
    */
   layout?:
-    | (HeroCarouselBlock | PageHeroBlock | MediaTextBlock | FeatureGridBlock | VisionMissionBlock | TimelineBlock)[]
+    | (
+        | HeroCarouselBlock
+        | PageHeroBlock
+        | MediaTextBlock
+        | FeatureGridBlock
+        | VisionMissionBlock
+        | TimelineBlock
+        | CertificationsBlock
+        | CertificateGalleryBlock
+        | AwardsBlock
+        | ImageCarouselBlock
+        | TestimonialsBlock
+        | HotspotIllustrationBlock
+        | CtaBannerBlock
+        | RichTextBlock
+        | ArticleHeaderBlock
+      )[]
     | null;
   updatedBy?: (number | null) | User;
   updatedAt: string;
@@ -3113,6 +3694,15 @@ export interface PagesSelect<T extends boolean = true> {
         featureGrid?: T | FeatureGridBlockSelect<T>;
         visionMission?: T | VisionMissionBlockSelect<T>;
         timeline?: T | TimelineBlockSelect<T>;
+        certifications?: T | CertificationsBlockSelect<T>;
+        certificateGallery?: T | CertificateGalleryBlockSelect<T>;
+        awards?: T | AwardsBlockSelect<T>;
+        imageCarousel?: T | ImageCarouselBlockSelect<T>;
+        testimonials?: T | TestimonialsBlockSelect<T>;
+        hotspotIllustration?: T | HotspotIllustrationBlockSelect<T>;
+        ctaBanner?: T | CtaBannerBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        articleHeader?: T | ArticleHeaderBlockSelect<T>;
       };
   updatedBy?: T;
   trashedBy?: T;
@@ -3420,6 +4010,269 @@ export interface TimelineBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CertificationsBlock_select".
+ */
+export interface CertificationsBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  variant?: T;
+  layout?: T;
+  items?:
+    | T
+    | {
+        logo?: T;
+        code?: T;
+        title?: T;
+        description?: T;
+        certificateImages?:
+          | T
+          | {
+              image?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  appearance?:
+    | T
+    | {
+        background?: T;
+        backgroundImage?: T;
+        anchorId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CertificateGalleryBlock_select".
+ */
+export interface CertificateGalleryBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  badge?: T;
+  items?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AwardsBlock_select".
+ */
+export interface AwardsBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  items?:
+    | T
+    | {
+        image?: T;
+        year?: T;
+        title?: T;
+        description?: T;
+        issuer?: T;
+        id?: T;
+      };
+  pageSize?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageCarouselBlock_select".
+ */
+export interface ImageCarouselBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  items?:
+    | T
+    | {
+        image?: T;
+        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock_select".
+ */
+export interface TestimonialsBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  logos?:
+    | T
+    | {
+        image?: T;
+        name?: T;
+        id?: T;
+      };
+  items?:
+    | T
+    | {
+        quote?: T;
+        name?: T;
+        role?: T;
+        avatar?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HotspotIllustrationBlock_select".
+ */
+export interface HotspotIllustrationBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  image?: T;
+  hotspots?:
+    | T
+    | {
+        tone?: T;
+        x?: T;
+        y?: T;
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaBannerBlock_select".
+ */
+export interface CtaBannerBlockSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock_select".
+ */
+export interface RichTextBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  body?: T;
+  showTableOfContents?: T;
+  tocTitle?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ArticleHeaderBlock_select".
+ */
+export interface ArticleHeaderBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  metaLabel?: T;
+  lastUpdatedLabel?: T;
+  lastUpdated?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "shared-pages_select".
  */
 export interface SharedPagesSelect<T extends boolean = true> {
@@ -3446,6 +4299,15 @@ export interface SharedPagesSelect<T extends boolean = true> {
         featureGrid?: T | FeatureGridBlockSelect<T>;
         visionMission?: T | VisionMissionBlockSelect<T>;
         timeline?: T | TimelineBlockSelect<T>;
+        certifications?: T | CertificationsBlockSelect<T>;
+        certificateGallery?: T | CertificateGalleryBlockSelect<T>;
+        awards?: T | AwardsBlockSelect<T>;
+        imageCarousel?: T | ImageCarouselBlockSelect<T>;
+        testimonials?: T | TestimonialsBlockSelect<T>;
+        hotspotIllustration?: T | HotspotIllustrationBlockSelect<T>;
+        ctaBanner?: T | CtaBannerBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        articleHeader?: T | ArticleHeaderBlockSelect<T>;
       };
   updatedBy?: T;
   trashedBy?: T;
@@ -3719,6 +4581,15 @@ export interface DetailTemplatesSelect<T extends boolean = true> {
         featureGrid?: T | FeatureGridBlockSelect<T>;
         visionMission?: T | VisionMissionBlockSelect<T>;
         timeline?: T | TimelineBlockSelect<T>;
+        certifications?: T | CertificationsBlockSelect<T>;
+        certificateGallery?: T | CertificateGalleryBlockSelect<T>;
+        awards?: T | AwardsBlockSelect<T>;
+        imageCarousel?: T | ImageCarouselBlockSelect<T>;
+        testimonials?: T | TestimonialsBlockSelect<T>;
+        hotspotIllustration?: T | HotspotIllustrationBlockSelect<T>;
+        ctaBanner?: T | CtaBannerBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        articleHeader?: T | ArticleHeaderBlockSelect<T>;
       };
   updatedBy?: T;
   updatedAt?: T;
@@ -3740,6 +4611,15 @@ export interface SharedDetailTemplatesSelect<T extends boolean = true> {
         featureGrid?: T | FeatureGridBlockSelect<T>;
         visionMission?: T | VisionMissionBlockSelect<T>;
         timeline?: T | TimelineBlockSelect<T>;
+        certifications?: T | CertificationsBlockSelect<T>;
+        certificateGallery?: T | CertificateGalleryBlockSelect<T>;
+        awards?: T | AwardsBlockSelect<T>;
+        imageCarousel?: T | ImageCarouselBlockSelect<T>;
+        testimonials?: T | TestimonialsBlockSelect<T>;
+        hotspotIllustration?: T | HotspotIllustrationBlockSelect<T>;
+        ctaBanner?: T | CtaBannerBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        articleHeader?: T | ArticleHeaderBlockSelect<T>;
       };
   updatedBy?: T;
   updatedAt?: T;
