@@ -1,6 +1,7 @@
 import { readPublishedOrMembers, superAdmins, tenantMembers } from "../access";
 import { collectionLabels } from "../admin/labels";
 import { navGroup } from "../admin/navGroups";
+import { rejectTokensOutsideTemplates } from "../detailTemplates";
 import { withTrashedBy } from "../fields/authoring";
 import { pageFields, parentField } from "../fields/pageFields";
 import { withUpdatedBy } from "../fields/updatedBy";
@@ -32,7 +33,11 @@ export const SharedPages = withTrashedBy(
     versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
     trash: true,
     hooks: {
-      beforeValidate: [keepSingleHome, keepBasePagesOutOfTheTrash],
+      beforeValidate: [
+        keepSingleHome,
+        keepBasePagesOutOfTheTrash,
+        rejectTokensOutsideTemplates,
+      ],
       beforeDelete: [protectHome, keepBasePagesOnDelete, removeRoutes],
       beforeChange: [rejectOversizedCascade, freshBreadcrumbIds],
       afterChange: [keepBasePagesPublished, cascadePathChange, syncRoutes],

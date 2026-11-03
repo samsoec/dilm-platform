@@ -12,6 +12,7 @@ import {
   freshBreadcrumbIds,
   rejectOversizedCascade,
 } from "../pathCascade";
+import { rejectTokensOutsideTemplates } from "../detailTemplates";
 import { keepParentInTenant } from "../pageRules";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import {
@@ -35,7 +36,11 @@ export const Pages = withTenantAccess(
       versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
       trash: true,
       hooks: {
-        beforeValidate: [keepParentInTenant, keepBasePagesOutOfTheTrash],
+        beforeValidate: [
+          keepParentInTenant,
+          keepBasePagesOutOfTheTrash,
+          rejectTokensOutsideTemplates,
+        ],
         beforeChange: [rejectOversizedCascade, freshBreadcrumbIds],
         afterChange: [keepBasePagesPublished, cascadePathChange, syncRoutes],
         beforeDelete: [keepBasePagesOnDelete, removeRoutes],

@@ -66,6 +66,14 @@ export const COLLECTION_LABELS = {
     singular: { en: "Category", id: "Kategori" },
     plural: { en: "Categories", id: "Kategori" },
   },
+  "shared-detail-templates": {
+    singular: { en: "Shared detail template", id: "Templat detail bersama" },
+    plural: { en: "Shared detail templates", id: "Templat detail bersama" },
+  },
+  "detail-templates": {
+    singular: { en: "Detail template", id: "Templat detail" },
+    plural: { en: "Detail templates", id: "Templat detail" },
+  },
   routes: {
     singular: { en: "Route", id: "Rute" },
     plural: { en: "Routes", id: "Rute" },

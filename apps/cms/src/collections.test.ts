@@ -52,6 +52,7 @@ const TENANT_SCOPED = [
   "pages",
   "jobs",
   "posts",
+  "detail-templates",
 ];
 
 const IP_ADDRESS_PATTERN =
@@ -136,7 +137,7 @@ describe("the collections", () => {
     for (const { slug } of ALL) {
       expect(collection(slug).slug).toBe(slug);
     }
-    expect(ALL).toHaveLength(18);
+    expect(ALL).toHaveLength(20);
   });
 
   it("put every content collection under a required tenant", async () => {
@@ -245,6 +246,8 @@ describe("the sidebar navigation (FR-UI-01 to FR-UI-03)", () => {
       jobs: "person_add",
       posts: "newspaper",
       categories: "bookmark",
+      "shared-detail-templates": "space_dashboard",
+      "detail-templates": "space_dashboard",
       routes: "link",
     });
   });
