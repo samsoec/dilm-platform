@@ -1,24 +1,23 @@
-import type { Block, Field } from "payload";
-import type { PageBlockGroup } from "@dilm/shared-types";
+import type { Block } from "payload";
 
-export type SectionBlockConfig = {
-  slug: string;
-  interfaceName: string;
-  group: PageBlockGroup;
-  label?: string;
-  fields: Field[];
-};
+import { heroCarousel } from "./heroCarousel";
+import { pageHero } from "./pageHero";
+import { mediaText } from "./mediaText";
+import { featureGrid } from "./featureGrid";
+import { visionMission } from "./visionMission";
+import { timeline } from "./timeline";
 
-export function sectionBlock({
-  group,
-  label,
-  ...block
-}: SectionBlockConfig): Block {
-  return {
-    ...block,
-    ...(label ? { labels: { singular: label, plural: `${label}s` } } : {}),
-    admin: { group },
-  };
-}
+export {
+  sectionBlock,
+  type BlockCatalog,
+  type SectionBlockConfig,
+} from "./sectionBlock";
 
-export const pageBlocks: Block[] = [];
+export const pageBlocks: Block[] = [
+  heroCarousel,
+  pageHero,
+  mediaText,
+  featureGrid,
+  visionMission,
+  timeline,
+];

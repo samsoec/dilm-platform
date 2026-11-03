@@ -68,6 +68,18 @@ function options<T extends string>(
   return values.map((value) => ({ value, label: labels[value] }));
 }
 
+export function headingTextFields(): Field[] {
+  return [
+    withSameAsEnTag({ name: "eyebrow", type: "text", localized: true }),
+    italicHeadingField({ name: "title", label: "Title" }),
+    withSameAsEnTag({
+      name: "description",
+      type: "textarea",
+      localized: true,
+    }),
+  ];
+}
+
 export function headingField({
   name = "heading",
   align = "center",
@@ -76,13 +88,7 @@ export function headingField({
     name,
     type: "group",
     fields: [
-      withSameAsEnTag({ name: "eyebrow", type: "text", localized: true }),
-      italicHeadingField({ name: "title", label: "Title" }),
-      withSameAsEnTag({
-        name: "description",
-        type: "textarea",
-        localized: true,
-      }),
+      ...headingTextFields(),
       {
         name: "align",
         type: "select",
@@ -94,13 +100,24 @@ export function headingField({
   };
 }
 
+export const tableNamed =
+  (suffix: string): NonNullable<ArrayField["dbName"]> =>
+  ({ tableName }) =>
+    `${tableName}_${suffix}`;
+
 export function buttonsField({
   name = "buttons",
   maxRows = MAX_BUTTONS,
-}: { name?: string; maxRows?: number } = {}): ArrayField {
+  tableName,
+}: {
+  name?: string;
+  maxRows?: number;
+  tableName?: string;
+} = {}): ArrayField {
   return {
     name,
     type: "array",
+    ...(tableName ? { dbName: tableNamed(tableName) } : {}),
     minRows: 0,
     maxRows,
     labels: { singular: "Button", plural: "Buttons" },
@@ -242,7 +259,13 @@ export function iconField({
   name = "icon",
   label,
   required = false,
-}: { name?: string; label?: string; required?: boolean } = {}): UploadField {
+  condition,
+}: {
+  name?: string;
+  label?: string;
+  required?: boolean;
+  condition?: Condition;
+} = {}): UploadField {
   return withMediaPicker(
     {
       name,
@@ -251,7 +274,10 @@ export function iconField({
       relationTo: "media",
       required,
       filterOptions: { mimeType: { in: [...ICON_MIME_TYPES] } },
-      admin: { description: "SVG or PNG." },
+      admin: {
+        description: "SVG or PNG.",
+        ...(condition ? { condition } : {}),
+      },
     },
     {
       preview: "light",
@@ -261,3 +287,59 @@ export function iconField({
     },
   );
 }
+
+export function imageField({
+  name,
+  label,
+  required = false,
+  chooseLabel = "Choose an image",
+}: {
+  name: string;
+  label?: string;
+  required?: boolean;
+  chooseLabel?: string;
+}): UploadField {
+  return withMediaPicker(
+    {
+      name,
+      ...(label ? { label } : {}),
+      type: "upload",
+      relationTo: "media",
+      required,
+    },
+    { chooseLabel },
+  );
+}
+
+export const MAX_STATS = 4;
+
+export function statsField({
+  name = "stats",
+  maxRows = MAX_STATS,
+}: { name?: string; maxRows?: number } = {}): ArrayField {
+  return {
+    name,
+    type: "array",
+    minRows: 0,
+    maxRows,
+    labels: { singular: "Stat", plural: "Stats" },
+    fields: [
+      { name: "value", type: "text", required: true },
+      withSameAsEnTag({
+        name: "label",
+        type: "text",
+        required: true,
+        localized: true,
+      }),
+    ],
+  };
+}
+
+type BlockData = Record<string, unknown>;
+
+export const whenBlock =
+  (field: string, fallback: string, ...values: readonly string[]): Condition =>
+  (_, siblingData, options) => {
+    const data = (options?.blockData ?? siblingData) as BlockData | undefined;
+    return values.includes(String(data?.[field] ?? fallback));
+  };
