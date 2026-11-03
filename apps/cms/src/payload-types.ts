@@ -408,6 +408,13 @@ export interface Page {
         | CtaBannerBlock
         | RichTextBlock
         | ArticleHeaderBlock
+        | ProductsSolutionsTabsBlock
+        | ProductShowcaseBlock
+        | SolutionShowcaseBlock
+        | PostShowcaseBlock
+        | JobListingBlock
+        | JobShowcaseBlock
+        | IrDocumentsBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -520,6 +527,13 @@ export interface SharedPage {
         | CtaBannerBlock
         | RichTextBlock
         | ArticleHeaderBlock
+        | ProductsSolutionsTabsBlock
+        | ProductShowcaseBlock
+        | SolutionShowcaseBlock
+        | PostShowcaseBlock
+        | JobListingBlock
+        | JobShowcaseBlock
+        | IrDocumentsBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -2228,6 +2242,1042 @@ export interface ArticleHeaderBlock {
   blockType: 'articleHeader';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductsSolutionsTabsBlock".
+ */
+export interface ProductsSolutionsTabsBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  solutionsTab: {
+    label: string;
+    /**
+     * Published solutions from every company. The order here is the order on the page.
+     */
+    items: (number | Solution)[];
+  };
+  productsTab: {
+    label: string;
+    /**
+     * Published products from every company. The order here is the order on the page.
+     */
+    items: (number | Product)[];
+  };
+  /**
+   * The tab that is open when the page loads.
+   */
+  defaultTab: 'solutions' | 'products';
+  ctaCard: {
+    text?: string | null;
+    link: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+  };
+  bottomCta: {
+    title?: string | null;
+    description?: string | null;
+    first: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+    firstStyle: 'primary' | 'light' | 'text';
+    second: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+    secondStyle: 'primary' | 'light' | 'text';
+  };
+  appearance: {
+    background: 'default' | 'muted' | 'dark' | 'image';
+    backgroundImage?: (number | null) | Media;
+    /**
+     * Optional in-page anchor: lowercase letters, numbers and hyphens.
+     */
+    anchorId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'productsSolutionsTabs';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductShowcaseBlock".
+ */
+export interface ProductShowcaseBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  buttons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  source: 'manual' | 'all';
+  items?: (number | Product)[] | null;
+  cardStyle: 'imageOverlay' | 'imageCard' | 'textCard';
+  ctaCard: {
+    text?: string | null;
+    link: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+  };
+  bottomCta: {
+    title?: string | null;
+    description?: string | null;
+    first: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+    firstStyle: 'primary' | 'light' | 'text';
+    second: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+    secondStyle: 'primary' | 'light' | 'text';
+  };
+  appearance: {
+    background: 'default' | 'muted' | 'dark' | 'image';
+    backgroundImage?: (number | null) | Media;
+    /**
+     * Optional in-page anchor: lowercase letters, numbers and hyphens.
+     */
+    anchorId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'productShowcase';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionShowcaseBlock".
+ */
+export interface SolutionShowcaseBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  buttons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  source: 'manual' | 'all';
+  items?: (number | Solution)[] | null;
+  cardStyle: 'imageCard' | 'textCard' | 'imageTitle';
+  ctaCard: {
+    text?: string | null;
+    link: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+  };
+  bottomCta: {
+    title?: string | null;
+    description?: string | null;
+    first: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+    firstStyle: 'primary' | 'light' | 'text';
+    second: {
+      type: 'internal' | 'external' | 'reference';
+      newTab?: boolean | null;
+      /**
+       * Start with /. The site adds the language.
+       */
+      internalPath?: string | null;
+      /**
+       * A full address starting with https://
+       */
+      externalUrl?: string | null;
+      /**
+       * Follows the page or record if it is renamed or moved. Only published ones are offered.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'shared-pages';
+            value: number | SharedPage;
+          } | null)
+        | ({
+            relationTo: 'products';
+            value: number | Product;
+          } | null)
+        | ({
+            relationTo: 'solutions';
+            value: number | Solution;
+          } | null)
+        | ({
+            relationTo: 'jobs';
+            value: number | Job;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'categories';
+            value: number | Category;
+          } | null);
+      label?: string | null;
+    };
+    secondStyle: 'primary' | 'light' | 'text';
+  };
+  appearance: {
+    background: 'default' | 'muted' | 'dark' | 'image';
+    backgroundImage?: (number | null) | Media;
+    /**
+     * Optional in-page anchor: lowercase letters, numbers and hyphens.
+     */
+    anchorId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'solutionShowcase';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostShowcaseBlock".
+ */
+export interface PostShowcaseBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  buttons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  source: 'manual' | 'latest';
+  items?:
+    | {
+        /**
+         * Published posts only; a post card links to that post.
+         */
+        doc:
+          | {
+              relationTo: 'posts';
+              value: number | Post;
+            }
+          | {
+              relationTo: 'categories';
+              value: number | Category;
+            };
+        eyebrow?: string | null;
+        title?: string | null;
+        description?: string | null;
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Leave empty to use posts from every category.
+   */
+  categories?: (number | Category)[] | null;
+  limit?: number | null;
+  layout: 'carousel' | 'overlay' | 'featured';
+  cardEyebrow: 'category' | 'entity';
+  readMoreLabel?: string | null;
+  appearance: {
+    background: 'default' | 'muted' | 'dark' | 'image';
+    backgroundImage?: (number | null) | Media;
+    /**
+     * Optional in-page anchor: lowercase letters, numbers and hyphens.
+     */
+    anchorId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'postShowcase';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "JobListingBlock".
+ */
+export interface JobListingBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  filters?: {
+    search?: boolean | null;
+    department?: boolean | null;
+    location?: boolean | null;
+    jobType?: boolean | null;
+  };
+  searchPlaceholder?: string | null;
+  /**
+   * How many jobs show per page.
+   */
+  pageSize: number;
+  emptyText?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'jobListing';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "JobShowcaseBlock".
+ */
+export interface JobShowcaseBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  source: 'manual' | 'latest';
+  items?: (number | Job)[] | null;
+  limit?: number | null;
+  buttons?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  appearance: {
+    background: 'default' | 'muted' | 'dark' | 'image';
+    backgroundImage?: (number | null) | Media;
+    /**
+     * Optional in-page anchor: lowercase letters, numbers and hyphens.
+     */
+    anchorId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'jobShowcase';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IrDocumentsBlock".
+ */
+export interface IrDocumentsBlock {
+  sideNav?:
+    | {
+        link: {
+          type: 'internal' | 'external' | 'reference';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  /**
+   * Leave empty to show every type.
+   */
+  documentTypes?:
+    | (
+        | 'annual-report'
+        | 'financial-statement'
+        | 'sustainability-report'
+        | 'public-disclosure'
+        | 'shareholder-meeting'
+        | 'prospectus'
+      )[]
+    | null;
+  /**
+   * How many documents show per page.
+   */
+  pageSize: number;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'irDocuments';
+}
+/**
  * UU PDP consent audit trail, written by the system. Holds no IP addresses.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2855,6 +3905,13 @@ export interface DetailTemplate {
         | CtaBannerBlock
         | RichTextBlock
         | ArticleHeaderBlock
+        | ProductsSolutionsTabsBlock
+        | ProductShowcaseBlock
+        | SolutionShowcaseBlock
+        | PostShowcaseBlock
+        | JobListingBlock
+        | JobShowcaseBlock
+        | IrDocumentsBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -2891,6 +3948,13 @@ export interface SharedDetailTemplate {
         | CtaBannerBlock
         | RichTextBlock
         | ArticleHeaderBlock
+        | ProductsSolutionsTabsBlock
+        | ProductShowcaseBlock
+        | SolutionShowcaseBlock
+        | PostShowcaseBlock
+        | JobListingBlock
+        | JobShowcaseBlock
+        | IrDocumentsBlock
       )[]
     | null;
   updatedBy?: (number | null) | User;
@@ -3703,6 +4767,13 @@ export interface PagesSelect<T extends boolean = true> {
         ctaBanner?: T | CtaBannerBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         articleHeader?: T | ArticleHeaderBlockSelect<T>;
+        productsSolutionsTabs?: T | ProductsSolutionsTabsBlockSelect<T>;
+        productShowcase?: T | ProductShowcaseBlockSelect<T>;
+        solutionShowcase?: T | SolutionShowcaseBlockSelect<T>;
+        postShowcase?: T | PostShowcaseBlockSelect<T>;
+        jobListing?: T | JobListingBlockSelect<T>;
+        jobShowcase?: T | JobShowcaseBlockSelect<T>;
+        irDocuments?: T | IrDocumentsBlockSelect<T>;
       };
   updatedBy?: T;
   trashedBy?: T;
@@ -4273,6 +5344,412 @@ export interface ArticleHeaderBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductsSolutionsTabsBlock_select".
+ */
+export interface ProductsSolutionsTabsBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  solutionsTab?:
+    | T
+    | {
+        label?: T;
+        items?: T;
+      };
+  productsTab?:
+    | T
+    | {
+        label?: T;
+        items?: T;
+      };
+  defaultTab?: T;
+  ctaCard?:
+    | T
+    | {
+        text?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+      };
+  bottomCta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        first?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        firstStyle?: T;
+        second?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        secondStyle?: T;
+      };
+  appearance?:
+    | T
+    | {
+        background?: T;
+        backgroundImage?: T;
+        anchorId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProductShowcaseBlock_select".
+ */
+export interface ProductShowcaseBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  source?: T;
+  items?: T;
+  cardStyle?: T;
+  ctaCard?:
+    | T
+    | {
+        text?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+      };
+  bottomCta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        first?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        firstStyle?: T;
+        second?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        secondStyle?: T;
+      };
+  appearance?:
+    | T
+    | {
+        background?: T;
+        backgroundImage?: T;
+        anchorId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionShowcaseBlock_select".
+ */
+export interface SolutionShowcaseBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  source?: T;
+  items?: T;
+  cardStyle?: T;
+  ctaCard?:
+    | T
+    | {
+        text?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+      };
+  bottomCta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        first?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        firstStyle?: T;
+        second?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        secondStyle?: T;
+      };
+  appearance?:
+    | T
+    | {
+        background?: T;
+        backgroundImage?: T;
+        anchorId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostShowcaseBlock_select".
+ */
+export interface PostShowcaseBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  source?: T;
+  items?:
+    | T
+    | {
+        doc?: T;
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        image?: T;
+        id?: T;
+      };
+  categories?: T;
+  limit?: T;
+  layout?: T;
+  cardEyebrow?: T;
+  readMoreLabel?: T;
+  appearance?:
+    | T
+    | {
+        background?: T;
+        backgroundImage?: T;
+        anchorId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "JobListingBlock_select".
+ */
+export interface JobListingBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  filters?:
+    | T
+    | {
+        search?: T;
+        department?: T;
+        location?: T;
+        jobType?: T;
+      };
+  searchPlaceholder?: T;
+  pageSize?: T;
+  emptyText?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "JobShowcaseBlock_select".
+ */
+export interface JobShowcaseBlockSelect<T extends boolean = true> {
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  source?: T;
+  items?: T;
+  limit?: T;
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        style?: T;
+        id?: T;
+      };
+  appearance?:
+    | T
+    | {
+        background?: T;
+        backgroundImage?: T;
+        anchorId?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IrDocumentsBlock_select".
+ */
+export interface IrDocumentsBlockSelect<T extends boolean = true> {
+  sideNav?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              internalPath?: T;
+              externalUrl?: T;
+              reference?: T;
+              label?: T;
+            };
+        id?: T;
+      };
+  heading?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        align?: T;
+      };
+  documentTypes?: T;
+  pageSize?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "shared-pages_select".
  */
 export interface SharedPagesSelect<T extends boolean = true> {
@@ -4308,6 +5785,13 @@ export interface SharedPagesSelect<T extends boolean = true> {
         ctaBanner?: T | CtaBannerBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         articleHeader?: T | ArticleHeaderBlockSelect<T>;
+        productsSolutionsTabs?: T | ProductsSolutionsTabsBlockSelect<T>;
+        productShowcase?: T | ProductShowcaseBlockSelect<T>;
+        solutionShowcase?: T | SolutionShowcaseBlockSelect<T>;
+        postShowcase?: T | PostShowcaseBlockSelect<T>;
+        jobListing?: T | JobListingBlockSelect<T>;
+        jobShowcase?: T | JobShowcaseBlockSelect<T>;
+        irDocuments?: T | IrDocumentsBlockSelect<T>;
       };
   updatedBy?: T;
   trashedBy?: T;
@@ -4590,6 +6074,13 @@ export interface DetailTemplatesSelect<T extends boolean = true> {
         ctaBanner?: T | CtaBannerBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         articleHeader?: T | ArticleHeaderBlockSelect<T>;
+        productsSolutionsTabs?: T | ProductsSolutionsTabsBlockSelect<T>;
+        productShowcase?: T | ProductShowcaseBlockSelect<T>;
+        solutionShowcase?: T | SolutionShowcaseBlockSelect<T>;
+        postShowcase?: T | PostShowcaseBlockSelect<T>;
+        jobListing?: T | JobListingBlockSelect<T>;
+        jobShowcase?: T | JobShowcaseBlockSelect<T>;
+        irDocuments?: T | IrDocumentsBlockSelect<T>;
       };
   updatedBy?: T;
   updatedAt?: T;
@@ -4620,6 +6111,13 @@ export interface SharedDetailTemplatesSelect<T extends boolean = true> {
         ctaBanner?: T | CtaBannerBlockSelect<T>;
         richText?: T | RichTextBlockSelect<T>;
         articleHeader?: T | ArticleHeaderBlockSelect<T>;
+        productsSolutionsTabs?: T | ProductsSolutionsTabsBlockSelect<T>;
+        productShowcase?: T | ProductShowcaseBlockSelect<T>;
+        solutionShowcase?: T | SolutionShowcaseBlockSelect<T>;
+        postShowcase?: T | PostShowcaseBlockSelect<T>;
+        jobListing?: T | JobListingBlockSelect<T>;
+        jobShowcase?: T | JobShowcaseBlockSelect<T>;
+        irDocuments?: T | IrDocumentsBlockSelect<T>;
       };
   updatedBy?: T;
   updatedAt?: T;

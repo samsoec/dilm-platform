@@ -7,6 +7,7 @@ import type {
   GroupField,
   NumberField,
   RelationshipField,
+  RelationshipFieldManyValidation,
   SelectField,
   TextFieldSingleValidation,
   UploadField,
@@ -28,6 +29,7 @@ import { italicHeadingField } from "../fields/italicHeading";
 import { withSameAsEnTag } from "../fields/layoutEditor";
 import { link } from "../fields/link";
 import { withMediaPicker } from "../fields/mediaPicker";
+import { unscopedRelationship } from "../tenancy";
 
 export const MAX_BUTTONS = 2;
 
@@ -214,6 +216,11 @@ export type RecordPickerOptions = {
   sources?: readonly RecordSource[];
   defaultSource?: RecordSource;
   label?: string;
+  minItems?: number;
+  maxItems?: number;
+  limit?: { default?: number; max?: number };
+  filterOptions?: RelationshipField["filterOptions"];
+  validate?: RelationshipFieldManyValidation;
 };
 
 export function recordPickerFields({
@@ -221,6 +228,11 @@ export function recordPickerFields({
   sources = RECORD_SOURCES,
   defaultSource = sources[0],
   label,
+  minItems,
+  maxItems,
+  limit: limitOptions,
+  filterOptions,
+  validate,
 }: RecordPickerOptions): Field[] {
   const source: SelectField = {
     name: "source",
@@ -237,16 +249,24 @@ export function recordPickerFields({
       type: "relationship",
       relationTo: collection,
       hasMany: true,
+      ...(minItems ? { required: true, minRows: minItems } : {}),
+      ...(maxItems ? { maxRows: maxItems } : {}),
+      ...(filterOptions ? { maxDepth: 1, filterOptions } : {}),
+      ...(validate ? { validate } : {}),
       hooks: { beforeChange: [clearUnlessSource("manual")] },
       admin: { condition: sourceIs("manual") },
     };
-    fields.push(items);
+    fields.push(filterOptions ? unscopedRelationship(items) : items);
   }
   if (sources.includes("latest")) {
     const limit: NumberField = {
       name: "limit",
       type: "number",
       min: 1,
+      ...(limitOptions?.max ? { max: limitOptions.max } : {}),
+      ...(limitOptions?.default
+        ? { required: true, defaultValue: limitOptions.default }
+        : {}),
       hooks: { beforeChange: [clearUnlessSource("latest")] },
       admin: { condition: sourceIs("latest"), step: 1 },
     };

@@ -65,9 +65,9 @@ export type LinkData = {
   reference?: LinkReference | null;
 };
 
-type Ref = number | string | { id: number | string } | null | undefined;
+export type Ref = number | string | { id: number | string } | null | undefined;
 
-function idOf(value: Ref): string | undefined {
+export function idOf(value: Ref): string | undefined {
   if (value === null || value === undefined || value === "") return undefined;
   return String(typeof value === "object" ? value.id : value);
 }
@@ -104,12 +104,12 @@ const referenceOptions: FilterOptions = ({ relationTo, data, id }) => {
   return referenceFilter(relationTo, doc?.tenant, self);
 };
 
-type ValidateContext = {
+export type ValidateContext = {
   collectionSlug?: string;
   id?: Ref;
 };
 
-async function storedPick(
+export async function storedPick(
   context: ValidateContext,
   args: { req: PayloadRequest; path?: (string | number)[] | string[] },
 ): Promise<LinkReference | null | undefined> {
