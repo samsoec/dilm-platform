@@ -74,6 +74,18 @@ const shown = (field: Field, blockData: object) =>
     }
   ).condition({}, blockData, { blockData });
 
+const NEAR_LIMIT_ALIASES = [
+  "_detail_templates_v__blocks_certifications_items_certificateImages (66)",
+  "_shared_detail_templates_v__blocks_certifications_items_certificateImages (73)",
+  "_shared_detail_templates_v__blocks_featureGrid_footerButtons (60)",
+  "_shared_detail_templates_v__blocks_featureGrid_headingButtons (61)",
+  "_shared_detail_templates_v__blocks_heroCarousel_slides_buttons (62)",
+  "_shared_detail_templates_v__blocks_visionMission_mission_items (62)",
+  "_shared_pages_v__blocks_certifications_items_certificateImages (62)",
+  "detail_templates__blocks_certifications_items_certificateImages (63)",
+  "shared_detail_templates__blocks_certifications_items_certificateImages (70)",
+];
+
 const t = { t: (key: string) => key };
 
 describe("the record blocks are registered (FR-PM-27, FR-PM-33)", () => {
@@ -144,6 +156,7 @@ describe("the record blocks are registered (FR-PM-27, FR-PM-33)", () => {
               ))),
       );
     const clashes: string[] = [];
+    const nearLimit: string[] = [];
     let checked = 0;
     for (const collection of layouts) {
       const offered = (findField(collection.fields, "layout") as BlocksField)
@@ -161,6 +174,9 @@ describe("the record blocks are registered (FR-PM-27, FR-PM-33)", () => {
             }
             seen.set(cut, name);
             checked += 1;
+            if (!name.endsWith("__locales") && name.length >= 60) {
+              nearLimit.push(`${name} (${name.length})`);
+            }
           }
         };
         const walk = (fields: Field[], alias: string) => {
@@ -192,6 +208,7 @@ describe("the record blocks are registered (FR-PM-27, FR-PM-33)", () => {
     }
     expect(checked).toBeGreaterThan(500);
     expect(clashes).toEqual([]);
+    expect(nearLimit.sort()).toEqual(NEAR_LIMIT_ALIASES);
   });
 
   it("offers every block in every layout except the declared exclusions", () => {

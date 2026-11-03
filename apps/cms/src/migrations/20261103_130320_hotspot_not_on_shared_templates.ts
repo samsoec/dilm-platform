@@ -1,6 +1,17 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+  const held = await db.execute(sql`
+    SELECT
+      (SELECT count(*) FROM "shared_detail_templates_hot") +
+      (SELECT count(*) FROM "shared_detail_templates_hot_hotspots") +
+      (SELECT count(*) FROM "__shared_detail_templates_v_hot_v") +
+      (SELECT count(*) FROM "__shared_detail_templates_v_hot_v_hotspots") AS total`)
+  if (Number(held.rows[0]?.total) > 0) {
+    throw new Error(
+      'Hotspot blocks exist on shared detail templates; remove them before this migration',
+    )
+  }
   await db.execute(sql`
    DROP TABLE "shared_detail_templates_hot_hotspots" CASCADE;
   DROP TABLE "shared_detail_templates_hot_hotspots_locales" CASCADE;
