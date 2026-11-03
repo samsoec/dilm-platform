@@ -121,6 +121,8 @@ export type TokenRecord = {
 
 type LocalizedText = string | null | undefined | Record<string, string | null>;
 
+export const CONTENT_LOCALES = ["en", "id"] as const;
+
 const DEFAULT_LOCALE = "en";
 
 function inLocale(value: LocalizedText, locale: string): string | undefined {
@@ -199,6 +201,14 @@ export function scopedTokenProblem(
   return unknown === undefined ? undefined : rule.message(unknown);
 }
 
+function isLocaleMap(value: object): boolean {
+  const keys = Object.keys(value);
+  return (
+    keys.length > 0 &&
+    keys.every((key) => (CONTENT_LOCALES as readonly string[]).includes(key))
+  );
+}
+
 function textsIn(
   value: unknown,
   found: string[],
@@ -209,9 +219,11 @@ function textsIn(
   else if (Array.isArray(value)) {
     value.forEach((item) => textsIn(item, found, skip, prefix));
   } else if (value && typeof value === "object") {
+    const locales = isLocaleMap(value);
     for (const [key, item] of Object.entries(value)) {
       const path = prefix ? `${prefix}.${key}` : key;
-      if (!SKIPPED_KEYS.has(key) && !skip.includes(path)) {
+      const skipped = !locales && SKIPPED_KEYS.has(key);
+      if (!skipped && !skip.includes(path)) {
         textsIn(item, found, skip, path);
       }
     }

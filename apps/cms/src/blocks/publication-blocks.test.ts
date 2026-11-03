@@ -15,6 +15,7 @@ import type {
   Where,
 } from "payload";
 import {
+  CONTENT_LOCALES,
   CURRENT_CATEGORY_WARNING,
   DEFAULT_POST_PAGE_SIZE,
   MAX_HIGHLIGHTS,
@@ -31,6 +32,8 @@ import { Categories } from "../collections/Categories";
 import { DetailTemplates } from "../collections/DetailTemplates";
 import { Jobs } from "../collections/Jobs";
 import { Pages } from "../collections/Pages";
+import { SharedPages } from "../collections/SharedPages";
+import { localization } from "../localization";
 import { Posts } from "../collections/Posts";
 import { Products } from "../collections/Products";
 import { SharedDetailTemplates } from "../collections/SharedDetailTemplates";
@@ -361,6 +364,101 @@ describe("token rules (PS-08)", () => {
     const title = validateOf(named(postListing.fields, "emptyState", "title"));
     expect(title("None for {query}", {})).toBe(true);
     expect(title("{count}", {})).toBe("Only {query} works in this title.");
+  });
+});
+
+describe("per-locale values are scanned (an API save in every locale)", () => {
+  const listing = (resultsLabel: unknown, title: unknown = "") => [
+    { blockType: "postListing", resultsLabel, emptyState: { title } },
+  ];
+
+  it("lists the same locales as the CMS", () => {
+    expect([...CONTENT_LOCALES]).toEqual([...localization.locales]);
+  });
+
+  it("rejects a bad token in the Indonesian results line with the PS-08 wording", () => {
+    expect(tokenProblem(listing({ en: "{count}", id: "{foo}" }), true)).toBe(
+      "{foo} isn't a placeholder. Use {count} or {query}.",
+    );
+    expect(
+      tokenProblem(listing({ en: "{count}", id: "{count} {query}" }), false),
+    ).toBeUndefined();
+  });
+
+  it("rejects a bad token in either locale of the empty title", () => {
+    for (const title of [
+      { en: "x", id: "{count}" },
+      { en: "{count}", id: "x" },
+    ]) {
+      expect(tokenProblem(listing("", title), true)).toBe(
+        "Only {query} works in this title.",
+      );
+    }
+    expect(
+      tokenProblem(listing("", { en: "{query}", id: "{query}" }), false),
+    ).toBeUndefined();
+  });
+
+  it("rejects {title} in the Indonesian value on a page and accepts it in both on a template", () => {
+    const body = (text: unknown) => [{ blockType: "richText", body: text }];
+    expect(tokenProblem(body({ en: "ok", id: "{title}" }), false)).toBe(
+      TOKENS_OUTSIDE_TEMPLATES,
+    );
+    expect(tokenProblem(body({ en: "{title}", id: "{title}" }), true)).toBe(
+      undefined,
+    );
+    expect(tokenProblem(body({ en: "ok", id: "{x}" }), true)).toBe(
+      unknownTokenMessage("x"),
+    );
+  });
+
+  it("still skips row and block ids", () => {
+    const layout = [
+      {
+        id: "{title}",
+        blockType: "richText",
+        blockName: "{title}",
+        items: [{ id: "64f0c1", label: { en: "ok", id: "ok" } }, { id: "{x}" }],
+        lone: { id: "64f0c2" },
+      },
+    ];
+    expect(tokenProblem(layout, false)).toBe(TOKENS_OUTSIDE_TEMPLATES);
+    const plain = [
+      {
+        id: "64f0c1",
+        blockType: "richText",
+        items: [{ id: "64f0c1", label: { en: "ok", id: "ok" } }],
+        lone: { id: "64f0c2" },
+      },
+    ];
+    expect(tokenProblem(plain, false)).toBeUndefined();
+    expect(tokenProblem(plain, true)).toBeUndefined();
+  });
+
+  it("runs on every collection's token hook", async () => {
+    const layout = [
+      { blockType: "richText", body: { en: "ok", id: "{title}" } },
+    ];
+    const hooks = (collection: CollectionConfig) =>
+      (collection.hooks?.beforeValidate ?? []) as ((
+        a: unknown,
+      ) => Promise<unknown>)[];
+    for (const collection of [Pages, SharedPages]) {
+      const hook = hooks(collection).find(
+        (h) => h === rejectTokensOutsideTemplates,
+      )!;
+      await expect(hook({ data: { layout } }), collection.slug).rejects.toThrow(
+        TOKENS_OUTSIDE_TEMPLATES,
+      );
+    }
+    const bad = [{ blockType: "richText", body: { en: "ok", id: "{x}" } }];
+    for (const collection of [DetailTemplates, SharedDetailTemplates]) {
+      const hook = hooks(collection).find((h) => h === allowTemplateTokens)!;
+      await expect(
+        hook({ data: { layout: bad } }),
+        collection.slug,
+      ).rejects.toThrow("{x} isn't a placeholder. Use {title}.");
+    }
   });
 });
 
