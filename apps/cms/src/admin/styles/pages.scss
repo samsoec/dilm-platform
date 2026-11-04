@@ -32,9 +32,17 @@
   }
 
   .dil-pages__banner.dil-banner--error .dil-banner__body {
-    flex-direction: row;
+    flex-flow: row nowrap;
     align-items: center;
     justify-content: space-between;
+
+    .dil-banner__text {
+      flex: 1;
+    }
+
+    .dil-banner__action {
+      margin-inline-start: auto;
+    }
   }
 
   .dil-pages__toolbar {

@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
 import { ModalContainer, ModalProvider } from "@faceless-ui/modal";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -14,12 +20,14 @@ import {
   toTrashRows,
 } from "./pagesModel";
 
+const { toastCustom } = vi.hoisted(() => ({ toastCustom: vi.fn() }));
+
 vi.mock("@payloadcms/ui", async () => {
   const modal = await import("@faceless-ui/modal");
   return {
     Modal: modal.Modal,
     useModal: modal.useModal,
-    toast: vi.fn(),
+    toast: { custom: toastCustom, dismiss: vi.fn() },
     useConfig: () => ({
       config: { routes: { admin: "/admin", api: "/api" }, serverURL: "" },
     }),
@@ -167,7 +175,46 @@ const items = () => screen.getAllByRole("treeitem");
 const titles = () =>
   items().map((item) => within(item).getAllByRole("link")[0]!.textContent);
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+  toastCustom.mockClear();
+});
+
+type ToastProps = {
+  tone: string;
+  title: string;
+  body?: string;
+  action?: { label: string; onClick: () => Promise<void> | void };
+};
+
+function lastToast(): ToastProps {
+  const render = toastCustom.mock.calls.at(-1)![0] as (id: string) => {
+    props: ToastProps;
+  };
+  return render("t").props;
+}
+
+function stubFetch(
+  ...responses: { ok: boolean; status?: number; body?: object }[]
+) {
+  const fetchMock = vi.fn();
+  for (const { ok, status = ok ? 200 : 404, body = {} } of responses) {
+    fetchMock.mockResolvedValueOnce({ ok, status, json: async () => body });
+  }
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+}
+
+async function trashCareer() {
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: "Actions for Career" }));
+  await user.click(screen.getByRole("menuitem", { name: "Move to trash…" }));
+  const dialog = await screen.findByRole("alertdialog");
+  await user.click(
+    within(dialog).getByRole("button", { name: "Move to trash" }),
+  );
+}
 
 describe("PagesTree", () => {
   it("lists the company's pages with shared ones inline, own containers open", () => {
@@ -378,6 +425,110 @@ describe("PagesTree", () => {
           name: 'Move "Career" to trash?',
         }),
       ).toBeTruthy();
+    });
+  });
+
+  describe("Undo after moving to the trash", () => {
+    it("restores as a draft through the trashed-documents request", async () => {
+      const fetchMock = stubFetch({ ok: true }, { ok: true });
+      mount();
+      await trashCareer();
+      await waitFor(() => expect(toastCustom).toHaveBeenCalled());
+      const trashed = lastToast();
+      expect(trashed.tone).toBe("undo");
+      expect(fetchMock.mock.calls[0]![0]).toBe("/api/pages/5");
+      await trashed.action!.onClick();
+      const [url, init] = fetchMock.mock.calls[1]!;
+      expect(url).toBe("/api/pages/5?trash=true");
+      expect(init.method).toBe("PATCH");
+      expect(JSON.parse(init.body)).toEqual({
+        deletedAt: null,
+        _status: "draft",
+      });
+      expect(lastToast()).toMatchObject({
+        tone: "success",
+        title: 'Restored "Career".',
+      });
+    });
+
+    it("restores to the top level when the page's parent is not live", async () => {
+      const fetchMock = stubFetch({ ok: true }, { ok: true });
+      const orphan = record(9, "Orphan", { parentKey: "pages:404" });
+      mount({ rows: toRows(buildTree([orphan]), context) });
+      const user = userEvent.setup();
+      await user.click(
+        screen.getByRole("button", { name: "Actions for Orphan" }),
+      );
+      await user.click(
+        screen.getByRole("menuitem", { name: "Move to trash…" }),
+      );
+      const dialog = await screen.findByRole("alertdialog");
+      await user.click(
+        within(dialog).getByRole("button", { name: "Move to trash" }),
+      );
+      await waitFor(() => expect(toastCustom).toHaveBeenCalled());
+      await lastToast().action!.onClick();
+      expect(JSON.parse(fetchMock.mock.calls[1]![1].body)).toEqual({
+        deletedAt: null,
+        _status: "draft",
+        parent: null,
+      });
+    });
+
+    it("shows the server's error and does not claim success when Undo fails", async () => {
+      stubFetch(
+        { ok: true },
+        {
+          ok: false,
+          status: 404,
+          body: { errors: [{ message: "Not Found" }] },
+        },
+      );
+      mount();
+      await trashCareer();
+      await waitFor(() => expect(toastCustom).toHaveBeenCalled());
+      await lastToast().action!.onClick();
+      expect(lastToast()).toMatchObject({
+        tone: "error",
+        title: 'Couldn\'t restore "Career".',
+        body: "Not Found",
+      });
+    });
+
+    it("shows an error when the request cannot be sent", async () => {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => ({}),
+        })
+        .mockRejectedValueOnce(new Error("offline"));
+      vi.stubGlobal("fetch", fetchMock);
+      mount();
+      await trashCareer();
+      await waitFor(() => expect(toastCustom).toHaveBeenCalled());
+      await lastToast().action!.onClick();
+      expect(lastToast()).toMatchObject({
+        tone: "error",
+        body: "The CMS can't be reached.",
+      });
+    });
+
+    it("shows the error instead of success when the trash request fails", async () => {
+      stubFetch({
+        ok: false,
+        status: 403,
+        body: { errors: [{ message: "You are not allowed." }] },
+      });
+      mount();
+      await trashCareer();
+      await waitFor(() => expect(toastCustom).toHaveBeenCalled());
+      expect(lastToast()).toMatchObject({
+        tone: "error",
+        title: 'Couldn\'t move "Career" to trash.',
+        body: "You are not allowed.",
+      });
     });
   });
 

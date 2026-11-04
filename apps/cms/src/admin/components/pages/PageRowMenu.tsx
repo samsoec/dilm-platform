@@ -70,8 +70,8 @@ export function PageRowMenu({
     path: `/${row.collection}/${row.id}`,
   });
 
-  const patch = (body: object) =>
-    fetch(url, {
+  const patch = (body: object, trashed = false) =>
+    fetch(trashed ? `${url}?trash=true` : url, {
       method: "PATCH",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -113,8 +113,22 @@ export function PageRowMenu({
       body: "You can restore it from Trash.",
       action: {
         label: "Undo",
-        onClick: () => {
-          void patch({ deletedAt: null }).then(() => router.refresh());
+        onClick: async () => {
+          const undone = await patch(row.restore, true);
+          if (!undone?.ok) {
+            notify({
+              tone: "error",
+              title: `Couldn't restore "${row.title}".`,
+              body: await failure(undone),
+            });
+            return;
+          }
+          router.refresh();
+          notify({
+            tone: "success",
+            title: `Restored "${row.title}".`,
+            body: "It's back as a Draft.",
+          });
         },
       },
     });

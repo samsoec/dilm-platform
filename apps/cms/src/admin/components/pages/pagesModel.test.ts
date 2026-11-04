@@ -384,6 +384,39 @@ describe("row badges and tags", () => {
       ]);
     });
 
+    it("counts footer link columns, by reference and by path", () => {
+      const links = headerLinks(undefined, {
+        linkColumns: [
+          {
+            links: [
+              {
+                link: {
+                  type: "internal",
+                  internalPath: "/terms-and-conditions/",
+                },
+              },
+              {
+                link: {
+                  type: "reference",
+                  reference: { relationTo: "pages", value: 41 },
+                },
+              },
+              { link: { type: "external", externalUrl: "https://a.b" } },
+            ],
+          },
+        ],
+      });
+      const flagged = (record: PageRecord) =>
+        rowsOf([record], { header: links })[0]!.tags.map(({ label }) => label);
+      expect(flagged(page({ id: "50", en: "/terms-and-conditions" }))).toEqual(
+        [],
+      );
+      expect(flagged(page({ id: "41", en: "/x" }))).toEqual([]);
+      expect(flagged(page({ id: "51", en: "/sustainability" }))).toEqual([
+        "Not in header",
+      ]);
+    });
+
     it("copes with a missing header", () => {
       const links = headerLinks(undefined);
       expect(links.keys.size + links.paths.size).toBe(0);

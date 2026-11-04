@@ -257,6 +257,20 @@ export async function loadPagesTree(
             user,
           })
           .then(({ docs: [found] }) => found);
+  const footer =
+    tenant === undefined
+      ? undefined
+      : payload
+          .find({
+            collection: "footer",
+            where: { tenant: { equals: tenant } },
+            select: { linkColumns: true },
+            limit: 1,
+            depth: 0,
+            overrideAccess: false,
+            user,
+          })
+          .then(({ docs: [found] }) => found);
   const settings =
     tenant === undefined
       ? undefined
@@ -281,6 +295,7 @@ export async function loadPagesTree(
     sharedPublished,
     companyRow,
     headerRow,
+    footerRow,
     settingsRow,
   ] = await Promise.all([
     listPages(context, "pages", tenant, "live"),
@@ -291,6 +306,7 @@ export async function loadPagesTree(
     livePublished(context, "shared-pages", tenant),
     company,
     header,
+    footer,
     settings,
   ]);
 
@@ -319,7 +335,10 @@ export async function loadPagesTree(
   )?.routing;
   const career = idOf(routing?.careerPage);
   const publication = idOf(routing?.publicationPage);
-  const links = headerLinks(headerRow as Parameters<typeof headerLinks>[0]);
+  const links = headerLinks(
+    headerRow as Parameters<typeof headerLinks>[0],
+    footerRow as Parameters<typeof headerLinks>[1],
+  );
 
   return {
     records,

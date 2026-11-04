@@ -69,9 +69,17 @@ export function TrashActions({
       action: {
         label: "Undo",
         onClick: () => {
-          void patch({ deletedAt: new Date().toISOString() }).then(() =>
-            router.refresh(),
-          );
+          void patch({ deletedAt: new Date().toISOString() }).then((undone) => {
+            if (!undone?.ok) {
+              notify({
+                tone: "error",
+                title: `Couldn't move "${title}" back to the trash.`,
+                body: "Try again.",
+              });
+              return;
+            }
+            router.refresh();
+          });
         },
       },
     });

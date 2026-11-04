@@ -57,6 +57,7 @@ export type PageRow = {
   tags: RowTag[];
   savedLabel: string;
   savedBy: string | null;
+  restore: RestoreData;
 };
 
 export type TrashRow = {
@@ -201,6 +202,11 @@ export function headerLinks(
       }
     | null
     | undefined,
+  footer?: {
+    linkColumns?:
+      | readonly { links?: readonly { link?: LinkLike | null }[] | null }[]
+      | null;
+  } | null,
 ): HeaderLinks {
   const keys = new Set<string>();
   const paths = new Set<string>();
@@ -223,6 +229,9 @@ export function headerLinks(
     for (const child of item.children ?? []) add(child.link);
   }
   if (header?.cta?.enabled) add(header.cta.link);
+  for (const column of footer?.linkColumns ?? []) {
+    for (const item of column.links ?? []) add(item.link);
+  }
   return { keys, paths };
 }
 
@@ -273,7 +282,7 @@ function rowTags(
   context: RowContext,
 ): RowTag[] {
   const tags: RowTag[] = [];
-  if (record.collection === "shared-pages") {
+  if (record.collection === "shared-pages" && !forwards) {
     tags.push({ kind: "shared", label: "Shared" });
   }
   if (forwards) {
@@ -319,6 +328,7 @@ export function toRows(
   };
   collect(tree);
 
+  const liveKeys = new Set(titles.keys());
   const rows: PageRow[] = [];
   const visit = (nodes: readonly TreeNode[]) => {
     for (const { record, depth, children } of nodes) {
@@ -349,6 +359,7 @@ export function toRows(
           },
         ),
         tags: rowTags(record, forwards, context),
+        restore: restoreData(record, liveKeys),
         savedLabel: savedText(record.updatedAt, context.now),
         savedBy: record.savedBy,
       });

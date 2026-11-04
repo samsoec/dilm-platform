@@ -404,11 +404,12 @@ expand/collapse, search, chips and the row menu. Status comes from
   page's title in the content language (or the host / path for an external
   or internal link). "Jobs live here" and "Posts & search" come from
   `tenant-settings` `routing.careerPage` / `routing.publicationPage`.
-- "Not in header" means no header `navItems` link (single links, dropdown
-  children) and no enabled call-to-action links to the page, either by
-  reference or by an internal path equal to the page's path in any
-  language (trailing slash ignored). Home and forwarding containers are
-  never flagged.
+- "Not in header" means nothing in the header (`navItems` single links and
+  dropdown children, an enabled call-to-action) or in the footer link
+  columns links to the page, either by reference or by an internal path
+  equal to the page's path in any language (trailing slash ignored), so
+  footer-only pages such as the legal ones are not flagged. Home and
+  forwarding containers are never flagged.
 - Add child page links to the standard create view with `?parent=<id>`,
   which the `parent` field's default value reads. Preview is shown disabled
   until the preview feature exists, and Unpublish / Move to trash use the
