@@ -66,7 +66,7 @@ export const Pages = withTenantAccess(
         useAsTitle: "title",
         defaultColumns: ["title", "slug", "parent", "_status", "updatedAt"],
       },
-      custom: { nav: { icon: "article", order: 1 } },
+      custom: { nav: { icon: "account_tree", order: 1 } },
       fields: pageFields(parentField("pages", true), true),
     }),
   ),

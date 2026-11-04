@@ -19,7 +19,21 @@ export const STATUS_SETS = {
   document: {
     draft: { icon: "edit_note", label: "Draft", tone: "neutral" },
     published: { icon: "public", label: "Published", tone: "ok" },
-    trashed: { icon: "delete", label: "Trashed", tone: "warn" },
+    changed: {
+      icon: "published_with_changes",
+      label: "Changed since publish",
+      tone: "warn",
+    },
+    trashed: { icon: "delete", label: "Trashed", tone: "danger" },
+  },
+  job: {
+    open: { icon: "radio_button_checked", label: "Open", tone: "ok" },
+    closed: { icon: "do_not_disturb_on", label: "Closed", tone: "neutral" },
+    closedAutomatically: {
+      icon: "event_busy",
+      label: "Closed automatically",
+      tone: "warn",
+    },
   },
   sync: {
     synced: { icon: "check_circle", label: "Synced", tone: "ok", plain: true },

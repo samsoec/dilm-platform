@@ -177,6 +177,35 @@
     }
   }
 
+  .dil-reach {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+
+    .dil-icon {
+      font-size: 14px;
+    }
+  }
+
+  .dil-reach--tenant {
+    background: var(--dil-tenant-soft, var(--dil-sel-bg));
+    color: var(--dil-tenant-ink, var(--dil-sel-ink));
+  }
+
+  .dil-reach--all {
+    background: var(--dil-ink);
+    color: var(--dil-surface);
+    font-weight: 700;
+  }
+
   .dil-tag {
     display: inline-flex;
     align-items: center;

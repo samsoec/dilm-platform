@@ -11,6 +11,7 @@ export type NavGroup = {
 export type CollectionNav = {
   icon: IconName;
   order?: number;
+  omit?: boolean;
   badge?: NavBadgeKey;
 };
 
@@ -30,9 +31,6 @@ export const NAV_GROUPS = [
 ] as const satisfies readonly NavGroup[];
 
 export type NavGroupKey = (typeof NAV_GROUPS)[number]["key"];
-
-export const CONTENT_GROUP_HINT =
-  "Pages, products and news appear here once the website build adds them.";
 
 export function navGroup(key: NavGroupKey): string {
   return NAV_GROUPS.find((group) => group.key === key)!.label;

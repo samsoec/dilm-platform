@@ -41,7 +41,7 @@ export const SharedDetailTemplates = withUpdatedBy({
     description:
       "One layout for every product and one for every solution, on all three websites. Only Super Admins change them.",
   },
-  custom: { nav: { icon: "space_dashboard", order: 8 } },
+  custom: { nav: { icon: "dashboard_customize", order: 3, omit: true } },
   fields: [
     {
       name: "recordType",

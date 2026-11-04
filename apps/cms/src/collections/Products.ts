@@ -209,7 +209,7 @@ export const Products = withTenantAccess(
         listSearchableFields: ["name", "productGroup", "slug"],
       },
       defaultSort: "order",
-      custom: { nav: { icon: "science", order: 3 } },
+      custom: { nav: { icon: "science", order: 4 } },
       fields: [
         ...recordAddressFields(),
         {

@@ -15,7 +15,7 @@ export const SiteRouting: GlobalConfig = {
   label: { en: "Site routing", id: "Rute situs" },
   access: { read: tenantMembers, update: superAdmins },
   admin: { group: navGroup("settings") },
-  custom: { nav: { icon: "link", order: 2 } },
+  custom: { nav: { icon: "route", order: 3 } },
   hooks: {
     beforeChange: [checkSiteRouting],
     afterChange: [cascadeSiteRouting, revalidateRoutingMoves(stubRevalidator)],

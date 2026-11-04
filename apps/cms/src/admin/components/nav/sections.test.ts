@@ -2,11 +2,7 @@ import type { SanitizedPermissions } from "payload";
 import { describe, expect, it } from "vitest";
 
 import { collections } from "../../../collections";
-import {
-  CONTENT_GROUP_HINT,
-  type CollectionNav,
-  navGroup,
-} from "../../navGroups";
+import { type CollectionNav, navGroup } from "../../navGroups";
 import {
   buildNavSections,
   isActiveHref,
@@ -65,7 +61,6 @@ function sections(superAdmin: boolean, groups = ALL_GROUPS) {
 describe("buildNavSections (FR-UI-01, FR-UI-04, FR-UI-15)", () => {
   it("follows NAV_GROUPS order, whatever order Payload hands the groups in", () => {
     expect(sections(true).map(({ key }) => key)).toEqual([
-      "content",
       "layout",
       "inbox",
       "investor",
@@ -76,7 +71,7 @@ describe("buildNavSections (FR-UI-01, FR-UI-04, FR-UI-15)", () => {
   });
 
   it("orders items by custom.nav.order and gives each its icon", () => {
-    const [, layout, inbox, , , , admin] = sections(true);
+    const [layout, inbox, , , , admin] = sections(true);
 
     expect(layout.items.map(({ slug, icon }) => [slug, icon])).toEqual([
       ["header", "web_asset"],
@@ -107,21 +102,19 @@ describe("buildNavSections (FR-UI-01, FR-UI-04, FR-UI-15)", () => {
     ]);
   });
 
-  it("shows the content hint while Website content is empty", () => {
-    expect(sections(true)[0]).toMatchObject({
-      key: "content",
-      hint: CONTENT_GROUP_HINT,
-      items: [],
-    });
+  it("hides Website content like any other group while it has no items", () => {
+    const keys = sections(true).map(({ key }) => key);
+
+    expect(keys).not.toContain("content");
   });
 
-  it("drops the hint once a collection joins Website content", () => {
+  it("never carries a hint line", () => {
     const [content] = sections(true, [
       { label: navGroup("content"), entities: [entity("pages", "Pages")] },
     ]);
 
-    expect(content.hint).toBeUndefined();
     expect(content.items.map(({ label }) => label)).toEqual(["Pages"]);
+    expect(content).not.toHaveProperty("hint");
   });
 
   it("hides other groups with no visible items", () => {
@@ -129,7 +122,7 @@ describe("buildNavSections (FR-UI-01, FR-UI-04, FR-UI-15)", () => {
       { label: navGroup("media"), entities: [entity("media")] },
     ]).map(({ key }) => key);
 
-    expect(keys).toEqual(["content", "media"]);
+    expect(keys).toEqual(["media"]);
   });
 
   it("tags Administration for Super Admins and hides it from everyone else", () => {
@@ -146,7 +139,7 @@ describe("buildNavSections (FR-UI-01, FR-UI-04, FR-UI-15)", () => {
       { label: navGroup("media"), entities: [entity("media")] },
     ]).map(({ key }) => key);
 
-    expect(keys).toEqual(["content", "media", "Plugins"]);
+    expect(keys).toEqual(["media", "Plugins"]);
   });
 });
 

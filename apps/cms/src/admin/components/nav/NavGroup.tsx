@@ -62,7 +62,6 @@ export function NavGroup({
         <MaterialIcon name={open ? "expand_more" : "chevron_right"} />
       </button>
       <div className="dil-nav__group-items" hidden={!open} id={contentId}>
-        {section.hint && <p className="dil-nav__hint">{section.hint}</p>}
         {children}
       </div>
     </div>
