@@ -26,7 +26,7 @@ export const Documents = withTenantAccess(
         beforeDelete: [keepLinkedDocumentsOnDelete],
       },
       admin: {
-        group: navGroup("media"),
+        group: navGroup("content"),
         useAsTitle: "title",
         listSearchableFields: ["title", "filename"],
         defaultColumns: ["title", "filesize", "uploadedBy", "createdAt"],
@@ -34,7 +34,7 @@ export const Documents = withTenantAccess(
           "PDF data sheets and attachments. Upload a file once, then link it from products and posts.",
       },
       defaultSort: "title",
-      custom: { nav: { icon: "picture_as_pdf" } },
+      custom: { nav: { icon: "picture_as_pdf", order: 9 } },
       upload: { mimeTypes: [DOCUMENT_MIME_TYPE] },
       fields: [
         {

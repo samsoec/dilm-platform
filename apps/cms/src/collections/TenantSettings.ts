@@ -115,7 +115,7 @@ export const TenantSettings = withTenantAccess(
       ],
     },
     custom: {
-      nav: { icon: "tune" },
+      nav: { icon: "tune", order: 1 },
     },
     fields: [
       {

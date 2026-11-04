@@ -363,9 +363,17 @@ error, read-only and destructive states look the same everywhere:
   destructive and text. `busy` keeps the label and adds a spinner;
   `unavailableReason` disables it and prints the reason next to it. Actions a
   role can't take are hidden, never shown as unavailable.
-- `StatusChip` (application, document, sync and user statuses), `Banner`
+- `StatusChip` (application, document, job, sync and user statuses), `Banner`
   (info, warning, error, read-only), `Tag` / `LocaleTag` / `SameAsEn` /
   `SuperAdminTag` / `CountTag`, `SegmentedControl`, `ReadOnlyHint`.
+- `PublishBadge` / `JobListingBadge` / `ReachBadge` (R2 content screens) with
+  the pure helpers `getPublishStatus`, `getJobListing` (`kit/publication.ts`)
+  and `getReach` (`kit/reach.ts`). They import nothing from Payload, so lists,
+  editors, pickers and dialogs can call them from server and client
+  components. A list row's `_status` can read `changed` (Payload's list-only
+  value); pass `hasPublishedVersion` when the caller has looked up the live
+  row. Products and solutions have an owner tenant but reach all sites;
+  `ALL_SITE_COLLECTIONS` lists the kinds that do.
 - `ConfirmDialog` sits on Payload's modal. Focus starts on Cancel, Esc
   closes it and focus goes back to the button that opened it; `typeToConfirm`
   asks for `DELETE` before an irreversible delete.

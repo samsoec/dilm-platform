@@ -75,7 +75,7 @@ export const Jobs = withTenantAccess(
         listSearchableFields: ["title", "department", "location", "slug"],
       },
       defaultSort: "order",
-      custom: { nav: { icon: "person_add", order: 5 } },
+      custom: { nav: { icon: "work", order: 6 } },
       fields: [
         ...jobAddressFields(),
         ...lockStructure([

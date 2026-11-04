@@ -153,12 +153,12 @@ export const redirectsOverrides = {
     delete: changeOwnManualRedirects,
   },
   admin: {
-    group: navGroup("content"),
+    group: navGroup("settings"),
     useAsTitle: "from",
     defaultColumns: ["from", "to", "tenant", "locale", "origin"],
   },
   indexes: [{ fields: ["tenant", "locale", "from"], unique: true }],
-  custom: { nav: { icon: "link" } },
+  custom: { nav: { icon: "alt_route", order: 4 } },
   fields: redirectFields,
 } satisfies Omit<Partial<CollectionConfig>, "fields"> & {
   fields: () => Field[];

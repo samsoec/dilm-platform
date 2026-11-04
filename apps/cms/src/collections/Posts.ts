@@ -57,7 +57,7 @@ export const Posts = withTenantAccess(
         listSearchableFields: ["title", "slug"],
       },
       defaultSort: "-publishedAt",
-      custom: { nav: { icon: "newspaper", order: 6 } },
+      custom: { nav: { icon: "newspaper", order: 7 } },
       fields: [
         ...postAddressFields(),
         ...lockStructure([

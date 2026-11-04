@@ -3,11 +3,7 @@ import { formatAdminURL } from "payload/shared";
 
 import type { NavBadgeKey } from "../../data/badges";
 import type { IconName } from "../../icons";
-import {
-  CONTENT_GROUP_HINT,
-  type CollectionNav,
-  NAV_GROUPS,
-} from "../../navGroups";
+import { type CollectionNav, NAV_GROUPS } from "../../navGroups";
 
 export type NavEntity = {
   slug: string;
@@ -31,7 +27,6 @@ export type NavSection = {
   label: string;
   icon: IconName;
   superAdminOnly: boolean;
-  hint?: string;
   items: NavItem[];
 };
 
@@ -89,14 +84,13 @@ export function buildNavSections(args: SectionArgs): NavSection[] {
     const superAdminOnly = "superAdminOnly" in group && group.superAdminOnly;
     if (superAdminOnly && !args.superAdmin) return [];
     const items = toItems(byLabel.get(group.label)?.entities ?? [], args);
-    if (items.length === 0 && group.key !== "content") return [];
+    if (items.length === 0) return [];
     return [
       {
         key: group.key,
         label: group.label,
         icon: group.icon,
         superAdminOnly,
-        hint: items.length === 0 ? CONTENT_GROUP_HINT : undefined,
         items,
       },
     ];

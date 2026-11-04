@@ -137,7 +137,7 @@ export const Solutions = withTenantAccess(
         listSearchableFields: ["name", "industryLabel", "slug"],
       },
       defaultSort: "order",
-      custom: { nav: { icon: "dashboard_customize", order: 4 } },
+      custom: { nav: { icon: "lightbulb", order: 5 } },
       fields: [
         ...recordAddressFields(),
         {

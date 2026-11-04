@@ -38,10 +38,10 @@ export const SiteMessages = withTenantAccess(
     slug: "site-messages",
     labels: collectionLabels("site-messages"),
     admin: {
-      group: navGroup("layout"),
+      group: navGroup("settings"),
       components: { edit: LIVE_DOCUMENT_CONTROLS },
     },
-    custom: { nav: { icon: "notifications", order: 3 } },
+    custom: { nav: { icon: "campaign", order: 2 } },
     access: {
       delete: superAdmins,
     },

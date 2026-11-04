@@ -49,7 +49,7 @@ export const Categories: CollectionConfig = {
     description:
       "The groups posts are filed under. Shared by all three companies; only Super Admins change them.",
   },
-  custom: { nav: { icon: "bookmark", order: 7 } },
+  custom: { nav: { icon: "sell", order: 8 } },
   fields: [
     ...categoryAddressFields(),
     ...lockStructure([

@@ -40,7 +40,7 @@ export const DetailTemplates = withTenantAccess(
       description:
         "One layout for all of this company's jobs, one for its posts and one for its categories.",
     },
-    custom: { nav: { icon: "space_dashboard", order: 9 } },
+    custom: { nav: { icon: "dashboard_customize", order: 3 } },
     fields: [
       {
         name: "recordType",

@@ -58,6 +58,8 @@ describe("pageModelPlugins", () => {
     const config = await applied();
     const redirects = config.collections!.find((c) => c.slug === "redirects")!;
 
-    expect(redirects.custom).toEqual({ nav: { icon: "link" } });
+    expect(redirects.custom).toEqual({
+      nav: { icon: "alt_route", order: 4 },
+    });
   });
 });
