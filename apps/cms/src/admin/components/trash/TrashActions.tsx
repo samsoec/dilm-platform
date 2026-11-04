@@ -15,12 +15,14 @@ export function TrashActions({
   title,
   company,
   canDelete,
+  restoreData,
 }: {
   collectionSlug: TrashSlug;
   id: number;
   title: string;
   company: string;
   canDelete: boolean;
+  restoreData?: object;
 }) {
   const router = useRouter();
   const { openModal } = useModal();
@@ -45,10 +47,12 @@ export function TrashActions({
     }).catch(() => undefined);
 
   const restore = async () => {
-    const response = await patch({
-      deletedAt: null,
-      ...(collectionSlug === "ir-documents" && { _status: "draft" }),
-    });
+    const response = await patch(
+      restoreData ?? {
+        deletedAt: null,
+        ...(collectionSlug === "ir-documents" && { _status: "draft" }),
+      },
+    );
     if (!response?.ok) {
       notify({
         tone: "error",

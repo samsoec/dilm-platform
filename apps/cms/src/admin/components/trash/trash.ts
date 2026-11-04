@@ -1,6 +1,6 @@
 import type { IconName } from "../../icons";
 
-export type TrashSlug = "ir-documents" | "media";
+export type TrashSlug = "ir-documents" | "media" | "pages" | "shared-pages";
 
 export const TRASH_EMPTY = "Nothing in the trash.";
 
@@ -18,7 +18,23 @@ export type TrashCopy = {
   note?: string;
 };
 
+const PAGE_TRASH_COPY: TrashCopy = {
+  allLabel: "All pages",
+  icon: "description",
+  restoreBody:
+    "It comes back as a Draft under its old parent, or at the top level if that page is gone.",
+  restoreToast: "It's back as a Draft.",
+  deleteBody: (company) =>
+    `The page and its history are erased from ${company}. Its URL becomes free. This can't be undone.`,
+};
+
 export const TRASH_COPY: Record<TrashSlug, TrashCopy> = {
+  pages: PAGE_TRASH_COPY,
+  "shared-pages": {
+    ...PAGE_TRASH_COPY,
+    deleteBody: () =>
+      "The shared page and its history are erased from all 3 sites. Its URL becomes free. This can't be undone.",
+  },
   "ir-documents": {
     allLabel: "All documents",
     icon: "picture_as_pdf",

@@ -65,6 +65,11 @@ export const Pages = withTenantAccess(
         group: navGroup("content"),
         useAsTitle: "title",
         defaultColumns: ["title", "slug", "parent", "_status", "updatedAt"],
+        components: {
+          views: {
+            list: { Component: "/admin/components/pages/PagesView#PagesView" },
+          },
+        },
       },
       custom: { nav: { icon: "account_tree", order: 1 } },
       fields: pageFields(parentField("pages", true), true),

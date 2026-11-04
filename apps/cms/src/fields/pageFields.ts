@@ -86,6 +86,12 @@ export function parentField(
     type: "relationship",
     relationTo,
     maxDepth: 1,
+    defaultValue: ({ req }) => {
+      const wanted = (req?.query as { parent?: unknown } | undefined)?.parent;
+      return typeof wanted === "string" && /^\d+$/.test(wanted)
+        ? Number(wanted)
+        : undefined;
+    },
     filterOptions: ({ id, data }) => {
       const clauses: Where[] = [];
       const own = refId(id as string | number | undefined);

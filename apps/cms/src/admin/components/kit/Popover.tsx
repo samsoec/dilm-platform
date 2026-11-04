@@ -5,6 +5,7 @@ import {
   type ReactNode,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -20,9 +21,11 @@ export function Popover({
   align = "start",
   active = false,
   floating = false,
+  buttonTabIndex,
   className,
   children,
 }: {
+  buttonTabIndex?: number;
   floating?: boolean;
   label: ReactNode;
   icon?: IconName;
@@ -38,6 +41,18 @@ export function Popover({
   const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
+
+  useLayoutEffect(() => {
+    if (!open || !floating || !panelRef.current || !buttonRef.current) return;
+    const panel = panelRef.current.getBoundingClientRect();
+    const button = buttonRef.current.getBoundingClientRect();
+    if (panel.bottom <= window.innerHeight - 8) return;
+    setPosition((current) => ({
+      ...current,
+      top: "auto",
+      bottom: window.innerHeight - button.top + 6,
+    }));
+  }, [open, floating]);
 
   const close = () => {
     setOpen(false);
@@ -93,6 +108,7 @@ export function Popover({
           setOpen(true);
         }}
         ref={buttonRef}
+        tabIndex={buttonTabIndex}
         type="button"
       >
         {icon && <MaterialIcon name={icon} />}
