@@ -24,7 +24,7 @@ export const STATUS_SETS = {
       label: "Changed since publish",
       tone: "warn",
     },
-    trashed: { icon: "delete", label: "Trashed", tone: "warn" },
+    trashed: { icon: "delete", label: "Trashed", tone: "danger" },
   },
   job: {
     open: { icon: "radio_button_checked", label: "Open", tone: "ok" },

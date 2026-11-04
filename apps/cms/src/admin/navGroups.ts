@@ -11,6 +11,7 @@ export type NavGroup = {
 export type CollectionNav = {
   icon: IconName;
   order?: number;
+  omit?: boolean;
   badge?: NavBadgeKey;
 };
 

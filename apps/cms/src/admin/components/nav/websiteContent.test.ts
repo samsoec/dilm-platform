@@ -165,6 +165,12 @@ describe("Website content group (4a)", () => {
 
     expect(labels).toContain("detail-templates");
     expect(labels).not.toContain("shared-detail-templates");
+    const shared = entities.find(
+      ({ slug }) => slug === "shared-detail-templates",
+    );
+
+    expect(shared?.admin?.hidden).toBeFalsy();
+    expect((shared?.custom?.nav as CollectionNav).omit).toBe(true);
   });
 
   it("has no hint line", () => {

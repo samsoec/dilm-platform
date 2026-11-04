@@ -35,14 +35,13 @@ export const SharedDetailTemplates = withUpdatedBy({
     afterDelete: [revalidateTemplateOnDelete("shared", stubRevalidator)],
   },
   admin: {
-    hidden: true,
     group: navGroup("content"),
     useAsTitle: "recordType",
     defaultColumns: ["recordType", "_status", "updatedAt"],
     description:
       "One layout for every product and one for every solution, on all three websites. Only Super Admins change them.",
   },
-  custom: { nav: { icon: "dashboard_customize", order: 3 } },
+  custom: { nav: { icon: "dashboard_customize", order: 3, omit: true } },
   fields: [
     {
       name: "recordType",

@@ -55,6 +55,7 @@ function toItems(
   { navConfig, permissions, adminRoute }: SectionArgs,
 ): NavItem[] {
   return entities
+    .filter((entity) => !navConfig(entity.slug)?.omit)
     .map((entity, index) => {
       const nav = navConfig(entity.slug);
       return {

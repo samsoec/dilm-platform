@@ -60,6 +60,10 @@ describe("getPublishStatus (US-PUB-1.2)", () => {
       expect(chip?.label).toMatch(/\w/);
       expect(ICON_NAMES).toContain(chip?.icon);
     }
+    expect(statusChip("document", "trashed")).toMatchObject({
+      icon: "delete",
+      tone: "danger",
+    });
     expect(statusChip("document", "changed")).toMatchObject({
       label: "Changed since publish",
       tone: "warn",
