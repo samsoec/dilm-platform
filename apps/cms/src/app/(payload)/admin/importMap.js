@@ -136,6 +136,7 @@ import { NeedsAttentionWidget as NeedsAttentionWidget_ea192f5d98e48dd0016d07dce7
 import { TranslationWidget as TranslationWidget_f2fa3a2f832d3dee7a4aabf3599be638 } from '../../../admin/components/dashboard/Translation'
 import { SiteLayoutWidget as SiteLayoutWidget_d47b3268301ee6262ea516856058e959 } from '../../../admin/components/dashboard/SiteLayout'
 import { LatestIrWidget as LatestIrWidget_7d30844fb4e083d96810b84b413ef411 } from '../../../admin/components/dashboard/LatestIr'
+import { PagesView as PagesView_647f8fec1475ea4224d3b14fcac631aa } from '../../../admin/components/pages/PagesView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
@@ -279,6 +280,7 @@ export const importMap = {
   "/admin/components/dashboard/Translation#TranslationWidget": TranslationWidget_f2fa3a2f832d3dee7a4aabf3599be638,
   "/admin/components/dashboard/SiteLayout#SiteLayoutWidget": SiteLayoutWidget_d47b3268301ee6262ea516856058e959,
   "/admin/components/dashboard/LatestIr#LatestIrWidget": LatestIrWidget_7d30844fb4e083d96810b84b413ef411,
+  "/admin/components/pages/PagesView#PagesView": PagesView_647f8fec1475ea4224d3b14fcac631aa,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }

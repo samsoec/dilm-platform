@@ -388,6 +388,41 @@ Native fields need no wrapper: focus, error and read-only states are CSS in
 the switch look, or a horizontal radio field `admin.className:
 "dil-segmented"` for the segmented control.
 
+**Pages tree.** `pages` replaces its default list with
+`src/admin/components/pages/PagesView.tsx` (`admin.components.views.list`,
+TRD-PM §4.1, snapshot 4a). The server component reads the selected
+company's pages plus the shared pages once, with `overrideAccess: false`
+(`src/admin/data/pagesTree.ts`), builds the tree and the rows in
+`pagesModel.ts`, and hands them to the client `PagesTree`, which only does
+expand/collapse, search, chips and the row menu. Status comes from
+`getPublishStatus` (a draft newer than the published version reads
+"Changed since publish") and reach from `getReach`. Rules worth knowing:
+
+- Siblings sort by creation order, shared pages first; a page whose parent
+  is trashed is listed at the top level until the parent is restored.
+- "Forwards → X" appears when `redirectTo` has a target; X is the target
+  page's title in the content language (or the host / path for an external
+  or internal link). "Jobs live here" and "Posts & search" come from
+  `tenant-settings` `routing.careerPage` / `routing.publicationPage`.
+- "Not in header" means nothing in the header (`navItems` single links and
+  dropdown children, an enabled call-to-action) or in the footer link
+  columns links to the page, either by reference or by an internal path
+  equal to the page's path in any language (trailing slash ignored), so
+  footer-only pages such as the legal ones are not flagged. Home and
+  forwarding containers are never flagged.
+- Add child page links to the standard create view with `?parent=<id>`,
+  which the `parent` field's default value reads. Preview is shown disabled
+  until the preview feature exists, and Unpublish / Move to trash use the
+  plain kit confirmation until the impact-aware publish dialogs land.
+- Restore sets `_status: "draft"` and moves the page to the top level when
+  its old parent is trashed or gone. Viewers get no menu and no New page;
+  Super Admins also get the row menu on shared pages and Delete
+  permanently in the trash.
+- Arrow keys follow the WAI-ARIA tree pattern: Up/Down/Home/End move,
+  Right opens or steps into the first child, Left closes or goes to the
+  parent, Enter opens the page. Only the active row (and its link and menu
+  button) is in the tab order.
+
 **Admin sidebar.** `admin.components.Nav` points at
 `src/admin/components/nav/AdminNav.tsx` (TRD-UI §5.1), which replaces
 Payload's default sidebar with a tenant card, grouped links and a user
