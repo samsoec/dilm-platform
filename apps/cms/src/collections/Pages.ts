@@ -5,7 +5,8 @@ import {
 import { collectionLabels } from "../admin/labels";
 import { navGroup } from "../admin/navGroups";
 import { withTrashedBy } from "../fields/authoring";
-import { pageFields, parentField } from "../fields/pageFields";
+import { editorFields, withEditorShell } from "../fields/pageEditor";
+import { parentField } from "../fields/pageFields";
 import { withUpdatedBy } from "../fields/updatedBy";
 import {
   cascadePathChange,
@@ -31,48 +32,52 @@ import { withTenantAccess } from "../tenancy";
 export const PAGE_VERSIONS_PER_DOCUMENT = 50;
 
 export const Pages = withTenantAccess(
-  withTrashedBy(
-    withUpdatedBy({
-      slug: "pages",
-      labels: collectionLabels("pages"),
-      access: {
-        read: readPublishedOrMembers,
-        delete: trashByEditorsDeleteBySuperAdmins,
-      },
-      versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
-      trash: true,
-      hooks: {
-        beforeValidate: [
-          keepParentInTenant,
-          keepBasePagesOutOfTheTrash,
-          rejectTokensOutsideTemplates,
-        ],
-        beforeChange: [
-          rejectOversizedCascade,
-          freshBreadcrumbIds,
-          beginLiveChange,
-        ],
-        afterChange: [
-          keepBasePagesPublished,
-          cascadePathChange,
-          syncRoutes,
-          revalidateOnLiveChange(stubRevalidator),
-        ],
-        afterDelete: [revalidateOnDelete(stubRevalidator)],
-        beforeDelete: [keepBasePagesOnDelete, removeRoutes],
-      },
-      admin: {
-        group: navGroup("content"),
-        useAsTitle: "title",
-        defaultColumns: ["title", "slug", "parent", "_status", "updatedAt"],
-        components: {
-          views: {
-            list: { Component: "/admin/components/pages/PagesView#PagesView" },
+  withEditorShell(
+    withTrashedBy(
+      withUpdatedBy({
+        slug: "pages",
+        labels: collectionLabels("pages"),
+        access: {
+          read: readPublishedOrMembers,
+          delete: trashByEditorsDeleteBySuperAdmins,
+        },
+        versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
+        trash: true,
+        hooks: {
+          beforeValidate: [
+            keepParentInTenant,
+            keepBasePagesOutOfTheTrash,
+            rejectTokensOutsideTemplates,
+          ],
+          beforeChange: [
+            rejectOversizedCascade,
+            freshBreadcrumbIds,
+            beginLiveChange,
+          ],
+          afterChange: [
+            keepBasePagesPublished,
+            cascadePathChange,
+            syncRoutes,
+            revalidateOnLiveChange(stubRevalidator),
+          ],
+          afterDelete: [revalidateOnDelete(stubRevalidator)],
+          beforeDelete: [keepBasePagesOnDelete, removeRoutes],
+        },
+        admin: {
+          group: navGroup("content"),
+          useAsTitle: "title",
+          defaultColumns: ["title", "slug", "parent", "_status", "updatedAt"],
+          components: {
+            views: {
+              list: {
+                Component: "/admin/components/pages/PagesView#PagesView",
+              },
+            },
           },
         },
-      },
-      custom: { nav: { icon: "account_tree", order: 1 } },
-      fields: pageFields(parentField("pages", true), true),
-    }),
+        custom: { nav: { icon: "account_tree", order: 1 } },
+        fields: editorFields(parentField("pages", true)),
+      }),
+    ),
   ),
 );

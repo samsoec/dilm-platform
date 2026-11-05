@@ -8,6 +8,13 @@ import {
 } from "payload";
 
 import { localization } from "./localization";
+import {
+  computePath,
+  localeCodes,
+  slugForLocale,
+  usesSlugFallback,
+  type LocalizedSlugs,
+} from "./pathCompute";
 import { refId, scopedReq } from "./pageRules";
 import {
   RECORD_COLLECTIONS,
@@ -40,12 +47,13 @@ export const RESERVED_SEGMENTS = [
 export const RESERVED_MESSAGE =
   "URLs can't start with a reserved word: category, kategori, api, admin, _next, media.";
 
+export { computePath, localeCodes, slugForLocale, usesSlugFallback };
+export type { LocalizedSlugs };
+
 export type PageCollection = "pages" | "shared-pages";
 
 export type PathCollection =
   PageCollection | RecordCollection | "jobs" | "posts" | "categories";
-
-export type LocalizedSlugs = Record<string, string | null | undefined>;
 
 export type PathProblem = {
   locale: string;
@@ -61,35 +69,6 @@ export type PathInput = {
   category?: number | string | { id: number | string } | null;
   slugs: LocalizedSlugs;
 };
-
-export function localeCodes(): string[] {
-  return (localization.locales as readonly (string | { code: string })[]).map(
-    (locale) => (typeof locale === "string" ? locale : locale.code),
-  );
-}
-
-export function slugForLocale(slugs: LocalizedSlugs, locale: string) {
-  const own = slugs[locale];
-  if (own) return { slug: own, fellBack: false };
-  const fallback = slugs[localization.defaultLocale];
-  return {
-    slug: fallback || "",
-    fellBack: Boolean(fallback) && locale !== localization.defaultLocale,
-  };
-}
-
-export function usesSlugFallback(slugs: LocalizedSlugs): boolean {
-  return localeCodes().some((locale) => slugForLocale(slugs, locale).fellBack);
-}
-
-export function computePath(
-  parentPath: string | null | undefined,
-  slug: string | null | undefined,
-): string {
-  const base = !parentPath || parentPath === "/" ? "" : parentPath;
-  if (!slug) return base || "/";
-  return `${base}/${slug}`;
-}
 
 export function firstSegment(path: string): string {
   return path.split("/").filter(Boolean)[0] ?? "";

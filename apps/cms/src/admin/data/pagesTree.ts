@@ -120,7 +120,7 @@ async function livePublished(
   );
 }
 
-async function peopleNames(
+export async function peopleNames(
   { payload, user }: Context,
   ids: (number | string)[],
 ): Promise<Map<string, string>> {

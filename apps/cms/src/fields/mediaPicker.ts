@@ -5,6 +5,7 @@ export const MEDIA_PICKER_FIELD =
 
 export type MediaPickerOptions = {
   chooseLabel?: string;
+  emptyLabel?: string;
   preview?: "light" | "dark";
   launchRequired?: boolean;
   previewSize?: number;

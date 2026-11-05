@@ -139,6 +139,19 @@ import { LatestIrWidget as LatestIrWidget_7d30844fb4e083d96810b84b413ef411 } fro
 import { PagesView as PagesView_647f8fec1475ea4224d3b14fcac631aa } from '../../../admin/components/pages/PagesView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
+import { HeaderField as HeaderField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { ActionsField as ActionsField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { TabMarksField as TabMarksField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SectionsPanelField as SectionsPanelField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SlugNote as SlugNote_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { VisitorsField as VisitorsField_39d623e47254e0a5925afe7cf0a96938 } from '../../../admin/components/editor/PageSettings'
+import { ForwardNoteField as ForwardNoteField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SeoTitleField as SeoTitleField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SeoDescriptionField as SeoDescriptionField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SeoImageField as SeoImageField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SeoPreviewField as SeoPreviewField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SidebarField as SidebarField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { NoControl as NoControl_c6cd29aa8177a060e43b9ccc07ba17de } from '../../../admin/components/editor/EditorChrome'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
@@ -282,5 +295,18 @@ export const importMap = {
   "/admin/components/dashboard/LatestIr#LatestIrWidget": LatestIrWidget_7d30844fb4e083d96810b84b413ef411,
   "/admin/components/pages/PagesView#PagesView": PagesView_647f8fec1475ea4224d3b14fcac631aa,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
-  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
+  "/admin/components/editor/server#HeaderField": HeaderField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#ActionsField": ActionsField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#TabMarksField": TabMarksField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SectionsPanelField": SectionsPanelField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SlugNote": SlugNote_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/PageSettings#VisitorsField": VisitorsField_39d623e47254e0a5925afe7cf0a96938,
+  "/admin/components/editor/server#ForwardNoteField": ForwardNoteField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SeoTitleField": SeoTitleField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SeoDescriptionField": SeoDescriptionField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SeoImageField": SeoImageField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SeoPreviewField": SeoPreviewField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SidebarField": SidebarField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/EditorChrome#NoControl": NoControl_c6cd29aa8177a060e43b9ccc07ba17de,
 }

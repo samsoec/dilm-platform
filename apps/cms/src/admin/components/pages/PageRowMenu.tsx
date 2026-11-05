@@ -12,18 +12,7 @@ import { Popover } from "../kit/Popover";
 import { notify } from "../kit/Toast";
 import { MaterialIcon } from "../MaterialIcon";
 import { addChildPath, type PageRow, type RowActions } from "./pagesModel";
-
-async function failure(response: Response | undefined): Promise<string> {
-  if (!response) return "The CMS can't be reached.";
-  try {
-    const body = (await response.json()) as {
-      errors?: { message?: string }[];
-    };
-    return body.errors?.[0]?.message || "Try again.";
-  } catch {
-    return "Try again.";
-  }
-}
+import { failure } from "./requests";
 
 function moveFocus(event: KeyboardEvent<HTMLDivElement>) {
   const keys = ["ArrowDown", "ArrowUp", "Home", "End"];
