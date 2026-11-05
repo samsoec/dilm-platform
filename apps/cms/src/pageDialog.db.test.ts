@@ -1,3 +1,6 @@
+import { createServer, type Server } from "node:http";
+import type { AddressInfo } from "node:net";
+
 import type { Payload, PayloadRequest } from "payload";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -39,6 +42,7 @@ describe.skipIf(!database)(
   { timeout: 600_000 },
   () => {
     let payload: Payload;
+    let storage: Server;
     const tenantId: Record<string, number> = {};
     const users: Record<string, unknown> = {};
 
@@ -66,7 +70,21 @@ describe.skipIf(!database)(
       if (database === "dilm") {
         throw new Error("Refusing to use the shared dev database.");
       }
+      storage = createServer((request, response) => {
+        request.resume();
+        request.on("end", () => {
+          response.statusCode = 200;
+          response.setHeader("ETag", '"seed-test"');
+          response.end();
+        });
+      });
+      await new Promise<void>((resolve) =>
+        storage.listen(0, "127.0.0.1", resolve),
+      );
       process.env.DATABASE_NAME = database;
+      process.env.S3_ENDPOINT = `http://127.0.0.1:${(storage.address() as AddressInfo).port}`;
+      process.env.S3_ACCESS_KEY_ID = "test";
+      process.env.S3_SECRET_ACCESS_KEY = "test";
       const { getPayload } = await import("payload");
       const { default: config } = await import("./payload.config");
       payload = await getPayload({ config });
@@ -98,6 +116,7 @@ describe.skipIf(!database)(
 
     afterAll(async () => {
       await payload?.destroy();
+      await new Promise((resolve) => storage?.close(resolve));
     });
 
     const dunia = () => String(tenantId.duniakimia);
