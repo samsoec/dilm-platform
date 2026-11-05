@@ -14,6 +14,11 @@ import {
   rejectOversizedCascade,
 } from "../pathCascade";
 import { rejectTokensOutsideTemplates } from "../detailTemplates";
+import {
+  checkSlugHandler,
+  createDraftHandler,
+  parentOptionsHandler,
+} from "../pageDialog";
 import { keepParentInTenant } from "../pageRules";
 import {
   beginLiveChange,
@@ -43,6 +48,19 @@ export const Pages = withTenantAccess(
         },
         versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
         trash: true,
+        endpoints: [
+          {
+            path: "/parent-options",
+            method: "get",
+            handler: parentOptionsHandler,
+          },
+          { path: "/check-slug", method: "post", handler: checkSlugHandler },
+          {
+            path: "/create-draft",
+            method: "post",
+            handler: createDraftHandler,
+          },
+        ],
         hooks: {
           beforeValidate: [
             keepParentInTenant,

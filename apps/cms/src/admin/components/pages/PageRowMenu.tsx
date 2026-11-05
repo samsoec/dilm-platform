@@ -11,6 +11,7 @@ import { ConfirmDialog } from "../kit/ConfirmDialog";
 import { Popover } from "../kit/Popover";
 import { notify } from "../kit/Toast";
 import { MaterialIcon } from "../MaterialIcon";
+import { useNewPage } from "./NewPageHost";
 import { addChildPath, type PageRow, type RowActions } from "./pagesModel";
 import { failure } from "./requests";
 
@@ -47,6 +48,7 @@ export function PageRowMenu({
   tabIndex: 0 | -1;
 }) {
   const router = useRouter();
+  const addChild = useNewPage();
   const { openModal } = useModal();
   const {
     config: { routes, serverURL },
@@ -144,21 +146,35 @@ export function PageRowMenu({
             onKeyDown={moveFocus}
             role="menu"
           >
-            {actions.addChild && (
-              <Link
-                className="dil-page-menu__item"
-                href={formatAdminURL({
-                  adminRoute: routes.admin,
-                  path: addChildPath(row),
-                })}
-                onClick={close}
-                prefetch={false}
-                role="menuitem"
-              >
-                <MaterialIcon name="add" />
-                Add child page
-              </Link>
-            )}
+            {actions.addChild &&
+              (addChild ? (
+                <button
+                  className="dil-page-menu__item"
+                  onClick={() => {
+                    close();
+                    addChild(String(row.id));
+                  }}
+                  role="menuitem"
+                  type="button"
+                >
+                  <MaterialIcon name="add" />
+                  Add child page
+                </button>
+              ) : (
+                <Link
+                  className="dil-page-menu__item"
+                  href={formatAdminURL({
+                    adminRoute: routes.admin,
+                    path: addChildPath(row),
+                  })}
+                  onClick={close}
+                  prefetch={false}
+                  role="menuitem"
+                >
+                  <MaterialIcon name="add" />
+                  Add child page
+                </Link>
+              ))}
             <button
               aria-disabled="true"
               className="dil-page-menu__item"

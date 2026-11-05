@@ -8,9 +8,10 @@ Usage: scripts/test-seed-pages.sh
 Runs the seed:pages integration test (src/seed/pages.db.test.ts) against the
 scratch Postgres database dilm_seed_test, then the publish revalidation
 integration test (src/revalidation.db.test.ts) against a second one,
-dilm_revalidation_test. Each database is dropped and recreated first, because
-Payload's dev schema push times out on a used one. The shared dev database is
-never touched.
+dilm_revalidation_test, then the new page dialog endpoint integration test
+(src/pageDialog.db.test.ts) against a third, dilm_page_dialog_test. Each
+database is dropped and recreated first, because Payload's dev schema push
+times out on a used one. The shared dev database is never touched.
 
 Uses psql when installed, otherwise `docker compose exec postgres psql`.
 The admin connection comes from PGHOST, PGPORT, PGUSER and PGPASSWORD
@@ -61,7 +62,7 @@ admin_sql() {
 run_against() {
   SCRATCH="$1"
   case "$SCRATCH" in
-    dilm_seed_test | dilm_revalidation_test) ;;
+    dilm_seed_test | dilm_revalidation_test | dilm_page_dialog_test) ;;
     *)
       echo "Refusing to use $SCRATCH." >&2
       exit 1
@@ -82,3 +83,4 @@ run_against() {
 
 run_against dilm_seed_test apps/cms/src/seed/pages.db.test.ts
 run_against dilm_revalidation_test apps/cms/src/revalidation.db.test.ts
+run_against dilm_page_dialog_test apps/cms/src/pageDialog.db.test.ts

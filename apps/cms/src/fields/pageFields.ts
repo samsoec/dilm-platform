@@ -13,13 +13,13 @@ import { layoutField } from "./layout";
 import { link } from "./link";
 import { hasRedirect, refId } from "../pageRules";
 import { writePath, writeSlugFallback } from "../paths";
+import {
+  SLUG_MESSAGE,
+  SLUG_PATTERN,
+  SLUG_REQUIRED_MESSAGE,
+} from "../slugRules";
 
-export const SLUG_PATTERN = /^[a-z0-9-]+$/;
-
-export const SLUG_MESSAGE =
-  "Use lowercase letters, numbers and hyphens only (a-z, 0-9, -).";
-
-export const SLUG_REQUIRED_MESSAGE = "Add the page's slug.";
+export { SLUG_MESSAGE, SLUG_PATTERN, SLUG_REQUIRED_MESSAGE };
 
 export function slugValidator(required: boolean): TextFieldSingleValidation {
   return (value) => {

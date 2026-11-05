@@ -55,10 +55,14 @@ export type PageCollection = "pages" | "shared-pages";
 export type PathCollection =
   PageCollection | RecordCollection | "jobs" | "posts" | "categories";
 
+export type PathProblemKind = "reserved" | "shared" | "same-site";
+
 export type PathProblem = {
   locale: string;
   path: string;
   message: string;
+  kind?: PathProblemKind;
+  existing?: { collection: PageCollection; id: number | string; title: string };
 };
 
 export type PathInput = {
@@ -373,7 +377,7 @@ export async function pathProblems(
     }
     const reserved = reservedProblem(path);
     if (reserved) {
-      problems.push({ locale, path, message: reserved });
+      problems.push({ locale, path, message: reserved, kind: "reserved" });
       continue;
     }
     const matches: Where = { path: { equals: path } };
@@ -390,6 +394,12 @@ export async function pathProblems(
           input.collection === "shared-pages"
             ? samePageMessage(path, doc.title ?? "Untitled")
             : sharedPageMessage(path, doc.title ?? "Untitled", count),
+        kind: "shared",
+        existing: {
+          collection: "shared-pages",
+          id: doc.id,
+          title: doc.title ?? "Untitled",
+        },
       });
     }
 
@@ -422,6 +432,12 @@ export async function pathProblems(
             input.collection === "shared-pages" || record
               ? companyPagesMessage(listed)
               : samePageMessage(path, listed[0].title, listed[0].company),
+          kind: input.collection === "pages" ? "same-site" : undefined,
+          existing: {
+            collection: "pages",
+            id: pages[0].id,
+            title: listed[0].title,
+          },
         });
       }
     }
