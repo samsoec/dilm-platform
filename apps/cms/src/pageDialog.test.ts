@@ -146,12 +146,13 @@ async function run(
 }
 
 describe("Pages endpoints", () => {
-  it("registers the three dialog endpoints on the collection", () => {
+  it("registers the dialog endpoints and the URL impact endpoint on the collection", () => {
     expect(
       (Pages.endpoints || []).map(({ path, method }) => `${method} ${path}`),
     ).toEqual([
       "get /parent-options",
       "post /check-slug",
+      "post /:id/path-impact",
       "post /create-draft",
     ]);
   });

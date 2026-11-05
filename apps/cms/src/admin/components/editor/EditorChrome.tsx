@@ -27,6 +27,7 @@ import {
   PUBLISH_FOLLOW_UP,
   viewerNotice,
 } from "./editor";
+import { UrlChangeGuard } from "./UrlChangeGuard";
 import { useEditorUrls, type UrlSeed } from "./useEditorUrls";
 
 const PUBLISH_SLUG = "dil-editor-publish";
@@ -179,6 +180,7 @@ export function EditorActions({
       <EditorCrumbs ancestors={ancestors} />
       <ReadOnlyNotice initials={initials} />
       <VersionsDrawer />
+      <UrlChangeGuard domain={seed.domain} />
       {host && createPortal(controls, host)}
       <ConfirmDialog
         body={

@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
 import { ModalContainer, ModalProvider, useModal } from "@faceless-ui/modal";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode, Ref } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -151,5 +157,20 @@ describe("ConfirmDialog (K-07, FR-UI-67)", () => {
     expect(confirm).toHaveProperty("disabled", false);
     await user.click(confirm);
     expect(onConfirm).toHaveBeenCalledOnce();
+  });
+
+  it("offers only the cancel button for a refusal", async () => {
+    const { dialog } = await openDialog({ refusal: true, cancelLabel: "Keep" });
+    expect(within(dialog).getAllByRole("button")).toHaveLength(1);
+    expect(within(dialog).getByRole("button", { name: "Keep" })).toBeTruthy();
+  });
+
+  it("returns focus to the element the caller names", async () => {
+    const target = document.createElement("input");
+    document.body.append(target);
+    const { user } = await openDialog({ returnFocus: () => target });
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(document.activeElement).toBe(target));
+    target.remove();
   });
 });

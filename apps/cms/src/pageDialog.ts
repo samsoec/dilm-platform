@@ -16,7 +16,7 @@ import { validatePageSlug, type PathProblem } from "./paths";
 
 type Json = Record<string, unknown>;
 
-function json(body: Json, status = 200): Response {
+export function json(body: Json, status = 200): Response {
   return Response.json(body, { status });
 }
 
@@ -38,7 +38,7 @@ export function gate(req: PayloadRequest, tenant: unknown): Gate {
   return { ok: true, tenant };
 }
 
-async function bodyOf(req: PayloadRequest): Promise<Json | undefined> {
+export async function bodyOf(req: PayloadRequest): Promise<Json | undefined> {
   try {
     const body: unknown = await req.json?.();
     return body && typeof body === "object" ? (body as Json) : undefined;
@@ -117,7 +117,7 @@ async function parse(req: PayloadRequest): Promise<Parsed> {
   };
 }
 
-async function parentProblem(
+export async function parentProblem(
   req: PayloadRequest,
   tenant: string,
   parent: string | undefined,
