@@ -14,17 +14,22 @@ import { MAX_LAYOUT_BLOCKS } from "@dilm/shared-types";
 
 import { Banner } from "../kit/Banner";
 import { MaterialIcon } from "../MaterialIcon";
-import { sectionCountText, sectionsKeptNote, sectionsTabText } from "./editor";
+import {
+  sectionCountText,
+  sectionsKeptNote,
+  sectionsTabText,
+  TAB_BUTTON_SELECTOR,
+} from "./editor";
 import { seoView, type SeoDefaults } from "./seo";
 import { useLocale } from "@payloadcms/ui";
-
-const TAB_BUTTONS = ".dil-editor-tabs .tabs-field__tab-button";
 
 function useTabButtons(): HTMLElement[] {
   const [buttons, setButtons] = useState<HTMLElement[]>([]);
   useEffect(() => {
     const find = () => {
-      const found = [...document.querySelectorAll<HTMLElement>(TAB_BUTTONS)];
+      const found = [
+        ...document.querySelectorAll<HTMLElement>(TAB_BUTTON_SELECTOR),
+      ];
       setButtons((current) =>
         current.length === found.length &&
         current.every((button, index) => button === found[index])

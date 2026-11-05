@@ -247,3 +247,9 @@ export const PREVIEW_UNAVAILABLE = "Preview isn't available yet.";
 
 export const PUBLISH_FOLLOW_UP =
   "It's on the website within minutes. Visitors keep seeing the previous version until then.";
+
+export const EDITOR_TAB_CLASS = "dil-editor-tabs";
+
+export const TAB_BUTTON_CLASS = "tabs-field__tab-button";
+
+export const TAB_BUTTON_SELECTOR = `.${EDITOR_TAB_CLASS} .${TAB_BUTTON_CLASS}`;

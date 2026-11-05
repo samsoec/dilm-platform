@@ -19,6 +19,8 @@ import {
 } from "./pageFields";
 import { link } from "./link";
 
+import { EDITOR_TAB_CLASS } from "../admin/components/editor/editor";
+
 const EDITOR = "/admin/components/editor";
 
 export const EDITOR_COMPONENTS = {
@@ -36,8 +38,6 @@ export const EDITOR_COMPONENTS = {
   visitors: `${EDITOR}/PageSettings#VisitorsField`,
   noControl: `${EDITOR}/EditorChrome#NoControl`,
 } as const;
-
-export const EDITOR_TAB_CLASS = "dil-editor-tabs";
 
 function ui(name: string, Field: string, position?: "sidebar"): UIField {
   return {
