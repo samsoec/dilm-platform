@@ -18,6 +18,14 @@ import {
   type ParentOption,
 } from "./newPage";
 
+const NONE: ParentOption = {
+  id: "",
+  collection: "pages",
+  title: NO_PARENT_LABEL,
+  paths: {},
+  shared: false,
+};
+
 type Entry =
   { key: "none"; option?: undefined } | { key: string; option: ParentOption };
 
@@ -53,16 +61,7 @@ export function ParentPicker({
     const shown = orderedParents(options).filter((option) =>
       matchesQuery(option, query),
     );
-    const none = matchesQuery(
-      {
-        id: "",
-        collection: "pages",
-        title: NO_PARENT_LABEL,
-        paths: {},
-        shared: false,
-      },
-      query,
-    );
+    const none = matchesQuery(NONE, query);
     return [
       ...(none ? [{ key: "none" } as Entry] : []),
       ...shown.map((option) => ({
@@ -71,6 +70,21 @@ export function ParentPicker({
       })),
     ];
   }, [options, query]);
+
+  const firstEnabled = (text: string) => {
+    const shown = orderedParents(options).filter((option) =>
+      matchesQuery(option, text),
+    );
+    const none = matchesQuery(NONE, text);
+    const list = [
+      ...(none ? [undefined] : []),
+      ...shown.map((option) => option),
+    ];
+    return Math.max(
+      0,
+      list.findIndex((option) => !option?.shared),
+    );
+  };
 
   const enabled = entries
     .map((entry, at) => ({ entry, at }))
@@ -184,7 +198,7 @@ export function ParentPicker({
               id={searchId}
               onChange={(event) => {
                 setQuery(event.target.value);
-                setActive(0);
+                setActive(firstEnabled(event.target.value));
               }}
               onKeyDown={onSearchKey}
               placeholder="Search pages"

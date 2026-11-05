@@ -111,7 +111,6 @@ describe.skipIf(!database)(
       await make("editor", ["tenant-editor"], [tenantId.duniakimia]);
       await make("viewer", ["tenant-viewer"], [tenantId.duniakimia]);
       await make("outsider", ["tenant-editor"], [tenantId.indoacid]);
-      await make("super", ["super-admin"], []);
     }, 600_000);
 
     afterAll(async () => {
@@ -246,11 +245,34 @@ describe.skipIf(!database)(
       );
     });
 
-    it("lets the same slug through on another company's site", async () => {
+    it("lets a slug used by another company's page through", async () => {
+      const theirs = await call(createDraftHandler, "outsider", {
+        body: {
+          tenant: String(tenantId.indoacid),
+          title: "Only on Indo",
+          slugs: { en: "only-on-indo", id: "" },
+        },
+      });
+      expect(theirs.status).toBe(201);
       const mine = await call(checkSlugHandler, "outsider", {
-        body: { tenant: String(tenantId.indoacid), slugs: { en: "about-us" } },
+        body: {
+          tenant: String(tenantId.indoacid),
+          slugs: { en: "only-on-indo" },
+        },
       });
       expect(mine.body.problems[0]?.kind).toBe("same-site");
+      const ours = await call(checkSlugHandler, "editor", {
+        body: { tenant: dunia(), slugs: { en: "only-on-indo", id: "" } },
+      });
+      expect(ours.body).toMatchObject({ ok: true, problems: [] });
+      const created = await call(createDraftHandler, "editor", {
+        body: {
+          tenant: dunia(),
+          title: "Only on Indo",
+          slugs: { en: "only-on-indo", id: "" },
+        },
+      });
+      expect(created.status).toBe(201);
       const free = await call(checkSlugHandler, "editor", {
         body: { tenant: dunia(), slugs: { en: "history-of-us", id: "" } },
       });

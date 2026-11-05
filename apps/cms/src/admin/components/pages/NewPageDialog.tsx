@@ -52,6 +52,7 @@ type Options =
 
 type Check =
   | { status: "idle" }
+  | { status: "pending" }
   | { status: "checking" }
   | { status: "done"; problems: DialogProblem[] }
   | { status: "failed" };
@@ -103,6 +104,7 @@ function OpenNewPageDialog({ tenant, parentId }: NewPageDialogProps) {
   const [focusTrapOptions] = useState(() => ({
     initialFocus: () => titleRef.current ?? false,
     returnFocusOnDeactivate: false,
+    escapeDeactivates: false,
   }));
   const titleId = useId();
   const fieldId = useId();
@@ -157,9 +159,10 @@ function OpenNewPageDialog({ tenant, parentId }: NewPageDialogProps) {
       setCheck({ status: "done", problems: shape });
       return;
     }
-    setCheck({ status: "checking" });
+    setCheck({ status: "pending" });
     const request = new AbortController();
     const timer = setTimeout(() => {
+      setCheck({ status: "checking" });
       fetch(checkSlugPath(api), {
         method: "POST",
         credentials: "include",
@@ -219,11 +222,13 @@ function OpenNewPageDialog({ tenant, parentId }: NewPageDialogProps) {
 
   const reason = !title.trim()
     ? "Add a title."
-    : check.status === "checking"
-      ? "Checking the slug…"
-      : check.status === "done" && check.problems.length > 0
-        ? "Fix the slug to continue."
-        : undefined;
+    : parentId && options.status === "loading"
+      ? "Loading pages…"
+      : check.status === "pending" || check.status === "checking"
+        ? "Checking the slug…"
+        : check.status === "done" && check.problems.length > 0
+          ? "Fix the slug to continue."
+          : undefined;
 
   const cancel = () => {
     if (busy) return;

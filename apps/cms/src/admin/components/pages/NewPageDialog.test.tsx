@@ -337,7 +337,7 @@ describe("slug checks", () => {
     const { user } = await open();
     await user.type(field("Title EN"), "History");
     expect(create().disabled).toBe(true);
-    expect(screen.getAllByText("Checking the slug…")).toHaveLength(2);
+    expect(screen.getAllByText("Checking the slug…")).toHaveLength(1);
     await waitFor(() => expect(create().disabled).toBe(false), {
       timeout: 3000,
     });
@@ -683,6 +683,75 @@ describe("creating the draft", () => {
     expect(notify).toHaveBeenCalledWith(
       expect.objectContaining({ tone: "error", body: "Slug already used." }),
     );
+  });
+});
+
+describe("loading and focus hardening", () => {
+  it("keeps Create draft waiting while the parent list loads for a child page", async () => {
+    let release: (value: Response) => void = () => undefined;
+    install({
+      options: () =>
+        new Promise<Response>((resolve) => {
+          release = resolve;
+        }),
+    });
+    const { user } = await open("1");
+    await user.type(field("Title EN"), "History");
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    expect(create().disabled).toBe(true);
+    expect(
+      screen.getByText("Loading pages…", { selector: ".dil-btn-reason" }),
+    ).toBeTruthy();
+    release(
+      new Response(JSON.stringify({ options: OPTIONS }), {
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    await waitFor(() => expect(create().disabled).toBe(false), {
+      timeout: 3000,
+    });
+  });
+
+  it("does not wait for the list when there is no starting parent", async () => {
+    install({ options: () => new Promise<Response>(() => undefined) });
+    const { user } = await open();
+    await user.type(field("Title EN"), "History");
+    await waitFor(() => expect(create().disabled).toBe(false), {
+      timeout: 3000,
+    });
+  });
+
+  it("announces Checking only once the request is actually sent", async () => {
+    const { fetchMock } = install();
+    const real = fetchMock.getMockImplementation()!;
+    fetchMock.mockImplementation(async (input, init) =>
+      String(input).endsWith("/check-slug")
+        ? new Promise<Response>(() => undefined)
+        : real(input, init),
+    );
+    const { user } = await open();
+    const live = screen.getByTestId("new-page-live");
+    await user.type(field("Title EN"), "Hist");
+    expect(live.textContent).toBe("");
+    await waitFor(() => expect(live.textContent).toBe("Checking the slug…"), {
+      timeout: 3000,
+    });
+  });
+
+  it("keeps the dialog open and focus inside when Esc closes the picker", async () => {
+    install();
+    const { user, dialog } = await open();
+    await user.click(screen.getByRole("button", { name: /Parent page/ }));
+    await screen.findByRole("listbox");
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("listbox")).toBeNull();
+    expect(screen.getByRole("dialog", { name: "New page" })).toBeTruthy();
+    for (let step = 0; step < 12; step += 1) {
+      await user.tab();
+      expect(dialog.contains(document.activeElement)).toBe(true);
+    }
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   });
 });
 

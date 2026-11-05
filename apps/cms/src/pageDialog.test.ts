@@ -374,6 +374,43 @@ describe("check-slug", () => {
   });
 });
 
+describe("length caps", () => {
+  it("refuses a title over 200 characters and a slug over 100", async () => {
+    const payload = stub(store());
+    for (const handler of [checkSlugHandler, createDraftHandler]) {
+      const title = await run(handler, payload, editor, {
+        body: { tenant: "2", title: "x".repeat(201), slugs: { en: "ok" } },
+      });
+      expect(title.status).toBe(422);
+      expect(title.body.message).toBe(
+        "The title can have up to 200 characters.",
+      );
+      const slug = await run(handler, payload, editor, {
+        body: {
+          tenant: "2",
+          title: "Ok",
+          slugs: { en: "a".repeat(100), id: "b".repeat(101) },
+        },
+      });
+      expect(slug.status).toBe(422);
+      expect(slug.body.message).toBe("A slug can have up to 100 characters.");
+    }
+    expect(payload.create).not.toHaveBeenCalled();
+  });
+
+  it("accepts exactly the limits", async () => {
+    const payload = stub(store());
+    const { status } = await run(createDraftHandler, payload, editor, {
+      body: {
+        tenant: "2",
+        title: "x".repeat(200),
+        slugs: { en: "a".repeat(100) },
+      },
+    });
+    expect(status).toBe(201);
+  });
+});
+
 describe("create-draft", () => {
   const create = (
     payload: ReturnType<typeof stub>,

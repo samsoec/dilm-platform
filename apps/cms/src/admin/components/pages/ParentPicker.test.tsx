@@ -215,4 +215,23 @@ describe("ParentPicker (PG-03)", () => {
     );
     expect((trigger() as HTMLButtonElement).disabled).toBe(true);
   });
+
+  it("never makes a shared page the active entry, so Enter picks something real", async () => {
+    const user = userEvent.setup();
+    const onPick = vi.fn();
+    render(<Harness onPick={onPick} />);
+    await user.click(trigger());
+    await user.type(screen.getByRole("combobox"), "solutions");
+    await user.keyboard("{Enter}");
+    expect(onPick).not.toHaveBeenCalled();
+    await user.clear(screen.getByRole("combobox"));
+    await user.type(screen.getByRole("combobox"), "s");
+    const search = screen.getByRole("combobox");
+    const active = document.getElementById(
+      search.getAttribute("aria-activedescendant")!,
+    );
+    expect(active?.getAttribute("aria-disabled")).toBeNull();
+    await user.keyboard("{Enter}");
+    expect(onPick).toHaveBeenCalledTimes(1);
+  });
 });

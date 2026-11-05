@@ -47,6 +47,9 @@ async function bodyOf(req: PayloadRequest): Promise<Json | undefined> {
   }
 }
 
+export const MAX_TITLE = 200;
+export const MAX_SLUG = 100;
+
 function textOf(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
@@ -76,6 +79,26 @@ async function parse(req: PayloadRequest): Promise<Parsed> {
   }
   const allowed = gate(req, body.tenant);
   if (!allowed.ok) return allowed;
+  const title = textOf(body.title).trim();
+  const slugs = slugsOf(body.slugs);
+  if (title.length > MAX_TITLE) {
+    return {
+      ok: false,
+      response: json(
+        { message: `The title can have up to ${MAX_TITLE} characters.` },
+        422,
+      ),
+    };
+  }
+  if (Object.values(slugs).some((slug) => slug.length > MAX_SLUG)) {
+    return {
+      ok: false,
+      response: json(
+        { message: `A slug can have up to ${MAX_SLUG} characters.` },
+        422,
+      ),
+    };
+  }
   const parent = parentOf(body.parent);
   if (parent !== undefined && !/^\d+$/.test(parent)) {
     return {
@@ -88,8 +111,8 @@ async function parse(req: PayloadRequest): Promise<Parsed> {
     value: {
       tenant: allowed.tenant,
       parent,
-      slugs: slugsOf(body.slugs),
-      title: textOf(body.title).trim(),
+      slugs,
+      title,
     },
   };
 }
