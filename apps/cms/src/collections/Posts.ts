@@ -78,6 +78,11 @@ export const Posts = withTenantAccess(
             admin: {
               description:
                 "The post's address follows its category. Changing it moves the post and leaves a redirect from the old address.",
+              components: {
+                afterInput: [
+                  "/admin/components/editor/PostCategoryNote#PostCategoryNote",
+                ],
+              },
             },
           },
           {

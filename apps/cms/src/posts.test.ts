@@ -73,6 +73,18 @@ describe("the posts collection (§4.6.5)", () => {
     });
   });
 
+  it("shows the PS-02 note under the primary category", () => {
+    expect(findField(Posts.fields, "primaryCategory")).toMatchObject({
+      admin: {
+        components: {
+          afterInput: [
+            "/admin/components/editor/PostCategoryNote#PostCategoryNote",
+          ],
+        },
+      },
+    });
+  });
+
   it("keeps drafts, versions and trash on", () => {
     expect(Posts.versions).toMatchObject({ drafts: true });
     expect(Posts.trash).toBe(true);

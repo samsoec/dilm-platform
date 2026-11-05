@@ -33,6 +33,7 @@ import {
   keepBasePagesPublished,
 } from "../siteRouting";
 import { withTenantAccess } from "../tenancy";
+import { pathImpactHandler } from "../pathImpact";
 
 export const PAGE_VERSIONS_PER_DOCUMENT = 50;
 
@@ -55,6 +56,11 @@ export const Pages = withTenantAccess(
             handler: parentOptionsHandler,
           },
           { path: "/check-slug", method: "post", handler: checkSlugHandler },
+          {
+            path: "/:id/path-impact",
+            method: "post",
+            handler: pathImpactHandler,
+          },
           {
             path: "/create-draft",
             method: "post",

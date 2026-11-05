@@ -144,6 +144,7 @@ import { ActionsField as ActionsField_baabe6231b786d2a57d52d56a1611534 } from '.
 import { TabMarksField as TabMarksField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
 import { SectionsPanelField as SectionsPanelField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
 import { SlugNote as SlugNote_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { PostCategoryNote as PostCategoryNote_1e5ba80d75161286b1b9a1e0c135b79e } from '../../../admin/components/editor/PostCategoryNote'
 import { VisitorsField as VisitorsField_39d623e47254e0a5925afe7cf0a96938 } from '../../../admin/components/editor/PageSettings'
 import { ForwardNoteField as ForwardNoteField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
 import { SeoTitleField as SeoTitleField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
@@ -301,6 +302,7 @@ export const importMap = {
   "/admin/components/editor/server#TabMarksField": TabMarksField_baabe6231b786d2a57d52d56a1611534,
   "/admin/components/editor/server#SectionsPanelField": SectionsPanelField_baabe6231b786d2a57d52d56a1611534,
   "/admin/components/editor/server#SlugNote": SlugNote_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/PostCategoryNote#PostCategoryNote": PostCategoryNote_1e5ba80d75161286b1b9a1e0c135b79e,
   "/admin/components/editor/PageSettings#VisitorsField": VisitorsField_39d623e47254e0a5925afe7cf0a96938,
   "/admin/components/editor/server#ForwardNoteField": ForwardNoteField_baabe6231b786d2a57d52d56a1611534,
   "/admin/components/editor/server#SeoTitleField": SeoTitleField_baabe6231b786d2a57d52d56a1611534,

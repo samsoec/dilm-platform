@@ -30,6 +30,8 @@ export type ConfirmDialogProps = {
   onCancel?: () => void;
   secondary?: { label: string; onClick: Action };
   typeToConfirm?: string;
+  refusal?: boolean;
+  returnFocus?: () => HTMLElement | null | undefined;
 };
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
@@ -51,11 +53,15 @@ function OpenConfirmDialog({
   onCancel,
   secondary,
   typeToConfirm,
+  refusal,
+  returnFocus,
 }: ConfirmDialogProps) {
   const { closeModal } = useModal();
   const [busy, setBusy] = useState<"confirm" | "secondary">();
   const [typed, setTyped] = useState("");
   const cancelRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
+  const returnFocusRef = useRef(returnFocus);
+  returnFocusRef.current = returnFocus;
   const titleId = useId();
   const bodyId = useId();
   const typedId = useId();
@@ -63,14 +69,16 @@ function OpenConfirmDialog({
   const [focusTrapOptions] = useState(() => ({
     initialFocus: () => cancelRef.current ?? false,
     returnFocusOnDeactivate: false,
+    escapeDeactivates: false,
   }));
 
   useEffect(() => {
     const trigger = document.activeElement;
     cancelRef.current?.focus();
     return () => {
-      if (trigger instanceof HTMLElement && trigger.isConnected) {
-        trigger.focus();
+      const target = returnFocusRef.current?.() ?? trigger;
+      if (target instanceof HTMLElement && target.isConnected) {
+        target.focus();
       }
     };
   }, []);
@@ -163,15 +171,17 @@ function OpenConfirmDialog({
               {secondary.label}
             </ActionButton>
           )}
-          <ActionButton
-            busy={busy === "confirm"}
-            onClick={run("confirm", onConfirm)}
-            type="button"
-            unavailableReasonId={confirmBlocked ? typedLabelId : undefined}
-            variant={tone === "delete" ? "destructive" : "primary"}
-          >
-            {busy === "confirm" && busyLabel ? busyLabel : confirmLabel}
-          </ActionButton>
+          {!refusal && (
+            <ActionButton
+              busy={busy === "confirm"}
+              onClick={run("confirm", onConfirm)}
+              type="button"
+              unavailableReasonId={confirmBlocked ? typedLabelId : undefined}
+              variant={tone === "delete" ? "destructive" : "primary"}
+            >
+              {busy === "confirm" && busyLabel ? busyLabel : confirmLabel}
+            </ActionButton>
+          )}
         </div>
       </div>
     </Modal>
