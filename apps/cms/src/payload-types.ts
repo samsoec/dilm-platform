@@ -329,67 +329,6 @@ export interface TenantSetting {
 export interface Page {
   id: number;
   tenant?: (number | null) | Tenant;
-  title: string;
-  /**
-   * The last part of the address. It can't be empty.
-   */
-  slug: string;
-  /**
-   * Leave empty for a top-level page. Only pages of this company are offered.
-   */
-  parent?: (number | null) | Page;
-  /**
-   * Worked out from the parent pages and the slug.
-   */
-  path?: string | null;
-  /**
-   * On when a language has no slug of its own and its address uses the English slug.
-   */
-  slugFallback?: boolean | null;
-  redirectTo: {
-    type: 'internal' | 'external' | 'reference';
-    newTab?: boolean | null;
-    /**
-     * Start with /. The site adds the language.
-     */
-    internalPath?: string | null;
-    /**
-     * A full address starting with https://
-     */
-    externalUrl?: string | null;
-    /**
-     * Follows the page or record if it is renamed or moved. Only published ones are offered.
-     */
-    reference?:
-      | ({
-          relationTo: 'pages';
-          value: number | Page;
-        } | null)
-      | ({
-          relationTo: 'shared-pages';
-          value: number | SharedPage;
-        } | null)
-      | ({
-          relationTo: 'products';
-          value: number | Product;
-        } | null)
-      | ({
-          relationTo: 'solutions';
-          value: number | Solution;
-        } | null)
-      | ({
-          relationTo: 'jobs';
-          value: number | Job;
-        } | null)
-      | ({
-          relationTo: 'posts';
-          value: number | Post;
-        } | null)
-      | ({
-          relationTo: 'categories';
-          value: number | Category;
-        } | null);
-  };
   /**
    * A page holds at most 30 sections.
    */
@@ -434,8 +373,65 @@ export interface Page {
         | PostListingBlock
       )[]
     | null;
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
+  title: string;
+  /**
+   * Leave empty for a top-level page. Only pages of this company are offered.
+   */
+  parent?: (number | null) | Page;
+  /**
+   * The last part of the address. It can't be empty.
+   */
+  slug: string;
+  forwards?: boolean | null;
+  redirectTo?: {
+    type: 'internal' | 'external' | 'reference';
+    newTab?: boolean | null;
+    /**
+     * Start with /. The site adds the language.
+     */
+    internalPath?: string | null;
+    /**
+     * A full address starting with https://
+     */
+    externalUrl?: string | null;
+    /**
+     * Follows the page or record if it is renamed or moved. Only published ones are offered.
+     */
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'shared-pages';
+          value: number | SharedPage;
+        } | null)
+      | ({
+          relationTo: 'products';
+          value: number | Product;
+        } | null)
+      | ({
+          relationTo: 'solutions';
+          value: number | Solution;
+        } | null)
+      | ({
+          relationTo: 'jobs';
+          value: number | Job;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'categories';
+          value: number | Category;
+        } | null);
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
+  };
   breadcrumbs?:
     | {
         doc?: (number | null) | Page;
@@ -444,18 +440,166 @@ export interface Page {
         id?: string | null;
       }[]
     | null;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-  };
+  /**
+   * Worked out from the parent pages and the slug.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroCarouselBlock".
+ */
+export interface HeroCarouselBlock {
+  slides: {
+    backgroundImage: number | Media;
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    buttons?:
+      | {
+          link: {
+            type: 'internal' | 'external' | 'reference';
+            newTab?: boolean | null;
+            /**
+             * Start with /. The site adds the language.
+             */
+            internalPath?: string | null;
+            /**
+             * A full address starting with https://
+             */
+            externalUrl?: string | null;
+            /**
+             * Follows the page or record if it is renamed or moved. Only published ones are offered.
+             */
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'shared-pages';
+                  value: number | SharedPage;
+                } | null)
+              | ({
+                  relationTo: 'products';
+                  value: number | Product;
+                } | null)
+              | ({
+                  relationTo: 'solutions';
+                  value: number | Solution;
+                } | null)
+              | ({
+                  relationTo: 'jobs';
+                  value: number | Job;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'categories';
+                  value: number | Category;
+                } | null);
+            label?: string | null;
+          };
+          style: 'primary' | 'light' | 'text';
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  stats?:
+    | {
+        value: string;
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Seconds each slide stays. 0 turns autoplay off.
+   */
+  autoplaySeconds: number;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'heroCarousel';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  alt: string;
+  uploadedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  prefix?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    'social-share'?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -781,57 +925,6 @@ export interface Product {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  alt: string;
-  uploadedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
-  prefix?: string | null;
-  _objectKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    'social-share'?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-/**
  * PDF data sheets and attachments. Upload a file once, then link it from products and posts.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1154,101 +1247,6 @@ export interface Category {
   coverImage?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "HeroCarouselBlock".
- */
-export interface HeroCarouselBlock {
-  slides: {
-    backgroundImage: number | Media;
-    eyebrow?: string | null;
-    /**
-     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
-     */
-    title?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    description?: string | null;
-    buttons?:
-      | {
-          link: {
-            type: 'internal' | 'external' | 'reference';
-            newTab?: boolean | null;
-            /**
-             * Start with /. The site adds the language.
-             */
-            internalPath?: string | null;
-            /**
-             * A full address starting with https://
-             */
-            externalUrl?: string | null;
-            /**
-             * Follows the page or record if it is renamed or moved. Only published ones are offered.
-             */
-            reference?:
-              | ({
-                  relationTo: 'pages';
-                  value: number | Page;
-                } | null)
-              | ({
-                  relationTo: 'shared-pages';
-                  value: number | SharedPage;
-                } | null)
-              | ({
-                  relationTo: 'products';
-                  value: number | Product;
-                } | null)
-              | ({
-                  relationTo: 'solutions';
-                  value: number | Solution;
-                } | null)
-              | ({
-                  relationTo: 'jobs';
-                  value: number | Job;
-                } | null)
-              | ({
-                  relationTo: 'posts';
-                  value: number | Post;
-                } | null)
-              | ({
-                  relationTo: 'categories';
-                  value: number | Category;
-                } | null);
-            label?: string | null;
-          };
-          style: 'primary' | 'light' | 'text';
-          id?: string | null;
-        }[]
-      | null;
-    id?: string | null;
-  }[];
-  stats?:
-    | {
-        value: string;
-        label: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Seconds each slide stays. 0 turns autoplay off.
-   */
-  autoplaySeconds: number;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'heroCarousel';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -5735,20 +5733,6 @@ export interface SiteMessagesSelect<T extends boolean = true> {
  */
 export interface PagesSelect<T extends boolean = true> {
   tenant?: T;
-  title?: T;
-  slug?: T;
-  parent?: T;
-  path?: T;
-  slugFallback?: T;
-  redirectTo?:
-    | T
-    | {
-        type?: T;
-        newTab?: T;
-        internalPath?: T;
-        externalUrl?: T;
-        reference?: T;
-      };
   layout?:
     | T
     | {
@@ -5790,15 +5774,18 @@ export interface PagesSelect<T extends boolean = true> {
         publicationHero?: T | PublicationHeroBlockSelect<T>;
         postListing?: T | PostListingBlockSelect<T>;
       };
-  updatedBy?: T;
-  trashedBy?: T;
-  breadcrumbs?:
+  title?: T;
+  parent?: T;
+  slug?: T;
+  forwards?: T;
+  redirectTo?:
     | T
     | {
-        doc?: T;
-        url?: T;
-        label?: T;
-        id?: T;
+        type?: T;
+        newTab?: T;
+        internalPath?: T;
+        externalUrl?: T;
+        reference?: T;
       };
   meta?:
     | T
@@ -5807,6 +5794,18 @@ export interface PagesSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  path?: T;
+  slugFallback?: T;
+  updatedBy?: T;
+  trashedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

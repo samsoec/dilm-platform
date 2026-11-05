@@ -24,9 +24,17 @@ export function localizedSeoFields({
 }
 
 export const pageModelPlugins: Plugin[] = [
-  nestedDocsPlugin({ collections: PAGE_COLLECTIONS }),
+  nestedDocsPlugin({
+    collections: PAGE_COLLECTIONS,
+    parentFieldSlug: "parent",
+  }),
   seoPlugin({
-    collections: [...PAGE_COLLECTIONS, ...RECORD_COLLECTIONS, "jobs", "posts"],
+    collections: [
+      ...PAGE_COLLECTIONS.filter((slug) => slug !== "pages"),
+      ...RECORD_COLLECTIONS,
+      "jobs",
+      "posts",
+    ],
     uploadsCollection: "media",
     fields: localizedSeoFields,
   }),
