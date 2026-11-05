@@ -12,11 +12,11 @@ import {
 import { localization } from "../../../localization";
 import { loadPagesTree } from "../../data/pagesTree";
 import { selectedTenantID, TENANT_COOKIE } from "../../data/sidebar";
-import { ActionButton } from "../kit/ActionButton";
 import { Banner } from "../kit/Banner";
 import { Skeleton } from "../kit/Loading";
 import { companyInitials } from "../ir/irEditor";
 import { isTrashView } from "../trash/trash";
+import { NewPageButton, NewPageHost } from "./NewPageHost";
 import { PagesRetry } from "./PagesRetry";
 import { PagesStepNav } from "./PagesStepNav";
 import { PagesTree } from "./PagesTree";
@@ -47,9 +47,7 @@ function Heading({
         </p>
       </div>
       {canCreatePage(viewer) && createHref && (
-        <ActionButton el="link" icon="add" url={createHref}>
-          New page
-        </ActionButton>
+        <NewPageButton fallbackHref={createHref} />
       )}
     </div>
   );
@@ -88,7 +86,7 @@ async function PagesData(props: ListViewServerProps & { viewer: Viewer }) {
     const rows = toRows(buildTree(data.records), context);
     const liveKeys = new Set(data.records.map(({ key }) => key));
     const trash = toTrashRows(data.trashed, context, liveKeys);
-    return (
+    const content = (
       <>
         <Heading
           createHref={tenant === undefined ? undefined : createHref}
@@ -108,6 +106,11 @@ async function PagesData(props: ListViewServerProps & { viewer: Viewer }) {
           viewer={viewer}
         />
       </>
+    );
+    return data.company && canCreatePage(viewer) ? (
+      <NewPageHost tenant={data.company}>{content}</NewPageHost>
+    ) : (
+      content
     );
   } catch (error) {
     payload.logger.error({ err: error, msg: "Couldn't load the Pages tree" });

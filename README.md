@@ -410,8 +410,21 @@ expand/collapse, search, chips and the row menu. Status comes from
   equal to the page's path in any language (trailing slash ignored), so
   footer-only pages such as the legal ones are not flagged. Home and
   forwarding containers are never flagged.
-- Add child page links to the standard create view with `?parent=<id>`,
-  which the `parent` field's default value reads. Preview is shown disabled
+- New page and Add child page open the PG-01 dialog
+  (`NewPageDialog.tsx`, hosted by `NewPageHost.tsx` on the Pages list)
+  instead of a blank document; the blank create view still exists, reads
+  `?parent=<id>` through the `parent` field's default value and sends the
+  editor back to the list with the dialog open. The dialog talks to three
+  endpoints on `pages` (`src/pageDialog.ts`): `GET /api/pages/parent-options`
+  (this company's pages plus shared pages, read as the user), `POST
+/api/pages/check-slug` (the same `validatePageSlug` the save hook runs,
+  after the shape rules in `slugRules.ts`) and `POST
+/api/pages/create-draft` (checks again, then creates a draft in English
+  and writes the Indonesian slug as a second draft write). All three need a
+  tenant editor of the company named in the request and re-check the parent
+  against the company, so a crafted parent is refused here and by
+  `keepParentInTenant`. An empty Indonesian slug is allowed: that address
+  uses the English slug and the dialog says so. Preview is shown disabled
   until the preview feature exists, and Unpublish / Move to trash use the
   plain kit confirmation until the impact-aware publish dialogs land.
 - Restore sets `_status: "draft"` and moves the page to the top level when

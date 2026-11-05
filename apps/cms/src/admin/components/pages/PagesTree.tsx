@@ -13,13 +13,13 @@ import {
   useState,
 } from "react";
 
-import { ActionButton } from "../kit/ActionButton";
 import { Banner } from "../kit/Banner";
 import { PublishBadge } from "../kit/PublishBadge";
 import { ReachBadge } from "../kit/ReachBadge";
 import { MaterialIcon } from "../MaterialIcon";
 import { TrashActions } from "../trash/TrashActions";
 import { TRASH_EMPTY } from "../trash/trash";
+import { NewPageButton } from "./NewPageHost";
 import { PageRowMenu } from "./PageRowMenu";
 import {
   canCreatePage,
@@ -271,9 +271,7 @@ export function PagesTree({
           <h3 className="dil-empty__title">{EMPTY_TITLE(company.name)}</h3>
           <p className="dil-empty__text">{EMPTY_TEXT}</p>
           {canCreatePage(viewer) && !noCompany && (
-            <ActionButton el="link" icon="add" url={createHref}>
-              New page
-            </ActionButton>
+            <NewPageButton fallbackHref={createHref} />
           )}
         </section>
       ) : (

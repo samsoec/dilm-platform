@@ -22,6 +22,7 @@ import { Banner } from "../kit/Banner";
 import { MediaPickerField } from "../media/MediaPickerField";
 import { companyInitials } from "../ir/irEditor";
 import type { PageCollection } from "../pages/pagesModel";
+import { NewPageRedirect } from "../pages/NewPageRedirect";
 import { PagesRetry } from "../pages/PagesRetry";
 import { EditorActions } from "./EditorChrome";
 import { EditorHeader } from "./EditorHeader";
@@ -107,6 +108,10 @@ function tenantOf(data: PageEditorData) {
 }
 
 export async function HeaderField(props: UIFieldServerProps) {
+  if (props.id === undefined && props.collectionSlug === "pages") {
+    const wanted = relationId(props.data?.parent);
+    return <NewPageRedirect parent={wanted} />;
+  }
   const { data, failed } = await loadFor(props);
   return (
     <>
