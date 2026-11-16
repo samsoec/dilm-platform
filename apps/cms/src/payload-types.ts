@@ -926,7 +926,7 @@ export interface Product {
   shortDescription?: string | null;
   image?: (number | null) | Media;
   /**
-   * Subscript and superscript only, like H₂SO₄. Pasted bold, italic or links are turned into plain text.
+   * Select a number and press ⌘, for subscript, ⌘. for superscript.
    */
   formula?: {
     root: {
@@ -985,9 +985,6 @@ export interface Product {
   variants?:
     | {
         name: string;
-        /**
-         * Leave empty to use the product's formula. Subscript and superscript only.
-         */
         formula?: {
           root: {
             type: string;
@@ -1003,13 +1000,7 @@ export interface Product {
           };
           [k: string]: unknown;
         } | null;
-        /**
-         * Leave empty to use the product's CAS number.
-         */
         casNumber?: string | null;
-        /**
-         * Leave empty to use the product's classification.
-         */
         classification?: string | null;
         packaging?: string | null;
         specs?:

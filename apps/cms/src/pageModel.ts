@@ -3,7 +3,6 @@ import { redirectsPlugin } from "@payloadcms/plugin-redirects";
 import { seoPlugin } from "@payloadcms/plugin-seo";
 import type { CollectionSlug, Field, Plugin } from "payload";
 
-import { RECORD_COLLECTIONS } from "./recordBases";
 import { redirectsOverrides } from "./redirects";
 
 export const PAGE_COLLECTIONS: CollectionSlug[] = ["pages", "shared-pages"];
@@ -29,7 +28,7 @@ export const pageModelPlugins: Plugin[] = [
     parentFieldSlug: "parent",
   }),
   seoPlugin({
-    collections: [...RECORD_COLLECTIONS, "jobs", "posts"],
+    collections: ["solutions", "jobs", "posts"],
     uploadsCollection: "media",
     fields: localizedSeoFields,
   }),

@@ -99,8 +99,10 @@ export function EditorActions({
   shared = false,
   home = false,
   label,
+  readOnlyNotice = true,
 }: {
   label?: string;
+  readOnlyNotice?: boolean;
   seed: UrlSeed;
   ancestors: { id: string; title: string }[];
   initials: string;
@@ -123,8 +125,9 @@ export function EditorActions({
   const {
     config: { routes, serverURL },
   } = useConfig();
-  const title = useFormFields(([fields]) => fields.title?.value) as
-    string | undefined;
+  const title = useFormFields(
+    ([fields]) => (fields.title ?? fields.name)?.value,
+  ) as string | undefined;
   const [host, setHost] = useState<HTMLElement | null>(null);
   const [busy, setBusy] = useState(false);
   const [problems, setProblems] = useState<FieldProblem[]>([]);
@@ -165,7 +168,17 @@ export function EditorActions({
       overrides: { _status: "published" },
       disableSuccessStatus: true,
     });
-    if (!result?.res.ok) return;
+    if (!result?.res.ok) {
+      setProblems(
+        fieldProblems(
+          getFields() as Record<
+            string,
+            { valid?: boolean; errorMessage?: string }
+          >,
+        ),
+      );
+      return;
+    }
     setHasPublishedDoc(true);
     setUnpublishedVersionCount(0);
     setMostRecentVersionIsAutosaved(false);
@@ -275,7 +288,7 @@ export function EditorActions({
   return (
     <>
       <EditorCrumbs ancestors={ancestors} />
-      <ReadOnlyNotice initials={initials} shared={shared} />
+      {readOnlyNotice && <ReadOnlyNotice initials={initials} shared={shared} />}
       <VersionsDrawer />
       <UrlChangeGuard domain={seed.domain} />
       {host && createPortal(controls, host)}

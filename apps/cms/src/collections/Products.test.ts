@@ -158,7 +158,20 @@ describe("products (§4.6.1)", () => {
       "Variants",
       "Applications",
       "Example process",
+      "SEO",
     ]);
+  });
+
+  it("explains the formula shortcuts and counts the short description", () => {
+    const formula = fieldOf(Products, "formula");
+    expect((formula as { admin?: { description?: string } }).admin).toEqual({
+      description:
+        "Select a number and press ⌘, for subscript, ⌘. for superscript.",
+    });
+    const short = fieldOf(Products, "shortDescription") as {
+      admin?: { components?: { Label?: { clientProps?: { limit: number } } } };
+    };
+    expect(short.admin?.components?.Label?.clientProps?.limit).toBe(160);
   });
 });
 

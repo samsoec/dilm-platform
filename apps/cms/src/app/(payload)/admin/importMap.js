@@ -140,8 +140,21 @@ import { PostsOnPagePanel as PostsOnPagePanel_ad41897aabca1a3b5959be43390a6c74 }
 import { NoControl as NoControl_c6cd29aa8177a060e43b9ccc07ba17de } from '../../../admin/components/editor/EditorChrome'
 import { PagesView as PagesView_647f8fec1475ea4224d3b14fcac631aa } from '../../../admin/components/pages/PagesView'
 import { SharedPagesView as SharedPagesView_0cdfde5e4f1a0a2176a661f2961c479a } from '../../../admin/components/pages/SharedPagesView'
+import { ProductOwnerBanner as ProductOwnerBanner_144c9a6e6a8753edfc374a6f9c27aa55 } from '../../../admin/components/products/ProductOwnerBanner'
+import { ProductHeaderField as ProductHeaderField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
+import { ProductActionsField as ProductActionsField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
+import { ProductTabMarksField as ProductTabMarksField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
+import { ProductSidebarField as ProductSidebarField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
+import { ShortDescriptionLabel as ShortDescriptionLabel_e9d058a5011d059c4ef16bf3020ca48f } from '../../../admin/components/products/ProductEditorParts'
 import { SuperscriptFeatureClient as SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { SubscriptFeatureClient as SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { DocumentUsage as DocumentUsage_e9d058a5011d059c4ef16bf3020ca48f } from '../../../admin/components/products/ProductEditorParts'
+import { InheritedNote as InheritedNote_e9d058a5011d059c4ef16bf3020ca48f } from '../../../admin/components/products/ProductEditorParts'
+import { SpecsLabel as SpecsLabel_e9d058a5011d059c4ef16bf3020ca48f } from '../../../admin/components/products/ProductEditorParts'
+import { SpecsPaste as SpecsPaste_e9d058a5011d059c4ef16bf3020ca48f } from '../../../admin/components/products/ProductEditorParts'
+import { VariantsLabel as VariantsLabel_e9d058a5011d059c4ef16bf3020ca48f } from '../../../admin/components/products/ProductEditorParts'
+import { VariantRowLabel as VariantRowLabel_e9d058a5011d059c4ef16bf3020ca48f } from '../../../admin/components/products/ProductEditorParts'
+import { ProductsView as ProductsView_08170be242e6deb2806c9ad2a32fcbed } from '../../../admin/components/products/ProductsView'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -185,11 +198,8 @@ import { SiteLayoutWidget as SiteLayoutWidget_d47b3268301ee6262ea516856058e959 }
 import { LatestIrWidget as LatestIrWidget_7d30844fb4e083d96810b84b413ef411 } from '../../../admin/components/dashboard/LatestIr'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
-import { ProductsView as ProductsView_08170be242e6deb2806c9ad2a32fcbed } from '../../../admin/components/products/ProductsView'
-import { ProductOwnerBanner as ProductOwnerBanner_144c9a6e6a8753edfc374a6f9c27aa55 } from '../../../admin/components/products/ProductOwnerBanner'
 
 /** @type import('payload').ImportMap */
-
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
   "/admin/components/users/UserCells#RoleCell": RoleCell_5cd97e58844d5c99becf880375f054b9,
@@ -333,8 +343,21 @@ export const importMap = {
   "/admin/components/editor/EditorChrome#NoControl": NoControl_c6cd29aa8177a060e43b9ccc07ba17de,
   "/admin/components/pages/PagesView#PagesView": PagesView_647f8fec1475ea4224d3b14fcac631aa,
   "/admin/components/pages/SharedPagesView#SharedPagesView": SharedPagesView_0cdfde5e4f1a0a2176a661f2961c479a,
+  "/admin/components/products/ProductOwnerBanner#ProductOwnerBanner": ProductOwnerBanner_144c9a6e6a8753edfc374a6f9c27aa55,
+  "/admin/components/products/server#ProductHeaderField": ProductHeaderField_e5427e3530a8a9e3f536213c9665e1e0,
+  "/admin/components/products/server#ProductActionsField": ProductActionsField_e5427e3530a8a9e3f536213c9665e1e0,
+  "/admin/components/products/server#ProductTabMarksField": ProductTabMarksField_e5427e3530a8a9e3f536213c9665e1e0,
+  "/admin/components/products/server#ProductSidebarField": ProductSidebarField_e5427e3530a8a9e3f536213c9665e1e0,
+  "/admin/components/products/ProductEditorParts#ShortDescriptionLabel": ShortDescriptionLabel_e9d058a5011d059c4ef16bf3020ca48f,
   "@payloadcms/richtext-lexical/client#SuperscriptFeatureClient": SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#SubscriptFeatureClient": SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/admin/components/products/ProductEditorParts#DocumentUsage": DocumentUsage_e9d058a5011d059c4ef16bf3020ca48f,
+  "/admin/components/products/ProductEditorParts#InheritedNote": InheritedNote_e9d058a5011d059c4ef16bf3020ca48f,
+  "/admin/components/products/ProductEditorParts#SpecsLabel": SpecsLabel_e9d058a5011d059c4ef16bf3020ca48f,
+  "/admin/components/products/ProductEditorParts#SpecsPaste": SpecsPaste_e9d058a5011d059c4ef16bf3020ca48f,
+  "/admin/components/products/ProductEditorParts#VariantsLabel": VariantsLabel_e9d058a5011d059c4ef16bf3020ca48f,
+  "/admin/components/products/ProductEditorParts#VariantRowLabel": VariantRowLabel_e9d058a5011d059c4ef16bf3020ca48f,
+  "/admin/components/products/ProductsView#ProductsView": ProductsView_08170be242e6deb2806c9ad2a32fcbed,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaDescriptionComponent": MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860,
@@ -377,7 +400,5 @@ export const importMap = {
   "/admin/components/dashboard/SiteLayout#SiteLayoutWidget": SiteLayoutWidget_d47b3268301ee6262ea516856058e959,
   "/admin/components/dashboard/LatestIr#LatestIrWidget": LatestIrWidget_7d30844fb4e083d96810b84b413ef411,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
-  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
-  "/admin/components/products/ProductsView#ProductsView": ProductsView_08170be242e6deb2806c9ad2a32fcbed,
-  "/admin/components/products/ProductOwnerBanner#ProductOwnerBanner": ProductOwnerBanner_144c9a6e6a8753edfc374a6f9c27aa55
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }
