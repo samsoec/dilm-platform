@@ -361,4 +361,41 @@ describe("solutions (§4.6.2)", () => {
       validate: expect.any(Function),
     });
   });
+
+  it("has the five editor tabs in order", () => {
+    const tabs = Solutions.fields.find(
+      (field) => field.type === "tabs",
+    ) as TabsField;
+    expect(tabs.tabs.map((tab) => ("label" in tab ? tab.label : ""))).toEqual([
+      "Card & hero",
+      "Supporting products",
+      "Impact & value",
+      "Applications",
+    ]);
+  });
+
+  it("shows tag lists, the star picker and hides the featured field", () => {
+    for (const name of ["keyApplications", "industriesServed"]) {
+      expect(arrayOf(Solutions, name).admin?.components?.Field).toContain(
+        "TagListField",
+      );
+    }
+    expect(
+      (fieldOf(Solutions, "supportingProducts") as RelationshipField).admin
+        ?.components?.Field,
+    ).toContain("SupportingProductsField");
+    expect(
+      (fieldOf(Solutions, "featuredProduct") as RelationshipField).admin
+        ?.hidden,
+    ).toBe(true);
+  });
+
+  it("keeps the address fields out of the editor", () => {
+    expect(
+      (fieldOf(Solutions, "slug") as RelationshipField).admin?.hidden,
+    ).toBeUndefined();
+    expect(
+      (fieldOf(Solutions, "path") as RelationshipField).admin?.hidden,
+    ).toBe(true);
+  });
 });

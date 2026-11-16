@@ -93,7 +93,7 @@ describe("row text", () => {
 describe("PR-02 and PR-08 copy", () => {
   it("matches the banner", () => {
     expect(ownerBannerText("IndoAcid")).toBe(
-      "Owned by IndoAcid. Only IndoAcid editors or a Super Admin can change it. You can view it and pick it into your pages.",
+      "Owned by IndoAcid. Only IndoAcid editors or a Super Admin can change it. You can view this product and pick it into your pages.",
     );
   });
 

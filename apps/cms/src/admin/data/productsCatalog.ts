@@ -50,7 +50,7 @@ type RawProduct = {
   updatedAt: string;
 };
 
-function ownerID(tenant: RawProduct["tenant"]): string {
+export function ownerID(tenant: RawProduct["tenant"]): string {
   if (tenant === null || tenant === undefined) return "";
   return String(typeof tenant === "object" ? tenant.id : tenant);
 }
@@ -75,13 +75,14 @@ export async function loadCompanies({
   }));
 }
 
-async function publishedIDs(
+export async function publishedIDs(
   { payload, user }: AdminQueryContext,
   ids: (number | string)[],
+  collection: "products" | "solutions" = "products",
 ): Promise<Set<string>> {
   if (ids.length === 0) return new Set();
   const { docs } = await payload.find({
-    collection: "products",
+    collection,
     where: { id: { in: ids } },
     draft: false,
     pagination: false,

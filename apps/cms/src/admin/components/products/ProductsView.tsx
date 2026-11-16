@@ -67,12 +67,14 @@ function Heading({
   );
 }
 
-function Toolbar({
+export function Toolbar({
   companies,
   pathname,
   query,
   selected,
+  searchLabel = "Search by name, formula or CAS number",
 }: {
+  searchLabel?: string;
   companies: CatalogCompany[];
   pathname: string;
   query: CatalogQuery;
@@ -135,7 +137,7 @@ function Toolbar({
           <input name="status" type="hidden" value={query.status} />
         )}
         <label className="dil-sr-only" htmlFor="dil-products-search">
-          Search by name, formula or CAS number
+          {searchLabel}
         </label>
         <input
           className="dil-products__search-input"
@@ -143,7 +145,7 @@ function Toolbar({
           id="dil-products-search"
           maxLength={SEARCH_MAX_LENGTH}
           name="q"
-          placeholder="Search by name, formula or CAS number"
+          placeholder={searchLabel}
           type="search"
         />
         <ActionButton icon="search" type="submit" variant="secondary">

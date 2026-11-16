@@ -40,6 +40,7 @@ export async function loadProductEditor(
   user: TypedUser,
   id: string | undefined,
   locale: string,
+  collection: "products" | "solutions" = "products",
 ): Promise<ProductEditorData> {
   const context = { payload, user };
   const { docs: tenants } = await payload.find({
@@ -55,7 +56,7 @@ export async function loadProductEditor(
   if (id === undefined) return { ...blankProductEditor(), domains };
 
   const doc = await payload.findByID({
-    collection: "products",
+    collection,
     id,
     draft: true,
     depth: 0,
@@ -69,7 +70,7 @@ export async function loadProductEditor(
   const company = tenants.find(({ id: tenant }) => String(tenant) === owner);
   const [live, count] = await Promise.all([
     payload.findVersions({
-      collection: "products",
+      collection,
       where: {
         and: [
           { parent: { equals: id } },
@@ -83,7 +84,7 @@ export async function loadProductEditor(
       user,
     }),
     payload.countVersions({
-      collection: "products",
+      collection,
       where: { parent: { equals: id } },
       overrideAccess: false,
       user,

@@ -1,0 +1,120 @@
+@layer dil {
+  .dil-tags,
+  .dil-supporting {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .dil-tags__head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .dil-tags__list,
+  .dil-supporting__list,
+  .dil-supporting__choices {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dil-tags__list {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dil-tags__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px 4px 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: 999px;
+    background: var(--dil-surface);
+    font-size: 13px;
+  }
+
+  .dil-tags__remove,
+  .dil-supporting__star,
+  .dil-supporting__move {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px;
+    border: 0;
+    background: none;
+    color: var(--dil-muted);
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.4;
+    }
+  }
+
+  .dil-supporting__star.is-on {
+    color: var(--dil-brand);
+  }
+
+  .dil-tags__add,
+  .dil-supporting__choice,
+  .dil-supporting__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dil-tags__input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font: inherit;
+  }
+
+  .dil-supporting__list,
+  .dil-supporting__choices {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dil-supporting__row,
+  .dil-supporting__choice {
+    padding: 8px 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface);
+  }
+
+  .dil-supporting__name {
+    display: flex;
+    flex: 1;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  .dil-supporting__owner,
+  .dil-supporting__hint,
+  .dil-supporting__note,
+  .dil-supporting__empty {
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+
+  .dil-supporting__hint,
+  .dil-supporting__note,
+  .dil-supporting__empty {
+    margin: 0;
+  }
+
+  .dil-supporting__picker {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}

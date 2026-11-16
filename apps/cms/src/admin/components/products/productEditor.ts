@@ -231,8 +231,10 @@ export function droppedText(dropped: number, max = MAX_SPEC_ROWS): string {
 export function ownerPanelText(input: {
   company: string;
   canEdit: boolean;
+  noun?: string;
 }): string {
+  const noun = input.noun ?? "product";
   return input.canEdit
-    ? `${input.company} owns this product. Its editors and Super Admins can change it.`
+    ? `${input.company} owns this ${noun}. Its editors and Super Admins can change it.`
     : `Owned by ${input.company}. Only ${input.company} editors or a Super Admin can change it.`;
 }

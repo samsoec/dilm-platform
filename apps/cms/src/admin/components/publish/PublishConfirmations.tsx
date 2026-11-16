@@ -146,18 +146,22 @@ export function PublishConfirm({
           {impact && <ReachBadge reach={reachOf(impact)} />}
           {!impact && !failed && <p>Checking where this goes live…</p>}
           {failed && <p>Couldn&apos;t check where this goes live.</p>}
-          {impact && impact.collection === "products" && (
-            <p>{productPublishLead(impact.reach.sites)}</p>
-          )}
+          {impact &&
+            (impact.collection === "products" ||
+              impact.collection === "solutions") && (
+              <p>{productPublishLead(impact.reach.sites)}</p>
+            )}
           {impact && impact.sites.length > 0 && (
             <>
               <p>It goes live at</p>
               <SiteUrlList impact={impact} />
             </>
           )}
-          {impact && impact.collection === "products" && (
-            <p>{PRODUCT_PUBLISH_TAIL}</p>
-          )}
+          {impact &&
+            (impact.collection === "products" ||
+              impact.collection === "solutions") && (
+              <p>{PRODUCT_PUBLISH_TAIL}</p>
+            )}
           {impact?.template && <p>{templateChangeText(impact.template)}</p>}
           {questions}
           {block && <Banner tone="error">{block}</Banner>}

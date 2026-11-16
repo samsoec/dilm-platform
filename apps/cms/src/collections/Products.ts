@@ -40,7 +40,7 @@ import {
 const PARTS = "/admin/components/products/ProductEditorParts";
 const SERVER = "/admin/components/products/server";
 
-function ui(name: string, Field: string, position?: "sidebar"): Field {
+export function ui(name: string, Field: string, position?: "sidebar"): Field {
   return {
     name,
     type: "ui",
@@ -48,7 +48,7 @@ function ui(name: string, Field: string, position?: "sidebar"): Field {
   };
 }
 
-function hideSystemField(field: Field): Field {
+export function hideSystemField(field: Field): Field {
   return "name" in field &&
     (field.name === "path" || field.name === "slugFallback")
     ? ({ ...field, admin: { ...field.admin, hidden: true } } as Field)

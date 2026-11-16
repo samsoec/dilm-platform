@@ -58,10 +58,12 @@ export function ProductHeader({
   status,
   domains,
   path,
+  noun = "product",
 }: {
   status: PublishStatus;
   domains: string[];
   path: string;
+  noun?: string;
 }) {
   const name = useFormFields(([fields]) => fields.name?.value) as
     string | undefined;
@@ -76,7 +78,7 @@ export function ProductHeader({
         <h1 className="dil-editor-title">
           {typeof name === "string" && name.trim()
             ? name.trim()
-            : "Untitled product"}
+            : `Untitled ${noun}`}
         </h1>
         <PublishBadge status={live} />
         <ReachBadge reach={ALL_REACH} />
@@ -366,6 +368,7 @@ export function ShortDescriptionLabel({
 }
 
 export type ProductSidebarProps = {
+  noun?: string;
   status: PublishStatus;
   owner: string;
   canEdit: boolean;
@@ -396,6 +399,7 @@ function Panel({
 }
 
 export function ProductSidebar(props: ProductSidebarProps) {
+  const noun = props.noun ?? "product";
   const status = useLiveStatus(props.status);
   const { id } = useDocumentInfo();
   const { openModal } = useModal();
@@ -407,14 +411,21 @@ export function ProductSidebar(props: ProductSidebarProps) {
     savedBy: props.savedBy,
   });
   return (
-    <aside aria-label="Product details" className="dil-editor-sidebar">
+    <aside
+      aria-label={`${noun[0]!.toUpperCase()}${noun.slice(1)} details`}
+      className="dil-editor-sidebar"
+    >
       <Panel id="dil-panel-owner" title="Owner">
         <p className="dil-editor-fact">
           <MaterialIcon name={props.canEdit ? "domain" : "lock"} />
           {props.owner}
         </p>
         <p className="dil-editor-panel__note">
-          {ownerPanelText({ company: props.owner, canEdit: props.canEdit })}
+          {ownerPanelText({
+            company: props.owner,
+            canEdit: props.canEdit,
+            noun,
+          })}
         </p>
       </Panel>
       <UsedInPanel data={props.usedIn} />
@@ -422,7 +433,7 @@ export function ProductSidebar(props: ProductSidebarProps) {
         {id === undefined ? (
           <p className="dil-editor-panel__note">
             Nothing is saved yet. Save a draft to start the history, or publish
-            to put the product on all {ALL_SITES_COUNT} sites.
+            to put the {noun} on all {ALL_SITES_COUNT} sites.
           </p>
         ) : (
           <>

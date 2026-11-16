@@ -201,6 +201,14 @@ import { LatestIrWidget as LatestIrWidget_7d30844fb4e083d96810b84b413ef411 } fro
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
+import { TagListField as TagListField_34bd111c69ab981169931ebf28476433 } from '../../../admin/components/solutions/SolutionEditorParts'
+import { SupportingProductsField as SupportingProductsField_34bd111c69ab981169931ebf28476433 } from '../../../admin/components/solutions/SolutionEditorParts'
+import { SolutionsView as SolutionsView_904402e7ba2044cb16a9649df53cb8f4 } from '../../../admin/components/solutions/SolutionsView'
+import { SolutionOwnerBanner as SolutionOwnerBanner_144c9a6e6a8753edfc374a6f9c27aa55 } from '../../../admin/components/products/ProductOwnerBanner'
+import { SolutionHeaderField as SolutionHeaderField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
+import { SolutionActionsField as SolutionActionsField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
+import { SolutionTabMarksField as SolutionTabMarksField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
+import { SolutionSidebarField as SolutionSidebarField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -404,5 +412,13 @@ export const importMap = {
   "/admin/components/dashboard/SiteLayout#SiteLayoutWidget": SiteLayoutWidget_d47b3268301ee6262ea516856058e959,
   "/admin/components/dashboard/LatestIr#LatestIrWidget": LatestIrWidget_7d30844fb4e083d96810b84b413ef411,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
-  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
+  "/admin/components/solutions/SolutionEditorParts#TagListField": TagListField_34bd111c69ab981169931ebf28476433,
+  "/admin/components/solutions/SolutionEditorParts#SupportingProductsField": SupportingProductsField_34bd111c69ab981169931ebf28476433,
+  "/admin/components/solutions/SolutionsView#SolutionsView": SolutionsView_904402e7ba2044cb16a9649df53cb8f4,
+  "/admin/components/products/ProductOwnerBanner#SolutionOwnerBanner": SolutionOwnerBanner_144c9a6e6a8753edfc374a6f9c27aa55,
+  "/admin/components/products/server#SolutionHeaderField": SolutionHeaderField_e5427e3530a8a9e3f536213c9665e1e0,
+  "/admin/components/products/server#SolutionActionsField": SolutionActionsField_e5427e3530a8a9e3f536213c9665e1e0,
+  "/admin/components/products/server#SolutionTabMarksField": SolutionTabMarksField_e5427e3530a8a9e3f536213c9665e1e0,
+  "/admin/components/products/server#SolutionSidebarField": SolutionSidebarField_e5427e3530a8a9e3f536213c9665e1e0
 }
