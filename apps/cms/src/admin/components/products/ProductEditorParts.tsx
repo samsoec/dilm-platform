@@ -30,7 +30,11 @@ import {
   MAX_SPEC_ROWS,
   MAX_VARIANTS,
   ownerPanelText,
+  hiddenRowsText,
   parseSpecs,
+  PREVIEW_ROWS,
+  specRowState,
+  specsSchemaPath,
   PASTE_HINT,
   previewSpecs,
   sameOnSitesText,
@@ -93,7 +97,12 @@ export function ProductTabMarks() {
   const applications = useFormFields(
     ([fields]) => fields.applications?.rows?.length ?? 0,
   );
-  const [, , variantsTab, applicationsTab] = buttons;
+  const tabNamed = (label: string) =>
+    buttons.find((button) =>
+      (button.textContent ?? "").trim().startsWith(label),
+    );
+  const variantsTab = tabNamed("Variants");
+  const applicationsTab = tabNamed("Applications");
   return (
     <>
       {variantsTab &&
@@ -219,24 +228,13 @@ export function SpecsPaste({ path }: { path?: string }) {
 
   const pasted = parseSpecs(text);
   const preview = previewSpecs(existing, pasted, MAX_SPEC_ROWS);
-  const cell = (value: string | boolean) => ({
-    initialValue: value,
-    valid: true,
-    value,
-  });
-
   const apply = () => {
     preview.accepted.forEach((row, offset) => {
       addFieldRow({
         path: arrayPath,
         rowIndex: existing + offset,
-        schemaPath: arrayPath,
-        subFieldState: {
-          parameter: cell(row.parameter),
-          method: cell(row.method),
-          value: cell(row.value),
-          emphasized: cell(false),
-        },
+        schemaPath: specsSchemaPath(arrayPath),
+        subFieldState: specRowState(row),
       });
     });
     setText("");
@@ -275,7 +273,7 @@ export function SpecsPaste({ path }: { path?: string }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {pasted.map((row, index) => (
+                  {pasted.slice(0, PREVIEW_ROWS).map((row, index) => (
                     <tr
                       className={
                         index >= preview.accepted.length ? "is-over" : ""
@@ -298,6 +296,11 @@ export function SpecsPaste({ path }: { path?: string }) {
                   ))}
                 </tbody>
               </table>
+              {pasted.length > PREVIEW_ROWS && (
+                <p className="dil-spec-paste__summary">
+                  {hiddenRowsText(pasted.length)}
+                </p>
+              )}
               <p aria-live="polite" className="dil-spec-paste__summary">
                 {preview.text}
               </p>

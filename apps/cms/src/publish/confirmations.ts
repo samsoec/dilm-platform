@@ -65,9 +65,15 @@ export function validationSummary(count: number): string {
 
 export type FieldProblem = { path: string; label: string; message: string };
 
+export const PROBLEM_LABELS: Record<string, string> = {
+  slug: "Slug",
+  name: "Name",
+  title: "Title",
+};
+
 export function fieldProblems(
   fields: Record<string, { valid?: boolean; errorMessage?: string }>,
-  labels: Record<string, string> = {},
+  labels: Record<string, string> = PROBLEM_LABELS,
 ): FieldProblem[] {
   return Object.entries(fields)
     .filter(([, field]) => field.valid === false)

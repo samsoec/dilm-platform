@@ -171,3 +171,20 @@ describe("consentBlock", () => {
     expect(consentBlock([{ blockType: "hero" }])).toBeNull();
   });
 });
+
+describe("a slug clash on publish", () => {
+  it("is listed in the summary under the slug field with the server's message", async () => {
+    const { recordClashMessage } = await import("../paths");
+    const message = recordClashMessage(
+      "products",
+      { collection: "products", name: "Soda ash", company: "Dunia Kimia" },
+      3,
+    );
+    const problems = fieldProblems({
+      name: { valid: true },
+      slug: { valid: false, errorMessage: message },
+    });
+    expect(problems).toEqual([{ path: "slug", label: "Slug", message }]);
+    expect(message).toContain("already uses this URL");
+  });
+});

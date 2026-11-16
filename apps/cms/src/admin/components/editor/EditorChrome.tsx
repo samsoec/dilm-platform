@@ -168,7 +168,17 @@ export function EditorActions({
       overrides: { _status: "published" },
       disableSuccessStatus: true,
     });
-    if (!result?.res.ok) return;
+    if (!result?.res.ok) {
+      setProblems(
+        fieldProblems(
+          getFields() as Record<
+            string,
+            { valid?: boolean; errorMessage?: string }
+          >,
+        ),
+      );
+      return;
+    }
     setHasPublishedDoc(true);
     setUnpublishedVersionCount(0);
     setMostRecentVersionIsAutosaved(false);

@@ -4,7 +4,11 @@ import { formulaPlainText } from "../../../fields/formula";
 import {
   documentUses,
   inheritedFrom,
+  hiddenRowsText,
   parseSpecs,
+  parseTable,
+  specRowState,
+  specsSchemaPath,
   previewSpecs,
   productPublishLead,
   sameOnSitesText,
@@ -89,5 +93,44 @@ describe("wording", () => {
       "same path on a.com, b.com and c.com",
     );
     expect(formulaPlainText(formula("H2O"))).toBe("H2O");
+  });
+});
+
+describe("spreadsheet quoting", () => {
+  it("keeps newlines, tabs and doubled quotes inside quoted cells", () => {
+    const text = 'Purity\t"ASTM\nD1"\t"99%\ttyp"\r\n"Say ""hi"""\t\t5\n';
+    expect(parseTable(text)).toEqual([
+      ["Purity", "ASTM\nD1", "99%\ttyp"],
+      ['Say "hi"', "", "5"],
+    ]);
+    const rows = parseSpecs(text);
+    expect(rows).toHaveLength(2);
+    expect(rows[1]!.parameter).toBe('Say "hi"');
+  });
+
+  it("keeps a quote that is not at the start of a cell", () => {
+    expect(parseTable('5" pipe\tx')).toEqual([['5" pipe', "x"]]);
+  });
+
+  it("summarises rows beyond the preview", () => {
+    expect(hiddenRowsText(1000)).toBe("and 970 more rows not shown");
+    expect(hiddenRowsText(30)).toBe("");
+  });
+});
+
+describe("building spec rows", () => {
+  it("uses the schema path without row numbers", () => {
+    expect(specsSchemaPath("variants.2.specs")).toBe("variants.specs");
+    expect(specsSchemaPath("specs")).toBe("specs");
+  });
+
+  it("builds a valid state for every sub-field of a row", () => {
+    const [row] = parseSpecs("Purity\tASTM\t99%");
+    expect(specRowState(row!)).toEqual({
+      parameter: { initialValue: "Purity", valid: true, value: "Purity" },
+      method: { initialValue: "ASTM", valid: true, value: "ASTM" },
+      value: { initialValue: "99%", valid: true, value: "99%" },
+      emphasized: { initialValue: false, valid: true, value: false },
+    });
   });
 });

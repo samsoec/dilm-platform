@@ -108,11 +108,54 @@ export type PastedSpec = {
   missing: ("parameter" | "method" | "value")[];
 };
 
+export function parseTable(text: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let cell = "";
+  let quoted = false;
+  let atStart = true;
+  const endCell = () => {
+    row.push(cell);
+    cell = "";
+    atStart = true;
+  };
+  const endRow = () => {
+    endCell();
+    rows.push(row);
+    row = [];
+  };
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index]!;
+    if (quoted) {
+      if (char === '"' && text[index + 1] === '"') {
+        cell += '"';
+        index += 1;
+      } else if (char === '"') {
+        quoted = false;
+      } else {
+        cell += char;
+      }
+    } else if (char === '"' && atStart) {
+      quoted = true;
+      atStart = false;
+    } else if (char === "\t") {
+      endCell();
+    } else if (char === "\n" || char === "\r") {
+      if (char === "\r" && text[index + 1] === "\n") index += 1;
+      endRow();
+    } else {
+      cell += char;
+      atStart = false;
+    }
+  }
+  if (cell !== "" || row.length > 0) endRow();
+  return rows;
+}
+
 export function parseSpecs(text: string): PastedSpec[] {
-  const rows = text
-    .split(/\r?\n/)
-    .filter((line) => line.replace(/\t/g, "").trim() !== "")
-    .map((line) => line.split("\t").map((cell) => cell.trim()));
+  const rows = parseTable(text)
+    .map((cells) => cells.map((cell) => cell.trim()))
+    .filter((cells) => cells.some((cell) => cell !== ""));
   if (rows.length > 0 && /^parameter$/i.test(rows[0]![0] ?? "")) rows.shift();
   return rows.map(([parameter = "", method = "", value = ""]) => ({
     parameter,
@@ -128,6 +171,33 @@ export function parseSpecs(text: string): PastedSpec[] {
       .filter(([, cell]) => cell === "")
       .map(([name]) => name),
   }));
+}
+
+export const PREVIEW_ROWS = MAX_SPEC_ROWS;
+
+export function specsSchemaPath(path: string): string {
+  return path.replace(/\.\d+(?=\.|$)/g, "");
+}
+
+export function specRowState(row: PastedSpec) {
+  const cell = <T extends string | boolean>(value: T) => ({
+    initialValue: value,
+    valid: true,
+    value,
+  });
+  return {
+    parameter: cell(row.parameter),
+    method: cell(row.method),
+    value: cell(row.value),
+    emphasized: cell(false),
+  };
+}
+
+export function hiddenRowsText(total: number, shown = PREVIEW_ROWS): string {
+  const rest = total - shown;
+  return rest > 0
+    ? `and ${rest} more ${rest === 1 ? "row" : "rows"} not shown`
+    : "";
 }
 
 export type PastePreview = {

@@ -48,6 +48,13 @@ function ui(name: string, Field: string, position?: "sidebar"): Field {
   };
 }
 
+function hideSystemField(field: Field): Field {
+  return "name" in field &&
+    (field.name === "path" || field.name === "slugFallback")
+    ? ({ ...field, admin: { ...field.admin, hidden: true } } as Field)
+    : field;
+}
+
 function inherited(): { Description: string } {
   return { Description: `${PARTS}#InheritedNote` };
 }
@@ -302,8 +309,8 @@ export const Products = withTenantAccess(
           ui("productHeader", `${SERVER}#ProductHeaderField`),
           ui("productActions", `${SERVER}#ProductActionsField`),
           ui("productTabMarks", `${SERVER}#ProductTabMarksField`),
-          ...recordAddressFields(),
           ui("productSidebar", `${SERVER}#ProductSidebarField`, "sidebar"),
+          ...recordAddressFields().map(hideSystemField),
           {
             type: "tabs",
             admin: { className: EDITOR_TAB_CLASS },
