@@ -51,33 +51,27 @@ export function limitReason(
   return `Limit reached: ${count} of ${max} ${noun}s. Remove one to add another.`;
 }
 
-type TitleNode = {
-  type?: string;
-  format?: number | string;
-  children?: TitleNode[];
-};
+const BOLD_WEIGHT = /font-weight:\s*(bold|[6-9]00)/i;
 
-const BOLD = 1;
-
-export function removedFromTitle(root: TitleNode | undefined): string[] {
-  const found = new Set<string>();
-  const walk = (node: TitleNode) => {
-    if (node.type === "link" || node.type === "autolink") found.add("a link");
-    else if (node.type === "heading") found.add("a heading");
-    else if (node.type === "list" || node.type === "listitem") {
-      found.add("a list");
-    } else if (node.type === "quote") found.add("a quote");
-    if (
-      node.type === "text" &&
-      typeof node.format === "number" &&
-      (node.format & BOLD) !== 0
-    ) {
-      found.add("bold");
-    }
-    node.children?.forEach(walk);
+export function removedFromHtml(html: string): string[] {
+  if (!html) return [];
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const body = doc.body;
+  const found: string[] = [];
+  const has = (name: string, present: boolean) => {
+    if (present) found.push(name);
   };
-  if (root) walk(root);
-  return [...found].sort((a, b) => (a === "bold" ? -1 : b === "bold" ? 1 : 0));
+  has(
+    "bold",
+    body.querySelector("b, strong") !== null ||
+      [...body.querySelectorAll("[style]")].some((node) =>
+        BOLD_WEIGHT.test(node.getAttribute("style") ?? ""),
+      ),
+  );
+  has("a link", body.querySelector("a[href]") !== null);
+  has("a heading", body.querySelector("h1, h2, h3, h4, h5, h6") !== null);
+  has("a list", body.querySelector("ul, ol, li") !== null);
+  return found;
 }
 
 export function titleNotice(removed: readonly string[]): string {

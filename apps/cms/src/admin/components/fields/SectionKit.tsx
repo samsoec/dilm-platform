@@ -7,7 +7,7 @@ import {
   useRowLabel,
 } from "@payloadcms/ui";
 import type { SelectFieldClientProps } from "payload";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import type { LinkValue } from "../../layoutEditor";
 import {
@@ -16,7 +16,7 @@ import {
   buttonStyleLabel,
   buttonSummary,
   limitReason,
-  removedFromTitle,
+  removedFromHtml,
   TITLE_HINT,
   titleNotice,
   VARIANT_KEPT_NOTE,
@@ -99,7 +99,7 @@ export const ButtonStyleField = ({
   return (
     <div className="field-type dil-button-style">
       <label className="field-label" htmlFor={id}>
-        Style
+        {typeof field.label === "string" ? field.label : "Style"}
       </label>
       <select
         aria-describedby={`${id}-help`}
@@ -203,24 +203,39 @@ export const VariantField = ({
   );
 };
 
-export function TitleNotice({ path }: { path?: string }) {
-  const root = useFormFields(
-    ([fields]) =>
-      (
-        fields[path ?? ""]?.value as
-          { root?: Parameters<typeof removedFromTitle>[0] } | undefined
-      )?.root,
-  );
-  const notice = titleNotice(removedFromTitle(root));
+export function PasteNotice() {
+  const anchor = useRef<HTMLSpanElement>(null);
+  const [notice, setNotice] = useState("");
+  useEffect(() => {
+    const container = anchor.current?.closest(".field-type");
+    if (!container) return;
+    const onPaste = (event: Event) => {
+      const html = (event as ClipboardEvent).clipboardData?.getData(
+        "text/html",
+      );
+      setNotice(titleNotice(removedFromHtml(html ?? "")));
+    };
+    container.addEventListener("paste", onPaste, true);
+    return () => container.removeEventListener("paste", onPaste, true);
+  }, []);
   return (
-    <div className="dil-title-hint">
-      <span className="dil-title-hint__key">{TITLE_HINT}</span>
+    <>
+      <span hidden ref={anchor} />
       {notice && (
         <p className="dil-field-note dil-field-note--warn" role="status">
           <MaterialIcon name="info" />
           {notice}
         </p>
       )}
+    </>
+  );
+}
+
+export function TitleNotice() {
+  return (
+    <div className="dil-title-hint">
+      <span className="dil-title-hint__key">{TITLE_HINT}</span>
+      <PasteNotice />
     </div>
   );
 }

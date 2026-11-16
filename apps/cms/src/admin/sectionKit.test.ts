@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 
 import {
@@ -5,7 +6,7 @@ import {
   buttonStyleLabel,
   buttonSummary,
   limitReason,
-  removedFromTitle,
+  removedFromHtml,
   sectionArrayLabel,
   titleNotice,
 } from "./sectionKit";
@@ -43,22 +44,16 @@ describe("section field kit", () => {
     );
   });
 
-  it("reports what pasting removed from the title (SE-08)", () => {
-    const root = {
-      type: "root",
-      children: [
-        {
-          type: "paragraph",
-          children: [
-            { type: "text", format: 1 },
-            { type: "link", children: [{ type: "text", format: 0 }] },
-          ],
-        },
-      ],
-    };
-    expect(titleNotice(removedFromTitle(root))).toBe(
+  it("reports what pasted HTML would carry into the title (SE-08)", () => {
+    const html =
+      '<meta charset="utf-8"><p>Our <b>story</b>, <a href="https://x.com">read</a></p>';
+    expect(titleNotice(removedFromHtml(html))).toBe(
       "Pasted bold and a link were removed from the title.",
     );
-    expect(titleNotice(removedFromTitle(undefined))).toBe("");
+    expect(
+      removedFromHtml('<span style="font-weight:700">x</span><h2>y</h2>'),
+    ).toEqual(["bold", "a heading"]);
+    expect(removedFromHtml("<i>only italic</i>")).toEqual([]);
+    expect(titleNotice([])).toBe("");
   });
 });
