@@ -1063,13 +1063,16 @@ export interface Product {
         }[]
       | null;
   };
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
   meta?: {
     title?: string | null;
     description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
     image?: (number | null) | Media;
   };
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1163,7 +1166,13 @@ export interface Solution {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Pick from every company's published products. The order here is the order shown.
+   */
   supportingProducts?: (number | Product)[] | null;
+  /**
+   * Optional. It has to be one of the supporting products. Empty uses the first one.
+   */
   featuredProduct?: (number | null) | Product;
   impact?: {
     /**
@@ -7377,6 +7386,8 @@ export interface ProductsSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  updatedBy?: T;
+  trashedBy?: T;
   meta?:
     | T
     | {
@@ -7384,8 +7395,6 @@ export interface ProductsSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
-  updatedBy?: T;
-  trashedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
