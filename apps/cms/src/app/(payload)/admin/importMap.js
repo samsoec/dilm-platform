@@ -243,6 +243,12 @@ import { FeaturedNewest as FeaturedNewest_8163c6dee7ae2a46071ad6d780e2cc5b } fro
 import { TokenChips as TokenChips_6fb29fa8c15549956cf1a097fb717545 } from '../../../admin/components/publication/TokenChips'
 import { TextChangedFlag as TextChangedFlag_8605708db795378a6bcf8ef107e10925 } from '../../../admin/components/legal/TextChangedFlag'
 import { TocSummary as TocSummary_e4e608a49fb60a281dbcf2decc4d0e85 } from '../../../admin/components/legal/TocSummary'
+import { SiteMessagesIntro as SiteMessagesIntro_a194ef5925e05041dff37082987d360b } from '../../../admin/components/siteMessages/SiteMessagesParts'
+import { CookiePolicyCheck as CookiePolicyCheck_a194ef5925e05041dff37082987d360b } from '../../../admin/components/siteMessages/SiteMessagesParts'
+import { PolicyVersionWarning as PolicyVersionWarning_a194ef5925e05041dff37082987d360b } from '../../../admin/components/siteMessages/SiteMessagesParts'
+import { NotFoundPreview as NotFoundPreview_a194ef5925e05041dff37082987d360b } from '../../../admin/components/siteMessages/SiteMessagesParts'
+import { CookieBannerPreview as CookieBannerPreview_a194ef5925e05041dff37082987d360b } from '../../../admin/components/siteMessages/SiteMessagesParts'
+import { ConsentNotes as ConsentNotes_a194ef5925e05041dff37082987d360b } from '../../../admin/components/siteMessages/SiteMessagesParts'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -489,4 +495,10 @@ export const importMap = {
   "/admin/components/ir/IrEditorParts#SummaryLanguageNote": SummaryLanguageNote_e05db7d652f5a712500fa0647c5af374,
   "/admin/components/legal/TextChangedFlag#TextChangedFlag": TextChangedFlag_8605708db795378a6bcf8ef107e10925,
   "/admin/components/legal/TocSummary#TocSummary": TocSummary_e4e608a49fb60a281dbcf2decc4d0e85,
+  "/admin/components/siteMessages/SiteMessagesParts#SiteMessagesIntro": SiteMessagesIntro_a194ef5925e05041dff37082987d360b,
+  "/admin/components/siteMessages/SiteMessagesParts#CookiePolicyCheck": CookiePolicyCheck_a194ef5925e05041dff37082987d360b,
+  "/admin/components/siteMessages/SiteMessagesParts#PolicyVersionWarning": PolicyVersionWarning_a194ef5925e05041dff37082987d360b,
+  "/admin/components/siteMessages/SiteMessagesParts#NotFoundPreview": NotFoundPreview_a194ef5925e05041dff37082987d360b,
+  "/admin/components/siteMessages/SiteMessagesParts#CookieBannerPreview": CookieBannerPreview_a194ef5925e05041dff37082987d360b,
+  "/admin/components/siteMessages/SiteMessagesParts#ConsentNotes": ConsentNotes_a194ef5925e05041dff37082987d360b,
 }

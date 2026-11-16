@@ -1,0 +1,105 @@
+@layer dil {
+  .dil-cookie-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0 16px;
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    color: var(--dil-muted);
+
+    .dil-icon {
+      color: var(--dil-success, currentColor);
+      font-size: 18px;
+    }
+  }
+
+  .dil-policy-warning {
+    margin-bottom: 16px;
+  }
+
+  .dil-msg-preview__open {
+    margin-inline-start: auto;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .dil-msg-preview__page,
+  .dil-msg-preview__banner {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m, 8px);
+    background: var(--dil-bg, transparent);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-msg-preview__page {
+    text-align: center;
+  }
+
+  .dil-msg-preview__code {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--dil-muted);
+  }
+
+  .dil-msg-preview__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .dil-msg-preview__text {
+    margin: 0;
+    font-size: 13px;
+    color: var(--dil-muted);
+  }
+
+  .dil-msg-preview__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 4px 0 0;
+  }
+
+  .dil-msg-preview__button {
+    padding: 4px 10px;
+    border: 1px solid var(--dil-line);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .dil-msg-preview__button--primary {
+    border-color: transparent;
+    background: var(--dil-ink);
+    color: var(--dil-surface);
+  }
+
+  .dil-msg-preview__footer {
+    margin: 8px 0 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--dil-line);
+    font-size: 11px;
+    color: var(--dil-muted);
+  }
+
+  .dil-msg-preview__note {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--dil-muted);
+  }
+
+  .dil-msg-notes__list {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding-inline-start: 18px;
+    font-size: 13px;
+    color: var(--dil-muted);
+  }
+}

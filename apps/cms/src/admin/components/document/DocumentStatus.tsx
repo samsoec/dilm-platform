@@ -34,7 +34,7 @@ export function DocumentStatus() {
         title="Read-only."
         tone="readonly"
       >
-        {viewerNotice(collectionSlug as LiveCollection)}
+        {viewerNotice(collectionSlug as LiveCollection, company?.name)}
       </Banner>
     );
   }

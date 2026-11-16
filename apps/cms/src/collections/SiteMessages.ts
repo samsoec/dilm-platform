@@ -1,3 +1,5 @@
+import type { UIField } from "payload";
+
 import {
   FixedToolbarFeature,
   lexicalEditor,
@@ -16,6 +18,7 @@ import {
   versionInfo,
   withSameAsEnTag,
 } from "../fields/layoutEditor";
+import { POLICY_VERSION_HINT } from "../admin/siteMessages";
 import { link } from "../fields/link";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { revalidateTenantLayout, stubRevalidator } from "../revalidation";
@@ -23,6 +26,19 @@ import { requireCookiePolicyLink } from "../siteMessages";
 import { withTenantAccess } from "../tenancy";
 
 export const MAX_NOT_FOUND_BUTTONS = 2;
+
+const PARTS = "/admin/components/siteMessages/SiteMessagesParts";
+
+function part(name: string, component: string, position?: "sidebar"): UIField {
+  return {
+    name,
+    type: "ui",
+    admin: {
+      ...(position ? { position } : {}),
+      components: { Field: `${PARTS}#${component}` },
+    },
+  };
+}
 
 export const cookieBodyEditor = () =>
   lexicalEditor({
@@ -53,6 +69,10 @@ export const SiteMessages = withTenantAccess(
     },
     fields: [
       localeBanner,
+      part("intro", "SiteMessagesIntro"),
+      part("notFoundPreview", "NotFoundPreview", "sidebar"),
+      part("cookieBannerPreview", "CookieBannerPreview", "sidebar"),
+      part("consentNotes", "ConsentNotes", "sidebar"),
       versionInfo,
       {
         name: "notFound",
@@ -107,6 +127,7 @@ export const SiteMessages = withTenantAccess(
                 "Link this text to your Cookie Policy page. It can't be saved without that link.",
             },
           },
+          part("cookiePolicyCheck", "CookiePolicyCheck"),
           withSameAsEnTag({
             name: "acceptLabel",
             type: "text",
@@ -122,7 +143,9 @@ export const SiteMessages = withTenantAccess(
           {
             name: "policyVersion",
             type: "text",
+            admin: { description: POLICY_VERSION_HINT },
           },
+          part("policyVersionWarning", "PolicyVersionWarning"),
         ],
       },
     ],
