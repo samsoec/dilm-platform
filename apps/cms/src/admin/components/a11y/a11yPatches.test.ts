@@ -21,6 +21,7 @@ describe("applyA11yPatches", () => {
       <button class="clickable-arrow clickable-arrow--right"></button>
       <button class="date-time-picker__clear-button"></button>
       <button class="popup-button array-actions__button"></button>
+      <div class="clipboard-action__popup"><button class="popup-button"></button></div>
       <ul class="array-field__header-actions"><li><button class="popup-button"></button></li></ul>
     `);
     expect(
@@ -28,6 +29,11 @@ describe("applyA11yPatches", () => {
         .querySelector(".array-actions__button")
         ?.getAttribute("aria-label"),
     ).toBe("Row actions");
+    expect(
+      document
+        .querySelector(".clipboard-action__popup .popup-button")
+        ?.getAttribute("aria-label"),
+    ).toBe("Copy or paste blocks");
     expect(
       document
         .querySelector(".array-field__header-actions .popup-button")

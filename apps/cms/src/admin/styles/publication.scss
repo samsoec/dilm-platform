@@ -49,6 +49,10 @@
     color: var(--dil-sel-ink);
   }
 
+  .dil-category-tabs__item--locked .dil-category-tabs__meta {
+    color: var(--dil-sel-ink);
+  }
+
   .dil-category-tabs__name {
     flex: 1;
     min-width: 0;

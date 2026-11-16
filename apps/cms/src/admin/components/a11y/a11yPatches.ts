@@ -47,6 +47,11 @@ export function applyA11yPatches(root: ParentNode): void {
       setIfMissing(element, "aria-label", "Document actions"),
     );
   root
+    .querySelectorAll(".clipboard-action__popup .popup-button")
+    .forEach((element) =>
+      setIfMissing(element, "aria-label", "Copy or paste blocks"),
+    );
+  root
     .querySelectorAll(".array-actions__button")
     .forEach((element) => setIfMissing(element, "aria-label", "Row actions"));
   root
