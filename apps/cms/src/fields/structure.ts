@@ -112,7 +112,7 @@ export function keepRowStructureIn(
     const changed = changedRowStructure(data, originalDoc, only);
     if (changed.length > 0) {
       throw new APIError(
-        `Rows can only be added, removed or reordered in English (${changed.join(", ")}). Switch the content language to EN.`,
+        `Rows can only be added, removed or reordered in English (${changed.join(", ")}). Switch the content language to EN. If English was just changed, reload the page to continue.`,
         400,
         undefined,
         true,

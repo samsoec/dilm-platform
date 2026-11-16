@@ -74,4 +74,30 @@ describe("sections in Indonesian", () => {
     expect(() => run("en", moved)).not.toThrow();
     expect(() => run("id", before)).not.toThrow();
   });
+
+  it("compares with the latest version, so a draft reorder in English does not block Indonesian", () => {
+    const latest = {
+      layout: [before.layout[1], before.layout[0]],
+      title: "Old",
+    };
+    const form = {
+      layout: [before.layout[1], before.layout[0]],
+      title: "Baru",
+    };
+    expect(changedRowStructure(form, latest, ["layout"])).toEqual([]);
+  });
+
+  it("flags a stale form and says to reload", () => {
+    const latest = { layout: [before.layout[1], before.layout[0]] };
+    const stale = { layout: before.layout };
+    expect(changedRowStructure(stale, latest, ["layout"])).toEqual(["layout"]);
+    expect(() =>
+      (keepSectionStructure as unknown as (args: object) => unknown)({
+        data: stale,
+        operation: "update",
+        originalDoc: latest,
+        req: { locale: "id" },
+      }),
+    ).toThrow(/reload/);
+  });
 });
