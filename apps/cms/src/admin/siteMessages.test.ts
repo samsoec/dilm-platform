@@ -4,6 +4,9 @@ import { SiteMessages } from "../collections/SiteMessages";
 import { findField, subfields } from "../testing";
 import {
   bannerText,
+  COOKIE_LINK_NOT_LIVE,
+  COOKIE_LINK_OTHER_COMPANY,
+  cookiePolicyCheck,
   cookiePolicyCheckLine,
   firstLinkedPageId,
   policyVersionChanged,
@@ -79,5 +82,44 @@ describe("site messages screen", () => {
     expect(
       (field as { admin?: { description?: string } }).admin?.description,
     ).toBe(POLICY_VERSION_HINT);
+  });
+
+  describe("cookie policy check", () => {
+    const here = { siteDomain: "duniakimia.com", locale: "en" };
+    const page = (extra: object) => ({
+      id: 7,
+      path: "/en/cookie-policy",
+      _status: "published",
+      tenant: { id: 1, name: "Dunia", domain: "duniakimia.com" },
+      ...extra,
+    });
+
+    it("confirms a live page of this company", () => {
+      expect(cookiePolicyCheck(page({}), here)).toEqual({
+        ok: true,
+        text: "Links to Cookie Policy (/en/cookie-policy)",
+      });
+    });
+
+    it("warns for a draft, trashed or unreadable page", () => {
+      for (const doc of [
+        page({ _status: "draft" }),
+        page({ deletedAt: "2026-01-01" }),
+        null,
+      ]) {
+        expect(cookiePolicyCheck(doc, here)).toEqual({
+          ok: false,
+          text: COOKIE_LINK_NOT_LIVE,
+        });
+      }
+    });
+
+    it("warns without the path for another company's page", () => {
+      const other = page({ tenant: { id: 2, domain: "likutelaga.com" } });
+      expect(cookiePolicyCheck(other, here)).toEqual({
+        ok: false,
+        text: COOKIE_LINK_OTHER_COMPANY,
+      });
+    });
   });
 });

@@ -7,11 +7,10 @@ import {
   useLocale,
 } from "@payloadcms/ui";
 
-import { docPath } from "../../linkPicker";
 import {
   bannerText,
   CONSENT_NOTES,
-  cookiePolicyCheckLine,
+  cookiePolicyCheck,
   firstLinkedPageId,
   NOT_FOUND_RESPONSE,
   notFoundUrl,
@@ -39,15 +38,22 @@ export function SiteMessagesIntro() {
 export function CookiePolicyCheck() {
   const body = useFormFields(([fields]) => fields["cookieBanner.body"]?.value);
   const { code } = useLocale();
+  const { company } = useUnsavedChangesGuard();
   const id = firstLinkedPageId(body);
-  const { doc } = useLinkTarget(
+  const { doc, loading } = useLinkTarget(
     id ? { relationTo: "pages", value: id } : undefined,
   );
-  if (!id) return null;
+  if (!id || loading) return null;
+  const check = cookiePolicyCheck(doc, {
+    siteDomain: company?.domain ?? "",
+    locale: code,
+  });
   return (
-    <p className="dil-cookie-check">
-      <MaterialIcon name="check_circle" />
-      {cookiePolicyCheckLine(doc ? docPath(doc, code) : "")}
+    <p
+      className={`dil-cookie-check${check.ok ? "" : " dil-cookie-check--warn"}`}
+    >
+      <MaterialIcon name={check.ok ? "check_circle" : "warning"} />
+      {check.text}
     </p>
   );
 }

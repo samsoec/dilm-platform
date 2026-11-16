@@ -1,4 +1,5 @@
 import { linkedPageIds } from "../siteMessages";
+import { docPath, isLive, isOtherCompany, type PickerDoc } from "./linkPicker";
 
 export const NOT_FOUND_RESPONSE = "Returns HTTP 404 and isn't indexed.";
 
@@ -68,4 +69,25 @@ export function bannerText(body: unknown): string {
 
 export function notFoundUrl(domain: string, locale: string): string {
   return `https://${domain}/${locale}/${NOT_FOUND_PROBE_PATH}`;
+}
+
+export const COOKIE_LINK_NOT_LIVE =
+  "The linked page isn't published, so Save will be refused.";
+
+export const COOKIE_LINK_OTHER_COMPANY =
+  "The linked page belongs to another company, so Save will be refused.";
+
+export type CookieCheck = { ok: boolean; text: string };
+
+export function cookiePolicyCheck(
+  doc: PickerDoc | null | undefined,
+  { siteDomain, locale }: { siteDomain: string; locale: string },
+): CookieCheck {
+  if (!doc || !isLive("pages", doc)) {
+    return { ok: false, text: COOKIE_LINK_NOT_LIVE };
+  }
+  if (isOtherCompany(doc, siteDomain)) {
+    return { ok: false, text: COOKIE_LINK_OTHER_COMPANY };
+  }
+  return { ok: true, text: cookiePolicyCheckLine(docPath(doc, locale)) };
 }

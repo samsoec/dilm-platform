@@ -14,6 +14,14 @@
     }
   }
 
+  .dil-cookie-check--warn {
+    color: var(--dil-ink);
+
+    .dil-icon {
+      color: var(--dil-warning, currentColor);
+    }
+  }
+
   .dil-policy-warning {
     margin-bottom: 16px;
   }
