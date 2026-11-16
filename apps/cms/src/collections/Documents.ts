@@ -38,6 +38,16 @@ export const Documents = withTenantAccess(
       upload: { mimeTypes: [DOCUMENT_MIME_TYPE] },
       fields: [
         {
+          name: "usedIn",
+          type: "ui",
+          admin: {
+            position: "sidebar",
+            components: {
+              Field: "/admin/components/usedIn/server#DocumentUsedInField",
+            },
+          },
+        },
+        {
           name: "title",
           type: "text",
           required: true,

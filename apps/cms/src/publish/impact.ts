@@ -21,7 +21,8 @@ import {
 import { localization } from "../localization";
 import { json } from "../pageDialog";
 import { refId, scopedReq } from "../pageRules";
-import { findReferrers, type Referrer } from "../routeIndex";
+import { findReferrers, refKey, type Referrer } from "../routeIndex";
+import { sectionsReferencing } from "./usedInSections";
 import { COOKIE_POLICY_LOCKED, findCookiePolicyLinks } from "../siteMessages";
 import {
   baseState,
@@ -103,8 +104,10 @@ async function referrerTitle(
   payload: Payload,
   req: PayloadRequest,
   referrer: Referrer,
+  key: string,
 ): Promise<LinkRef> {
   let title: string;
+  let sections: string[] = [];
   try {
     const doc = (await payload.findByID({
       collection: referrer.collection as CollectionSlug,
@@ -116,6 +119,7 @@ async function referrerTitle(
       req: scopedReq(req),
     })) as unknown as { title?: unknown };
     title = titleOf(doc.title);
+    sections = sectionsReferencing((doc as { layout?: unknown }).layout, key);
   } catch {
     title = "Untitled";
   }
@@ -123,8 +127,47 @@ async function referrerTitle(
     collection: referrer.collection,
     id: referrer.id,
     title,
+    sections,
     paths: referrer.paths,
   };
+}
+
+async function pickingSolutions(
+  payload: Payload,
+  req: PayloadRequest,
+  id: string,
+): Promise<LinkRef[]> {
+  const { docs } = await payload.find({
+    collection: "solutions",
+    where: {
+      and: [
+        { _status: { equals: "published" } },
+        {
+          or: [
+            { supportingProducts: { contains: id } },
+            { featuredProduct: { equals: id } },
+          ],
+        },
+      ],
+    },
+    locale: "all",
+    fallbackLocale: false,
+    depth: 0,
+    pagination: false,
+    overrideAccess: true,
+    req: scopedReq(req),
+  });
+  return (docs as unknown as Doc[]).map((doc) => ({
+    collection: "solutions",
+    id: String(doc.id),
+    title: titleOf(doc.name),
+    sections: ["Supporting or featured product"],
+    paths: Object.fromEntries(
+      Object.entries(asMap(doc.path)).flatMap(([locale, path]) =>
+        path ? [[locale, path]] : [],
+      ),
+    ),
+  }));
 }
 
 export function visibleReferrers(
@@ -326,11 +369,16 @@ export async function publishImpact(
     req.user,
     shared ? undefined : tenantId,
   );
-  const links = await Promise.all(
+  const pageLinks = await Promise.all(
     referrers
       .slice(0, MAX_LISTED_LINKS)
-      .map((referrer) => referrerTitle(payload, req, referrer)),
+      .map((referrer) =>
+        referrerTitle(payload, req, referrer, refKey(collection, id)),
+      ),
   );
+  const picking =
+    collection === "products" ? await pickingSolutions(payload, req, id) : [];
+  const links = [...pageLinks, ...picking];
 
   const isPage = (PAGE_COLLECTIONS as readonly string[]).includes(collection);
   const detail = collection.endsWith("detail-templates");
@@ -364,7 +412,7 @@ export async function publishImpact(
         },
     sites,
     links,
-    linkCount: referrers.length,
+    linkCount: referrers.length + picking.length,
     placements:
       collection === "posts" ? await postPlacements(payload, req, id) : [],
     refusal: isPage

@@ -9,7 +9,11 @@ import { formatAdminURL } from "payload/shared";
 import { type ReactNode, useEffect, useState } from "react";
 
 import {
+  handPickedLead,
+  isHandPicked,
   linkPath,
+  linkPlace,
+  SKIP_NOTE,
   placementText,
   publishBlockText,
   publishButtonLabel,
@@ -91,7 +95,7 @@ function LinkList({ impact }: { impact: Impact }) {
     <ul className="dil-editor-publish__urls">
       {impact.links.map((link) => (
         <li key={`${link.collection}:${link.id}`}>
-          {link.title} <code>{linkPath(link.paths)}</code>
+          {linkPlace(link)} <code>{linkPath(link.paths)}</code>
         </li>
       ))}
       {impact.linkCount > impact.links.length && (
@@ -209,6 +213,12 @@ export function UnpublishConfirm({
               ) : (
                 <p>It isn&apos;t in any list or card.</p>
               )
+            ) : isHandPicked(impact) ? (
+              <>
+                <p>{handPickedLead(impact)}</p>
+                <LinkList impact={impact} />
+                <p>{SKIP_NOTE}</p>
+              </>
             ) : (
               <>
                 <p>{unpublishLead(impact)}</p>
@@ -273,7 +283,13 @@ export function TrashConfirm({
           ) : (
             <>
               {impact.sites.length > 0 && <SiteUrlList impact={impact} />}
-              {impact.linkCount > 0 ? (
+              {isHandPicked(impact) ? (
+                <>
+                  <p>{handPickedLead(impact)}</p>
+                  <LinkList impact={impact} />
+                  <p>{SKIP_NOTE}</p>
+                </>
+              ) : impact.linkCount > 0 ? (
                 <>
                   <p>
                     {impact.linkCount === 1

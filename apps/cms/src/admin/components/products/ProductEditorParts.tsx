@@ -20,6 +20,8 @@ import { publishingLines } from "../editor/editor";
 import { ActionButton } from "../kit/ActionButton";
 import { PublishBadge } from "../kit/PublishBadge";
 import { ReachBadge } from "../kit/ReachBadge";
+import { UsedInPanel } from "../kit/UsedInPanel";
+import type { UsedInData } from "../kit/usedIn";
 import type { PublishStatus } from "../kit/publication";
 import { allSitesLabel, ALL_SITES_COUNT } from "../kit/reach";
 import { MaterialIcon } from "../MaterialIcon";
@@ -371,6 +373,7 @@ export type ProductSidebarProps = {
   savedAt: string | null;
   savedBy: string | null;
   versions: number;
+  usedIn: UsedInData;
 };
 
 function Panel({
@@ -414,11 +417,7 @@ export function ProductSidebar(props: ProductSidebarProps) {
           {ownerPanelText({ company: props.owner, canEdit: props.canEdit })}
         </p>
       </Panel>
-      <Panel id="dil-panel-used" title="Used in">
-        <p className="dil-editor-panel__note">
-          The pages and solutions that list this product will show here.
-        </p>
-      </Panel>
+      <UsedInPanel data={props.usedIn} />
       <Panel id="dil-panel-publishing" title="Publishing">
         {id === undefined ? (
           <p className="dil-editor-panel__note">

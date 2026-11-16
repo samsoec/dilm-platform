@@ -468,6 +468,32 @@
     line-height: 1.5;
   }
 
+  .dil-used-in {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+  }
+
+  .dil-used-in__row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+  }
+
+  .dil-used-in__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    color: var(--dil-muted);
+    font-size: 12px;
+  }
+
   .dil-editor-fact {
     display: flex;
     align-items: center;
