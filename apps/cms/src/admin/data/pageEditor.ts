@@ -68,6 +68,8 @@ export type PageEditorData = {
   forwards: boolean;
   links: LinkEntry[];
   translation: TranslationCount;
+  publicationPage: boolean;
+  settingsID: string | null;
 };
 
 const UNTRANSLATED_SKIP = new Set(["slug", "path"]);
@@ -171,6 +173,35 @@ async function seoDefaults(
       image && typeof image === "object" && image.id !== undefined
         ? { id: image.id, filename: image.filename ?? null }
         : null,
+  };
+}
+
+async function publicationState(
+  { payload, user }: Context,
+  collection: PageCollection,
+  tenant: string | null,
+  id: string,
+): Promise<{ publicationPage: boolean; settingsID: string | null }> {
+  if (collection !== "pages" || tenant === null) {
+    return { publicationPage: false, settingsID: null };
+  }
+  const {
+    docs: [settings],
+  } = await payload.find({
+    collection: "tenant-settings",
+    where: { tenant: { equals: tenant } },
+    limit: 1,
+    depth: 0,
+    select: { routing: true },
+    overrideAccess: false,
+    user,
+  });
+  const found = settings as
+    | { id: number | string; routing?: { publicationPage?: unknown } }
+    | undefined;
+  return {
+    publicationPage: idText(found?.routing?.publicationPage) === id,
+    settingsID: found ? String(found.id) : null,
   };
 }
 
@@ -295,6 +326,7 @@ async function load(
     links,
     ancestorTitles,
     sites,
+    publication,
   ] = await Promise.all([
     tenant === null
       ? undefined
@@ -361,6 +393,7 @@ async function load(
       locale,
     ),
     collection === "shared-pages" ? allSites(context) : [],
+    publicationState(context, collection, tenant, id),
   ]);
 
   const savedBy = idText(doc.updatedBy);
@@ -409,6 +442,7 @@ async function load(
     forwards: hasRedirect(doc as Parameters<typeof hasRedirect>[0]),
     links,
     translation: countTranslations(fields, doc),
+    ...publication,
   };
 }
 
@@ -447,6 +481,8 @@ export function blankEditorData(
     forwards: false,
     links: [],
     translation: { translated: 0, total: 0 },
+    publicationPage: false,
+    settingsID: null,
     ...overrides,
   };
 }

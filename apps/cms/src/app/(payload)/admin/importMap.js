@@ -238,6 +238,9 @@ import { ProfileUsedBy as ProfileUsedBy_02893fdbdd16a24c67301821731b191e } from 
 import { DisplayHeading as DisplayHeading_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
 import { CoverFallback as CoverFallback_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
 import { SummaryLanguageNote as SummaryLanguageNote_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
+import { CategoryTabsField as CategoryTabsField_9291b222fe6bef4ad0747dfdc063915d } from '../../../admin/components/publication/CategoryTabsField'
+import { FeaturedNewest as FeaturedNewest_8163c6dee7ae2a46071ad6d780e2cc5b } from '../../../admin/components/publication/FeaturedNewest'
+import { TokenChips as TokenChips_6fb29fa8c15549956cf1a097fb717545 } from '../../../admin/components/publication/TokenChips'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -361,6 +364,9 @@ export const importMap = {
   "/admin/components/records/PostCardField#PostCardField": PostCardField_182937fa4e496a2d07b528fcf84723e8,
   "/admin/components/records/OverrideFallback#OverrideFallback": OverrideFallback_86c938bd78e79200bf6b002678b8ded6,
   "/admin/components/records/CategoryChipsField#CategoryChipsField": CategoryChipsField_d1f0d31ef78dec4b384e054e64654b7c,
+  "/admin/components/publication/CategoryTabsField#CategoryTabsField": CategoryTabsField_9291b222fe6bef4ad0747dfdc063915d,
+  "/admin/components/publication/FeaturedNewest#FeaturedNewest": FeaturedNewest_8163c6dee7ae2a46071ad6d780e2cc5b,
+  "/admin/components/publication/TokenChips#TokenChips": TokenChips_6fb29fa8c15549956cf1a097fb717545,
   "/admin/components/fields/SectionStates#ProfileFallback": ProfileFallback_551bc1cd103f773e8fe0e9eb80a4d7f4,
   "/admin/components/fields/SectionStates#PinNote": PinNote_551bc1cd103f773e8fe0e9eb80a4d7f4,
   "/admin/components/fields/SectionStates#SectionStateNote": SectionStateNote_551bc1cd103f773e8fe0e9eb80a4d7f4,

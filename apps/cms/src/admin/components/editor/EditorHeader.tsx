@@ -9,6 +9,7 @@ import { PublishBadge } from "../kit/PublishBadge";
 import { ReachBadge } from "../kit/ReachBadge";
 import { getPublishStatus, type PublishStatus } from "../kit/publication";
 import { getReach } from "../kit/reach";
+import { PUBLICATION_TAG } from "../publication/publication";
 import { useEditorUrls, type UrlSeed } from "./useEditorUrls";
 
 export function useLiveStatus(initial: PublishStatus): PublishStatus {
@@ -41,6 +42,7 @@ export type EditorHeaderProps = {
   status: PublishStatus;
   tenant: { id: number | string; domain?: string } | null;
   untitled: string;
+  publicationPage?: boolean;
 };
 
 export function EditorHeader({
@@ -49,6 +51,7 @@ export function EditorHeader({
   status,
   tenant,
   untitled,
+  publicationPage,
 }: EditorHeaderProps) {
   const title = useFormFields(([fields]) => fields.title?.value) as
     string | undefined;
@@ -71,6 +74,9 @@ export function EditorHeader({
       <div className="dil-editor-header__row">
         {shared && <ReachBadge reach={reach} />}
         <h1 className="dil-editor-title">{title?.trim() || untitled}</h1>
+        {publicationPage && (
+          <span className="dil-editor-header__tag">{PUBLICATION_TAG}</span>
+        )}
         <PublishBadge status={live} />
         {!shared && <ReachBadge reach={reach} />}
       </div>

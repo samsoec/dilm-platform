@@ -17,11 +17,15 @@ import {
   unknownResultsTokenMessage,
 } from "@dilm/shared-types";
 
+import {
+  SOURCE_HINT,
+  FEATURED_FALLBACK_NOTE,
+} from "../admin/components/publication/publication";
 import { withSameAsEnTag } from "../fields/layoutEditor";
 import { link } from "../fields/link";
 import { pickerScope, validateOnePick } from "../fields/recordPicks";
 import { unscopedRelationship } from "../tenancy";
-import { whenBlock } from "./factories";
+import { SOURCE_FIELD_COMPONENT, whenBlock } from "./factories";
 import { highlightsField } from "./highlights";
 import { sectionBlock } from "./sectionBlock";
 
@@ -68,6 +72,11 @@ export const validateEmptyTitle = tokenValidator(
   unknownEmptyTitleTokenMessage,
 );
 
+const FEATURED_NEWEST =
+  "/admin/components/publication/FeaturedNewest#FeaturedNewest";
+
+const TOKEN_CHIPS = "/admin/components/publication/TokenChips#TokenChips";
+
 export const postListing = sectionBlock({
   slug: "postListing",
   interfaceName: "PostListingBlock",
@@ -83,6 +92,7 @@ export const postListing = sectionBlock({
   fields: [
     {
       name: "source",
+      label: "Which posts",
       type: "select",
       required: true,
       defaultValue: "all",
@@ -91,6 +101,15 @@ export const postListing = sectionBlock({
         label: POST_LISTING_SOURCE_LABELS[value],
       })),
       admin: {
+        components: {
+          Field: {
+            path: SOURCE_FIELD_COMPONENT,
+            clientProps: {
+              order: ["all", "categories", "currentCategory"],
+              hint: SOURCE_HINT,
+            },
+          },
+        },
         description: `Which posts the list is drawn from. ${CURRENT_CATEGORY_WARNING} Anywhere else it shows nothing; it does not stop you saving or publishing.`,
       },
     },
@@ -113,12 +132,13 @@ export const postListing = sectionBlock({
       filterOptions: pickerScope,
       validate: validateOnePick,
       admin: {
-        description:
-          "A published post of this company. Leave empty to feature the newest post. Hidden while a visitor is searching.",
+        components: { afterInput: [FEATURED_NEWEST] },
+        description: `${FEATURED_FALLBACK_NOTE} Hidden while searching.`,
       },
     }),
     {
       name: "pageSize",
+      label: "Per page",
       type: "number",
       required: true,
       defaultValue: DEFAULT_POST_PAGE_SIZE,
@@ -128,30 +148,36 @@ export const postListing = sectionBlock({
     },
     withSameAsEnTag({
       name: "resultsLabel",
+      label: "Results line",
       type: "text",
       localized: true,
       validate: validateResultsLabel,
       admin: {
+        components: { afterInput: [TOKEN_CHIPS] },
         description:
           '{count} = number of matching posts, {query} = what the visitor typed. Sample: Showing 12 results for "alum".',
       },
     }),
     {
       name: "emptyState",
+      label: "No results",
       type: "group",
       fields: [
         withSameAsEnTag({
           name: "title",
+          label: "Title",
           type: "text",
           localized: true,
           validate: validateEmptyTitle,
           admin: {
+            components: { afterInput: [TOKEN_CHIPS] },
             description:
               "{query} = what the visitor typed. No other placeholder works here.",
           },
         }),
         withSameAsEnTag({
           name: "description",
+          label: "Description",
           type: "textarea",
           localized: true,
         }),

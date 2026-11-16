@@ -44,7 +44,9 @@ export const SegmentField = ({
   tag,
   imagePath,
   order,
+  hint,
 }: SelectFieldClientProps & {
+  hint?: string;
   tag?: string;
   imagePath?: string;
   order?: readonly string[];
@@ -74,6 +76,7 @@ export const SegmentField = ({
         options={options}
         value={current}
       />
+      {hint && <p className="dil-field-note">{hint}</p>}
       {needsImage && (
         <p className="dil-field-note" role="status">
           <MaterialIcon name="image" />
