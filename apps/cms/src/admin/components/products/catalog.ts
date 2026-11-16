@@ -57,6 +57,7 @@ export function catalogWhere(query: CatalogQuery): Where {
     clauses.push({
       or: [
         { name: { like: query.search } },
+        { formulaText: { like: query.search } },
         { casNumber: { like: query.search } },
       ],
     });

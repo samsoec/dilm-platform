@@ -39,6 +39,7 @@ import * as migration_20261103_134436_dilm_113_template_blocks from './20261103_
 import * as migration_20261103_145749_dilm_149_publication_blocks from './20261103_145749_dilm_149_publication_blocks';
 import * as migration_20261103_162946_dilm_115_refresh_status from './20261103_162946_dilm_115_refresh_status';
 import * as migration_20261116_062358_link_order from './20261116_062358_link_order';
+import * as migration_20261116_090443_products_formula_text from './20261116_090443_products_formula_text';
 
 export const migrations = [
   {
@@ -244,6 +245,11 @@ export const migrations = [
   {
     up: migration_20261116_062358_link_order.up,
     down: migration_20261116_062358_link_order.down,
-    name: '20261116_062358_link_order'
+    name: '20261116_062358_link_order',
+  },
+  {
+    up: migration_20261116_090443_products_formula_text.up,
+    down: migration_20261116_090443_products_formula_text.down,
+    name: '20261116_090443_products_formula_text'
   },
 ];

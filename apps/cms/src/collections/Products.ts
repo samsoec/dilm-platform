@@ -11,7 +11,7 @@ import { iconField } from "../blocks/factories";
 import { sameCompanyDocuments } from "../catalog";
 import { withTrashedBy } from "../fields/authoring";
 import { bodyTextField } from "../fields/bodyText";
-import { formulaField } from "../fields/formula";
+import { formulaField, formulaPlainText } from "../fields/formula";
 import { italicHeadingField } from "../fields/italicHeading";
 import { withMediaPicker } from "../fields/mediaPicker";
 import { recordAddressFields } from "../fields/recordFields";
@@ -192,6 +192,10 @@ export const Products = withTenantAccess(
         beforeChange: [
           requireBase("products"),
           keepRowStructure,
+          ({ data }) => ({
+            ...data,
+            formulaText: formulaPlainText(data?.formula),
+          }),
           beginLiveChange,
         ],
         afterChange: [syncRoutes, revalidateOnLiveChange(stubRevalidator)],
@@ -220,6 +224,13 @@ export const Products = withTenantAccess(
       defaultSort: "order",
       custom: { nav: { icon: "science", order: 4 } },
       fields: [
+        {
+          name: "formulaText",
+          type: "text",
+          index: true,
+          admin: { hidden: true, readOnly: true },
+          access: { create: () => false, update: () => false },
+        },
         {
           name: "ownerBanner",
           type: "ui",

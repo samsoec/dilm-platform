@@ -135,7 +135,7 @@ function Toolbar({
           <input name="status" type="hidden" value={query.status} />
         )}
         <label className="dil-sr-only" htmlFor="dil-products-search">
-          Search by name or CAS number
+          Search by name, formula or CAS number
         </label>
         <input
           className="dil-products__search-input"
@@ -143,7 +143,7 @@ function Toolbar({
           id="dil-products-search"
           maxLength={SEARCH_MAX_LENGTH}
           name="q"
-          placeholder="Search by name or CAS number"
+          placeholder="Search by name, formula or CAS number"
           type="search"
         />
         <ActionButton icon="search" type="submit" variant="secondary">

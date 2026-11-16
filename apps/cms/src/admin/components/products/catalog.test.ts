@@ -55,7 +55,7 @@ describe("catalogWhere", () => {
   it("scopes to an owner and searches name and CAS number", () => {
     const where = catalogWhere({ owner: "2", status: undefined, search: "64" });
     expect(JSON.stringify(where)).toContain('"tenant":{"equals":"2"}');
-    for (const field of ["name", "casNumber"]) {
+    for (const field of ["name", "formulaText", "casNumber"]) {
       expect(JSON.stringify(where)).toContain(`"${field}":{"like":"64"}`);
     }
   });
@@ -151,11 +151,11 @@ describe("status in the query", () => {
     ).toContain('"_status":{"not_equals":"published"}');
   });
 
-  it("does not search the formula", () => {
+  it("searches the plain-text formula", () => {
     expect(
       JSON.stringify(
         catalogWhere({ owner: "all", status: undefined, search: "H2SO4" }),
       ),
-    ).not.toContain("formula");
+    ).toContain('"formulaText":{"like":"H2SO4"}');
   });
 });
