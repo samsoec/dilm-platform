@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   canEditProduct,
+  SOLUTION_SEARCH_FIELDS,
   catalogHref,
   catalogWhere,
   emptyCatalogText,
@@ -157,5 +158,32 @@ describe("status in the query", () => {
         catalogWhere({ owner: "all", status: undefined, search: "H2SO4" }),
       ),
     ).toContain('"formulaText":{"like":"H2SO4"}');
+  });
+});
+
+describe("catalogWhere for solutions", () => {
+  it("searches name and industry only and filters status", () => {
+    const where = catalogWhere(
+      { owner: "2", status: "draft", search: "dye" },
+      SOLUTION_SEARCH_FIELDS,
+    );
+    expect(where).toEqual({
+      and: [
+        { tenant: { equals: "2" } },
+        {
+          or: [{ name: { like: "dye" } }, { industryLabel: { like: "dye" } }],
+        },
+        { _status: { not_equals: "published" } },
+      ],
+    });
+  });
+
+  it("uses the published clause for published", () => {
+    expect(
+      catalogWhere(
+        { owner: "all", status: "published", search: "" },
+        SOLUTION_SEARCH_FIELDS,
+      ),
+    ).toEqual({ and: [{ _status: { equals: "published" } }] });
   });
 });

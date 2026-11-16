@@ -14,6 +14,7 @@ import {
   ProductSidebar,
   ProductTabMarks,
 } from "./ProductEditorParts";
+import { SolutionTabMarks } from "../solutions/SolutionEditorParts";
 
 export async function usedInFor(
   { payload, req, id }: Pick<UIFieldServerProps, "payload" | "req" | "id">,
@@ -35,14 +36,10 @@ export async function usedInFor(
   }
 }
 
-async function loadFor({
-  payload,
-  req,
-  id,
-}: Pick<
-  UIFieldServerProps,
-  "payload" | "req" | "id"
->): Promise<ProductEditorData> {
+async function loadFor(
+  { payload, req, id }: Pick<UIFieldServerProps, "payload" | "req" | "id">,
+  collection: "products" | "solutions" = "products",
+): Promise<ProductEditorData> {
   const user = req.user;
   if (!user) return blankProductEditor();
   try {
@@ -51,11 +48,12 @@ async function loadFor({
       user,
       id === undefined ? undefined : String(id),
       String(req.locale ?? localization.defaultLocale),
+      collection,
     );
   } catch (error) {
     payload.logger.error({
       err: error,
-      msg: "Couldn't load the product editor",
+      msg: `Couldn't load the ${collection} editor`,
     });
     return blankProductEditor();
   }
@@ -72,16 +70,24 @@ export async function ProductHeaderField(props: UIFieldServerProps) {
   );
 }
 
-export function ProductActionsField() {
+function actions(collection: "products" | "solutions") {
   return (
     <EditorActions
       ancestors={[]}
       initials=""
       readOnlyNotice={false}
-      seed={{ collection: "products", parentPaths: {}, slugs: {} }}
+      seed={{ collection, parentPaths: {}, slugs: {} }}
       shared
     />
   );
+}
+
+export function ProductActionsField() {
+  return actions("products");
+}
+
+export function SolutionActionsField() {
+  return actions("solutions");
 }
 
 export function ProductTabMarksField() {
@@ -95,6 +101,40 @@ export async function ProductSidebarField(props: UIFieldServerProps) {
     <ProductSidebar
       canEdit={data.canEdit}
       liveSince={data.liveSince}
+      owner={data.owner}
+      savedAt={data.savedAt}
+      savedBy={data.savedBy}
+      status={data.status}
+      usedIn={usedIn}
+      versions={data.versions}
+    />
+  );
+}
+
+export async function SolutionHeaderField(props: UIFieldServerProps) {
+  const data = await loadFor(props, "solutions");
+  return (
+    <ProductHeader
+      domains={data.domains}
+      noun="solution"
+      path={data.path}
+      status={data.status}
+    />
+  );
+}
+
+export function SolutionTabMarksField() {
+  return <SolutionTabMarks />;
+}
+
+export async function SolutionSidebarField(props: UIFieldServerProps) {
+  const data = await loadFor(props, "solutions");
+  const usedIn = await usedInFor(props, "solutions");
+  return (
+    <ProductSidebar
+      canEdit={data.canEdit}
+      liveSince={data.liveSince}
+      noun="solution"
       owner={data.owner}
       savedAt={data.savedAt}
       savedBy={data.savedBy}

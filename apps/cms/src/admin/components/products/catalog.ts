@@ -48,18 +48,20 @@ export function parseCatalogQuery(
   };
 }
 
-export function catalogWhere(query: CatalogQuery): Where {
+export const PRODUCT_SEARCH_FIELDS = ["name", "formulaText", "casNumber"];
+export const SOLUTION_SEARCH_FIELDS = ["name", "industryLabel"];
+
+export function catalogWhere(
+  query: CatalogQuery,
+  searchFields: readonly string[] = PRODUCT_SEARCH_FIELDS,
+): Where {
   const clauses: Where[] = [];
   if (query.owner !== ALL_COMPANIES) {
     clauses.push({ tenant: { equals: query.owner } });
   }
   if (query.search) {
     clauses.push({
-      or: [
-        { name: { like: query.search } },
-        { formulaText: { like: query.search } },
-        { casNumber: { like: query.search } },
-      ],
+      or: searchFields.map((field) => ({ [field]: { like: query.search } })),
     });
   }
   if (query.status === "published") {
@@ -108,8 +110,13 @@ export function productsText(count: number): string {
   return `${count} ${count === 1 ? "product" : "products"}`;
 }
 
-export function ownerBannerText(owner: string): string {
-  return `Owned by ${owner}. Only ${owner} editors or a Super Admin can change it. You can view it and pick it into your pages.`;
+export function solutionsText(count: number): string {
+  return `${count} ${count === 1 ? "solution" : "solutions"}`;
+}
+
+export function ownerBannerText(owner: string, noun?: string): string {
+  const view = noun ? `view this ${noun}` : "view it";
+  return `Owned by ${owner}. Only ${owner} editors or a Super Admin can change it. You can ${view} and pick it into your pages.`;
 }
 
 export function emptyCatalogText(

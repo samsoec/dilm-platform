@@ -16,10 +16,6 @@ async function render(props: UIFieldServerProps, collection: string) {
   );
 }
 
-export function SolutionUsedInField(props: UIFieldServerProps) {
-  return render(props, "solutions");
-}
-
 export function DocumentUsedInField(props: UIFieldServerProps) {
   return render(props, "documents");
 }

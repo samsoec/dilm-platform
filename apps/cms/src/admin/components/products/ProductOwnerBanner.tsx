@@ -4,11 +4,10 @@ import type { RoleHolder } from "../../../access";
 import { Banner } from "../kit/Banner";
 import { canEditProduct, ownerBannerText } from "./catalog";
 
-export async function ProductOwnerBanner({
-  data,
-  payload,
-  req,
-}: UIFieldServerProps) {
+async function ownerBanner(
+  { data, payload, req }: UIFieldServerProps,
+  noun?: string,
+) {
   const user = req.user;
   const tenant = data?.tenant as
     number | string | { id: number | string } | undefined;
@@ -27,15 +26,23 @@ export async function ProductOwnerBanner({
     });
     return (
       <Banner icon="lock" tone="readonly">
-        {ownerBannerText(docs[0]?.name ?? "another company")}
+        {ownerBannerText(docs[0]?.name ?? "another company", noun)}
       </Banner>
     );
   } catch (error) {
     payload.logger.error({ err: error, msg: "Couldn't name the owner" });
     return (
       <Banner icon="lock" tone="readonly">
-        {ownerBannerText("another company")}
+        {ownerBannerText("another company", noun)}
       </Banner>
     );
   }
+}
+
+export function ProductOwnerBanner(props: UIFieldServerProps) {
+  return ownerBanner(props);
+}
+
+export function SolutionOwnerBanner(props: UIFieldServerProps) {
+  return ownerBanner(props, "solution");
 }
