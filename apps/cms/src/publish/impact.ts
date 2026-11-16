@@ -21,7 +21,8 @@ import {
 import { localization } from "../localization";
 import { json } from "../pageDialog";
 import { refId, scopedReq } from "../pageRules";
-import { findReferrers, type Referrer } from "../routeIndex";
+import { findReferrers, refKey, type Referrer } from "../routeIndex";
+import { sectionsReferencing } from "./usedInSections";
 import { COOKIE_POLICY_LOCKED, findCookiePolicyLinks } from "../siteMessages";
 import {
   baseState,
@@ -103,8 +104,10 @@ async function referrerTitle(
   payload: Payload,
   req: PayloadRequest,
   referrer: Referrer,
+  key: string,
 ): Promise<LinkRef> {
   let title: string;
+  let sections: string[] = [];
   try {
     const doc = (await payload.findByID({
       collection: referrer.collection as CollectionSlug,
@@ -116,6 +119,7 @@ async function referrerTitle(
       req: scopedReq(req),
     })) as unknown as { title?: unknown };
     title = titleOf(doc.title);
+    sections = sectionsReferencing((doc as { layout?: unknown }).layout, key);
   } catch {
     title = "Untitled";
   }
@@ -123,8 +127,69 @@ async function referrerTitle(
     collection: referrer.collection,
     id: referrer.id,
     title,
+    sections,
     paths: referrer.paths,
   };
+}
+
+export function splitByVisibility<T extends object>(
+  docs: T[],
+  user: RoleHolder,
+  onlyTenant?: string,
+): { visible: T[]; hidden: number } {
+  const visible = docs.filter((doc) => {
+    const tenant = refId((doc as { tenant?: unknown }).tenant as never);
+    if (!tenant) return true;
+    if (onlyTenant !== undefined && tenant !== onlyTenant) return false;
+    return hasTenantAccess(user, tenant);
+  });
+  return { visible, hidden: docs.length - visible.length };
+}
+
+async function pickingSolutions(
+  payload: Payload,
+  req: PayloadRequest,
+  id: string,
+  onlyTenant?: string,
+): Promise<{ links: LinkRef[]; visible: number; hidden: number }> {
+  const { docs } = await payload.find({
+    collection: "solutions",
+    where: {
+      and: [
+        { _status: { equals: "published" } },
+        {
+          or: [
+            { supportingProducts: { contains: id } },
+            { featuredProduct: { equals: id } },
+          ],
+        },
+      ],
+    },
+    locale: "all",
+    fallbackLocale: false,
+    depth: 0,
+    limit: 200,
+    pagination: false,
+    overrideAccess: true,
+    req: scopedReq(req),
+  });
+  const { visible, hidden } = splitByVisibility(
+    docs as unknown as Doc[],
+    req.user,
+    onlyTenant,
+  );
+  const links = visible.slice(0, MAX_LISTED_LINKS).map((doc) => ({
+    collection: "solutions",
+    id: String(doc.id),
+    title: titleOf(doc.name),
+    sections: ["Supporting or featured product"],
+    paths: Object.fromEntries(
+      Object.entries(asMap(doc.path)).flatMap(([locale, path]) =>
+        path ? [[locale, path]] : [],
+      ),
+    ),
+  }));
+  return { links, visible: visible.length, hidden };
 }
 
 export function visibleReferrers(
@@ -326,11 +391,25 @@ export async function publishImpact(
     req.user,
     shared ? undefined : tenantId,
   );
-  const links = await Promise.all(
+  const pageLinks = await Promise.all(
     referrers
       .slice(0, MAX_LISTED_LINKS)
-      .map((referrer) => referrerTitle(payload, req, referrer)),
+      .map((referrer) =>
+        referrerTitle(payload, req, referrer, refKey(collection, id)),
+      ),
   );
+  const picking =
+    collection === "products"
+      ? await pickingSolutions(payload, req, id, shared ? undefined : tenantId)
+      : { links: [], visible: 0, hidden: 0 };
+  const pageKeys = new Set(
+    pageLinks.map((link) => `${link.collection}:${link.id}`),
+  );
+  const pickedLinks = picking.links.filter(
+    (link) => !pageKeys.has(`${link.collection}:${link.id}`),
+  );
+  const links = [...pageLinks, ...pickedLinks];
+  const duplicates = picking.links.length - pickedLinks.length;
 
   const isPage = (PAGE_COLLECTIONS as readonly string[]).includes(collection);
   const detail = collection.endsWith("detail-templates");
@@ -364,7 +443,8 @@ export async function publishImpact(
         },
     sites,
     links,
-    linkCount: referrers.length,
+    linkCount: referrers.length + picking.visible - duplicates,
+    hiddenCount: picking.hidden,
     placements:
       collection === "posts" ? await postPlacements(payload, req, id) : [],
     refusal: isPage

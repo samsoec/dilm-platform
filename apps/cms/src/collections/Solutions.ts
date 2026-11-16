@@ -141,6 +141,16 @@ export const Solutions = withTenantAccess(
       defaultSort: "order",
       custom: { nav: { icon: "lightbulb", order: 5 } },
       fields: [
+        {
+          name: "usedIn",
+          type: "ui",
+          admin: {
+            position: "sidebar",
+            components: {
+              Field: "/admin/components/usedIn/server#SolutionUsedInField",
+            },
+          },
+        },
         ...recordAddressFields(),
         {
           type: "tabs",

@@ -11,6 +11,7 @@ export type LinkRef = {
   collection: string;
   id: string;
   title: string;
+  sections?: string[];
   paths: Record<string, string>;
 };
 
@@ -41,6 +42,7 @@ export type Impact = {
   sites: SiteUrls[];
   links: LinkRef[];
   linkCount: number;
+  hiddenCount?: number;
   placements: Placement[];
   refusal: TrashRefusal | null;
   block: PublishBlock | null;
@@ -111,7 +113,36 @@ export function hostsOf(impact: Impact): string[] {
   return impact.sites.map((site) => site.domain);
 }
 
+export const SKIP_NOTE = "Those sections will skip it; no empty cards appear.";
+
+export const HAND_PICKED = ["products", "solutions"];
+
+export function isHandPicked(impact: Impact): boolean {
+  return HAND_PICKED.includes(impact.collection) && pickedCount(impact) > 0;
+}
+
+export function pickedCount(impact: Impact): number {
+  return impact.linkCount + (impact.hiddenCount ?? 0);
+}
+
+export function handPickedTitle(name: string, impact: Impact): string {
+  return impact.reach.scope === "all"
+    ? `Unpublish "${name}" from all ${impact.reach.sites} sites?`
+    : `Unpublish "${name}" from ${impact.reach.label}?`;
+}
+
+export function handPickedLead(impact: Impact): string {
+  return `It's hand-picked in ${plural(pickedCount(impact), "place")}.`;
+}
+
+export function linkPlace(link: LinkRef): string {
+  return link.sections?.length
+    ? `${link.title} › ${joinNames(link.sections)}`
+    : link.title;
+}
+
 export function unpublishTitle(name: string, impact: Impact): string {
+  if (isHandPicked(impact)) return handPickedTitle(name, impact);
   if (impact.collection === "posts") {
     return `Unpublish "${name}"? It leaves ${joinNames(hostsOf(impact))} and disappears from:`;
   }
