@@ -1,3 +1,4 @@
+import { IR_LANGUAGE_LABELS } from "../../../irDocumentTypes";
 const MB = 1024 * 1024;
 
 export const IR_MAX_BYTES = 50 * MB;
@@ -206,4 +207,12 @@ export function fileStateText({
   return [fileSizeText(filesize), when && `published ${when}`]
     .filter(Boolean)
     .join(" · ");
+}
+
+export function summaryLanguageNote(locale: unknown): string {
+  const language =
+    typeof locale === "string" ? IR_LANGUAGE_LABELS[locale] : undefined;
+  return language
+    ? `In the document's own language (this file is ${language}).`
+    : "In the document's own language.";
 }

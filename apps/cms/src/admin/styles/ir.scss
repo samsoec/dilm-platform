@@ -445,3 +445,20 @@
     margin: 0;
   }
 }
+
+.dil-ir-cover-fallback {
+  align-items: center;
+  color: var(--dil-muted);
+  display: flex;
+  font-family: var(--dil-font-sans);
+  font-size: 13px;
+  gap: 8px;
+  margin: 0 0 var(--base);
+}
+
+.dil-ir-summary-note {
+  color: var(--dil-muted);
+  font-family: var(--dil-font-sans);
+  font-size: 12px;
+  margin: 4px 0 0;
+}

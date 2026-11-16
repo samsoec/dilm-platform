@@ -6,3 +6,4 @@ export * from "./video-embed";
 export * from "./detail-templates";
 export * from "./entities";
 export * from "./publication";
+export * from "./dot-map";

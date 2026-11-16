@@ -180,6 +180,10 @@ export const IrDocuments = withTenantAccess(
             relationTo: "media",
             admin: {
               description: "No cover: the list shows this document-type icon.",
+              components: {
+                beforeInput: [`${IR_PARTS}#DisplayHeading`],
+                afterInput: [`${IR_PARTS}#CoverFallback`],
+              },
             },
           }),
           {
@@ -188,6 +192,7 @@ export const IrDocuments = withTenantAccess(
             admin: {
               description: "Shown under the title in the Investor list.",
               rows: 3,
+              components: { afterInput: [`${IR_PARTS}#SummaryLanguageNote`] },
             },
           },
           {
