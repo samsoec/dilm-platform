@@ -603,3 +603,14 @@ describe("resolveLink", () => {
     expect(messages).toHaveLength(6);
   });
 });
+
+describe("link switch order", () => {
+  it("offers page or record first", async () => {
+    const { LINK_TYPES, LINK_TYPE_LABELS } = await import("./link");
+    expect(LINK_TYPES.map((type) => LINK_TYPE_LABELS[type])).toEqual([
+      "Page or record",
+      "Path on this site",
+      "Other site",
+    ]);
+  });
+});

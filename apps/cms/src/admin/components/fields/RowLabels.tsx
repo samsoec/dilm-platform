@@ -20,7 +20,9 @@ import {
   type SocialPlatform,
 } from "../../data/socialPlatforms";
 import { MaterialIcon } from "../MaterialIcon";
+import { referenceTitle } from "../../linkPicker";
 import { announce } from "./announce";
+import { useLinkTarget } from "./useLinkTarget";
 import { SameAsEnBadge, useSameAsDefault } from "./SameAsEnTag";
 
 function RowLabel({
@@ -30,7 +32,9 @@ function RowLabel({
   same,
   full = false,
   missingTitle,
+  linkName,
 }: {
+  linkName?: string;
   number: string;
   title: string;
   meta: string[];
@@ -50,6 +54,12 @@ function RowLabel({
         <span className="dil-row-label__missing">
           <MaterialIcon name="error" />
           {missingTitle}
+        </span>
+      )}
+      {linkName && (
+        <span className="dil-row-label__meta dil-row-label__link">
+          <MaterialIcon name="link" />
+          {linkName}
         </span>
       )}
       {meta.map((part) => (
@@ -100,9 +110,13 @@ export function NavItemRowLabel() {
     `${path}.${navItemLabelPath(data ?? {})}`,
     title,
   );
+  const linkName = useLinkName(data?.type === "dropdown" ? null : data?.link);
   return (
     <RowLabel
-      meta={navItemMeta(data ?? {})}
+      linkName={linkName}
+      meta={navItemMeta(data ?? {}).filter((part) =>
+        linkName ? part !== linkTarget(data?.link) : true,
+      )}
       number={rowNumberText(rowNumber)}
       same={same}
       title={title}
@@ -110,13 +124,24 @@ export function NavItemRowLabel() {
   );
 }
 
+function useLinkName(link: LinkValue | null | undefined): string {
+  const reference = link?.type === "reference" ? link.reference : undefined;
+  const { doc } = useLinkTarget(reference);
+  if (!reference?.relationTo || !doc) return "";
+  return referenceTitle(reference.relationTo, doc);
+}
+
 export function LinkRowLabel() {
   const { data, path, rowNumber } = useRowLabel<{ link?: LinkValue }>();
   const link = data?.link ?? {};
   const same = useSameAsDefault(`${path}.link.label`, link.label);
+  const linkName = useLinkName(link);
   return (
     <RowLabel
-      meta={[linkTarget(link), tabText(link.newTab)].filter(Boolean)}
+      linkName={linkName}
+      meta={[linkName ? "" : linkTarget(link), tabText(link.newTab)].filter(
+        Boolean,
+      )}
       number={rowNumberText(rowNumber)}
       same={same}
       title={link.label ?? ""}

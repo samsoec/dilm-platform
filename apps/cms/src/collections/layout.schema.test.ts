@@ -75,12 +75,12 @@ describe("header and footer editor layout (TRD-UI §6.4, §6.5)", () => {
     expect(before("section_copyright", "copyright")).toBe(true);
   });
 
-  it("calls link types This site, Other site and Page or record without changing the values", () => {
+  it("calls link types Page or record, Path on this site and Other site without changing the values", () => {
     const type = findField(subfields(link()), "type") as RadioField;
     expect(type.options).toEqual([
-      { value: "internal", label: "This site" },
-      { value: "external", label: "Other site" },
       { value: "reference", label: "Page or record" },
+      { value: "internal", label: "Path on this site" },
+      { value: "external", label: "Other site" },
     ]);
   });
 });
