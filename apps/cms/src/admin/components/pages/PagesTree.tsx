@@ -36,6 +36,7 @@ import {
   type TrashRow,
   trashActions,
   type Viewer,
+  SHARED_VIEWER_BANNER,
   VIEWER_BANNER,
   visibleRows,
 } from "./pagesModel";
@@ -48,11 +49,14 @@ export type PagesTreeProps = {
   viewer: Viewer;
   initialFilter: Filter;
   noCompany: boolean;
+  scope?: "company" | "shared";
 };
 
-function initialExpanded(rows: PageRow[]): Set<string> {
+function initialExpanded(rows: PageRow[], all: boolean): Set<string> {
   return new Set(
-    parentKeys(rows.filter(({ shared, depth }) => !shared && depth === 0)),
+    parentKeys(
+      rows.filter(({ shared, depth }) => all || (!shared && depth === 0)),
+    ),
   );
 }
 
@@ -64,7 +68,9 @@ export function PagesTree({
   viewer,
   initialFilter,
   noCompany,
+  scope = "company",
 }: PagesTreeProps) {
+  const sharedScope = scope === "shared";
   const {
     config: {
       routes: { admin },
@@ -73,7 +79,9 @@ export function PagesTree({
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>(initialFilter);
   const [query, setQuery] = useState("");
-  const [expanded, setExpanded] = useState(() => initialExpanded(rows));
+  const [expanded, setExpanded] = useState(() =>
+    initialExpanded(rows, sharedScope),
+  );
   const [active, setActive] = useState<string>();
   const treeRef = useRef<HTMLDivElement>(null);
   const searchId = useId();
@@ -90,7 +98,9 @@ export function PagesTree({
   );
   const everyOpen =
     allParents.length > 0 && allParents.every((key) => expanded.has(key));
-  const own = rows.filter(({ shared }) => !shared).length;
+  const own = sharedScope
+    ? rows.length
+    : rows.filter(({ shared }) => !shared).length;
   const empty = own === 0 && !narrowed && !noCompany;
   const inTrash = filter === "trash";
   const childCounts = useMemo(() => {
@@ -189,14 +199,14 @@ export function PagesTree({
 
   const createHref = formatAdminURL({
     adminRoute: admin,
-    path: "/collections/pages/create",
+    path: `/collections/${sharedScope ? "shared-pages" : "pages"}/create`,
   });
 
   return (
     <div className="dil-pages">
       {!viewer.canEdit && (
         <Banner className="dil-pages__banner" tone="readonly">
-          {VIEWER_BANNER(company.initials)}
+          {sharedScope ? SHARED_VIEWER_BANNER : VIEWER_BANNER(company.initials)}
         </Banner>
       )}
       {noCompany && (
@@ -268,8 +278,10 @@ export function PagesTree({
           <span aria-hidden className="dil-empty__icon">
             <MaterialIcon name="account_tree" />
           </span>
-          <h3 className="dil-empty__title">{EMPTY_TITLE(company.name)}</h3>
-          <p className="dil-empty__text">{EMPTY_TEXT}</p>
+          <h3 className="dil-empty__title">
+            {sharedScope ? "No shared pages yet" : EMPTY_TITLE(company.name)}
+          </h3>
+          {!sharedScope && <p className="dil-empty__text">{EMPTY_TEXT}</p>}
           {canCreatePage(viewer) && !noCompany && (
             <NewPageButton fallbackHref={createHref} />
           )}
@@ -407,7 +419,11 @@ export function PagesTree({
             )}
           </div>
           <div className="dil-pages__footer">
-            <span>{footerText(rows, company.name)}</span>
+            <span>
+              {sharedScope
+                ? `${rows.length} shared ${rows.length === 1 ? "page" : "pages"}`
+                : footerText(rows, company.name)}
+            </span>
             <span>
               <MaterialIcon name="lock" />
               Shared pages: only a Super Admin can change them.

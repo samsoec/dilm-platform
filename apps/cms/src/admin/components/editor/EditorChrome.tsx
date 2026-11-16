@@ -32,6 +32,8 @@ import {
   type FieldProblem,
   type Impact,
 } from "../../../publish/confirmations";
+import { allSitesLabel } from "../kit/reach";
+import { SHARED_VIEWER_BANNER } from "../pages/pagesModel";
 import { withAncestorCrumbs, type AncestorCrumb } from "./crumbs";
 import {
   DOCUMENT_ACTIONS_ID,
@@ -79,12 +81,18 @@ export function EditorCrumbs({
   return null;
 }
 
-export function ReadOnlyNotice({ initials }: { initials: string }) {
+export function ReadOnlyNotice({
+  initials,
+  shared = false,
+}: {
+  initials: string;
+  shared?: boolean;
+}) {
   const { hasSavePermission } = useDocumentInfo();
   if (hasSavePermission !== false) return null;
   return (
     <Banner className="dil-editor-readonly" tone="readonly">
-      {viewerNotice(initials)}
+      {shared ? SHARED_VIEWER_BANNER : viewerNotice(initials)}
     </Banner>
   );
 }
@@ -93,10 +101,14 @@ export function EditorActions({
   seed,
   ancestors,
   initials,
+  shared = false,
+  home = false,
 }: {
   seed: UrlSeed;
   ancestors: { id: string; title: string }[];
   initials: string;
+  shared?: boolean;
+  home?: boolean;
 }) {
   const router = useRouter();
   const {
@@ -251,7 +263,7 @@ export function EditorActions({
               Unpublish…
             </ActionButton>
           )}
-          {id !== undefined && (
+          {id !== undefined && !home && (
             <ActionButton
               onClick={() => openModal(TRASH_SLUG)}
               type="button"
@@ -266,7 +278,7 @@ export function EditorActions({
             onClick={() => void startPublish()}
             type="button"
           >
-            Publish…
+            {shared && `${allSitesLabel()} · `}Publish…
           </ActionButton>
         </>
       )}
@@ -276,7 +288,7 @@ export function EditorActions({
   return (
     <>
       <EditorCrumbs ancestors={ancestors} />
-      <ReadOnlyNotice initials={initials} />
+      <ReadOnlyNotice initials={initials} shared={shared} />
       <VersionsDrawer />
       <UrlChangeGuard domain={seed.domain} />
       {host && createPortal(controls, host)}

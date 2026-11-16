@@ -76,7 +76,9 @@ async function loadFor({
         payload,
         user,
         collection,
-        tenant === undefined ? null : String(tenant),
+        collection === "shared-pages" || tenant === undefined
+          ? null
+          : String(tenant),
         relationId(data?.parent),
       ),
       failed: false,
@@ -91,10 +93,19 @@ function seedOf(data: PageEditorData, parentId?: string): UrlSeed {
   return {
     collection: data.collection,
     domain: data.company?.domain,
+    domains: data.sites.map(({ domain }) => domain),
     parentId,
     parentPaths: data.parentPaths,
     slugs: data.slugs,
   };
+}
+
+function isHome(data: PageEditorData): boolean {
+  return (
+    data.id !== "" &&
+    Object.values(data.slugs).every((slug) => !slug) &&
+    Object.keys(data.parentPaths).length === 0
+  );
 }
 
 function parentOf(props: Props): string | undefined {
@@ -142,6 +153,8 @@ export async function ActionsField(props: UIFieldServerProps) {
     <EditorActions
       ancestors={data.ancestors}
       initials={companyInitials(data.company?.name)}
+      home={isHome(data)}
+      shared={data.collection === "shared-pages"}
       seed={seedOf(data, parentOf(props))}
     />
   );
@@ -229,6 +242,7 @@ export async function SidebarField(props: UIFieldServerProps) {
     <EditorSidebar
       childCount={data.children}
       collection={data.collection}
+      home={isHome(data)}
       inMenu={data.inMenu}
       languageName={names.of(code) ?? code}
       links={data.links}
@@ -238,6 +252,7 @@ export async function SidebarField(props: UIFieldServerProps) {
       }
       savedAt={data.savedAt}
       savedBy={data.savedBy}
+      sites={data.sites}
       status={data.status}
       tenant={tenantOf(data)}
       translation={data.translation}

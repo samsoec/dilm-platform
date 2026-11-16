@@ -354,3 +354,47 @@ export async function loadPagesTree(
     otherTargets: await otherTargets(context, records, locale),
   };
 }
+
+export type SharedTreeData = {
+  records: PageRecord[];
+  trashed: PageRecord[];
+  sites: { id: TenantID; name: string; domain: string }[];
+  otherTargets: Record<string, string>;
+};
+
+export async function loadSharedPagesTree(
+  context: Context,
+  locale: string,
+): Promise<SharedTreeData> {
+  const { payload, user } = context;
+  const [live, trashed, published, tenants] = await Promise.all([
+    listPages(context, "shared-pages", undefined, "live"),
+    listPages(context, "shared-pages", undefined, "trashed"),
+    livePublished(context, "shared-pages", undefined),
+    payload.find({
+      collection: "tenants",
+      select: { name: true, domain: true },
+      sort: "id",
+      pagination: false,
+      depth: 0,
+      overrideAccess: false,
+      user,
+    }),
+  ]);
+  const people = [...live, ...trashed].flatMap((raw) => [
+    idOf(raw.updatedBy),
+    idOf(raw.trashedBy),
+  ]);
+  const names = await peopleNames(context, [
+    ...new Set(people.filter((id): id is number | string => id !== null)),
+  ]);
+  const build = (docs: RawPage[], set: ReadonlySet<string>) =>
+    docs.map((raw) => toRecord(raw, "shared-pages", { published: set, names }));
+  const records = build(live, published);
+  return {
+    records,
+    trashed: build(trashed, new Set()),
+    sites: tenants.docs.map(({ id, name, domain }) => ({ id, name, domain })),
+    otherTargets: await otherTargets(context, records, locale),
+  };
+}

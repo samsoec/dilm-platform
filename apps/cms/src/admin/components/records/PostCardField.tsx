@@ -62,6 +62,9 @@ export const PostCardField: RelationshipFieldClientComponent = ({
           {row && rowMeta(collection, doc) && (
             <span className="dil-post-card__meta">{row.meta}</span>
           )}
+          {row?.company && (
+            <span className="dil-post-card__meta">{row.company}</span>
+          )}
           {row && <ReachBadge compact reach={row.reach} />}
           <span className="dil-post-card__link">
             <MaterialIcon name="link" />

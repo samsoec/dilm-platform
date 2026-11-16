@@ -201,19 +201,23 @@ export function PageRowMenu({
               <MaterialIcon name="unpublished" />
               Unpublish…
             </button>
-            <div className="dil-page-menu__divider" role="separator" />
-            <button
-              className="dil-page-menu__item dil-page-menu__item--danger"
-              onClick={() => {
-                close();
-                openModal(trashSlug);
-              }}
-              role="menuitem"
-              type="button"
-            >
-              <MaterialIcon name="delete" />
-              Move to trash…
-            </button>
+            {actions.trash && (
+              <>
+                <div className="dil-page-menu__divider" role="separator" />
+                <button
+                  className="dil-page-menu__item dil-page-menu__item--danger"
+                  onClick={() => {
+                    close();
+                    openModal(trashSlug);
+                  }}
+                  role="menuitem"
+                  type="button"
+                >
+                  <MaterialIcon name="delete" />
+                  Move to trash…
+                </button>
+              </>
+            )}
           </div>
         )}
       </Popover>

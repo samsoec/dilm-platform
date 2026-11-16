@@ -21,6 +21,7 @@ import { MaterialIcon } from "../MaterialIcon";
 import { failure } from "../pages/requests";
 import {
   LINKS_NOTE,
+  PREVIEW_UNAVAILABLE,
   placement,
   publishingLines,
   trashBody,
@@ -41,6 +42,8 @@ export type SidebarProps = {
   savedBy: string | null;
   versions: number;
   inMenu: boolean;
+  home?: boolean;
+  sites?: { id: number | string; name: string; domain: string }[];
   links: LinkEntry[];
   translation: { translated: number; total: number };
   childCount: number;
@@ -237,6 +240,25 @@ export function EditorSidebar(props: SidebarProps) {
         </p>
       </Panel>
 
+      {props.collection === "shared-pages" && (
+        <Panel id="dil-panel-preview" title="Preview on">
+          <ul className="dil-editor-links">
+            {(props.sites ?? []).map((site) => (
+              <li key={site.id}>
+                <ActionButton
+                  icon="visibility"
+                  type="button"
+                  unavailableReason={PREVIEW_UNAVAILABLE}
+                  variant="secondary"
+                >
+                  {site.domain}
+                </ActionButton>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      )}
+
       <Panel
         aside={String(props.links.length)}
         id="dil-panel-links"
@@ -327,14 +349,16 @@ export function EditorSidebar(props: SidebarProps) {
               >
                 Unpublish…
               </ActionButton>
-              <ActionButton
-                icon="delete"
-                onClick={() => openModal(TRASH_SLUG)}
-                type="button"
-                variant="text"
-              >
-                Move to trash…
-              </ActionButton>
+              {!props.home && (
+                <ActionButton
+                  icon="delete"
+                  onClick={() => openModal(TRASH_SLUG)}
+                  type="button"
+                  variant="text"
+                >
+                  Move to trash…
+                </ActionButton>
+              )}
             </>
           )}
         </div>

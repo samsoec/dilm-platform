@@ -29,12 +29,7 @@ export const pageModelPlugins: Plugin[] = [
     parentFieldSlug: "parent",
   }),
   seoPlugin({
-    collections: [
-      ...PAGE_COLLECTIONS.filter((slug) => slug !== "pages"),
-      ...RECORD_COLLECTIONS,
-      "jobs",
-      "posts",
-    ],
+    collections: [...RECORD_COLLECTIONS, "jobs", "posts"],
     uploadsCollection: "media",
     fields: localizedSeoFields,
   }),
