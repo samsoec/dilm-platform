@@ -43,6 +43,16 @@ export function sectionBlock({
       : {}),
     admin: {
       group,
+      components: {
+        Label: {
+          path: "/admin/components/fields/SectionRowLabel#SectionRowLabel",
+          clientProps: {
+            name: singular ?? block.slug,
+            slug: block.slug,
+            record: Boolean(recordTypes),
+          },
+        },
+      },
       ...(catalog || recordTypes
         ? {
             custom: {

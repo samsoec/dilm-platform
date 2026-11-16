@@ -535,4 +535,135 @@
   .dil-copyright__text {
     flex: 1;
   }
+
+  .dil-sections-header {
+    font-family: var(--dil-font-sans);
+    font-weight: 700;
+  }
+
+  // Payload classes: .collapsible, .collapsible__actions, .collapsible--style-error, .collapsible__header-wrap (@payloadcms/ui elements/Collapsible); our row menu replaces Payload's action menu on the page layout
+  .dil-layout-field {
+    .collapsible {
+      position: relative;
+    }
+
+    .collapsible__actions {
+      display: none;
+    }
+
+    .collapsible--style-error {
+      border: 1px solid var(--dil-danger);
+      background: var(--dil-danger-bg);
+    }
+
+    .collapsible:not(.collapsible--collapsed) {
+      border-color: var(--dil-brand);
+      background: var(--dil-sel-bg);
+    }
+  }
+
+  .dil-section-row {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    font-family: var(--dil-font-sans);
+    font-size: 14px;
+  }
+
+  .dil-section-row--picked {
+    outline: 2px solid var(--dil-brand);
+    outline-offset: 2px;
+  }
+
+  .dil-section-row__handle,
+  .dil-section-row__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    background: transparent;
+    color: var(--dil-muted);
+    cursor: pointer;
+  }
+
+  .dil-section-row__number,
+  .dil-section-row__slug {
+    color: var(--dil-muted);
+    font-family: var(--dil-font-mono);
+    font-size: 12px;
+  }
+
+  .dil-section-row__name {
+    color: var(--dil-ink);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .dil-section-row__chip {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--dil-surface-2);
+    color: var(--dil-ink-2);
+    font-size: 12px;
+  }
+
+  .dil-section-row__summary {
+    flex: 1;
+    overflow: hidden;
+    color: var(--dil-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dil-section-row__menu {
+    margin-inline-start: auto;
+  }
+
+  .dil-section-row__items {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+  }
+
+  .dil-section-row__item {
+    padding: 6px 10px;
+    color: var(--dil-ink);
+    text-align: start;
+
+    &:disabled {
+      color: var(--dil-muted);
+      cursor: default;
+    }
+
+    kbd {
+      margin-inline-start: auto;
+      color: var(--dil-muted);
+      font-family: var(--dil-font-mono);
+      font-size: 12px;
+    }
+  }
+
+  .dil-section-row__insert {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    display: none;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border: 1px dashed var(--dil-brand);
+    border-radius: 999px;
+    background: var(--dil-surface);
+    color: var(--dil-brand-ink);
+    font-size: 12px;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+
+  .dil-layout-field .collapsible:hover .dil-section-row__insert,
+  .dil-section-row__insert:focus-visible {
+    display: inline-flex;
+  }
 }
