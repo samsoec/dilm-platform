@@ -563,11 +563,34 @@ describe("ir-documents", () => {
       fieldNames(IrDocuments.fields.filter(({ type }) => type === "ui")),
     ).toEqual([
       "detailsHeading",
+      "displayHeading",
+      "coverFallback",
       "readyToPublish",
       "disclosureTiming",
       "versionInfo",
       "moveToTrash",
     ]);
+  });
+
+  it("reaches the display heading and cover fallback around the cover", () => {
+    const names = IrDocuments.fields.map(
+      (field) => (field as { name?: string }).name,
+    );
+    const cover = names.indexOf("coverImage");
+    expect(names[cover - 1]).toBe("displayHeading");
+    expect(names[cover + 1]).toBe("coverFallback");
+    const parts = (name: string) =>
+      (
+        IrDocuments.fields.find(
+          (field) => (field as { name?: string }).name === name,
+        ) as { admin: { components: { Field: string } } }
+      ).admin.components.Field;
+    expect(parts("displayHeading")).toBe(
+      "/admin/components/ir/IrEditorParts#DisplayHeading",
+    );
+    expect(parts("coverFallback")).toBe(
+      "/admin/components/ir/IrEditorParts#CoverFallback",
+    );
   });
 
   it("is editable by Tenant Editors, read-only for Tenant Viewers", async () => {

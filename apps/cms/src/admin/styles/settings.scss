@@ -271,3 +271,58 @@
     border-bottom: 0;
   }
 }
+
+.dil-map-pin {
+  margin-bottom: var(--base);
+
+  &__surface {
+    border: 1px solid var(--dil-line);
+    border-radius: 8px;
+    color: var(--dil-muted);
+    cursor: crosshair;
+    max-width: 640px;
+    padding: 8px;
+
+    &:focus-visible {
+      outline: 2px solid var(--dil-brand);
+      outline-offset: 2px;
+    }
+  }
+
+  &__svg {
+    display: block;
+    height: auto;
+    width: 100%;
+    fill: currentColor;
+  }
+
+  &__marker {
+    fill: var(--dil-danger-fill);
+    stroke: var(--dil-surface);
+    stroke-width: 3;
+  }
+
+  &__hint,
+  &__readout {
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+    margin: 6px 0 0;
+  }
+}
+
+.dil-profile-used {
+  margin: var(--base) 0;
+
+  &__list {
+    color: var(--dil-muted);
+    display: flex;
+    flex-wrap: wrap;
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    gap: 8px 16px;
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+  }
+}

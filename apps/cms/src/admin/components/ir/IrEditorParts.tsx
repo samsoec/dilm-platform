@@ -16,7 +16,7 @@ import { formatAdminURL } from "payload/shared";
 import { type ReactNode, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { IR_LANGUAGE_LABELS } from "../../../irDocumentTypes";
+import { IR_LANGUAGE_LABELS, irTypeLabel } from "../../../irDocumentTypes";
 import { useUnsavedChangesGuard } from "../guard/UnsavedChangesProvider";
 import { VERSIONS_DRAWER_SLUG } from "../document/VersionsDrawer";
 import { ActionButton } from "../kit/ActionButton";
@@ -29,6 +29,7 @@ import {
   companyInitials,
   DRAFT_NOTE,
   publishChecklist,
+  summaryLanguageNote,
 } from "./irEditor";
 
 export function ListOnly({ children }: { children: ReactNode }) {
@@ -120,6 +121,38 @@ export function DetailsHeading() {
       <span className="dil-ir-panel__aside">* Required to publish</span>
     </header>
   );
+}
+
+export function DisplayHeading() {
+  return (
+    <header className="dil-ir-panel__head dil-ir-details__head">
+      <h2 className="dil-ir-panel__title">Investor page display</h2>
+      <span className="dil-ir-panel__aside">Optional</span>
+    </header>
+  );
+}
+
+export function CoverFallback() {
+  const { cover, type } = useFormFields(([fields]) => ({
+    cover: fields.coverImage?.value,
+    type: fields.documentType?.value,
+  }));
+  if (cover) return null;
+  return (
+    <p className="dil-ir-cover-fallback">
+      <MaterialIcon name="picture_as_pdf" />
+      <span>
+        {type
+          ? `${irTypeLabel(type)}: the document-type icon is shown until you add a cover.`
+          : "The document-type icon is shown until you add a cover."}
+      </span>
+    </p>
+  );
+}
+
+export function SummaryLanguageNote() {
+  const locale = useFormFields(([fields]) => fields.locale?.value);
+  return <p className="dil-ir-summary-note">{summaryLanguageNote(locale)}</p>;
 }
 
 export function PublishChecklist() {

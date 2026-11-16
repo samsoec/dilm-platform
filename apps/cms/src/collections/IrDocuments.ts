@@ -173,6 +173,11 @@ export const IrDocuments = withTenantAccess(
                 "The disclosure date shown on the Investor page. It's not the upload date.",
             },
           },
+          {
+            name: "displayHeading",
+            type: "ui",
+            admin: { components: { Field: `${IR_PARTS}#DisplayHeading` } },
+          },
           withMediaPicker({
             name: "coverImage",
             label: "Cover image",
@@ -183,11 +188,17 @@ export const IrDocuments = withTenantAccess(
             },
           }),
           {
+            name: "coverFallback",
+            type: "ui",
+            admin: { components: { Field: `${IR_PARTS}#CoverFallback` } },
+          },
+          {
             name: "summary",
             type: "textarea",
             admin: {
               description: "Shown under the title in the Investor list.",
               rows: 3,
+              components: { afterInput: [`${IR_PARTS}#SummaryLanguageNote`] },
             },
           },
           {

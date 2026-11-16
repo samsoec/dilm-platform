@@ -378,6 +378,16 @@ export const TenantSettings = withTenantAccess(
                     ],
                   },
                   {
+                    name: "mapPinPicker",
+                    type: "ui",
+                    admin: {
+                      components: {
+                        Field:
+                          "/admin/components/profile/MapPinPicker#MapPinPicker",
+                      },
+                    },
+                  },
+                  {
                     name: "mapPin",
                     label: "Map pin",
                     type: "group",
@@ -445,6 +455,16 @@ export const TenantSettings = withTenantAccess(
                       className: "dil-mono-input",
                       placeholder: "https://",
                       description: 'Opened by the "Open Google Map" button.',
+                    },
+                  },
+                  {
+                    name: "usedBy",
+                    type: "ui",
+                    admin: {
+                      components: {
+                        Field:
+                          "/admin/components/profile/ProfileUsedBy#ProfileUsedBy",
+                      },
                     },
                   },
                 ],

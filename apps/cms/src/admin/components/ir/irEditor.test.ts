@@ -9,6 +9,7 @@ import {
   fileMetaText,
   IR_MAX_BYTES,
   progressText,
+  summaryLanguageNote,
   publishChecklist,
   requiredToPublish,
   titleFromFilename,
@@ -135,5 +136,19 @@ describe("publish copy (I-04 to I-06)", () => {
         uploader: "Dimas",
       }),
     ).toBe("18.4 MB · published 14 Oct, 10:30");
+  });
+});
+
+describe("summaryLanguageNote", () => {
+  it("names the document's language", () => {
+    expect(summaryLanguageNote("id")).toBe(
+      "In the document's own language (this file is Indonesian).",
+    );
+    expect(summaryLanguageNote("en")).toBe(
+      "In the document's own language (this file is English).",
+    );
+    expect(summaryLanguageNote(undefined)).toBe(
+      "In the document's own language.",
+    );
   });
 });
