@@ -187,7 +187,12 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
 /** @type import('payload').ImportMap */
+import { ProductsView as ProductsView_pr12 } from '../../../admin/components/products/ProductsView'
+import { ProductOwnerBanner as ProductOwnerBanner_pr18 } from '../../../admin/components/products/ProductOwnerBanner'
+
 export const importMap = {
+  "/admin/components/products/ProductsView#ProductsView": ProductsView_pr12,
+  "/admin/components/products/ProductOwnerBanner#ProductOwnerBanner": ProductOwnerBanner_pr18,
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
   "/admin/components/users/UserCells#RoleCell": RoleCell_5cd97e58844d5c99becf880375f054b9,
   "/admin/components/users/SitesCell#SitesCell": SitesCell_b575303840066c9cd1a8a5971511e4a7,

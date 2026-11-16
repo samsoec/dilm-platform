@@ -209,10 +209,27 @@ export const Products = withTenantAccess(
           "updatedAt",
         ],
         listSearchableFields: ["name", "productGroup", "slug"],
+        components: {
+          views: {
+            list: {
+              Component: "/admin/components/products/ProductsView#ProductsView",
+            },
+          },
+        },
       },
       defaultSort: "order",
       custom: { nav: { icon: "science", order: 4 } },
       fields: [
+        {
+          name: "ownerBanner",
+          type: "ui",
+          admin: {
+            components: {
+              Field:
+                "/admin/components/products/ProductOwnerBanner#ProductOwnerBanner",
+            },
+          },
+        },
         ...recordAddressFields(),
         {
           type: "tabs",
