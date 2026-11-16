@@ -99,9 +99,11 @@ export function EditorActions({
   shared = false,
   home = false,
   label,
+  publishBlock,
   readOnlyNotice = true,
 }: {
   label?: string;
+  publishBlock?: string;
   readOnlyNotice?: boolean;
   seed: UrlSeed;
   ancestors: { id: string; title: string }[];
@@ -277,6 +279,7 @@ export function EditorActions({
             icon="public"
             onClick={() => void startPublish()}
             type="button"
+            unavailableReason={publishBlock}
           >
             {shared && `${allSitesLabel()} · `}Publish…
           </ActionButton>
