@@ -170,7 +170,7 @@ export function altArrowMove(
 export type MenuActionId =
   "up" | "down" | "insertAbove" | "insertBelow" | "duplicate" | "remove";
 
-export function menuActions(index: number, count: number) {
+export function menuActions(index: number, count: number, max?: number) {
   return [
     { id: "up", label: "Move up", hint: "⌥↑", disabled: index === 0 },
     {
@@ -181,7 +181,11 @@ export function menuActions(index: number, count: number) {
     },
     { id: "insertAbove", label: "Insert above", disabled: false },
     { id: "insertBelow", label: "Insert below", disabled: false },
-    { id: "duplicate", label: "Duplicate", disabled: false },
+    {
+      id: "duplicate",
+      label: "Duplicate",
+      disabled: max !== undefined && count >= max,
+    },
     { id: "remove", label: "Remove…", disabled: false },
   ] as { id: MenuActionId; label: string; hint?: string; disabled: boolean }[];
 }
