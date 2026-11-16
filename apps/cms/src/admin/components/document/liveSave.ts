@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from "react";
 
+import { siteMessagesViewerNotice } from "../../siteMessages";
+
 export type SavedVersion = { version: number; at: number };
 
 const saved = new Map<string, SavedVersion>();
@@ -34,7 +36,8 @@ export function savedAgo(at: number, now = Date.now()): string {
   return `${Math.floor(minutes / 60)} h ago`;
 }
 
-export type LiveCollection = "header" | "footer" | "tenant-settings";
+export type LiveCollection =
+  "header" | "footer" | "tenant-settings" | "site-messages";
 
 export function savedToast(
   slug: LiveCollection,
@@ -48,14 +51,20 @@ export function savedToast(
       body: `The header and footer on ${site} refresh too.`,
     };
   }
-  const name = slug === "header" ? "Header" : "Footer";
+  const name =
+    slug === "site-messages"
+      ? "Site messages"
+      : slug === "header"
+        ? "Header"
+        : "Footer";
   return {
     title: `${name} saved · version ${version}.`,
     body: `${site} will show it within minutes.`,
   };
 }
 
-export function viewerNotice(slug: LiveCollection): string {
+export function viewerNotice(slug: LiveCollection, company?: string): string {
+  if (slug === "site-messages") return siteMessagesViewerNotice(company);
   const name =
     slug === "tenant-settings"
       ? "company settings"
