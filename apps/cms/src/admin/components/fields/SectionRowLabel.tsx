@@ -22,6 +22,8 @@ import { ConfirmDialog } from "../kit/ConfirmDialog";
 import { Popover } from "../kit/Popover";
 import { MaterialIcon } from "../MaterialIcon";
 import { announce } from "./announce";
+import { useLockedStructure } from "./useLockedStructure";
+import { LOCKED_SUFFIX } from "../editor/editor";
 
 export const OPEN_CATALOG_EVENT = "dil:open-catalog";
 
@@ -45,6 +47,7 @@ export function SectionRowLabel({
   record?: boolean;
 }) {
   const { data, path, rowNumber } = useRowLabel<SectionData>();
+  const locked = useLockedStructure();
   const index = rowNumber ?? 0;
   const arrayPath = path.slice(0, path.lastIndexOf("."));
   const count = useFormFields(
@@ -104,6 +107,19 @@ export function SectionRowLabel({
     duplicate: "view_list",
     remove: "delete",
   };
+
+  if (locked) {
+    return (
+      <span className="dil-section-row dil-section-row--locked">
+        <span className="dil-section-row__number">{positionText(index)}</span>
+        <span className="dil-section-row__name">{name}</span>
+        <code className="dil-section-row__slug">{slug}</code>
+        {variant && <span className="dil-section-row__chip">{variant}</span>}
+        {summary && <span className="dil-section-row__summary">{summary}</span>}
+        <span className="dil-section-row__locked">{LOCKED_SUFFIX}</span>
+      </span>
+    );
+  }
 
   return (
     <span

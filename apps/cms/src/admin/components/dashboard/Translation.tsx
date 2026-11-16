@@ -4,6 +4,8 @@ import { formatAdminURL } from "payload/shared";
 import { Suspense } from "react";
 
 import { dashboardScope, layoutDocs } from "../../data/dashboard";
+import { translationRows } from "../../data/translationProgress";
+import { slugsText, TRANSLATION_ROWS_NOTE } from "../../translationProgress";
 import { MaterialIcon } from "../MaterialIcon";
 import { Frame } from "./Frame";
 import { countTranslations, percent } from "./model";
@@ -37,7 +39,8 @@ async function Translation({ cookies, req, user }: WidgetServerProps) {
         </Frame>
       );
     const docs = await layoutDocs(payload, user, scope.tenant);
-    const rows = SOURCES.flatMap(({ label, slug, key }) => {
+    const content = await translationRows(payload, user, scope.tenant);
+    const layoutRows = SOURCES.flatMap(({ label, slug, key }) => {
       const doc = docs[key];
       if (!doc) return [];
       return [
@@ -47,10 +50,23 @@ async function Translation({ cookies, req, user }: WidgetServerProps) {
             adminRoute: payload.config.routes.admin,
             path: `/collections/${slug}/${doc.id}?locale=id`,
           }),
+          slugs: "",
           ...countTranslations(payload.collections[slug].config.fields, doc),
         },
       ];
     });
+    const rows = [
+      ...layoutRows,
+      ...content.map((row) => ({
+        label: row.label,
+        href: formatAdminURL({
+          adminRoute: payload.config.routes.admin,
+          path: `/translation/${row.key}`,
+        }),
+        slugs: slugsText(row.slugs),
+        ...row.texts,
+      })),
+    ];
     const total = rows.reduce(
       (sum, row) => ({
         translated: sum.translated + row.translated,
@@ -89,6 +105,7 @@ async function Translation({ cookies, req, user }: WidgetServerProps) {
                   {complete && " →"}
                 </span>
                 <span className="dil-translation__ratio">
+                  {percent(row)}%{row.slugs && ` · ${row.slugs}`} ·{" "}
                   {row.translated} / {row.total}
                 </span>
                 {!complete && (
@@ -102,11 +119,7 @@ async function Translation({ cookies, req, user }: WidgetServerProps) {
             </li>
           ))}
         </ul>
-        <p className="dil-widget__note">
-          {complete
-            ? "A label counts once its ID text exists and differs from EN. Rows open that editor in ID."
-            : "Page content will be counted here once pages exist."}
-        </p>
+        <p className="dil-widget__note">{TRANSLATION_ROWS_NOTE}</p>
       </Frame>
     );
   } catch (error) {

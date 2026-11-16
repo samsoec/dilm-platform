@@ -8,6 +8,7 @@ import {
   tenantRecordTypeOptions,
 } from "../detailTemplates";
 import { layoutField } from "../fields/layout";
+import { keepSectionStructure } from "../fields/structure";
 import { withEditorShell } from "../fields/pageEditor";
 import {
   TEMPLATE_LIST_VIEW,
@@ -36,7 +37,7 @@ export const DetailTemplates = withTenantAccess(
       versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
       hooks: {
         beforeValidate: [keepOneTemplatePerType, allowTemplateTokens],
-        beforeChange: [captureTemplateRow],
+        beforeChange: [keepSectionStructure, captureTemplateRow],
         afterChange: [revalidateTemplate("tenant", stubRevalidator)],
         afterDelete: [revalidateTemplateOnDelete("tenant", stubRevalidator)],
       },

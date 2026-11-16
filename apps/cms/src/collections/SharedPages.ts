@@ -1,4 +1,5 @@
 import { publishImpactEndpoint } from "../publish/impact";
+import { keepSectionStructure } from "../fields/structure";
 import { readPublishedOrMembers, superAdmins, tenantMembers } from "../access";
 import { collectionLabels } from "../admin/labels";
 import { navGroup } from "../admin/navGroups";
@@ -50,6 +51,7 @@ export const SharedPages = withEditorShell(
         ],
         beforeDelete: [protectHome, keepBasePagesOnDelete, removeRoutes],
         beforeChange: [
+          keepSectionStructure,
           rejectOversizedCascade,
           freshBreadcrumbIds,
           beginLiveChange,

@@ -9,6 +9,7 @@ import {
   sharedRecordTypeOptions,
 } from "../detailTemplates";
 import { LAYOUT_EXCLUSIONS, layoutField } from "../fields/layout";
+import { keepSectionStructure } from "../fields/structure";
 import { withEditorShell } from "../fields/pageEditor";
 import {
   TEMPLATE_LIST_VIEW,
@@ -38,7 +39,7 @@ export const SharedDetailTemplates = withEditorShell(
     versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
     hooks: {
       beforeValidate: [keepOneTemplatePerType, allowTemplateTokens],
-      beforeChange: [captureTemplateRow],
+      beforeChange: [keepSectionStructure, captureTemplateRow],
       afterChange: [revalidateTemplate("shared", stubRevalidator)],
       afterDelete: [revalidateTemplateOnDelete("shared", stubRevalidator)],
     },

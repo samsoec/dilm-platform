@@ -6,6 +6,7 @@ import { useEffect } from "react";
 
 import { altArrowMove, movedText, sectionCountText } from "../../sectionRows";
 import { announce } from "./announce";
+import { useLockedStructure } from "./useLockedStructure";
 
 export const SectionsHeader: BlocksFieldLabelClientComponent = ({
   field,
@@ -16,8 +17,10 @@ export const SectionsHeader: BlocksFieldLabelClientComponent = ({
     ([fields]) => fields[fieldPath]?.rows?.length ?? 0,
   );
   const { moveFieldRow, setModified } = useForm();
+  const locked = useLockedStructure();
 
   useEffect(() => {
+    if (locked) return;
     const onKey = (event: KeyboardEvent) => {
       if (!(event.target instanceof Element)) return;
       const row = event.target.closest(
@@ -35,7 +38,7 @@ export const SectionsHeader: BlocksFieldLabelClientComponent = ({
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [count, fieldPath, moveFieldRow, setModified]);
+  }, [count, fieldPath, locked, moveFieldRow, setModified]);
 
   return (
     <span className="dil-sections-header">
