@@ -1,5 +1,6 @@
 "use client";
 
+import { MAX_LAYOUT_BLOCKS } from "@dilm/shared-types";
 import { useForm, useFormFields, useModal, useRowLabel } from "@payloadcms/ui";
 import { useState, type KeyboardEvent } from "react";
 
@@ -16,6 +17,7 @@ import {
   sectionSummary,
   variantText,
 } from "../../sectionRows";
+import { CATALOG_LIMIT_TEXT } from "../../sectionCatalog";
 import { ConfirmDialog } from "../kit/ConfirmDialog";
 import { Popover } from "../kit/Popover";
 import { MaterialIcon } from "../MaterialIcon";
@@ -56,6 +58,7 @@ export function SectionRowLabel({
     origin: index,
   });
   const pickedUp = pickup.pickedUp;
+  const limit = arrayPath === "layout" ? MAX_LAYOUT_BLOCKS : undefined;
   const dialog = `remove-section-${path}`;
   const variant = variantText(data?.variant);
   const summary = sectionSummary(data, record);
@@ -135,10 +138,15 @@ export function SectionRowLabel({
         >
           {(close) => (
             <div className="dil-section-row__items" role="group">
-              {menuActions(index, count).map((action) => (
+              {menuActions(index, count, limit).map((action) => (
                 <button
                   className="dil-section-row__item"
                   disabled={action.disabled}
+                  title={
+                    action.id === "duplicate" && action.disabled
+                      ? CATALOG_LIMIT_TEXT
+                      : undefined
+                  }
                   key={action.id}
                   onClick={() => {
                     close();
