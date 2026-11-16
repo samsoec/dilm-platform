@@ -582,6 +582,14 @@ describe("row actions by role", () => {
     });
   });
 
+  it("leaves trash out of the menu for Home, shared or not", () => {
+    expect(rowActions({ ...own, icon: "home" }, editor).trash).toBe(false);
+    expect(rowActions({ ...shared, icon: "home" }, superAdmin)).toMatchObject({
+      menu: true,
+      trash: false,
+    });
+  });
+
   it("gives a viewer no menu and no lock on the company's pages", () => {
     expect(rowActions(own, viewer)).toMatchObject({
       menu: false,

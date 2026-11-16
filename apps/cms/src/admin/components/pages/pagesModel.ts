@@ -83,6 +83,7 @@ export type RowContext = {
   otherTargets?: Readonly<Record<string, string>>;
   tenants?: readonly ReachTenant[];
   sites?: number;
+  skipHeaderTag?: boolean;
   now?: Date;
 };
 
@@ -294,7 +295,12 @@ function rowTags(
   if (record.key === context.publicationKey) {
     tags.push({ kind: "posts", label: "Posts & search" });
   }
-  if (!forwards && !isRoot(record) && !isInHeader(record, context.header)) {
+  if (
+    !context.skipHeaderTag &&
+    !forwards &&
+    !isRoot(record) &&
+    !isInHeader(record, context.header)
+  ) {
     tags.push({ kind: "header", label: "Not in header" });
   }
   return tags;
@@ -528,7 +534,7 @@ export type RowActions = {
 };
 
 export function rowActions(
-  row: Pick<PageRow, "shared" | "status">,
+  row: Pick<PageRow, "shared" | "status"> & Partial<Pick<PageRow, "icon">>,
   viewer: Viewer,
 ): RowActions {
   const allowed = viewer.canEdit && (!row.shared || viewer.superAdmin);
@@ -539,7 +545,7 @@ export function rowActions(
     preview: false,
     unpublish:
       allowed && (row.status === "published" || row.status === "changed"),
-    trash: allowed,
+    trash: allowed && row.icon !== "home",
   };
 }
 
@@ -565,6 +571,9 @@ export function addChildPath(
 
 export const VIEWER_BANNER = (initials: string) =>
   `You can view this page. Editors of ${initials} can change it.`;
+
+export const SHARED_VIEWER_BANNER =
+  "Shared across all 3 sites. Only a Super Admin can change it.";
 
 export const EMPTY_TITLE = (company: string) => `No pages for ${company} yet`;
 

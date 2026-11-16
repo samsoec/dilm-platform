@@ -18,6 +18,7 @@ import {
 export type UrlSeed = {
   collection: string;
   domain?: string;
+  domains?: string[];
   parentId?: string;
   parentPaths: ParentPaths;
   slugs: Record<string, string>;
@@ -25,6 +26,7 @@ export type UrlSeed = {
 
 export type EditorUrls = {
   rows: UrlRow[];
+  siteRows: UrlRow[][];
   current: UrlRow | undefined;
   warning: SlugWarning | undefined;
   parentError: string | undefined;
@@ -102,6 +104,20 @@ export function useEditorUrls(seed: UrlSeed): EditorUrls {
       }),
     [defaultLocale, known, locales, parent, seed.domain, slugs],
   );
+  const siteRows = useMemo(
+    () =>
+      (seed.domains ?? []).map((domain) =>
+        computeUrls({
+          domain,
+          locales,
+          defaultLocale,
+          slugs,
+          parentPaths: parent ? known[parent] : undefined,
+          parent: Boolean(parent),
+        }),
+      ),
+    [defaultLocale, known, locales, parent, seed.domains, slugs],
+  );
   const names = useMemo(
     () =>
       Object.fromEntries(
@@ -111,6 +127,7 @@ export function useEditorUrls(seed: UrlSeed): EditorUrls {
   );
   return {
     rows,
+    siteRows,
     current: rows.find(({ locale }) => locale === code),
     warning: slugFallbackWarning(slugs, locales, defaultLocale, names),
     parentError: parent ? failed[parent] : undefined,

@@ -114,7 +114,10 @@ export function seoGroup(): GroupField {
   };
 }
 
-export function editorFields(parent: RelationshipField): Field[] {
+export function editorFields(
+  parent: RelationshipField,
+  shared = false,
+): Field[] {
   const tabs: TabsField = {
     type: "tabs",
     admin: { className: EDITOR_TAB_CLASS },
@@ -156,9 +159,9 @@ export function editorFields(parent: RelationshipField): Field[] {
             type: "row",
             fields: [
               {
-                ...slugField(true),
+                ...slugField(!shared),
                 admin: {
-                  ...slugField(true).admin,
+                  ...slugField(!shared).admin,
                   position: undefined,
                   width: "50%",
                   components: { afterInput: [EDITOR_COMPONENTS.slugNote] },
@@ -190,7 +193,7 @@ export function editorFields(parent: RelationshipField): Field[] {
     ui("editorActions", EDITOR_COMPONENTS.actions),
     ui("editorTabMarks", EDITOR_COMPONENTS.tabMarks),
     tabs,
-    createBreadcrumbsField("pages", {
+    createBreadcrumbsField(shared ? "shared-pages" : "pages", {
       admin: { hidden: true, readOnly: true },
     }) as Field,
     { ...pathField, admin: { ...pathField.admin, hidden: true } },

@@ -138,6 +138,7 @@ import { SidebarField as SidebarField_baabe6231b786d2a57d52d56a1611534 } from '.
 import { PostsOnPagePanel as PostsOnPagePanel_ad41897aabca1a3b5959be43390a6c74 } from '../../../admin/components/records/PostsOnPagePanel'
 import { NoControl as NoControl_c6cd29aa8177a060e43b9ccc07ba17de } from '../../../admin/components/editor/EditorChrome'
 import { PagesView as PagesView_647f8fec1475ea4224d3b14fcac631aa } from '../../../admin/components/pages/PagesView'
+import { SharedPagesView as SharedPagesView_0cdfde5e4f1a0a2176a661f2961c479a } from '../../../admin/components/pages/SharedPagesView'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -322,6 +323,7 @@ export const importMap = {
   "/admin/components/records/PostsOnPagePanel#PostsOnPagePanel": PostsOnPagePanel_ad41897aabca1a3b5959be43390a6c74,
   "/admin/components/editor/EditorChrome#NoControl": NoControl_c6cd29aa8177a060e43b9ccc07ba17de,
   "/admin/components/pages/PagesView#PagesView": PagesView_647f8fec1475ea4224d3b14fcac631aa,
+  "/admin/components/pages/SharedPagesView#SharedPagesView": SharedPagesView_0cdfde5e4f1a0a2176a661f2961c479a,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaDescriptionComponent": MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860,

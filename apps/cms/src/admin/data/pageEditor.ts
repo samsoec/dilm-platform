@@ -51,6 +51,7 @@ export type PageEditorData = {
   id: string;
   tenant: string | null;
   company?: { id: number | string; name: string; domain: string };
+  sites: { id: number | string; name: string; domain: string }[];
   status: PublishStatus;
   hasPublished: boolean;
   parentPaths: ParentPaths;
@@ -126,6 +127,19 @@ async function titlesFor(
     }),
   );
   return titles;
+}
+
+async function allSites({ payload, user }: Context) {
+  const { docs } = await payload.find({
+    collection: "tenants",
+    select: { name: true, domain: true },
+    sort: "id",
+    pagination: false,
+    depth: 0,
+    overrideAccess: false,
+    user,
+  });
+  return docs.map(({ id, name, domain }) => ({ id, name, domain }));
 }
 
 async function seoDefaults(
@@ -280,6 +294,7 @@ async function load(
     menu,
     links,
     ancestorTitles,
+    sites,
   ] = await Promise.all([
     tenant === null
       ? undefined
@@ -345,6 +360,7 @@ async function load(
       ancestorIds.map((ancestor) => ({ collection, id: ancestor })),
       locale,
     ),
+    collection === "shared-pages" ? allSites(context) : [],
   ]);
 
   const savedBy = idText(doc.updatedBy);
@@ -365,6 +381,7 @@ async function load(
     company: company
       ? { id: company.id, name: company.name, domain: company.domain }
       : undefined,
+    sites,
     status: getPublishStatus(
       { _status: doc._status, deletedAt: doc.deletedAt },
       { hasPublishedVersion: hasPublished },
@@ -413,6 +430,7 @@ export function blankEditorData(
     collection,
     id: "",
     tenant: null,
+    sites: [],
     status: "draft",
     hasPublished: false,
     parentPaths: {},
@@ -440,7 +458,7 @@ async function loadNew(
   parent: string | undefined,
 ): Promise<PageEditorData> {
   const { payload, user } = context;
-  const [company, parentDoc, defaults] = await Promise.all([
+  const [company, parentDoc, defaults, sites] = await Promise.all([
     tenant === null
       ? undefined
       : payload
@@ -468,8 +486,10 @@ async function loadNew(
         })
       : undefined,
     seoDefaults(context, tenant),
+    collection === "shared-pages" ? allSites(context) : [],
   ]);
   return blankEditorData(collection, {
+    sites,
     tenant,
     company: company
       ? { id: company.id, name: company.name, domain: company.domain }

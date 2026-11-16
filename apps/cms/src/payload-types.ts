@@ -607,67 +607,6 @@ export interface Media {
  */
 export interface SharedPage {
   id: number;
-  title: string;
-  /**
-   * The last part of the address. Leave it empty only for Home.
-   */
-  slug?: string | null;
-  /**
-   * Leave empty for a top-level page.
-   */
-  parent?: (number | null) | SharedPage;
-  /**
-   * Worked out from the parent pages and the slug.
-   */
-  path?: string | null;
-  /**
-   * On when a language has no slug of its own and its address uses the English slug.
-   */
-  slugFallback?: boolean | null;
-  redirectTo: {
-    type: 'reference' | 'internal' | 'external';
-    newTab?: boolean | null;
-    /**
-     * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
-     */
-    internalPath?: string | null;
-    /**
-     * A full address starting with https://
-     */
-    externalUrl?: string | null;
-    /**
-     * Follows the page or record if it is renamed or moved. Only published ones are offered.
-     */
-    reference?:
-      | ({
-          relationTo: 'pages';
-          value: number | Page;
-        } | null)
-      | ({
-          relationTo: 'shared-pages';
-          value: number | SharedPage;
-        } | null)
-      | ({
-          relationTo: 'products';
-          value: number | Product;
-        } | null)
-      | ({
-          relationTo: 'solutions';
-          value: number | Solution;
-        } | null)
-      | ({
-          relationTo: 'jobs';
-          value: number | Job;
-        } | null)
-      | ({
-          relationTo: 'posts';
-          value: number | Post;
-        } | null)
-      | ({
-          relationTo: 'categories';
-          value: number | Category;
-        } | null);
-  };
   /**
    * A page holds at most 30 sections.
    */
@@ -712,8 +651,65 @@ export interface SharedPage {
         | PostListingBlock
       )[]
     | null;
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
+  title: string;
+  /**
+   * Leave empty for a top-level page.
+   */
+  parent?: (number | null) | SharedPage;
+  /**
+   * The last part of the address. Leave it empty only for Home.
+   */
+  slug?: string | null;
+  forwards?: boolean | null;
+  redirectTo?: {
+    type: 'reference' | 'internal' | 'external';
+    newTab?: boolean | null;
+    /**
+     * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
+     */
+    internalPath?: string | null;
+    /**
+     * A full address starting with https://
+     */
+    externalUrl?: string | null;
+    /**
+     * Follows the page or record if it is renamed or moved. Only published ones are offered.
+     */
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'shared-pages';
+          value: number | SharedPage;
+        } | null)
+      | ({
+          relationTo: 'products';
+          value: number | Product;
+        } | null)
+      | ({
+          relationTo: 'solutions';
+          value: number | Solution;
+        } | null)
+      | ({
+          relationTo: 'jobs';
+          value: number | Job;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'categories';
+          value: number | Category;
+        } | null);
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
+  };
   breadcrumbs?:
     | {
         doc?: (number | null) | SharedPage;
@@ -722,18 +718,184 @@ export interface SharedPage {
         id?: string | null;
       }[]
     | null;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-  };
+  /**
+   * Worked out from the parent pages and the slug.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PageHeroBlock".
+ */
+export interface PageHeroBlock {
+  backgroundImage: number | Media;
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'pageHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaTextBlock".
+ */
+export interface MediaTextBlock {
+  heading: {
+    eyebrow?: string | null;
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    align: 'center' | 'left' | 'split';
+  };
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  images: {
+    image: number | Media;
+    id?: string | null;
+  }[];
+  imageLayout: 'single' | 'staggered';
+  imagePosition: 'right' | 'left';
+  stats?:
+    | {
+        value: string;
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  points?:
+    | {
+        /**
+         * SVG or PNG.
+         */
+        icon?: (number | null) | Media;
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  pointsLayout: 'inline' | 'grid';
+  buttons?:
+    | {
+        link: {
+          type: 'reference' | 'internal' | 'external';
+          newTab?: boolean | null;
+          /**
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
+           */
+          internalPath?: string | null;
+          /**
+           * A full address starting with https://
+           */
+          externalUrl?: string | null;
+          /**
+           * Follows the page or record if it is renamed or moved. Only published ones are offered.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'shared-pages';
+                value: number | SharedPage;
+              } | null)
+            | ({
+                relationTo: 'products';
+                value: number | Product;
+              } | null)
+            | ({
+                relationTo: 'solutions';
+                value: number | Solution;
+              } | null)
+            | ({
+                relationTo: 'jobs';
+                value: number | Job;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'categories';
+                value: number | Category;
+              } | null);
+          label?: string | null;
+        };
+        style: 'primary' | 'light' | 'text';
+        id?: string | null;
+      }[]
+    | null;
+  appearance: {
+    background: 'default' | 'muted' | 'dark' | 'image';
+    backgroundImage?: (number | null) | Media;
+    /**
+     * Optional in-page anchor: lowercase letters, numbers and hyphens.
+     */
+    anchorId?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaText';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1247,170 +1409,6 @@ export interface Category {
   coverImage?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "PageHeroBlock".
- */
-export interface PageHeroBlock {
-  backgroundImage: number | Media;
-  heading: {
-    eyebrow?: string | null;
-    /**
-     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
-     */
-    title?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    description?: string | null;
-    align: 'center' | 'left' | 'split';
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'pageHero';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "MediaTextBlock".
- */
-export interface MediaTextBlock {
-  heading: {
-    eyebrow?: string | null;
-    /**
-     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
-     */
-    title?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    description?: string | null;
-    align: 'center' | 'left' | 'split';
-  };
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  images: {
-    image: number | Media;
-    id?: string | null;
-  }[];
-  imageLayout: 'single' | 'staggered';
-  imagePosition: 'right' | 'left';
-  stats?:
-    | {
-        value: string;
-        label: string;
-        id?: string | null;
-      }[]
-    | null;
-  points?:
-    | {
-        /**
-         * SVG or PNG.
-         */
-        icon?: (number | null) | Media;
-        title: string;
-        description?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  pointsLayout: 'inline' | 'grid';
-  buttons?:
-    | {
-        link: {
-          type: 'reference' | 'internal' | 'external';
-          newTab?: boolean | null;
-          /**
-           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
-           */
-          internalPath?: string | null;
-          /**
-           * A full address starting with https://
-           */
-          externalUrl?: string | null;
-          /**
-           * Follows the page or record if it is renamed or moved. Only published ones are offered.
-           */
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: number | Page;
-              } | null)
-            | ({
-                relationTo: 'shared-pages';
-                value: number | SharedPage;
-              } | null)
-            | ({
-                relationTo: 'products';
-                value: number | Product;
-              } | null)
-            | ({
-                relationTo: 'solutions';
-                value: number | Solution;
-              } | null)
-            | ({
-                relationTo: 'jobs';
-                value: number | Job;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: number | Post;
-              } | null)
-            | ({
-                relationTo: 'categories';
-                value: number | Category;
-              } | null);
-          label?: string | null;
-        };
-        style: 'primary' | 'light' | 'text';
-        id?: string | null;
-      }[]
-    | null;
-  appearance: {
-    background: 'default' | 'muted' | 'dark' | 'image';
-    backgroundImage?: (number | null) | Media;
-    /**
-     * Optional in-page anchor: lowercase letters, numbers and hyphens.
-     */
-    anchorId?: string | null;
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'mediaText';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -7244,20 +7242,6 @@ export interface PostListingBlockSelect<T extends boolean = true> {
  * via the `definition` "shared-pages_select".
  */
 export interface SharedPagesSelect<T extends boolean = true> {
-  title?: T;
-  slug?: T;
-  parent?: T;
-  path?: T;
-  slugFallback?: T;
-  redirectTo?:
-    | T
-    | {
-        type?: T;
-        newTab?: T;
-        internalPath?: T;
-        externalUrl?: T;
-        reference?: T;
-      };
   layout?:
     | T
     | {
@@ -7299,15 +7283,18 @@ export interface SharedPagesSelect<T extends boolean = true> {
         publicationHero?: T | PublicationHeroBlockSelect<T>;
         postListing?: T | PostListingBlockSelect<T>;
       };
-  updatedBy?: T;
-  trashedBy?: T;
-  breadcrumbs?:
+  title?: T;
+  parent?: T;
+  slug?: T;
+  forwards?: T;
+  redirectTo?:
     | T
     | {
-        doc?: T;
-        url?: T;
-        label?: T;
-        id?: T;
+        type?: T;
+        newTab?: T;
+        internalPath?: T;
+        externalUrl?: T;
+        reference?: T;
       };
   meta?:
     | T
@@ -7316,6 +7303,18 @@ export interface SharedPagesSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  path?: T;
+  slugFallback?: T;
+  updatedBy?: T;
+  trashedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

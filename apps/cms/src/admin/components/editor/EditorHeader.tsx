@@ -53,7 +53,7 @@ export function EditorHeader({
   const title = useFormFields(([fields]) => fields.title?.value) as
     string | undefined;
   const live = useLiveStatus(status);
-  const { rows, parentError } = useEditorUrls(seed);
+  const { rows: ownRows, siteRows, parentError } = useEditorUrls(seed);
   const reach = getReach(
     { tenant: tenant?.id ?? null },
     {
@@ -62,17 +62,21 @@ export function EditorHeader({
     },
   );
 
+  const shared = collection === "shared-pages";
+  const rows = shared && siteRows.length > 0 ? siteRows.flat() : ownRows;
+
   return (
     <header className="dil-editor-header">
       <RefreshAfterSave />
       <div className="dil-editor-header__row">
+        {shared && <ReachBadge reach={reach} />}
         <h1 className="dil-editor-title">{title?.trim() || untitled}</h1>
         <PublishBadge status={live} />
-        <ReachBadge reach={reach} />
+        {!shared && <ReachBadge reach={reach} />}
       </div>
       <ul aria-label="Page addresses" className="dil-editor-urls">
         {rows.map((row) => (
-          <li className="dil-editor-urls__item" key={row.locale}>
+          <li className="dil-editor-urls__item" key={row.display}>
             <abbr
               className="dil-editor-urls__lang"
               title={row.locale === "en" ? "English" : "Indonesian"}
