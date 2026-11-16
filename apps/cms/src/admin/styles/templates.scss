@@ -50,6 +50,10 @@
     font-size: 12px;
   }
 
+  .is-current > .dil-template-strip__link .dil-template-strip__meta {
+    color: var(--dil-sel-ink);
+  }
+
   .dil-template-strip__hint {
     display: inline-flex;
     align-items: center;
