@@ -1,0 +1,26 @@
+@layer dil {
+  .dil-categories__table {
+    .dil-categories__count {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .dil-categories__description {
+    display: block;
+    margin-top: 2px;
+    color: var(--dil-muted);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .dil-categories__delete {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-danger);
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

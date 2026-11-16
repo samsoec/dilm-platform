@@ -220,6 +220,8 @@ import { PostSidebarField as PostSidebarField_cb92c40415a69acd06b03fb6a45472ce }
 import { CategoryDescriptionField as CategoryDescriptionField_cb92c40415a69acd06b03fb6a45472ce } from '../../../admin/components/posts/server'
 import { ExcerptOverflow as ExcerptOverflow_875c528c12186098fbb31ab249687c25 } from '../../../admin/components/posts/PostEditorParts'
 import { PostsView as PostsView_f7b14af4fb8a7bd53d110862034d5b5f } from '../../../admin/components/posts/PostsView'
+import { CategoriesView as CategoriesView_78d4384d466ddcdcc75df9e4062c5ee6 } from '../../../admin/components/categories/CategoriesView'
+import { CategorySlugImpactField as CategorySlugImpactField_b4719770b96f588e1f7fbe74eb3c3b40 } from '../../../admin/components/categories/server'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -442,5 +444,7 @@ export const importMap = {
   "/admin/components/posts/server#PostSidebarField": PostSidebarField_cb92c40415a69acd06b03fb6a45472ce,
   "/admin/components/posts/server#CategoryDescriptionField": CategoryDescriptionField_cb92c40415a69acd06b03fb6a45472ce,
   "/admin/components/posts/PostEditorParts#ExcerptOverflow": ExcerptOverflow_875c528c12186098fbb31ab249687c25,
-  "/admin/components/posts/PostsView#PostsView": PostsView_f7b14af4fb8a7bd53d110862034d5b5f
+  "/admin/components/posts/PostsView#PostsView": PostsView_f7b14af4fb8a7bd53d110862034d5b5f,
+  "/admin/components/categories/CategoriesView#CategoriesView": CategoriesView_78d4384d466ddcdcc75df9e4062c5ee6,
+  "/admin/components/categories/server#CategorySlugImpactField": CategorySlugImpactField_b4719770b96f588e1f7fbe74eb3c3b40
 }

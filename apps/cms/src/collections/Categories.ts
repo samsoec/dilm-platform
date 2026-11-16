@@ -13,6 +13,7 @@ import {
   categoryNameField,
 } from "../fields/recordFields";
 import { lockStructure } from "../fields/structure";
+import { ui } from "./Products";
 import {
   beginLiveChange,
   revalidateOnDelete,
@@ -46,12 +47,24 @@ export const Categories: CollectionConfig = {
     useAsTitle: "name",
     defaultColumns: ["name", "slug", "updatedAt"],
     listSearchableFields: ["name", "slug"],
+    components: {
+      views: {
+        list: {
+          Component:
+            "/admin/components/categories/CategoriesView#CategoriesView",
+        },
+      },
+    },
     description:
       "The groups posts are filed under. Shared by all three companies; only Super Admins change them.",
   },
   custom: { nav: { icon: "sell", order: 8 } },
   fields: [
     ...categoryAddressFields(),
+    ui(
+      "slugImpact",
+      "/admin/components/categories/server#CategorySlugImpactField",
+    ),
     ...lockStructure([
       categoryNameField,
       {
