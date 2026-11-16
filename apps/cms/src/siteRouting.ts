@@ -144,7 +144,7 @@ function titleOf(value: LocaleMap | string | null | undefined): string {
   );
 }
 
-type BasePage = {
+export type BasePage = {
   id: string;
   title: string;
   live: boolean;
@@ -163,7 +163,7 @@ type StoredPage = {
   deletedAt?: string | null;
 };
 
-async function loadBasePage(
+export async function loadBasePage(
   payload: Payload,
   req: Request,
   collection: PageCollection,

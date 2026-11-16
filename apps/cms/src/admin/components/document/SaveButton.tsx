@@ -13,6 +13,7 @@ import {
 import { formatAdminURL } from "payload/shared";
 import { useState } from "react";
 
+import { useRoutingGate } from "../routing/useRoutingGate";
 import { useUnsavedChangesGuard } from "../guard/UnsavedChangesProvider";
 import { ActionButton } from "../kit/ActionButton";
 import { notify } from "../kit/Toast";
@@ -35,6 +36,7 @@ export function SaveButton() {
   const { company } = useUnsavedChangesGuard();
   const editDepth = useEditDepth();
   const [busy, setBusy] = useState(false);
+  const { confirm, dialog } = useRoutingGate(collectionSlug);
 
   const versionCount = async (): Promise<number> => {
     const url = formatAdminURL({
@@ -55,6 +57,10 @@ export function SaveButton() {
       return;
     }
     setBusy(true);
+    if (!(await confirm())) {
+      setBusy(false);
+      return;
+    }
     const result = await submit({ disableSuccessStatus: true });
     if (result && result.res.ok) {
       const version = await versionCount().catch(() => 1);
@@ -115,14 +121,17 @@ export function SaveButton() {
   }
 
   return (
-    <ActionButton
-      busy={busy}
-      className="dil-save-button"
-      icon="public"
-      onClick={() => void save()}
-      type="button"
-    >
-      Save &amp; publish
-    </ActionButton>
+    <>
+      <ActionButton
+        busy={busy}
+        className="dil-save-button"
+        icon="public"
+        onClick={() => void save()}
+        type="button"
+      >
+        Save &amp; publish
+      </ActionButton>
+      {dialog}
+    </>
   );
 }

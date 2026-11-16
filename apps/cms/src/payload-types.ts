@@ -233,11 +233,11 @@ export interface TenantSetting {
   siteName: string;
   routing?: {
     /**
-     * Every job's URL is this page's URL plus the job's slug.
+     * Only this company's published pages. The page can't be trashed while it's set here.
      */
     careerPage?: (number | null) | Page;
     /**
-     * Used by the navbar search, the All tab on the post listing and the post breadcrumb. It can't be trashed or unpublished while it is set here.
+     * Pick the page that lists all posts. Post URLs don't change: they follow their category.
      */
     publicationPage?: (number | null) | Page;
   };

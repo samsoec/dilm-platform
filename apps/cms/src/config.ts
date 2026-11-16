@@ -34,6 +34,7 @@ import { localization } from "./localization";
 import { previewLinksHandler, withAdminPreview } from "./previewLinks";
 import { publicBucketStorage } from "./storage";
 import { pageModelPlugins } from "./pageModel";
+import { routingImpactHandler } from "./routingImpact";
 import { registerSiteRouting } from "./siteRouting";
 import { multiTenant } from "./tenancy";
 
@@ -45,6 +46,7 @@ export async function cmsConfig(client: PayloadClient) {
   return buildConfig({
     endpoints: [
       { path: "/preview-links", method: "get", handler: previewLinksHandler },
+      { path: "/routing-impact", method: "get", handler: routingImpactHandler },
     ],
     admin: {
       user: Users.slug,
