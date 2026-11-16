@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "prepare": "husky",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit && pnpm --filter @dilm/cms typecheck"
+    "typecheck": "tsc --noEmit && pnpm --filter @dilm/cms typecheck",
+    "verify": "scripts/verify.sh"
   },
   "devDependencies": {
     "@dilm/config": "workspace:*",

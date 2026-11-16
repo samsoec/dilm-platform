@@ -26,6 +26,8 @@ pnpm lint                                    # eslint across the whole workspace
 pnpm typecheck                               # tsc --noEmit at the root
 pnpm test                                    # vitest, one project per package
 pnpm format                                  # prettier --write .
+pnpm verify                                  # format check + lint + typecheck + test, short output
+scripts/verify.sh <test file>                # just those tests, while working
 pnpm --filter infra exec sst install --stage staging   # regenerate .sst/ types first — see below
 pnpm diff --stage staging                    # preview infra changes
 pnpm deploy:dev                              # sst deploy --stage dev
@@ -33,6 +35,9 @@ pnpm --filter infra dev                      # sst dev
 docker compose up -d && pnpm --filter cms dev   # Payload admin on :3000/admin
 pnpm --filter cms migrate:create <name>      # after any collection change; commit the output
 pnpm --filter cms migrate                    # apply pending migrations
+pnpm --filter cms check:migrations           # apply, roll back, re-apply, in sync: on a scratch database
+pnpm --filter cms qa:shots --path /admin/... # screenshots per QA role, width and theme
+scripts/wait-pr-checks.sh <pr>               # wait for CI once; never poll by hand
 ```
 
 ESLint and Prettier are shared from `packages/config`; the root `lint`,
@@ -91,6 +96,12 @@ extensionless relative imports because Turbopack can't resolve `./x.js` to
   `deploy-staging.yml` (push to `main`), `deploy-production.yml` (manual
   dispatch behind the `production` environment approval), `migrate-dev.yml`
   (manual: Payload migrations against dev with an IAM token).
+
+- [.claude/agents/](.claude/agents/) and
+  [.claude/skills/epic-run/](.claude/skills/epic-run/SKILL.md) — how tickets
+  are run by subagents: one `dilm-executor` per ticket, a fresh
+  `dilm-reviewer` per pull request. [apps/cms/CLAUDE.md](apps/cms/CLAUDE.md)
+  holds the CMS patterns and gotchas.
 
 ## Task workflow
 

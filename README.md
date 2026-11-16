@@ -538,6 +538,11 @@ Reset first if you have already run `pnpm --filter cms dev` against that
 database: a schema Payload synced on start isn't recorded as a migration, and
 `migrate` stops to ask before touching it.
 
+`pnpm --filter cms check:migrations` does the whole proof in one command on
+its own scratch database, without touching yours: apply everything, roll
+everything back, apply again, and confirm `migrate:create` has nothing left to
+write.
+
 The `Payload migrations` CI job runs on every pull request. It applies every
 migration to an empty Postgres 16, then runs `migrate:create --skip-empty` and
 fails if that writes a file — meaning a collection changed without its
@@ -554,9 +559,33 @@ pnpm test          # vitest, one project per package
 pnpm format        # prettier --write . (pnpm format:check in dry-run)
 ```
 
+`pnpm verify` runs all four in one go (format check, lint, typecheck, test)
+and keeps the output short: one line per check, and only the end of a failing
+check's output with the path of its full log. Pass test files to run just
+those: `scripts/verify.sh apps/cms/src/paths.test.ts`.
+
 `pnpm install` installs a Husky `pre-commit` hook that runs `lint-staged`, so
 staged files are linted with `--fix` and formatted before a commit is created.
 CI runs the same `lint`, `typecheck` and `test` scripts on every PR.
+
+## Working with agents
+
+Tickets can be run by Claude Code agents, one pull request per ticket. The
+setup is tuned to keep usage down, because an agent re-reads its whole history
+on every step, so long-lived or chatty agents are what cost the most.
+
+- `.claude/agents/dilm-executor.md` implements one ticket and stops once its
+  pull request is open.
+- `.claude/agents/dilm-reviewer.md` reviews one pull request from its diff. A
+  new one is started for every pull request; it is never reused.
+- `.claude/skills/epic-run/SKILL.md` (`/epic-run`) is the coordinator's
+  method: ticket files, order, one fix round, merge, and browser checks
+  batched per step instead of per ticket.
+- `apps/cms/CLAUDE.md` lists where each existing pattern lives and the Payload
+  behaviours that cost time before, so agents do not rediscover them.
+- `scripts/wait-pr-checks.sh <pr>` waits for CI in one command.
+- `pnpm --filter cms qa:shots --path /admin/...` saves screenshots of an admin
+  page as each QA role, width and theme under the gitignored `docs/qa-shots/`.
 
 ## Stages
 
