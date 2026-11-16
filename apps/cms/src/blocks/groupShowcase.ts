@@ -41,6 +41,14 @@ export const groupShowcase = sectionBlock({
       admin: {
         description:
           "In the order shown. Each tile uses the company's cover image and light logo; names use its legal name. Edit those in Company settings.",
+        components: {
+          afterInput: [
+            {
+              path: "/admin/components/fields/SectionStates#PickCount",
+              clientProps: { max: MAX_ENTITY_ITEMS },
+            },
+          ],
+        },
       },
     },
   ],

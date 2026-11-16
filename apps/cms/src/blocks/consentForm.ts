@@ -123,6 +123,9 @@ export const consentText: RichTextField = {
   editor: consentEditor(),
   validate: validateConsent,
   admin: {
+    components: {
+      afterInput: ["/admin/components/fields/SectionStates#ConsentHint"],
+    },
     description:
       "Shown beside the checkbox visitors must tick. Must link to the company's Privacy Policy (UU PDP). Needed in every language to publish; saving a draft works without it.",
   },
@@ -136,6 +139,18 @@ export function applicationFormFields<Name extends string>(
     withSameAsEnTag({ name: "eyebrow", type: "text", localized: true }),
     withSameAsEnTag({ name: "title", type: "text", localized: true }),
     withSameAsEnTag({ name: "description", type: "textarea", localized: true }),
+    {
+      name: "fieldTable",
+      type: "ui",
+      admin: {
+        components: {
+          Field: {
+            path: "/admin/components/fields/SectionStates#FormFieldTable",
+            clientProps: { names: [...names], labels },
+          },
+        },
+      },
+    },
     {
       name: "fields",
       label: "Field wording",
