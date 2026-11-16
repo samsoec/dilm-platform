@@ -904,6 +904,7 @@ export interface MediaTextBlock {
 export interface Product {
   id: number;
   tenant?: (number | null) | Tenant;
+  formulaText?: string | null;
   /**
    * The last part of the address. Unique across every company's catalog.
    */
@@ -7326,6 +7327,7 @@ export interface SharedPagesSelect<T extends boolean = true> {
  */
 export interface ProductsSelect<T extends boolean = true> {
   tenant?: T;
+  formulaText?: T;
   slug?: T;
   path?: T;
   slugFallback?: T;

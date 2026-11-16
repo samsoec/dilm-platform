@@ -1,0 +1,114 @@
+@layer dil {
+  .dil-products__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+    margin-bottom: 16px;
+  }
+
+  .dil-products__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dil-products__chip {
+    padding: 6px 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: 999px;
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font-size: 13px;
+    text-decoration: none;
+
+    &[aria-current="page"] {
+      border-color: var(--dil-brand);
+      font-weight: 600;
+    }
+  }
+
+  .dil-products__search {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .dil-products__search-input {
+    min-width: 280px;
+    padding: 8px 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font: inherit;
+  }
+
+  .dil-products__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th,
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--dil-line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    thead th {
+      color: var(--dil-muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+  }
+
+  .dil-products__row--locked {
+    color: var(--dil-muted);
+  }
+
+  .dil-products__image {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-line);
+    object-fit: cover;
+  }
+
+  .dil-products__name {
+    color: inherit;
+    font-weight: 600;
+  }
+
+  .dil-products__lock {
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  .dil-products__count {
+    margin: 12px 0 0;
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+
+  .dil-products__viewer {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+
+  .dil-products__empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+}

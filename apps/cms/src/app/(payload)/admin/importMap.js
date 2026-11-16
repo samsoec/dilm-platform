@@ -185,8 +185,11 @@ import { SiteLayoutWidget as SiteLayoutWidget_d47b3268301ee6262ea516856058e959 }
 import { LatestIrWidget as LatestIrWidget_7d30844fb4e083d96810b84b413ef411 } from '../../../admin/components/dashboard/LatestIr'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
+import { ProductsView as ProductsView_08170be242e6deb2806c9ad2a32fcbed } from '../../../admin/components/products/ProductsView'
+import { ProductOwnerBanner as ProductOwnerBanner_144c9a6e6a8753edfc374a6f9c27aa55 } from '../../../admin/components/products/ProductOwnerBanner'
 
 /** @type import('payload').ImportMap */
+
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
   "/admin/components/users/UserCells#RoleCell": RoleCell_5cd97e58844d5c99becf880375f054b9,
@@ -374,5 +377,7 @@ export const importMap = {
   "/admin/components/dashboard/SiteLayout#SiteLayoutWidget": SiteLayoutWidget_d47b3268301ee6262ea516856058e959,
   "/admin/components/dashboard/LatestIr#LatestIrWidget": LatestIrWidget_7d30844fb4e083d96810b84b413ef411,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
-  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
+  "/admin/components/products/ProductsView#ProductsView": ProductsView_08170be242e6deb2806c9ad2a32fcbed,
+  "/admin/components/products/ProductOwnerBanner#ProductOwnerBanner": ProductOwnerBanner_144c9a6e6a8753edfc374a6f9c27aa55
 }
