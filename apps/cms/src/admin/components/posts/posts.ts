@@ -143,3 +143,10 @@ export function placementsFor({
   }
   return rows;
 }
+
+export function categoryDescription(
+  descriptions: Record<string, string> | undefined,
+  category: string | undefined,
+): string {
+  return (category && descriptions?.[category]) || "";
+}

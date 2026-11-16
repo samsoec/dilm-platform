@@ -21,7 +21,7 @@ import {
 import { stubRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import { withTenantAccess } from "../tenancy";
-import { CATEGORY_HELP, EXCERPT_LIMIT } from "../admin/components/posts/posts";
+import { EXCERPT_LIMIT } from "../admin/components/posts/posts";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 import { hideSystemField, ui } from "./Products";
 
@@ -95,8 +95,8 @@ export const Posts = withTenantAccess(
               required: true,
               maxDepth: 0,
               admin: {
-                description: CATEGORY_HELP,
                 components: {
+                  Description: `${SERVER}#CategoryDescriptionField`,
                   afterInput: [
                     "/admin/components/editor/PostCategoryNote#PostCategoryNote",
                   ],

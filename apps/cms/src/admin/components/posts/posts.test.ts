@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
+import { findField } from "../../../testing";
+import { Posts } from "../../../collections/Posts";
 import {
   categoryCounts,
+  categoryDescription,
   EXCERPT_LIMIT,
   parsePostsQuery,
   placementsFor,
@@ -124,5 +127,24 @@ describe("placementsFor", () => {
       publicationSet: false,
     });
     expect(all?.note).toBe("Set a Publication page first");
+  });
+});
+
+describe("category description", () => {
+  it("is wired as the primary category's Description component", () => {
+    const field = findField(Posts.fields, "primaryCategory") as unknown as {
+      admin?: { description?: unknown; components?: { Description?: string } };
+    };
+    expect(field.admin?.components?.Description).toBe(
+      "/admin/components/posts/server#CategoryDescriptionField",
+    );
+    expect(field.admin?.description).toBeUndefined();
+  });
+
+  it("looks the text up for a category, one without, and none", () => {
+    const map = { "1": "Company updates", "2": "" };
+    expect(categoryDescription(map, "1")).toBe("Company updates");
+    expect(categoryDescription(map, "2")).toBe("");
+    expect(categoryDescription(map, undefined)).toBe("");
   });
 });

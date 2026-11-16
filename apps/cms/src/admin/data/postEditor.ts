@@ -104,7 +104,7 @@ export async function loadLatestSections(
           ? title.trim()
           : blockLabel(undefined, "Post showcase");
       const pageTitle = page.title?.trim() || "Untitled page";
-      const key = `${pageTitle}›${section}`;
+      const key = `${page.id}›${section}`;
       const categories = (row.categories ?? [])
         .map((entry) => String(relationId(entry as never) ?? ""))
         .filter(Boolean);

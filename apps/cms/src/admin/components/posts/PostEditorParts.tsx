@@ -21,6 +21,7 @@ import { getReach } from "../kit/reach";
 import { MaterialIcon } from "../MaterialIcon";
 import {
   CATEGORY_HELP,
+  categoryDescription,
   EXCERPT_LIMIT,
   EXCERPT_OVERFLOW,
   HAND_PICK_NOTE,
@@ -137,7 +138,7 @@ export function CategoryDescription({
   descriptions?: Record<string, string>;
 }) {
   const category = useCategory();
-  const text = category ? descriptions?.[category] : undefined;
+  const text = categoryDescription(descriptions, category);
   return (
     <>
       <p className="dil-seo-note">{CATEGORY_HELP}</p>
