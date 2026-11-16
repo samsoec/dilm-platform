@@ -69,6 +69,7 @@ export type PageEditorData = {
   links: LinkEntry[];
   translation: TranslationCount;
   publicationPage: boolean;
+  settingsID: string | null;
 };
 
 const UNTRANSLATED_SKIP = new Set(["slug", "path"]);
@@ -175,13 +176,15 @@ async function seoDefaults(
   };
 }
 
-async function isPublicationPage(
+async function publicationState(
   { payload, user }: Context,
   collection: PageCollection,
   tenant: string | null,
   id: string,
-): Promise<boolean> {
-  if (collection !== "pages" || tenant === null) return false;
+): Promise<{ publicationPage: boolean; settingsID: string | null }> {
+  if (collection !== "pages" || tenant === null) {
+    return { publicationPage: false, settingsID: null };
+  }
   const {
     docs: [settings],
   } = await payload.find({
@@ -193,10 +196,13 @@ async function isPublicationPage(
     overrideAccess: false,
     user,
   });
-  const routing = (
-    settings as { routing?: { publicationPage?: unknown } } | undefined
-  )?.routing;
-  return idText(routing?.publicationPage) === id;
+  const found = settings as
+    | { id: number | string; routing?: { publicationPage?: unknown } }
+    | undefined;
+  return {
+    publicationPage: idText(found?.routing?.publicationPage) === id,
+    settingsID: found ? String(found.id) : null,
+  };
 }
 
 async function menuLinks({ payload, user }: Context, tenant: string | null) {
@@ -320,7 +326,7 @@ async function load(
     links,
     ancestorTitles,
     sites,
-    publicationPage,
+    publication,
   ] = await Promise.all([
     tenant === null
       ? undefined
@@ -387,7 +393,7 @@ async function load(
       locale,
     ),
     collection === "shared-pages" ? allSites(context) : [],
-    isPublicationPage(context, collection, tenant, id),
+    publicationState(context, collection, tenant, id),
   ]);
 
   const savedBy = idText(doc.updatedBy);
@@ -436,7 +442,7 @@ async function load(
     forwards: hasRedirect(doc as Parameters<typeof hasRedirect>[0]),
     links,
     translation: countTranslations(fields, doc),
-    publicationPage,
+    ...publication,
   };
 }
 
@@ -476,6 +482,7 @@ export function blankEditorData(
     links: [],
     translation: { translated: 0, total: 0 },
     publicationPage: false,
+    settingsID: null,
     ...overrides,
   };
 }

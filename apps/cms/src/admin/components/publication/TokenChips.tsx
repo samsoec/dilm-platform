@@ -1,6 +1,6 @@
 "use client";
 
-import { useField } from "@payloadcms/ui";
+import { useDocumentInfo, useField } from "@payloadcms/ui";
 import { useEffect, useRef, useState } from "react";
 
 import { MaterialIcon } from "../MaterialIcon";
@@ -15,7 +15,9 @@ import {
 
 type Props = { path?: string; readOnly?: boolean };
 
-export function TokenChips({ path = "", readOnly }: Props) {
+export function TokenChips({ path = "", readOnly: given }: Props) {
+  const { hasSavePermission } = useDocumentInfo();
+  const readOnly = Boolean(given) || hasSavePermission === false;
   const kind = tokenKindOf(path);
   const { value, setValue } = useField<string>({ path });
   const [open, setOpen] = useState(false);

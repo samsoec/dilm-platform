@@ -2,7 +2,7 @@
 
 import { FieldLabel, useField, useFormFields, useLocale } from "@payloadcms/ui";
 import type { RelationshipFieldClientComponent } from "payload";
-import { useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { keyMove, moveItem } from "../../recordPicker";
 import { MaterialIcon } from "../MaterialIcon";
@@ -10,8 +10,13 @@ import {
   ALL_TAB_DEFAULT,
   ALL_TAB_NOTE,
   CATEGORY_NAMES_NOTE,
+  CATEGORIES_FAILED_NOTE,
   categoryTabsCount,
+  existingPicks,
   selectableCategories,
+  tabAddedNote,
+  tabMoveNote,
+  tabRemovedNote,
 } from "./publication";
 
 type Category = { id: number | string; name?: string | null };
@@ -40,14 +45,30 @@ export const CategoryTabsField: RelationshipFieldClientComponent = ({
   const addId = useId();
   const picked = (value ?? []).map(idOf);
 
-  useEffect(() => {
-    fetch(`/api/categories?limit=200&depth=0&locale=${code}`, {
+  const [failed, setFailed] = useState(false);
+  const handles = useRef<(HTMLButtonElement | null)[]>([]);
+  const refocus = useRef<number | null>(null);
+
+  const load = useCallback(() => {
+    setFailed(false);
+    fetch(`/api/categories?limit=1000&depth=0&locale=${code}`, {
       credentials: "include",
     })
-      .then((response) => (response.ok ? response.json() : { docs: [] }))
+      .then((response) => {
+        if (!response.ok) throw new Error("failed");
+        return response.json();
+      })
       .then(({ docs }: { docs?: Category[] }) => setCategories(docs ?? []))
-      .catch(() => undefined);
+      .catch(() => setFailed(true));
   }, [code]);
+
+  useEffect(load, [load]);
+
+  useEffect(() => {
+    if (refocus.current === null) return;
+    handles.current[refocus.current]?.focus();
+    refocus.current = null;
+  });
 
   const nameOf = (id: string) => {
     const found = categories.find((category) => String(category.id) === id);
@@ -57,9 +78,8 @@ export const CategoryTabsField: RelationshipFieldClientComponent = ({
   const move = (from: number, to: number) => {
     if (to < 0 || to >= picked.length) return;
     setValue(moveItem(picked, from, to));
-    setNote(
-      `${nameOf(picked[from]!)} moved to tab ${to + 2} of ${picked.length + 1}`,
-    );
+    refocus.current = to;
+    setNote(tabMoveNote(nameOf(picked[from]!), to, picked.length));
   };
 
   const remaining = selectableCategories(categories, picked);
@@ -72,7 +92,10 @@ export const CategoryTabsField: RelationshipFieldClientComponent = ({
     <div className="field-type dil-category-tabs">
       <FieldLabel label={field.label} path={fieldPath} />
       <p className="dil-category-tabs__count">
-        {categoryTabsCount(picked.length, categories.length)}
+        {categoryTabsCount(
+          existingPicks(picked, categories).length,
+          categories.length,
+        )}
       </p>
       <ol className="dil-category-tabs__list">
         <li className="dil-category-tabs__item dil-category-tabs__item--locked">
@@ -94,6 +117,9 @@ export const CategoryTabsField: RelationshipFieldClientComponent = ({
             }}
           >
             <button
+              ref={(node) => {
+                handles.current[index] = node;
+              }}
               aria-label={`Move ${nameOf(id)}. Use the arrow keys.`}
               className="dil-category-tabs__handle"
               disabled={readOnly}
@@ -113,9 +139,10 @@ export const CategoryTabsField: RelationshipFieldClientComponent = ({
               <button
                 aria-label={`Remove ${nameOf(id)}`}
                 className="dil-category-tabs__remove"
-                onClick={() =>
-                  setValue(picked.filter((_, position) => position !== index))
-                }
+                onClick={() => {
+                  setValue(picked.filter((_, position) => position !== index));
+                  setNote(tabRemovedNote(nameOf(id)));
+                }}
                 type="button"
               >
                 <MaterialIcon name="close" />
@@ -137,7 +164,9 @@ export const CategoryTabsField: RelationshipFieldClientComponent = ({
             onChange={(event) => {
               const next = event.target.value;
               event.target.value = "";
-              if (next) setValue([...picked, next]);
+              if (!next) return;
+              setValue([...picked, next]);
+              setNote(tabAddedNote(nameOf(next), picked.length + 1));
             }}
             value=""
           >
@@ -149,6 +178,15 @@ export const CategoryTabsField: RelationshipFieldClientComponent = ({
             ))}
           </select>
         </div>
+      )}
+      {failed && (
+        <p className="dil-field-note" role="alert">
+          <MaterialIcon name="error" />
+          {CATEGORIES_FAILED_NOTE}{" "}
+          <button onClick={load} type="button">
+            Retry
+          </button>
+        </p>
       )}
       <p className="dil-field-note">
         <MaterialIcon name="info" />

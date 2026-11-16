@@ -1,15 +1,19 @@
 import Link from "next/link";
 
-import { COMPANY_SETTINGS_PATH } from "../../sectionStates";
 import {
   CATEGORY_TABS_NOTE,
   PUBLICATION_DEPENDENTS,
   PUBLICATION_PANEL_TITLE,
   PUBLICATION_SET_NOTE,
   PUBLICATION_SETTINGS_LABEL,
+  publicationSettingsHref,
 } from "./publication";
 
-export function PublicationPanel() {
+export function PublicationPanel({
+  settingsID,
+}: {
+  settingsID?: string | null;
+}) {
   return (
     <>
       <section
@@ -26,7 +30,7 @@ export function PublicationPanel() {
         </ul>
         <p className="dil-editor-panel__note">{PUBLICATION_SET_NOTE}</p>
         <p className="dil-editor-panel__note">
-          <Link href={COMPANY_SETTINGS_PATH} prefetch={false}>
+          <Link href={publicationSettingsHref(settingsID)} prefetch={false}>
             {PUBLICATION_SETTINGS_LABEL}
           </Link>
         </p>

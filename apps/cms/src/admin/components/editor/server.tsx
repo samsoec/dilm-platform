@@ -252,6 +252,7 @@ export async function SidebarField(props: UIFieldServerProps) {
         other ? { code: other, label: names.of(other) ?? other } : null
       }
       publicationPage={data.publicationPage}
+      settingsID={data.settingsID}
       savedAt={data.savedAt}
       savedBy={data.savedBy}
       sites={data.sites}

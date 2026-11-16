@@ -52,6 +52,7 @@ export type SidebarProps = {
   languageName: string;
   otherLanguage: { code: string; label: string } | null;
   publicationPage?: boolean;
+  settingsID?: string | null;
 };
 
 function Panel({
@@ -245,7 +246,7 @@ export function EditorSidebar(props: SidebarProps) {
 
       {props.publicationPage && (
         <>
-          <PublicationPanel />
+          <PublicationPanel settingsID={props.settingsID} />
           <Panel id="dil-panel-listing" title={PREVIEW_LISTING_TITLE}>
             <PreviewEntries collection={props.collection} id={id} />
           </Panel>

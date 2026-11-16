@@ -135,3 +135,33 @@ export function selectableCategories<T extends { id: number | string }>(
 ): T[] {
   return all.filter((category) => !picked.includes(String(category.id)));
 }
+
+export function publicationSettingsHref(
+  settingsID: number | string | null | undefined,
+): string {
+  return settingsID === null || settingsID === undefined || settingsID === ""
+    ? "/admin/collections/tenant-settings"
+    : `/admin/collections/tenant-settings/${settingsID}?tab=general`;
+}
+
+export function existingPicks(
+  picked: readonly string[],
+  known: readonly { id: number | string }[],
+): string[] {
+  const ids = new Set(known.map(({ id }) => String(id)));
+  return picked.filter((id) => ids.has(id));
+}
+
+export function tabMoveNote(name: string, to: number, total: number): string {
+  return `${name} moved to tab ${to + 2} of ${total + 1}`;
+}
+
+export function tabAddedNote(name: string, total: number): string {
+  return `${name} added as tab ${total + 1} of ${total + 1}`;
+}
+
+export function tabRemovedNote(name: string): string {
+  return `${name} removed from the tabs`;
+}
+
+export const CATEGORIES_FAILED_NOTE = "Couldn't load the categories.";

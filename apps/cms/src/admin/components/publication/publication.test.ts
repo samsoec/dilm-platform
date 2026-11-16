@@ -1,10 +1,16 @@
 import { describe, expect, it } from "vitest";
 
+import { moveItem } from "../../recordPicker";
 import { highlightsField } from "../../../blocks/highlights";
 import { postListing } from "../../../blocks/postListing";
 import { publicationHero } from "../../../blocks/publicationHero";
 import {
   categoryTabsCount,
+  existingPicks,
+  publicationSettingsHref,
+  tabAddedNote,
+  tabMoveNote,
+  tabRemovedNote,
   highlightsCount,
   insertAt,
   LIMIT_REACHED_NOTE,
@@ -118,5 +124,31 @@ describe("block wiring", () => {
     expect(items.maxRows).toBe(5);
     expect(items.validate).toBeTypeOf("function");
     expect(JSON.stringify(items.admin?.components)).toContain("Limit reached");
+  });
+});
+
+describe("settings link and category tab helpers", () => {
+  it("links to the general tab of the company's settings", () => {
+    expect(publicationSettingsHref("7")).toBe(
+      "/admin/collections/tenant-settings/7?tab=general",
+    );
+    expect(publicationSettingsHref(null)).toBe(
+      "/admin/collections/tenant-settings",
+    );
+  });
+
+  it("counts only categories that exist", () => {
+    expect(existingPicks(["1", "9", "2"], [{ id: 1 }, { id: 2 }])).toEqual([
+      "1",
+      "2",
+    ]);
+  });
+
+  it("moves and removes tabs and words each change", () => {
+    expect(moveItem(["a", "b", "c"], 0, 1)).toEqual(["b", "a", "c"]);
+    expect(moveItem(["a", "b"], 0, 5)).toEqual(["a", "b"]);
+    expect(tabMoveNote("Alum", 0, 3)).toBe("Alum moved to tab 2 of 4");
+    expect(tabAddedNote("Alum", 3)).toBe("Alum added as tab 4 of 4");
+    expect(tabRemovedNote("Alum")).toBe("Alum removed from the tabs");
   });
 });
