@@ -72,7 +72,17 @@ export const entityContacts = sectionBlock({
       filterOptions: entityScope,
       validate: validateContactPicks,
       hooks: { beforeChange: [clearUnlessManual] },
-      admin: { condition: whenBlock("source", "others", "manual") },
+      admin: {
+        condition: whenBlock("source", "others", "manual"),
+        components: {
+          afterInput: [
+            {
+              path: "/admin/components/fields/SectionStates#PickCount",
+              clientProps: { max: MAX_ENTITY_ITEMS },
+            },
+          ],
+        },
+      },
     },
   ],
 });

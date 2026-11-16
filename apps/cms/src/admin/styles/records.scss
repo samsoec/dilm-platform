@@ -130,3 +130,59 @@
     font-weight: 700;
   }
 }
+
+@layer dil {
+  .dil-section-states {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .dil-override-state {
+    display: block;
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+  }
+
+  .dil-override-state__reset {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-link, inherit);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .dil-pin-note {
+    margin: 4px 0 12px;
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+  }
+
+  .dil-form-fields {
+    margin-bottom: 16px;
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-form-fields__note {
+    margin: 0 0 8px;
+    color: var(--dil-muted);
+    font-size: 12px;
+  }
+
+  .dil-form-fields__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th,
+    td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--dil-line);
+      text-align: left;
+    }
+  }
+}

@@ -69,7 +69,9 @@ const blocks: Record<string, Block> = {
 };
 
 const names = (fields: Field[]) =>
-  fields.map((field) => ("name" in field ? field.name : ""));
+  fields
+    .filter((field) => field.type !== "ui")
+    .map((field) => ("name" in field ? field.name : ""));
 
 const named = (fields: Field[], ...path: string[]): Field => {
   let field: Field = findField(fields, path[0]);

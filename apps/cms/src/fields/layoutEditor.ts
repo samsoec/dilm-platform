@@ -96,7 +96,13 @@ export function withSameAsEnTag<T extends Field>(field: T): T {
       ...field.admin,
       components: {
         ...(field.admin as { components?: object } | undefined)?.components,
-        afterInput: [SAME_AS_EN_TAG],
+        afterInput: [
+          ...((
+            field.admin as
+              { components?: { afterInput?: readonly unknown[] } } | undefined
+          )?.components?.afterInput ?? []),
+          SAME_AS_EN_TAG,
+        ],
       },
     },
   } as T;

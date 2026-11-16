@@ -1,7 +1,33 @@
 import type { Block, Field } from "payload";
 import type { DetailRecordType, PageBlockGroup } from "@dilm/shared-types";
 
+import { TEMPLATE_BLOCK_RECORD_TYPES } from "@dilm/shared-types";
+
 import { tableNamed } from "./factories";
+
+const NOTED_SLUGS: readonly string[] = ["groupShowcase", "entityContacts"];
+
+export const SECTION_STATE_PATH =
+  "/admin/components/fields/SectionStates#SectionStateNote";
+
+function stateNote(slug: string, group: string): Field[] {
+  const noted =
+    group === "Current company" ||
+    NOTED_SLUGS.includes(slug) ||
+    Object.hasOwn(TEMPLATE_BLOCK_RECORD_TYPES, slug);
+  if (!noted) return [];
+  return [
+    {
+      name: "sectionState",
+      type: "ui",
+      admin: {
+        components: {
+          Field: { path: SECTION_STATE_PATH, clientProps: { slug, group } },
+        },
+      },
+    },
+  ];
+}
 
 export function withSectionCounters(fields: Field[]): Field[] {
   return fields.map((field) => {
@@ -69,7 +95,10 @@ export function sectionBlock({
   const singular = catalog?.name ?? label;
   return {
     ...block,
-    fields: withSectionCounters(block.fields),
+    fields: [
+      ...stateNote(block.slug, group),
+      ...withSectionCounters(block.fields),
+    ],
     ...(tableName ? { dbName: tableNamed(tableName) } : {}),
     ...(singular
       ? {

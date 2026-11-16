@@ -11,6 +11,14 @@ import {
 } from "./factories";
 import { sectionBlock } from "./sectionBlock";
 
+const STATES = "/admin/components/fields/SectionStates";
+
+const profileFallback = (name: string) => ({
+  components: {
+    afterInput: [{ path: `${STATES}#ProfileFallback`, clientProps: { name } }],
+  },
+});
+
 export const entityMap = sectionBlock({
   slug: "entityMap",
   interfaceName: "EntityMapBlock",
@@ -48,12 +56,23 @@ export const entityMap = sectionBlock({
           },
         },
         imageField({ name: "image", label: "Photo" }),
-        withSameAsEnTag({ name: "label", type: "text", localized: true }),
-        withSameAsEnTag({ name: "title", type: "text", localized: true }),
+        withSameAsEnTag({
+          name: "label",
+          type: "text",
+          localized: true,
+          admin: profileFallback("label"),
+        }),
+        withSameAsEnTag({
+          name: "title",
+          type: "text",
+          localized: true,
+          admin: profileFallback("title"),
+        }),
         withSameAsEnTag({
           name: "description",
           type: "textarea",
           localized: true,
+          admin: profileFallback("description"),
         }),
         {
           name: "regions",
@@ -69,6 +88,7 @@ export const entityMap = sectionBlock({
               localized: true,
             }),
           ],
+          admin: profileFallback("regions"),
         },
         {
           name: "pin",
@@ -99,6 +119,13 @@ export const entityMap = sectionBlock({
               ],
             },
           ],
+        },
+        {
+          name: "pinNote",
+          type: "ui",
+          admin: {
+            components: { Field: `${STATES}#PinNote` },
+          },
         },
         buttonsField({ tableName: "btn" }),
       ],
