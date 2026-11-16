@@ -101,6 +101,9 @@ function LinkList({ impact }: { impact: Impact }) {
       {impact.linkCount > impact.links.length && (
         <li>and {impact.linkCount - impact.links.length} more</li>
       )}
+      {(impact.hiddenCount ?? 0) > 0 && (
+        <li>and {impact.hiddenCount} more in other companies</li>
+      )}
     </ul>
   );
 }

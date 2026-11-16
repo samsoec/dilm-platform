@@ -21,7 +21,7 @@ export type UsedInData = {
 export const USED_IN_EMPTY = "Not used anywhere yet";
 
 export function usedInTitle(count: number, unit: UsedInData["unit"]): string {
-  if (unit === "variants") {
+  if (unit === "variants" && count > 0) {
     return `Used in · ${count} ${count === 1 ? "variant" : "variants"}`;
   }
   return `Used in · ${count}`;

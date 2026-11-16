@@ -14,9 +14,11 @@ import {
   handPickedTitle,
   isHandPicked,
   linkPlace,
+  pickedCount,
   unpublishTitle,
   type Impact,
 } from "./confirmations";
+import { splitByVisibility } from "./impact";
 import { sectionsReferencing } from "./usedInSections";
 
 const impact = (over: Partial<Impact>): Impact =>
@@ -93,5 +95,55 @@ describe("sectionsReferencing", () => {
     ]);
     expect(sectionsReferencing(layout, "products:8")).toEqual([]);
     expect(sectionsReferencing(null, "products:7")).toEqual([]);
+  });
+});
+
+describe("hand-picked scoping", () => {
+  const solutions = [
+    { id: 1, tenant: 1 },
+    { id: 2, tenant: 2 },
+    { id: 3, tenant: null },
+  ];
+  const editor = (tenant: number) => ({
+    id: 9,
+    roles: ["tenant-editor"],
+    tenants: [{ tenant }],
+  });
+
+  it("hides other companies' solutions and counts them", () => {
+    const a = splitByVisibility(solutions, editor(1) as never);
+    expect(a.visible.map((doc) => doc.id)).toEqual([1, 3]);
+    expect(a.hidden).toBe(1);
+  });
+
+  it("shows a super admin everything", () => {
+    const all = splitByVisibility(solutions, {
+      id: 1,
+      roles: ["super-admin"],
+    } as never);
+    expect(all.hidden).toBe(0);
+    expect(all.visible).toHaveLength(3);
+  });
+
+  it("keeps a company-scoped product to its own company", () => {
+    const only = splitByVisibility(solutions, editor(1) as never, "1");
+    expect(only.visible.map((doc) => doc.id)).toEqual([1, 3]);
+  });
+
+  it("counts hidden places and words a single-company record", () => {
+    const one = impact({
+      reach: { scope: "tenant", sites: 1, label: "indonesianacids.com" },
+      linkCount: 1,
+      hiddenCount: 2,
+    });
+    expect(pickedCount(one)).toBe(3);
+    expect(handPickedLead(one)).toBe("It's hand-picked in 3 places.");
+    expect(unpublishTitle("X", one)).toBe(
+      'Unpublish "X" from indonesianacids.com?',
+    );
+  });
+
+  it("titles an empty document list without a unit", () => {
+    expect(usedInTitle(0, "variants")).toBe("Used in · 0");
   });
 });

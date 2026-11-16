@@ -132,11 +132,26 @@ async function referrerTitle(
   };
 }
 
+export function splitByVisibility<T extends object>(
+  docs: T[],
+  user: RoleHolder,
+  onlyTenant?: string,
+): { visible: T[]; hidden: number } {
+  const visible = docs.filter((doc) => {
+    const tenant = refId((doc as { tenant?: unknown }).tenant as never);
+    if (!tenant) return true;
+    if (onlyTenant !== undefined && tenant !== onlyTenant) return false;
+    return hasTenantAccess(user, tenant);
+  });
+  return { visible, hidden: docs.length - visible.length };
+}
+
 async function pickingSolutions(
   payload: Payload,
   req: PayloadRequest,
   id: string,
-): Promise<LinkRef[]> {
+  onlyTenant?: string,
+): Promise<{ links: LinkRef[]; visible: number; hidden: number }> {
   const { docs } = await payload.find({
     collection: "solutions",
     where: {
@@ -153,11 +168,17 @@ async function pickingSolutions(
     locale: "all",
     fallbackLocale: false,
     depth: 0,
+    limit: 200,
     pagination: false,
     overrideAccess: true,
     req: scopedReq(req),
   });
-  return (docs as unknown as Doc[]).map((doc) => ({
+  const { visible, hidden } = splitByVisibility(
+    docs as unknown as Doc[],
+    req.user,
+    onlyTenant,
+  );
+  const links = visible.slice(0, MAX_LISTED_LINKS).map((doc) => ({
     collection: "solutions",
     id: String(doc.id),
     title: titleOf(doc.name),
@@ -168,6 +189,7 @@ async function pickingSolutions(
       ),
     ),
   }));
+  return { links, visible: visible.length, hidden };
 }
 
 export function visibleReferrers(
@@ -377,8 +399,17 @@ export async function publishImpact(
       ),
   );
   const picking =
-    collection === "products" ? await pickingSolutions(payload, req, id) : [];
-  const links = [...pageLinks, ...picking];
+    collection === "products"
+      ? await pickingSolutions(payload, req, id, shared ? undefined : tenantId)
+      : { links: [], visible: 0, hidden: 0 };
+  const pageKeys = new Set(
+    pageLinks.map((link) => `${link.collection}:${link.id}`),
+  );
+  const pickedLinks = picking.links.filter(
+    (link) => !pageKeys.has(`${link.collection}:${link.id}`),
+  );
+  const links = [...pageLinks, ...pickedLinks];
+  const duplicates = picking.links.length - pickedLinks.length;
 
   const isPage = (PAGE_COLLECTIONS as readonly string[]).includes(collection);
   const detail = collection.endsWith("detail-templates");
@@ -412,7 +443,8 @@ export async function publishImpact(
         },
     sites,
     links,
-    linkCount: referrers.length + picking.length,
+    linkCount: referrers.length + picking.visible - duplicates,
+    hiddenCount: picking.hidden,
     placements:
       collection === "posts" ? await postPlacements(payload, req, id) : [],
     refusal: isPage

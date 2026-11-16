@@ -42,6 +42,7 @@ export type Impact = {
   sites: SiteUrls[];
   links: LinkRef[];
   linkCount: number;
+  hiddenCount?: number;
   placements: Placement[];
   refusal: TrashRefusal | null;
   block: PublishBlock | null;
@@ -117,15 +118,21 @@ export const SKIP_NOTE = "Those sections will skip it; no empty cards appear.";
 export const HAND_PICKED = ["products", "solutions"];
 
 export function isHandPicked(impact: Impact): boolean {
-  return HAND_PICKED.includes(impact.collection) && impact.linkCount > 0;
+  return HAND_PICKED.includes(impact.collection) && pickedCount(impact) > 0;
+}
+
+export function pickedCount(impact: Impact): number {
+  return impact.linkCount + (impact.hiddenCount ?? 0);
 }
 
 export function handPickedTitle(name: string, impact: Impact): string {
-  return `Unpublish "${name}" from all ${impact.reach.sites} sites?`;
+  return impact.reach.scope === "all"
+    ? `Unpublish "${name}" from all ${impact.reach.sites} sites?`
+    : `Unpublish "${name}" from ${impact.reach.label}?`;
 }
 
 export function handPickedLead(impact: Impact): string {
-  return `It's hand-picked in ${plural(impact.linkCount, "place")}.`;
+  return `It's hand-picked in ${plural(pickedCount(impact), "place")}.`;
 }
 
 export function linkPlace(link: LinkRef): string {
