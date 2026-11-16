@@ -121,3 +121,27 @@ export function replaceConfirmBody(count: number, name: string): string {
 export function trashBlockedNote(live: number): string {
   return `Can't be moved to trash while ${live} published ${live === 1 ? "place links" : "places link"} it. Unlink it or replace the file instead.`;
 }
+
+export const MAX_PARALLEL_UPLOADS = 3;
+
+export function slotsFree(
+  states: string[],
+  limit: number = MAX_PARALLEL_UPLOADS,
+): number {
+  return Math.max(0, limit - states.filter((s) => s === "uploading").length);
+}
+
+export function nextQueued<T extends { state: string }>(
+  entries: T[],
+  limit: number = MAX_PARALLEL_UPLOADS,
+): T[] {
+  return entries
+    .filter((entry) => entry.state === "queued")
+    .slice(
+      0,
+      slotsFree(
+        entries.map((entry) => entry.state),
+        limit,
+      ),
+    );
+}

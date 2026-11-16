@@ -7,6 +7,7 @@ import { replaceAllText } from "../kit/usedIn";
 import {
   checkDocumentFile,
   DOCUMENT_EMPTY_TEXT,
+  nextQueued,
   percentDone,
   replaceConfirmTitle,
   stoppedText,
@@ -111,5 +112,25 @@ describe("documents list", () => {
       "linkStatus",
     ]);
     expect(Documents.hooks?.afterOperation).toHaveLength(1);
+  });
+});
+
+describe("nextQueued", () => {
+  const list = (...states: string[]) =>
+    states.map((state, key) => ({ key, state }));
+
+  it("starts at most three and queues the rest", () => {
+    expect(
+      nextQueued(list("queued", "queued", "queued", "queued", "queued")),
+    ).toHaveLength(3);
+  });
+
+  it("fills only the free slots", () => {
+    expect(
+      nextQueued(list("uploading", "uploading", "queued", "queued")).map(
+        (e) => e.key,
+      ),
+    ).toEqual([2]);
+    expect(nextQueued(list("uploading", "stopped", "rejected"))).toEqual([]);
   });
 });

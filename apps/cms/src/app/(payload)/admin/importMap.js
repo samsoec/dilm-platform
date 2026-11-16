@@ -222,13 +222,12 @@ import { ExcerptOverflow as ExcerptOverflow_875c528c12186098fbb31ab249687c25 } f
 import { PostsView as PostsView_f7b14af4fb8a7bd53d110862034d5b5f } from '../../../admin/components/posts/PostsView'
 import { CategoriesView as CategoriesView_78d4384d466ddcdcc75df9e4062c5ee6 } from '../../../admin/components/categories/CategoriesView'
 import { CategorySlugImpactField as CategorySlugImpactField_b4719770b96f588e1f7fbe74eb3c3b40 } from '../../../admin/components/categories/server'
-/** @type import('payload').ImportMap */
 import { DocumentTitleCell as DocumentTitleCell_7bb4151832e869f4153422cf60bddfd8 } from '../../../admin/components/documents/DocumentCells'
 import { UsedInCountCell as UsedInCountCell_7bb4151832e869f4153422cf60bddfd8 } from '../../../admin/components/documents/DocumentCells'
 import { UploadedCell as UploadedCell_7bb4151832e869f4153422cf60bddfd8 } from '../../../admin/components/documents/DocumentCells'
 import { LinkStatusCell as LinkStatusCell_7bb4151832e869f4153422cf60bddfd8 } from '../../../admin/components/documents/DocumentCells'
 import { DocumentsUploader as DocumentsUploader_24733135f9fc4d236948a0ea0d238093 } from '../../../admin/components/documents/DocumentsUploader'
-
+/** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
   "/admin/components/users/UserCells#RoleCell": RoleCell_5cd97e58844d5c99becf880375f054b9,
@@ -457,5 +456,5 @@ export const importMap = {
   "/admin/components/documents/DocumentCells#UsedInCountCell": UsedInCountCell_7bb4151832e869f4153422cf60bddfd8,
   "/admin/components/documents/DocumentCells#UploadedCell": UploadedCell_7bb4151832e869f4153422cf60bddfd8,
   "/admin/components/documents/DocumentCells#LinkStatusCell": LinkStatusCell_7bb4151832e869f4153422cf60bddfd8,
-  "/admin/components/documents/DocumentsUploader#DocumentsUploader": DocumentsUploader_24733135f9fc4d236948a0ea0d238093,
+  "/admin/components/documents/DocumentsUploader#DocumentsUploader": DocumentsUploader_24733135f9fc4d236948a0ea0d238093
 }

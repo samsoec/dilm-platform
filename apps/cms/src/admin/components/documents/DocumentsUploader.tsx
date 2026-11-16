@@ -16,6 +16,7 @@ import {
   checkDocumentFile,
   DOCUMENT_LIMIT_TEXT,
   MEDIA_LIBRARY_LABEL,
+  nextQueued,
   percentDone,
   stoppedText,
   uploadingText,
@@ -25,7 +26,7 @@ type Entry = {
   key: number;
   file: File;
   percent: number;
-  state: "uploading" | "stopped" | "rejected";
+  state: "queued" | "uploading" | "stopped" | "rejected";
   message?: string;
   image?: boolean;
   abort?: AbortController;
@@ -44,6 +45,7 @@ export function DocumentsUploader() {
   } = useConfig();
   const input = useRef<HTMLInputElement>(null);
   const counter = useRef(0);
+  const started = useRef(new Set<number>());
   const [entries, setEntries] = useState<Entry[]>([]);
   const [dragging, setDragging] = useState(false);
   const canCreate = Boolean(permissions?.collections?.documents?.create);
@@ -65,6 +67,7 @@ export function DocumentsUploader() {
     async (key: number, file: File) => {
       const abort = new AbortController();
       let last = 0;
+      started.current.add(key);
       patch(key, { state: "uploading", percent: 0, abort, message: undefined });
       try {
         await uploadMedia({
@@ -125,13 +128,20 @@ export function DocumentsUploader() {
         }
         setEntries((list) => [
           ...list,
-          { key, file, percent: 0, state: "uploading" },
+          { key, file, percent: 0, state: "queued" },
         ]);
-        void send(key, file);
       }
     },
-    [canCreate, needsCompany, send],
+    [canCreate, needsCompany],
   );
+
+  useEffect(() => {
+    for (const entry of nextQueued(entries)) {
+      if (started.current.has(entry.key)) continue;
+      started.current.add(entry.key);
+      void send(entry.key, entry.file);
+    }
+  }, [entries, send]);
 
   useEffect(() => {
     if (!canCreate || needsCompany) return;
@@ -217,7 +227,9 @@ export function DocumentsUploader() {
               <MaterialIcon name="picture_as_pdf" />
               <div className="dil-doc-upload__text">
                 <b>{entry.file.name}</b>
-                {entry.state === "uploading" ? (
+                {entry.state === "queued" ? (
+                  <span>Waiting to upload</span>
+                ) : entry.state === "uploading" ? (
                   <>
                     <span>{uploadingText(entry.percent)}</span>
                     <progress
@@ -246,10 +258,14 @@ export function DocumentsUploader() {
                   </span>
                 )}
               </div>
-              {entry.state === "uploading" && (
+              {(entry.state === "uploading" || entry.state === "queued") && (
                 <button
                   className="dil-ir-file__link"
-                  onClick={() => entry.abort?.abort()}
+                  onClick={() =>
+                    entry.state === "queued"
+                      ? patch(entry.key, null)
+                      : entry.abort?.abort()
+                  }
                   type="button"
                 >
                   Cancel
@@ -264,7 +280,7 @@ export function DocumentsUploader() {
                   Retry
                 </button>
               )}
-              {entry.state !== "uploading" && (
+              {entry.state !== "uploading" && entry.state !== "queued" && (
                 <button
                   aria-label={`Dismiss ${entry.file.name}`}
                   className="dil-ir-file__link"
