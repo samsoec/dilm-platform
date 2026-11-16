@@ -5057,6 +5057,7 @@ export interface Redirect {
   /**
    * Leave empty to apply to all three sites.
    */
+  createdBy?: (number | null) | User;
   tenant?: (number | null) | Tenant;
   locale: 'en' | 'id';
   origin: 'auto' | 'manual';
@@ -7693,6 +7694,7 @@ export interface RedirectsSelect<T extends boolean = true> {
         externalUrl?: T;
         reference?: T;
       };
+  createdBy?: T;
   tenant?: T;
   locale?: T;
   origin?: T;

@@ -16,6 +16,7 @@ import { collectionLabels } from "./admin/labels";
 import { navGroup } from "./admin/navGroups";
 import { link } from "./fields/link";
 import { localization } from "./localization";
+import { checkManualRedirect, stampCreatedBy } from "./redirectRules";
 
 export const REDIRECT_ORIGINS = ["auto", "manual"] as const;
 
@@ -88,6 +89,11 @@ export function redirectFields(): Field[] {
       admin: {
         className: "dil-mono-input",
         description: "The path visitors used to reach, starting with /.",
+        components: {
+          afterInput: [
+            "/admin/components/redirects/RedirectFromHost#RedirectFromHost",
+          ],
+        },
       },
     },
     link({
@@ -96,6 +102,13 @@ export function redirectFields(): Field[] {
       required: true,
       withLabel: false,
     }),
+    {
+      name: "createdBy",
+      label: "Created by",
+      type: "relationship",
+      relationTo: "users",
+      admin: { hidden: true, readOnly: true },
+    },
     {
       type: "row",
       fields: [
@@ -152,10 +165,21 @@ export const redirectsOverrides = {
     update: changeOwnManualRedirects,
     delete: changeOwnManualRedirects,
   },
+  hooks: {
+    beforeValidate: [checkManualRedirect],
+    beforeChange: [stampCreatedBy],
+  },
   admin: {
     group: navGroup("settings"),
     useAsTitle: "from",
     defaultColumns: ["from", "to", "tenant", "locale", "origin"],
+    components: {
+      views: {
+        list: {
+          Component: "/admin/components/redirects/RedirectsView#RedirectsView",
+        },
+      },
+    },
   },
   indexes: [{ fields: ["tenant", "locale", "from"], unique: true }],
   custom: { nav: { icon: "alt_route", order: 4 } },

@@ -19,6 +19,7 @@ import {
   type PageCollection,
 } from "./paths";
 import { refId, scopedReq } from "./pageRules";
+import { SYSTEM_REDIRECT_WRITE } from "./redirectRules";
 import {
   asId,
   findReferrersOf,
@@ -406,6 +407,7 @@ export async function writeAutoRedirect(
 ): Promise<void> {
   if (from === to) return;
   const scoped = scopedReq(req);
+  scoped.context = { ...scoped.context, [SYSTEM_REDIRECT_WRITE]: true };
   const remove = (id: number | string) =>
     payload.delete({
       collection: "redirects" as CollectionSlug,
