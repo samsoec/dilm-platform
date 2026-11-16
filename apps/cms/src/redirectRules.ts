@@ -14,6 +14,8 @@ import { isInternalPath } from "./validation";
 
 export const CHAIN_LIMIT = 20;
 
+export const SYSTEM_REDIRECT_WRITE = "skipRedirectChecks";
+
 export const SELF_LOOP_MESSAGE =
   "The old address and the new address are the same, so visitors would go round in circles.";
 
@@ -27,6 +29,11 @@ export function duplicateMessage(from: string): string {
 export function normalizeFrom(value: string): string {
   const text = value.trim();
   return text.length > 1 ? text.replace(/\/+$/, "") || "/" : text;
+}
+
+export function normalizeTarget(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  return normalizeFrom(value.split(/[?#]/)[0]) || undefined;
 }
 
 export function fromProblem(from: string): string | undefined {
@@ -62,26 +69,28 @@ export function redirectProblem(
 ): RedirectProblem | undefined {
   const format = fromProblem(facts.from);
   if (format) return { path: "from", message: format };
+  const target = normalizeTarget(facts.targetPath);
   const others = known.filter(
     (row) => row.id !== facts.id && overlaps(row.tenant, facts.tenant),
   );
   if (others.some((row) => row.from === facts.from)) {
     return { path: "from", message: duplicateMessage(facts.from) };
   }
-  if (facts.targetPath === facts.from) {
+  if (target === facts.from) {
     return { path: "to", message: SELF_LOOP_MESSAGE };
   }
   const seen = new Set<string>();
-  let current = facts.targetPath;
+  let current = target;
   for (let hop = 0; current && hop < CHAIN_LIMIT; hop += 1) {
     if (seen.has(current)) break;
     seen.add(current);
     const next = others.find((row) => row.from === current);
-    if (!next?.targetPath) break;
-    if (next.targetPath === facts.from) {
+    const onward = normalizeTarget(next?.targetPath);
+    if (!onward) break;
+    if (onward === facts.from) {
       return { path: "to", message: CHAIN_LOOP_MESSAGE };
     }
-    current = next.targetPath;
+    current = onward;
   }
   return undefined;
 }
@@ -124,6 +133,43 @@ function tenantWhere(tenant: string | null): Where {
   };
 }
 
+function referenceOf(
+  link: LinkData | null | undefined,
+): { relationTo: string; id: string } | undefined {
+  if (link?.type !== "reference") return undefined;
+  const id = idOf(link.reference?.value);
+  const relationTo = link.reference?.relationTo;
+  return id && relationTo ? { relationTo, id } : undefined;
+}
+
+async function referencePaths(
+  req: PayloadRequest,
+  links: readonly (LinkData | null | undefined)[],
+  locale: string,
+): Promise<Map<string, string>> {
+  const wanted = new Map<string, { relationTo: string; id: string }>();
+  for (const link of links) {
+    const ref = referenceOf(link);
+    if (ref) wanted.set(`${ref.relationTo}:${ref.id}`, ref);
+  }
+  const found = new Map<string, string>();
+  if (wanted.size === 0) return found;
+  const rows = await storedRoutes(req.payload, req, {
+    and: [
+      { locale: { equals: locale } },
+      {
+        or: [...wanted.values()].map(({ relationTo, id }) => ({
+          doc: { equals: { relationTo, value: asId(id) } },
+        })),
+      },
+    ],
+  });
+  for (const row of rows) {
+    found.set(`${row.doc.relationTo}:${refId(row.doc.value)}`, row.path);
+  }
+  return found;
+}
+
 export async function knownRedirects(
   req: PayloadRequest,
   locale: string,
@@ -138,14 +184,25 @@ export async function knownRedirects(
     overrideAccess: true,
     req: scopedReq(req),
   });
-  return Promise.all(
-    (docs as unknown as StoredRedirect[]).map(async (row) => ({
+  const rows = docs as unknown as StoredRedirect[];
+  const paths = await referencePaths(
+    req,
+    rows.map((row) => row.to),
+    locale,
+  );
+  return rows.map((row) => {
+    const ref = referenceOf(row.to);
+    return {
       id: String(row.id),
       from: row.from,
       tenant: refId(row.tenant) ?? null,
-      targetPath: await routePathOf(req, row.to, locale),
-    })),
-  );
+      targetPath: ref
+        ? paths.get(`${ref.relationTo}:${ref.id}`)
+        : row.to?.type === "external"
+          ? undefined
+          : row.to?.internalPath || undefined,
+    };
+  });
 }
 
 type Draft = {
@@ -161,7 +218,7 @@ export const checkManualRedirect: CollectionBeforeValidateHook = async ({
   originalDoc,
   req,
 }) => {
-  if (!data) return data;
+  if (!data || req.context?.[SYSTEM_REDIRECT_WRITE]) return data;
   const merged = { ...(originalDoc as Draft | undefined), ...data } as Draft;
   if ((merged.origin ?? "manual") !== "manual") return data;
   const from = normalizeFrom(String(merged.from ?? ""));
@@ -186,18 +243,27 @@ export const checkManualRedirect: CollectionBeforeValidateHook = async ({
   return { ...data, from };
 };
 
+export function createdByValue(
+  operation: string,
+  origin: string | null | undefined,
+  userId: number | string | null | undefined,
+  existing: unknown,
+): unknown {
+  if (operation !== "create") return existing;
+  return (origin ?? "manual") === "manual" ? (userId ?? null) : null;
+}
+
 export const stampCreatedBy: CollectionBeforeChangeHook = ({
   data,
   operation,
   originalDoc,
   req,
-}) => {
-  const next = { ...data } as Record<string, unknown>;
-  if (operation === "create") {
-    next.createdBy = req.user?.id ?? null;
-  } else {
-    next.createdBy = (originalDoc as { createdBy?: unknown } | undefined)
-      ?.createdBy;
-  }
-  return next;
-};
+}) => ({
+  ...data,
+  createdBy: createdByValue(
+    operation,
+    (data as { origin?: string | null }).origin,
+    req.user?.id,
+    (originalDoc as { createdBy?: unknown } | undefined)?.createdBy,
+  ),
+});

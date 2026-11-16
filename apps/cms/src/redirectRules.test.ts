@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  checkManualRedirect,
+  createdByValue,
+  stampCreatedBy,
+  SYSTEM_REDIRECT_WRITE,
   CHAIN_LOOP_MESSAGE,
   duplicateMessage,
   fromProblem,
@@ -84,5 +88,88 @@ describe("redirectProblem", () => {
   it("ends on a chain that never comes back", () => {
     const known = [row({ id: "5", from: "/new", targetPath: "/mid" })];
     expect(redirectProblem(facts(), known)).toBeUndefined();
+  });
+});
+
+describe("redirectProblem with sloppy targets", () => {
+  it("catches a target with a trailing slash, query or hash", () => {
+    for (const targetPath of ["/old/", "/old?x=1", "/old#top"]) {
+      expect(redirectProblem(facts({ targetPath }), [])).toMatchObject({
+        path: "to",
+      });
+    }
+  });
+
+  it("catches a chain loop through a sloppy target", () => {
+    const known = [row({ id: "5", from: "/new", targetPath: "/old/" })];
+    expect(redirectProblem(facts(), known)).toMatchObject({ path: "to" });
+  });
+});
+
+describe("createdByValue", () => {
+  it("stamps a manual create by a user", () => {
+    expect(createdByValue("create", "manual", 7, undefined)).toBe(7);
+    expect(createdByValue("create", undefined, 7, undefined)).toBe(7);
+  });
+
+  it("leaves automatic rows without an author", () => {
+    expect(createdByValue("create", "auto", 7, undefined)).toBeNull();
+  });
+
+  it("keeps the stored author on update", () => {
+    expect(createdByValue("update", "manual", 9, 7)).toBe(7);
+  });
+});
+
+describe("redirect hooks", () => {
+  const find = () => {
+    throw new Error("must not read");
+  };
+  const system = {
+    user: { id: 7 },
+    context: { [SYSTEM_REDIRECT_WRITE]: true },
+    payload: { find },
+  };
+
+  it("does not stamp an automatic row made during an editor's rename", () => {
+    const out = stampCreatedBy({
+      data: { origin: "auto" },
+      operation: "create",
+      originalDoc: undefined,
+      req: system,
+    } as never) as { createdBy: unknown };
+    expect(out.createdBy).toBeNull();
+  });
+
+  it("stamps a manual create by an editor", () => {
+    const out = stampCreatedBy({
+      data: { origin: "manual" },
+      operation: "create",
+      originalDoc: undefined,
+      req: { user: { id: 7 }, context: {} },
+    } as never) as { createdBy: unknown };
+    expect(out.createdBy).toBe(7);
+  });
+
+  it("lets the cascade update a legacy manual row without validating it", async () => {
+    const data = { from: "bad", origin: "manual", to: { type: "internal" } };
+    await expect(
+      checkManualRedirect({
+        data,
+        originalDoc: { id: 1, origin: "manual", locale: "en" },
+        req: system,
+      } as never),
+    ).resolves.toBe(data);
+  });
+
+  it("still validates a manual create by an editor", async () => {
+    const payload = { find: async () => ({ docs: [] }) };
+    await expect(
+      checkManualRedirect({
+        data: { from: "bad", origin: "manual", locale: "en", tenant: 2 },
+        originalDoc: undefined,
+        req: { user: { id: 7 }, context: {}, payload },
+      } as never),
+    ).rejects.toThrow();
   });
 });
