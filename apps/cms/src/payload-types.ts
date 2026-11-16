@@ -1063,16 +1063,13 @@ export interface Product {
         }[]
       | null;
   };
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
   meta?: {
     title?: string | null;
     description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
     image?: (number | null) | Media;
   };
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1091,15 +1088,15 @@ export interface Document {
    * Visitors download the file under this name, with .pdf added.
    */
   title: string;
-  downloadName?: string | null;
+  createdAt: string;
   usedInCount?: number | null;
   linkStatus?: string | null;
+  downloadName?: string | null;
   uploadedBy?: (number | null) | User;
   trashedBy?: (number | null) | User;
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
-  createdAt: string;
   deletedAt?: string | null;
   url?: string | null;
   thumbnailURL?: string | null;
@@ -1168,13 +1165,7 @@ export interface Solution {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Pick from every company's published products. The order here is the order shown.
-   */
   supportingProducts?: (number | Product)[] | null;
-  /**
-   * Optional. It has to be one of the supporting products. Empty uses the first one.
-   */
   featuredProduct?: (number | null) | Product;
   impact?: {
     /**
@@ -1338,9 +1329,6 @@ export interface Post {
    */
   order?: number | null;
   title: string;
-  /**
-   * The post's address follows its category. Changing it moves the post and leaves a redirect from the old address.
-   */
   primaryCategory: number | Category;
   publishedAt?: string | null;
   coverImage?: (number | null) | Media;
@@ -5054,6 +5042,7 @@ export interface Redirect {
           value: number | Category;
         } | null);
   };
+  createdBy?: (number | null) | User;
   /**
    * Leave empty to apply to all three sites.
    */
@@ -5499,15 +5488,15 @@ export interface IrDocumentsSelect<T extends boolean = true> {
 export interface DocumentsSelect<T extends boolean = true> {
   tenant?: T;
   title?: T;
-  downloadName?: T;
+  createdAt?: T;
   usedInCount?: T;
   linkStatus?: T;
+  downloadName?: T;
   uploadedBy?: T;
   trashedBy?: T;
   prefix?: T;
   _objectKey?: T;
   updatedAt?: T;
-  createdAt?: T;
   deletedAt?: T;
   url?: T;
   thumbnailURL?: T;
@@ -7390,8 +7379,6 @@ export interface ProductsSelect<T extends boolean = true> {
               id?: T;
             };
       };
-  updatedBy?: T;
-  trashedBy?: T;
   meta?:
     | T
     | {
@@ -7399,6 +7386,8 @@ export interface ProductsSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
+  updatedBy?: T;
+  trashedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -7693,6 +7682,7 @@ export interface RedirectsSelect<T extends boolean = true> {
         externalUrl?: T;
         reference?: T;
       };
+  createdBy?: T;
   tenant?: T;
   locale?: T;
   origin?: T;

@@ -1,0 +1,56 @@
+@layer dil {
+  .dil-redirects__filters {
+    margin-bottom: 16px;
+  }
+
+  .dil-redirects__name {
+    display: block;
+    font-weight: 600;
+  }
+
+  .dil-redirects__path {
+    color: var(--dil-muted);
+    font-size: 12px;
+  }
+
+  .dil-redirects__by {
+    display: block;
+    color: var(--dil-muted);
+    font-size: 12px;
+  }
+
+  .dil-redirects__row--live {
+    background: var(--dil-warn-bg);
+  }
+
+  .dil-redirects__live {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 6px 0 0;
+    color: var(--dil-warn);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .dil-redirects__actions {
+    display: inline-flex;
+    gap: 12px;
+  }
+
+  .dil-redirects__action {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-brand);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .dil-redirects__host {
+    display: block;
+    margin-top: 4px;
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+}

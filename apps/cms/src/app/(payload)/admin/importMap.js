@@ -230,6 +230,8 @@ import { DocumentsUploader as DocumentsUploader_24733135f9fc4d236948a0ea0d238093
 import { RoutingNote as RoutingNote_1ff0c5a193a1186ec5b3d906d2f52272 } from '../../../admin/components/routing/RoutingNote'
 import { RoutingSaveButton as RoutingSaveButton_57e2beb302d71fdb56104b50c79850c0 } from '../../../admin/components/routing/RoutingSaveButton'
 import { SiteRoutingHeader as SiteRoutingHeader_b5a58f2d2c5f19c6e5561da0ea3d2b86 } from '../../../admin/components/routing/SiteRoutingHeader'
+import { RedirectsView as RedirectsView_f330f08567f40773692e2b02822dcb62 } from '../../../admin/components/redirects/RedirectsView'
+import { RedirectFromHost as RedirectFromHost_ebbd57adba0cc715e1061e2013750200 } from '../../../admin/components/redirects/RedirectFromHost'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -462,5 +464,7 @@ export const importMap = {
   "/admin/components/documents/DocumentsUploader#DocumentsUploader": DocumentsUploader_24733135f9fc4d236948a0ea0d238093,
   "/admin/components/routing/RoutingNote#RoutingNote": RoutingNote_1ff0c5a193a1186ec5b3d906d2f52272,
   "/admin/components/routing/RoutingSaveButton#RoutingSaveButton": RoutingSaveButton_57e2beb302d71fdb56104b50c79850c0,
-  "/admin/components/routing/SiteRoutingHeader#SiteRoutingHeader": SiteRoutingHeader_b5a58f2d2c5f19c6e5561da0ea3d2b86
+  "/admin/components/routing/SiteRoutingHeader#SiteRoutingHeader": SiteRoutingHeader_b5a58f2d2c5f19c6e5561da0ea3d2b86,
+  "/admin/components/redirects/RedirectsView#RedirectsView": RedirectsView_f330f08567f40773692e2b02822dcb62,
+  "/admin/components/redirects/RedirectFromHost#RedirectFromHost": RedirectFromHost_ebbd57adba0cc715e1061e2013750200
 }
