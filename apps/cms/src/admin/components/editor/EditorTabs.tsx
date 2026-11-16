@@ -23,7 +23,7 @@ import {
 import { seoView, type SeoDefaults } from "./seo";
 import { useLocale } from "@payloadcms/ui";
 
-function useTabButtons(): HTMLElement[] {
+export function useTabButtons(): HTMLElement[] {
   const [buttons, setButtons] = useState<HTMLElement[]>([]);
   useEffect(() => {
     const find = () => {

@@ -926,7 +926,7 @@ export interface Product {
   shortDescription?: string | null;
   image?: (number | null) | Media;
   /**
-   * Subscript and superscript only, like H₂SO₄. Pasted bold, italic or links are turned into plain text.
+   * Select a number and press ⌘, for subscript, ⌘. for superscript.
    */
   formula?: {
     root: {
@@ -985,9 +985,6 @@ export interface Product {
   variants?:
     | {
         name: string;
-        /**
-         * Leave empty to use the product's formula. Subscript and superscript only.
-         */
         formula?: {
           root: {
             type: string;
@@ -1003,13 +1000,7 @@ export interface Product {
           };
           [k: string]: unknown;
         } | null;
-        /**
-         * Leave empty to use the product's CAS number.
-         */
         casNumber?: string | null;
-        /**
-         * Leave empty to use the product's classification.
-         */
         classification?: string | null;
         packaging?: string | null;
         specs?:
@@ -1072,16 +1063,13 @@ export interface Product {
         }[]
       | null;
   };
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
   meta?: {
     title?: string | null;
     description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
     image?: (number | null) | Media;
   };
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -7398,8 +7386,6 @@ export interface ProductsSelect<T extends boolean = true> {
               id?: T;
             };
       };
-  updatedBy?: T;
-  trashedBy?: T;
   meta?:
     | T
     | {
@@ -7407,6 +7393,8 @@ export interface ProductsSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
+  updatedBy?: T;
+  trashedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
