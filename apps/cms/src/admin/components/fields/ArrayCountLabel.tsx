@@ -4,6 +4,7 @@ import { useFormFields } from "@payloadcms/ui";
 import type { ArrayField } from "payload";
 
 import { countText } from "../../layoutEditor";
+import { sectionArrayLabel } from "../../sectionKit";
 
 function labelText(label: unknown, name: string): string {
   if (typeof label === "string") return label;
@@ -30,12 +31,18 @@ export const ArrayCountLabel = ({
   );
   return (
     <span className="dil-array-count">
-      {countText(
-        labelText(field?.label, name),
-        count,
-        field?.maxRows,
-        !inSection && fieldPath.includes("."),
-      )}
+      {inSection
+        ? sectionArrayLabel(
+            labelText(field?.label, name),
+            count,
+            field?.maxRows,
+          )
+        : countText(
+            labelText(field?.label, name),
+            count,
+            field?.maxRows,
+            fieldPath.includes("."),
+          )}
     </span>
   );
 };

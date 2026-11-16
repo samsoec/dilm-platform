@@ -48,6 +48,9 @@ export function italicHeadingField(
     hooks: { beforeValidate: [cleanHeading] },
     editor: italicOnlyEditor(),
     admin: {
+      components: {
+        afterInput: ["/admin/components/fields/SectionKit#TitleNotice"],
+      },
       description:
         description ??
         "Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.",

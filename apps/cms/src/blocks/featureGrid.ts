@@ -6,6 +6,7 @@ import {
   headingField,
   iconField,
   imageField,
+  variantField,
   whenBlock,
 } from "./factories";
 import { sectionBlock } from "./sectionBlock";
@@ -78,28 +79,27 @@ export const featureGrid = sectionBlock({
         }),
       ],
     },
-    {
+    variantField({
       name: "markerStyle",
-      type: "select",
-      required: true,
+      label: "Marker style",
       defaultValue: "icon",
-      options: [
+      chips: true,
+      choices: [
         { value: "icon", label: "Icon" },
         { value: "number", label: "Number" },
         { value: "letter", label: "Letter" },
         { value: "none", label: "None" },
       ],
-    },
-    {
+    }),
+    variantField({
       name: "cardStyle",
-      type: "select",
-      required: true,
+      label: "Card style",
       defaultValue: "card",
-      options: [
+      choices: [
         { value: "card", label: "Cards" },
         { value: "plain", label: "Plain" },
       ],
-    },
+    }),
     {
       name: "columns",
       type: "select",
