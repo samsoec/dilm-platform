@@ -192,6 +192,7 @@ import { SignOutScreen as SignOutScreen_ccdb22b60be80390756933282f929812 } from 
 import { SessionExpiredScreen as SessionExpiredScreen_ccdb22b60be80390756933282f929812 } from '../../../admin/components/login/SignOutScreen'
 import { ForgotScreen as ForgotScreen_39023fe4840fc2cf8a8f39c76b3ae8dc } from '../../../admin/components/login/ForgotScreen'
 import { ResetScreen as ResetScreen_d97d58d07e5d60bb290d849f7a96134d } from '../../../admin/components/login/ResetScreen'
+import { UntranslatedView as UntranslatedView_9bbcced39756e4e4b31947bca65efb79 } from '../../../admin/components/dashboard/UntranslatedView'
 import { AccountView as AccountView_19c2597698600b855c26411007192717 } from '../../../admin/components/account/AccountView'
 import { NeedsAttentionWidget as NeedsAttentionWidget_ea192f5d98e48dd0016d07dce773fb5d } from '../../../admin/components/dashboard/NeedsAttention'
 import { TranslationWidget as TranslationWidget_f2fa3a2f832d3dee7a4aabf3599be638 } from '../../../admin/components/dashboard/Translation'
@@ -433,6 +434,7 @@ export const importMap = {
   "/admin/components/login/SignOutScreen#SessionExpiredScreen": SessionExpiredScreen_ccdb22b60be80390756933282f929812,
   "/admin/components/login/ForgotScreen#ForgotScreen": ForgotScreen_39023fe4840fc2cf8a8f39c76b3ae8dc,
   "/admin/components/login/ResetScreen#ResetScreen": ResetScreen_d97d58d07e5d60bb290d849f7a96134d,
+  "/admin/components/dashboard/UntranslatedView#UntranslatedView": UntranslatedView_9bbcced39756e4e4b31947bca65efb79,
   "/admin/components/account/AccountView#AccountView": AccountView_19c2597698600b855c26411007192717,
   "/admin/components/dashboard/NeedsAttention#NeedsAttentionWidget": NeedsAttentionWidget_ea192f5d98e48dd0016d07dce773fb5d,
   "/admin/components/dashboard/Translation#TranslationWidget": TranslationWidget_f2fa3a2f832d3dee7a4aabf3599be638,

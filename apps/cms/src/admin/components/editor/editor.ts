@@ -31,6 +31,14 @@ export const VISITOR_LABELS: Record<VisitorMode, string> = {
   forward: "Forward to another page",
 };
 
+export const SECTIONS_LOCKED_BANNER =
+  "Editing Indonesian. Section order, list rows, picked records, variants and link targets are shared with English and locked here. Only text and slugs change.";
+
+export const MISSING_SLUG_NOTE =
+  "This page has no Indonesian slug yet, so its address uses the English slug.";
+
+export const LOCKED_SUFFIX = "· locked";
+
 export type RedirectValue = {
   type?: string | null;
   internalPath?: string | null;

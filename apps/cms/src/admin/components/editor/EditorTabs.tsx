@@ -15,11 +15,14 @@ import { MAX_LAYOUT_BLOCKS } from "@dilm/shared-types";
 import { Banner } from "../kit/Banner";
 import { MaterialIcon } from "../MaterialIcon";
 import {
+  LOCKED_SUFFIX,
   sectionCountText,
   sectionsKeptNote,
   sectionsTabText,
   TAB_BUTTON_SELECTOR,
 } from "./editor";
+import { IdEditingNotes } from "./IdEditingNotes";
+import { useLockedStructure } from "../fields/useLockedStructure";
 import { seoView, type SeoDefaults } from "./seo";
 import { useLocale } from "@payloadcms/ui";
 
@@ -123,6 +126,7 @@ export function SectionsPanel({ sections }: { sections: number }) {
   const { getEntityConfig } = useConfig();
   const { code } = useLocale();
   const selectId = useId();
+  const locked = useLockedStructure();
   const count = rows?.length ?? sections;
 
   if (forwards) return <SectionsKept count={sections} />;
@@ -155,45 +159,49 @@ export function SectionsPanel({ sections }: { sections: number }) {
   };
 
   return (
-    <div className="dil-sections-bar">
-      <span className="dil-sections-bar__count">
-        {sectionCountText(count, MAX_LAYOUT_BLOCKS)}
-      </span>
-      {rows.length > 1 && (
-        <span className="dil-sections-bar__jump">
-          <label htmlFor={selectId}>Jump to</label>
-          <select
-            id={selectId}
-            onChange={(event) => {
-              const index = Number(event.target.value);
-              event.target.value = "";
-              if (!Number.isNaN(index)) jump(index);
-            }}
-            value=""
-          >
-            <option value="">Section…</option>
-            {rows.map((row, index) => (
-              <option key={row.id} value={index}>
-                {String(index + 1).padStart(2, "0")}{" "}
-                {layout
-                  ? blockLabel(layout.blocks, row.blockType, code)
-                  : row.blockType}
-              </option>
-            ))}
-          </select>
+    <>
+      {locked && <IdEditingNotes />}
+      <div className="dil-sections-bar">
+        <span className="dil-sections-bar__count">
+          {sectionCountText(count, MAX_LAYOUT_BLOCKS)}
+          {locked && ` ${LOCKED_SUFFIX}`}
         </span>
-      )}
-      {rows.length > 0 && (
-        <button
-          className="dil-sections-bar__toggle"
-          onClick={() => setAll(!allCollapsed)}
-          type="button"
-        >
-          <MaterialIcon name={allCollapsed ? "unfold_more" : "unfold_less"} />
-          {allCollapsed ? "Expand all" : "Collapse all"}
-        </button>
-      )}
-    </div>
+        {rows.length > 1 && (
+          <span className="dil-sections-bar__jump">
+            <label htmlFor={selectId}>Jump to</label>
+            <select
+              id={selectId}
+              onChange={(event) => {
+                const index = Number(event.target.value);
+                event.target.value = "";
+                if (!Number.isNaN(index)) jump(index);
+              }}
+              value=""
+            >
+              <option value="">Section…</option>
+              {rows.map((row, index) => (
+                <option key={row.id} value={index}>
+                  {String(index + 1).padStart(2, "0")}{" "}
+                  {layout
+                    ? blockLabel(layout.blocks, row.blockType, code)
+                    : row.blockType}
+                </option>
+              ))}
+            </select>
+          </span>
+        )}
+        {rows.length > 0 && (
+          <button
+            className="dil-sections-bar__toggle"
+            onClick={() => setAll(!allCollapsed)}
+            type="button"
+          >
+            <MaterialIcon name={allCollapsed ? "unfold_more" : "unfold_less"} />
+            {allCollapsed ? "Expand all" : "Collapse all"}
+          </button>
+        )}
+      </div>
+    </>
   );
 }
 

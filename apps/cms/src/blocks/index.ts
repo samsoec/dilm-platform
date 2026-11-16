@@ -1,3 +1,4 @@
+import { lockStructure } from "../fields/structure";
 import type { Block } from "payload";
 
 import { heroCarousel } from "./heroCarousel";
@@ -46,7 +47,7 @@ export {
   type SectionBlockConfig,
 } from "./sectionBlock";
 
-export const pageBlocks: Block[] = [
+const sharedBlocks: Block[] = [
   heroCarousel,
   pageHero,
   mediaText,
@@ -85,3 +86,8 @@ export const pageBlocks: Block[] = [
   publicationHero,
   postListing,
 ];
+
+export const pageBlocks: Block[] = sharedBlocks.map((block) => ({
+  ...block,
+  fields: lockStructure(block.fields),
+}));

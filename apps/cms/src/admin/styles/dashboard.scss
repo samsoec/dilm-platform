@@ -408,4 +408,50 @@
     font-size: 11px;
     font-weight: 700;
   }
+
+  .dil-untranslated {
+    display: grid;
+    gap: 12px;
+    font-family: var(--dil-font-sans);
+    color: var(--dil-ink);
+  }
+
+  .dil-untranslated__back {
+    color: var(--dil-brand-ink);
+    font-size: 14px;
+  }
+
+  .dil-untranslated__title {
+    margin: 0;
+    font-size: 24px;
+  }
+
+  .dil-untranslated__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--dil-line);
+    border-radius: 8px;
+  }
+
+  .dil-untranslated__item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 16px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--dil-line);
+    color: var(--dil-ink);
+    font-size: 14px;
+    text-decoration: none;
+
+    &:hover .dil-untranslated__name {
+      color: var(--dil-brand-ink);
+      text-decoration: underline;
+    }
+  }
+
+  .dil-untranslated__left,
+  .dil-untranslated__slug {
+    color: var(--dil-muted);
+  }
 }

@@ -737,3 +737,15 @@
     }
   }
 }
+
+@layer dil {
+  .dil-link-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--dil-brand-ink);
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}

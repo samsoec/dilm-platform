@@ -67,6 +67,11 @@ export async function cmsConfig(client: PayloadClient) {
           account: {
             Component: "/admin/components/account/AccountView#AccountView",
           },
+          translation: {
+            Component:
+              "/admin/components/dashboard/UntranslatedView#UntranslatedView",
+            path: "/translation/:source",
+          },
         },
         graphics: {
           Icon: "/admin/graphics/Icon#Icon",

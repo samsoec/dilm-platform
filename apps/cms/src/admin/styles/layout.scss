@@ -1064,3 +1064,30 @@
     font-weight: 600;
   }
 }
+
+@layer dil {
+  [data-structure-locked] .dil-catalog-add,
+  [data-structure-locked] .dil-layout-field .array-actions,
+  [data-structure-locked] .dil-layout-field .collapsible__drag {
+    display: none;
+  }
+
+  .dil-section-row__locked {
+    margin-left: auto;
+    color: var(--dil-muted);
+    font-size: 13px;
+  }
+
+  [data-structure-locked]
+    .dil-layout-field
+    .field-type.read-only
+    > .field-label::after,
+  [data-structure-locked]
+    .dil-layout-field
+    .field-type.read-only
+    > label::after {
+    content: " · locked";
+    color: var(--dil-muted);
+    font-weight: 400;
+  }
+}

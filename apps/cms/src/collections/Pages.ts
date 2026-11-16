@@ -1,4 +1,5 @@
 import { publishImpactEndpoint } from "../publish/impact";
+import { keepSectionStructure } from "../fields/structure";
 import {
   trashByEditorsDeleteBySuperAdmins,
   readPublishedOrMembers,
@@ -76,6 +77,7 @@ export const Pages = withTenantAccess(
             rejectTokensOutsideTemplates,
           ],
           beforeChange: [
+            keepSectionStructure,
             rejectOversizedCascade,
             freshBreadcrumbIds,
             beginLiveChange,

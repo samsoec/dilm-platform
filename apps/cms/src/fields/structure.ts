@@ -25,6 +25,15 @@ function lockField(field: Field): Field {
       })),
     };
   }
+  if (field.type === "blocks") {
+    return {
+      ...field,
+      blocks: field.blocks.map((block) => ({
+        ...block,
+        fields: lockStructure(block.fields),
+      })),
+    };
+  }
   if ("fields" in field) {
     return { ...field, fields: lockStructure(field.fields) } as Field;
   }
@@ -83,31 +92,36 @@ function rowTree(value: unknown): Record<string, RowTree> {
 export function changedRowStructure(
   data: Record<string, unknown>,
   original: Record<string, unknown> | undefined,
+  only?: readonly string[],
 ): string[] {
   const before = rowTree(original);
   return Object.entries(rowTree(data))
     .filter(
       ([path, rows]) =>
+        (!only || only.includes(path)) &&
         JSON.stringify(rows) !== JSON.stringify(before[path] ?? []),
     )
     .map(([path]) => path);
 }
 
-export const keepRowStructure: CollectionBeforeChangeHook = ({
-  data,
-  operation,
-  originalDoc,
-  req,
-}) => {
-  if (operation !== "update" || isDefaultLocale(req.locale)) return data;
-  const changed = changedRowStructure(data, originalDoc);
-  if (changed.length > 0) {
-    throw new APIError(
-      `Rows can only be added, removed or reordered in English (${changed.join(", ")}). Switch the content language to EN.`,
-      400,
-      undefined,
-      true,
-    );
-  }
-  return data;
-};
+export function keepRowStructureIn(
+  only?: readonly string[],
+): CollectionBeforeChangeHook {
+  return ({ data, operation, originalDoc, req }) => {
+    if (operation !== "update" || isDefaultLocale(req.locale)) return data;
+    const changed = changedRowStructure(data, originalDoc, only);
+    if (changed.length > 0) {
+      throw new APIError(
+        `Rows can only be added, removed or reordered in English (${changed.join(", ")}). Switch the content language to EN.`,
+        400,
+        undefined,
+        true,
+      );
+    }
+    return data;
+  };
+}
+
+export const keepRowStructure = keepRowStructureIn();
+
+export const keepSectionStructure = keepRowStructureIn(["layout"]);
