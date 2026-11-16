@@ -28,6 +28,8 @@ import {
   translationLine,
   type LinkEntry,
 } from "./editor";
+import { PREVIEW_LISTING_TITLE } from "../publication/publication";
+import { PublicationPanel } from "../publication/PublicationPanel";
 import { useLiveStatus } from "./EditorHeader";
 
 const UNPUBLISH_SLUG = "dil-editor-unpublish";
@@ -49,6 +51,7 @@ export type SidebarProps = {
   childCount: number;
   languageName: string;
   otherLanguage: { code: string; label: string } | null;
+  publicationPage?: boolean;
 };
 
 function Panel({
@@ -239,6 +242,15 @@ export function EditorSidebar(props: SidebarProps) {
           {where.text}
         </p>
       </Panel>
+
+      {props.publicationPage && (
+        <>
+          <PublicationPanel />
+          <Panel id="dil-panel-listing" title={PREVIEW_LISTING_TITLE}>
+            <PreviewEntries collection={props.collection} id={id} />
+          </Panel>
+        </>
+      )}
 
       {props.collection === "shared-pages" && (
         <Panel id="dil-panel-preview" title="Preview on">

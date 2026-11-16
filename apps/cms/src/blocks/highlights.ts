@@ -4,11 +4,13 @@ import { MAX_HIGHLIGHTS } from "@dilm/shared-types";
 import { withSameAsEnTag } from "../fields/layoutEditor";
 import { pickerScope, validateManyPicks } from "../fields/recordPicks";
 import { unscopedRelationship } from "../tenancy";
+import { LIMIT_REACHED_NOTE } from "../admin/components/publication/publication";
 import { RECORD_PICKS_FIELD } from "./factories";
 
 export function highlightsField(description: string): GroupField {
   return {
     name: "highlights",
+    label: "Highlighted Updates",
     type: "group",
     admin: { description },
     fields: [
@@ -25,7 +27,16 @@ export function highlightsField(description: string): GroupField {
         filterOptions: pickerScope,
         validate: validateManyPicks,
         admin: {
-          components: { Field: RECORD_PICKS_FIELD },
+          components: {
+            Field: {
+              path: RECORD_PICKS_FIELD,
+              clientProps: {
+                addLabel: "Add post",
+                limitNote: LIMIT_REACHED_NOTE,
+                showCount: true,
+              },
+            },
+          },
           description: `Up to ${MAX_HIGHLIGHTS} published posts of this company.`,
         },
       }),

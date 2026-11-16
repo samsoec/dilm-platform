@@ -1,7 +1,7 @@
 "use client";
 
 import { FieldLabel, useField, useFormFields, useLocale } from "@payloadcms/ui";
-import type { RelationshipFieldClientComponent } from "payload";
+import type { RelationshipFieldClientProps } from "payload";
 import { useEffect, useState } from "react";
 
 import type { PickerDoc } from "../../linkPicker";
@@ -17,6 +17,7 @@ import {
 import { MaterialIcon } from "../MaterialIcon";
 import { useUnsavedChangesGuard } from "../guard/UnsavedChangesProvider";
 import { ReachBadge } from "../kit/ReachBadge";
+import { highlightsCount } from "../publication/publication";
 import { RecordPicker } from "./RecordPicker";
 
 type Stored = number | string | { id: number | string };
@@ -55,10 +56,17 @@ function useDocs(collection: PickCollection, ids: string[]) {
   return docs;
 }
 
-export const RecordPicksField: RelationshipFieldClientComponent = ({
+export const RecordPicksField = ({
   field,
   path,
   readOnly,
+  addLabel,
+  limitNote,
+  showCount,
+}: RelationshipFieldClientProps & {
+  addLabel?: string;
+  limitNote?: string;
+  showCount?: boolean;
 }) => {
   const fieldPath = path ?? field.name;
   const relation = Array.isArray(field.relationTo)
@@ -98,6 +106,9 @@ export const RecordPicksField: RelationshipFieldClientComponent = ({
   return (
     <div className="field-type dil-record-picks">
       <FieldLabel label={field.label} path={fieldPath} />
+      {showCount && max && (
+        <p className="dil-record-picks__count">{highlightsCount(ids.length)}</p>
+      )}
       <ol className="dil-record-picks__list">
         {ids.map((id, index) => {
           const doc = docs[id];
@@ -172,8 +183,14 @@ export const RecordPicksField: RelationshipFieldClientComponent = ({
           type="button"
         >
           <MaterialIcon name="add" />
-          Pick {collection}
+          {addLabel ?? `Pick ${collection}`}
         </button>
+      )}
+      {limitNote && !readOnly && max && ids.length >= max && (
+        <p className="dil-field-note" role="status">
+          <MaterialIcon name="block" />
+          {limitNote}
+        </p>
       )}
       {open && (
         <RecordPicker

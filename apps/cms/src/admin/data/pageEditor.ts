@@ -68,6 +68,7 @@ export type PageEditorData = {
   forwards: boolean;
   links: LinkEntry[];
   translation: TranslationCount;
+  publicationPage: boolean;
 };
 
 const UNTRANSLATED_SKIP = new Set(["slug", "path"]);
@@ -172,6 +173,30 @@ async function seoDefaults(
         ? { id: image.id, filename: image.filename ?? null }
         : null,
   };
+}
+
+async function isPublicationPage(
+  { payload, user }: Context,
+  collection: PageCollection,
+  tenant: string | null,
+  id: string,
+): Promise<boolean> {
+  if (collection !== "pages" || tenant === null) return false;
+  const {
+    docs: [settings],
+  } = await payload.find({
+    collection: "tenant-settings",
+    where: { tenant: { equals: tenant } },
+    limit: 1,
+    depth: 0,
+    select: { routing: true },
+    overrideAccess: false,
+    user,
+  });
+  const routing = (
+    settings as { routing?: { publicationPage?: unknown } } | undefined
+  )?.routing;
+  return idText(routing?.publicationPage) === id;
 }
 
 async function menuLinks({ payload, user }: Context, tenant: string | null) {
@@ -295,6 +320,7 @@ async function load(
     links,
     ancestorTitles,
     sites,
+    publicationPage,
   ] = await Promise.all([
     tenant === null
       ? undefined
@@ -361,6 +387,7 @@ async function load(
       locale,
     ),
     collection === "shared-pages" ? allSites(context) : [],
+    isPublicationPage(context, collection, tenant, id),
   ]);
 
   const savedBy = idText(doc.updatedBy);
@@ -409,6 +436,7 @@ async function load(
     forwards: hasRedirect(doc as Parameters<typeof hasRedirect>[0]),
     links,
     translation: countTranslations(fields, doc),
+    publicationPage,
   };
 }
 
@@ -447,6 +475,7 @@ export function blankEditorData(
     forwards: false,
     links: [],
     translation: { translated: 0, total: 0 },
+    publicationPage: false,
     ...overrides,
   };
 }

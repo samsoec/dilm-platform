@@ -1,0 +1,137 @@
+@layer dil {
+  .dil-editor-header__tag {
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .dil-publication-list {
+    margin: 0 0 8px;
+    padding-left: 18px;
+    color: var(--dil-ink);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+  }
+
+  .dil-category-tabs__count,
+  .dil-record-picks__count {
+    margin: 0 0 6px;
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+  }
+
+  .dil-category-tabs__list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dil-category-tabs__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-category-tabs__item--locked {
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+  }
+
+  .dil-category-tabs__name {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dil-category-tabs__meta,
+  .dil-category-tabs__position {
+    color: var(--dil-muted);
+    font-size: 12px;
+  }
+
+  .dil-category-tabs__handle,
+  .dil-category-tabs__remove {
+    display: inline-flex;
+    padding: 2px;
+    border: 0;
+    background: none;
+    color: var(--dil-muted);
+    cursor: pointer;
+  }
+
+  .dil-category-tabs__add {
+    margin-top: 8px;
+  }
+
+  .dil-token-chips {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-token-chips__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dil-token-chips__insert {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: none;
+    color: var(--dil-ink);
+    cursor: pointer;
+  }
+
+  .dil-token-chips__list {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+  }
+
+  .dil-token-chips__option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 0;
+    background: none;
+    color: var(--dil-ink);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .dil-token-chips__error {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    color: var(--dil-danger);
+    font-size: 13px;
+  }
+
+  .dil-token-chip--bad {
+    background: none;
+    color: var(--dil-danger);
+    outline: 1px solid var(--dil-danger);
+  }
+}
