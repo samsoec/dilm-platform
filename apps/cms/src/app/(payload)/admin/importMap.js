@@ -78,7 +78,7 @@ import { ApplicationView as ApplicationView_dadab5058eb4d2024b8c7d5fc6e34474 } f
 import { LocaleBanner as LocaleBanner_6e922f404c87f00d1c61cd1cda241d71 } from '../../../admin/components/fields/LocaleBanner'
 import { ValidationSummary as ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2 } from '../../../admin/components/fields/ValidationSummary'
 import { SourcedFromPanel as SourcedFromPanel_5c55509d5c0ba2360d16a128794e5b0d } from '../../../admin/components/fields/SourcedFromPanel'
-import { LinkTargetField as LinkTargetField_7f1c0a2d9e4b4c58a1d3b6e5f8092a41 } from '../../../admin/components/fields/LinkTargetField'
+import { LinkTargetField as LinkTargetField_459ef087053a8172042ceb7f64d0ce6d } from '../../../admin/components/fields/LinkTargetField'
 import { NavTypeField as NavTypeField_8694bf897a6746ab2199d0709a24c346 } from '../../../admin/components/fields/NavTypeField'
 import { PathPrefix as PathPrefix_ee56f462e1df17b24b760ddd7386e5b7 } from '../../../admin/components/fields/PathPrefix'
 import { SameAsEnTag as SameAsEnTag_4e5f1095615c1ec350a3e95bc7f13ee9 } from '../../../admin/components/fields/SameAsEnTag'
@@ -246,7 +246,7 @@ export const importMap = {
   "/admin/components/fields/LocaleBanner#LocaleBanner": LocaleBanner_6e922f404c87f00d1c61cd1cda241d71,
   "/admin/components/fields/ValidationSummary#ValidationSummary": ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2,
   "/admin/components/fields/SourcedFromPanel#SourcedFromPanel": SourcedFromPanel_5c55509d5c0ba2360d16a128794e5b0d,
-  "/admin/components/fields/LinkTargetField#LinkTargetField": LinkTargetField_7f1c0a2d9e4b4c58a1d3b6e5f8092a41,
+  "/admin/components/fields/LinkTargetField#LinkTargetField": LinkTargetField_459ef087053a8172042ceb7f64d0ce6d,
   "/admin/components/fields/NavTypeField#NavTypeField": NavTypeField_8694bf897a6746ab2199d0709a24c346,
   "/admin/components/fields/PathPrefix#PathPrefix": PathPrefix_ee56f462e1df17b24b760ddd7386e5b7,
   "/admin/components/fields/SameAsEnTag#SameAsEnTag": SameAsEnTag_4e5f1095615c1ec350a3e95bc7f13ee9,
