@@ -1271,19 +1271,16 @@ export interface Job {
   department?: string | null;
   experienceLevel?: ('entry' | 'mid' | 'senior' | 'lead') | null;
   jobType?: ('full-time' | 'part-time' | 'contract' | 'internship') | null;
-  /**
-   * For example Jakarta, Indonesia.
-   */
   location?: string | null;
+  /**
+   * Defaults to today.
+   */
   postedDate?: string | null;
   /**
-   * Optional. The job leaves the listings at exactly this date and time, in the time zone chosen beside it (WIB by default). Its page stays reachable without the application form.
+   * After this date it leaves the listing automatically. The time is in the time zone chosen beside it (WIB by default).
    */
   closingDate?: string | null;
   closingDate_tz: 'Asia/Jakarta' | 'Asia/Makassar' | 'Asia/Jayapura';
-  /**
-   * Closed jobs leave the Career listing and job sections. Their page stays reachable, without the application form, so shared links still work.
-   */
   status: 'open' | 'closed';
   body?: {
     root: {

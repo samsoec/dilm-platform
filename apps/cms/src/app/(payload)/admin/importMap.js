@@ -208,6 +208,12 @@ import { SolutionHeaderField as SolutionHeaderField_e5427e3530a8a9e3f536213c9665
 import { SolutionActionsField as SolutionActionsField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
 import { SolutionTabMarksField as SolutionTabMarksField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
 import { SolutionSidebarField as SolutionSidebarField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
+import { JobHeaderField as JobHeaderField_3174a30ee5da13c21f7688907acf0edd } from '../../../admin/components/jobs/server'
+import { JobActionsField as JobActionsField_3174a30ee5da13c21f7688907acf0edd } from '../../../admin/components/jobs/server'
+import { DepartmentField as DepartmentField_8c32e67fdf3d76943c5ce34c1adbdb78 } from '../../../admin/components/jobs/JobEditorParts'
+import { LocationField as LocationField_8c32e67fdf3d76943c5ce34c1adbdb78 } from '../../../admin/components/jobs/JobEditorParts'
+import { JobStatusField as JobStatusField_8c32e67fdf3d76943c5ce34c1adbdb78 } from '../../../admin/components/jobs/JobEditorParts'
+import { JobsView as JobsView_8df16c1d5ea7edf390080d88114caf7d } from '../../../admin/components/jobs/JobsView'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -418,5 +424,11 @@ export const importMap = {
   "/admin/components/products/server#SolutionHeaderField": SolutionHeaderField_e5427e3530a8a9e3f536213c9665e1e0,
   "/admin/components/products/server#SolutionActionsField": SolutionActionsField_e5427e3530a8a9e3f536213c9665e1e0,
   "/admin/components/products/server#SolutionTabMarksField": SolutionTabMarksField_e5427e3530a8a9e3f536213c9665e1e0,
-  "/admin/components/products/server#SolutionSidebarField": SolutionSidebarField_e5427e3530a8a9e3f536213c9665e1e0
+  "/admin/components/products/server#SolutionSidebarField": SolutionSidebarField_e5427e3530a8a9e3f536213c9665e1e0,
+  "/admin/components/jobs/server#JobHeaderField": JobHeaderField_3174a30ee5da13c21f7688907acf0edd,
+  "/admin/components/jobs/server#JobActionsField": JobActionsField_3174a30ee5da13c21f7688907acf0edd,
+  "/admin/components/jobs/JobEditorParts#DepartmentField": DepartmentField_8c32e67fdf3d76943c5ce34c1adbdb78,
+  "/admin/components/jobs/JobEditorParts#LocationField": LocationField_8c32e67fdf3d76943c5ce34c1adbdb78,
+  "/admin/components/jobs/JobEditorParts#JobStatusField": JobStatusField_8c32e67fdf3d76943c5ce34c1adbdb78,
+  "/admin/components/jobs/JobsView#JobsView": JobsView_8df16c1d5ea7edf390080d88114caf7d
 }
