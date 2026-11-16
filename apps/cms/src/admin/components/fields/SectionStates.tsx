@@ -33,16 +33,31 @@ function parentOf(path: string): string {
 export function SectionStateNote({
   slug,
   group,
+  path,
 }: {
   slug: string;
   group: string;
+  path?: string;
 }) {
   const { collectionSlug } = useDocumentInfo();
   const recordType = useFormFields(([fields]) => fields.recordType?.value) as
     string | undefined;
+  const highlights = useFormFields(([fields]) =>
+    path && slug === "postArticle"
+      ? fields[`${parentOf(path)}.highlights.items`]?.value
+      : undefined,
+  );
+  const source = useFormFields(([fields]) =>
+    path && slug === "postListing"
+      ? fields[`${parentOf(path)}.source`]?.value
+      : undefined,
+  );
+  const { dispatchFields, setModified } = useForm();
   const notes = sectionNotes(slug, group, {
     collection: collectionSlug,
     recordType,
+    highlights,
+    source,
   });
   if (notes.length === 0) return null;
   return (
@@ -50,6 +65,25 @@ export function SectionStateNote({
       {notes.map((note) => (
         <Banner key={note.text} tone={note.tone}>
           {note.text}
+          {note.setCurrentCategory && path && (
+            <>
+              {" "}
+              <button
+                className="dil-override-state__reset"
+                onClick={() => {
+                  dispatchFields({
+                    type: "UPDATE",
+                    path: `${parentOf(path)}.source`,
+                    value: "currentCategory",
+                  });
+                  setModified(true);
+                }}
+                type="button"
+              >
+                Use This category
+              </button>
+            </>
+          )}
           {note.link && (
             <>
               {" "}

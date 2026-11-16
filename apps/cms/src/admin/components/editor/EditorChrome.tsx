@@ -98,7 +98,9 @@ export function EditorActions({
   initials,
   shared = false,
   home = false,
+  label,
 }: {
+  label?: string;
   seed: UrlSeed;
   ancestors: { id: string; title: string }[];
   initials: string;
@@ -131,7 +133,7 @@ export function EditorActions({
     setHost(document.getElementById(DOCUMENT_ACTIONS_ID));
   }, []);
 
-  const name = title?.trim() ? title.trim() : "this page";
+  const name = label ?? (title?.trim() ? title.trim() : "this page");
   const action = formatAdminURL({
     apiRoute: routes.api,
     serverURL,

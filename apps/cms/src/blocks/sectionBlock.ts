@@ -5,7 +5,12 @@ import { TEMPLATE_BLOCK_RECORD_TYPES } from "@dilm/shared-types";
 
 import { tableNamed } from "./factories";
 
-const NOTED_SLUGS: readonly string[] = ["groupShowcase", "entityContacts"];
+const NOTED_SLUGS: readonly string[] = [
+  "groupShowcase",
+  "entityContacts",
+  "publicationHero",
+  "postListing",
+];
 
 export const SECTION_STATE_PATH =
   "/admin/components/fields/SectionStates#SectionStateNote";

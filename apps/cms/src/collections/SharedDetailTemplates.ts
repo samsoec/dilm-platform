@@ -9,6 +9,11 @@ import {
   sharedRecordTypeOptions,
 } from "../detailTemplates";
 import { LAYOUT_EXCLUSIONS, layoutField } from "../fields/layout";
+import { withEditorShell } from "../fields/pageEditor";
+import {
+  TEMPLATE_LIST_VIEW,
+  templateEditorFields,
+} from "../fields/templateEditor";
 import { withUpdatedBy } from "../fields/updatedBy";
 import {
   captureTemplateRow,
@@ -18,42 +23,45 @@ import {
 import { stubRevalidator } from "../revalidation";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 
-export const SharedDetailTemplates = withUpdatedBy({
-  slug: "shared-detail-templates",
-  endpoints: [publishImpactEndpoint("shared-detail-templates")],
-  labels: collectionLabels("shared-detail-templates"),
-  access: {
-    read: readPublishedOrMembers,
-    readVersions: tenantMembers,
-    create: superAdmins,
-    update: superAdmins,
-    delete: superAdmins,
-  },
-  versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
-  hooks: {
-    beforeValidate: [keepOneTemplatePerType, allowTemplateTokens],
-    beforeChange: [captureTemplateRow],
-    afterChange: [revalidateTemplate("shared", stubRevalidator)],
-    afterDelete: [revalidateTemplateOnDelete("shared", stubRevalidator)],
-  },
-  admin: {
-    group: navGroup("content"),
-    useAsTitle: "recordType",
-    defaultColumns: ["recordType", "_status", "updatedAt"],
-    description:
-      "One layout for every product and one for every solution, on all three websites. Only Super Admins change them.",
-  },
-  custom: { nav: { icon: "dashboard_customize", order: 3, omit: true } },
-  fields: [
-    {
-      name: "recordType",
-      label: "Template for",
-      type: "select",
-      enumName: "shared_detail_templates_record_type",
-      required: true,
-      unique: true,
-      options: sharedRecordTypeOptions,
+export const SharedDetailTemplates = withEditorShell(
+  withUpdatedBy({
+    slug: "shared-detail-templates",
+    endpoints: [publishImpactEndpoint("shared-detail-templates")],
+    labels: collectionLabels("shared-detail-templates"),
+    access: {
+      read: readPublishedOrMembers,
+      readVersions: tenantMembers,
+      create: superAdmins,
+      update: superAdmins,
+      delete: superAdmins,
     },
-    layoutField(pageBlocks, LAYOUT_EXCLUSIONS["shared-detail-templates"]),
-  ],
-});
+    versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
+    hooks: {
+      beforeValidate: [keepOneTemplatePerType, allowTemplateTokens],
+      beforeChange: [captureTemplateRow],
+      afterChange: [revalidateTemplate("shared", stubRevalidator)],
+      afterDelete: [revalidateTemplateOnDelete("shared", stubRevalidator)],
+    },
+    admin: {
+      group: navGroup("content"),
+      useAsTitle: "recordType",
+      components: { views: { list: { Component: TEMPLATE_LIST_VIEW } } },
+      defaultColumns: ["recordType", "_status", "updatedAt"],
+      description:
+        "One layout for every product and one for every solution, on all three websites. Only Super Admins change them.",
+    },
+    custom: { nav: { icon: "dashboard_customize", order: 3, omit: true } },
+    fields: templateEditorFields([
+      {
+        name: "recordType",
+        label: "Template for",
+        type: "select",
+        enumName: "shared_detail_templates_record_type",
+        required: true,
+        unique: true,
+        options: sharedRecordTypeOptions,
+      },
+      layoutField(pageBlocks, LAYOUT_EXCLUSIONS["shared-detail-templates"]),
+    ]),
+  }),
+);
