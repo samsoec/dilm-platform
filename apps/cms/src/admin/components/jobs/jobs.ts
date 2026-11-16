@@ -1,3 +1,5 @@
+import type { Where } from "payload";
+
 import type { SearchParams } from "../lists/statusQuery";
 import {
   getJobListing,
@@ -111,14 +113,6 @@ export function tabCounts(
   return counts;
 }
 
-export function matchesJob(
-  job: { tab: JobTab; department: string },
-  query: JobsQuery,
-): boolean {
-  if (query.tab && job.tab !== query.tab) return false;
-  return !query.department || job.department === query.department;
-}
-
 export function departmentsOf(
   jobs: readonly { department: string }[],
 ): string[] {
@@ -167,4 +161,36 @@ export function comboOptions(
 
 export function createLabel(value: string): string {
   return `Create "${value}"`;
+}
+
+export type JobsWhereOptions = {
+  tenant: number | string;
+  published: readonly (number | string)[];
+  skipTab?: boolean;
+};
+
+export function jobsWhere(
+  query: JobsQuery,
+  { tenant, published, skipTab = false }: JobsWhereOptions,
+): Where {
+  const clauses: Where[] = [{ tenant: { equals: tenant } }];
+  if (query.search) clauses.push({ title: { like: query.search } });
+  if (query.department) {
+    clauses.push({ department: { equals: query.department } });
+  }
+  if (query.tab && !skipTab) {
+    if (query.tab === "draft") {
+      if (published.length > 0) {
+        clauses.push({ id: { not_in: [...published] } });
+      }
+    } else {
+      clauses.push({ status: { equals: query.tab } });
+      clauses.push(
+        published.length > 0
+          ? { id: { in: [...published] } }
+          : { id: { exists: false } },
+      );
+    }
+  }
+  return { and: clauses };
 }

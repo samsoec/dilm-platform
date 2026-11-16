@@ -1,4 +1,4 @@
-import type { Payload, TypedUser, Where } from "payload";
+import type { Payload, TypedUser } from "payload";
 
 import { JOB_TYPES } from "../../collections/Jobs";
 import { localization } from "../../localization";
@@ -6,8 +6,8 @@ import { baseState, baseUnpublishedMessage } from "../../siteRouting";
 import { pathsOf } from "../components/editor/urls";
 import {
   departmentsOf,
+  jobsWhere,
   listingOf,
-  matchesJob,
   tabCounts,
   tabOf,
   type JobsQuery,
@@ -116,59 +116,74 @@ export async function loadJobs(
   query: JobsQuery,
   locale: "en" | "id" = localization.defaultLocale,
 ): Promise<JobsData> {
-  const where: Where = {
-    and: [
-      { tenant: { equals: tenant } },
-      ...(query.search ? [{ title: { like: query.search } }] : []),
-    ],
+  const live = await payload.find({
+    collection: "jobs",
+    where: {
+      and: [
+        { tenant: { equals: tenant } },
+        { _status: { equals: "published" } },
+      ],
+    },
+    draft: false,
+    pagination: false,
+    depth: 0,
+    select: { _status: true },
+    overrideAccess: false,
+    user,
+  });
+  const published = live.docs.map(({ id }) => id);
+  const publishedSet = new Set(published.map(String));
+  const common = {
+    collection: "jobs" as const,
+    draft: true,
+    depth: 0,
+    locale,
+    fallbackLocale: localization.defaultLocale,
   };
-  const [company, careerInfo, found] = await Promise.all([
-    loadCompany(payload, user, tenant),
-    loadCareer(payload, user, tenant),
-    payload.find({
-      collection: "jobs",
-      where,
-      draft: true,
-      sort: "-postedDate",
-      limit: CATALOG_LIMIT,
-      depth: 0,
-      locale,
-      fallbackLocale: localization.defaultLocale,
-      select: {
-        title: true,
-        department: true,
-        jobType: true,
-        location: true,
-        postedDate: true,
-        closingDate: true,
-        status: true,
-        _status: true,
-      },
-      overrideAccess: false,
-      user,
-    }),
-  ]);
+  const [company, careerInfo, found, forCounts, forDepartments] =
+    await Promise.all([
+      loadCompany(payload, user, tenant),
+      loadCareer(payload, user, tenant),
+      payload.find({
+        ...common,
+        where: jobsWhere(query, { tenant, published }),
+        overrideAccess: false,
+        user,
+        sort: "-postedDate",
+        limit: CATALOG_LIMIT,
+        select: {
+          title: true,
+          department: true,
+          jobType: true,
+          location: true,
+          postedDate: true,
+          closingDate: true,
+          status: true,
+          _status: true,
+        },
+      }),
+      payload.find({
+        ...common,
+        where: jobsWhere(query, { tenant, published, skipTab: true }),
+        overrideAccess: false,
+        user,
+        pagination: false,
+        select: { status: true },
+      }),
+      payload.find({
+        ...common,
+        where: { tenant: { equals: tenant } },
+        overrideAccess: false,
+        user,
+        pagination: false,
+        select: { department: true },
+      }),
+    ]);
   const { docs } = found;
-  const published = new Set<string>();
-  if (docs.length > 0) {
-    const live = await payload.find({
-      collection: "jobs",
-      where: { id: { in: docs.map(({ id }) => id) } },
-      draft: false,
-      pagination: false,
-      depth: 0,
-      select: { _status: true },
-      overrideAccess: false,
-      user,
-    });
-    for (const doc of live.docs) {
-      if (doc._status === "published") published.add(String(doc.id));
-    }
-  }
-  const all = docs.map((job): JobRow => {
+  const rows = docs.map((job): JobRow => {
     const status = getPublishStatus(
       { _status: job._status },
-      { hasPublishedVersion: published.has(String(job.id)) },
+      { hasPublishedVersion: publishedSet.has(String(job.id)) },
     );
     const facts = {
       status,
@@ -188,17 +203,23 @@ export async function loadJobs(
       tab: tabOf(facts),
     };
   });
-  const byDepartment = all.filter(({ department }) =>
-    query.department ? department === query.department : true,
-  );
   return {
-    rows: all.filter((row) => matchesJob(row, query)),
-    counts: tabCounts(byDepartment),
-    departments: departmentsOf(all),
-    truncated: docs.length >= CATALOG_LIMIT,
+    rows,
+    counts: tabCounts(
+      forCounts.docs.map((job) => ({
+        tab: tabOf({
+          status: publishedSet.has(String(job.id)) ? "published" : "draft",
+          listingStatus: job.status,
+        }),
+      })),
+    ),
+    departments: departmentsOf(
+      forDepartments.docs.map((job) => ({ department: job.department ?? "" })),
+    ),
+    truncated: found.totalDocs > CATALOG_LIMIT,
     company,
     settingsID: careerInfo.settingsID,
     career: careerInfo.career,
-    total: all.length,
+    total: found.totalDocs,
   };
 }

@@ -147,6 +147,7 @@ function Table({ adminRoute, rows }: { adminRoute: string; rows: JobRow[] }) {
         <thead>
           <tr>
             <th scope="col">Job</th>
+            <th scope="col">Department</th>
             <th scope="col">Job Type</th>
             <th scope="col">Location</th>
             <th scope="col">Posted</th>
@@ -169,10 +170,8 @@ function Table({ adminRoute, rows }: { adminRoute: string; rows: JobRow[] }) {
                 >
                   {row.title || "Untitled job"}
                 </Link>
-                {row.department && (
-                  <span className="dil-jobs__department">{row.department}</span>
-                )}
               </th>
+              <td>{row.department}</td>
               <td>{row.jobType}</td>
               <td>{row.location}</td>
               <td>{dayText(row.posted)}</td>

@@ -1063,16 +1063,13 @@ export interface Product {
         }[]
       | null;
   };
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
   meta?: {
     title?: string | null;
     description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
     image?: (number | null) | Media;
   };
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1166,13 +1163,7 @@ export interface Solution {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Pick from every company's published products. The order here is the order shown.
-   */
   supportingProducts?: (number | Product)[] | null;
-  /**
-   * Optional. It has to be one of the supporting products. Empty uses the first one.
-   */
   featuredProduct?: (number | null) | Product;
   impact?: {
     /**
@@ -1271,19 +1262,16 @@ export interface Job {
   department?: string | null;
   experienceLevel?: ('entry' | 'mid' | 'senior' | 'lead') | null;
   jobType?: ('full-time' | 'part-time' | 'contract' | 'internship') | null;
-  /**
-   * For example Jakarta, Indonesia.
-   */
   location?: string | null;
+  /**
+   * Defaults to today.
+   */
   postedDate?: string | null;
   /**
-   * Optional. The job leaves the listings at exactly this date and time, in the time zone chosen beside it (WIB by default). Its page stays reachable without the application form.
+   * After this date it leaves the listing automatically. The time is in the time zone chosen beside it (WIB by default).
    */
   closingDate?: string | null;
   closingDate_tz: 'Asia/Jakarta' | 'Asia/Makassar' | 'Asia/Jayapura';
-  /**
-   * Closed jobs leave the Career listing and job sections. Their page stays reachable, without the application form, so shared links still work.
-   */
   status: 'open' | 'closed';
   body?: {
     root: {
@@ -7389,8 +7377,6 @@ export interface ProductsSelect<T extends boolean = true> {
               id?: T;
             };
       };
-  updatedBy?: T;
-  trashedBy?: T;
   meta?:
     | T
     | {
@@ -7398,6 +7384,8 @@ export interface ProductsSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
+  updatedBy?: T;
+  trashedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

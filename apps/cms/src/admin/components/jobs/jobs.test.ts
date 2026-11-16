@@ -8,7 +8,7 @@ import {
   dayText,
   jobsHref,
   listingOf,
-  matchesJob,
+  jobsWhere,
   noCareerPageReason,
   parseJobsQuery,
   tabCounts,
@@ -65,9 +65,53 @@ describe("job list filters", () => {
     expect(tabCounts(rows)).toEqual({ all: 4, open: 2, closed: 1, draft: 1 });
   });
 
-  it("filters by tab and department together", () => {
-    const query = parseJobsQuery({ status: "open", department: "Sales" });
-    expect(rows.filter((row) => matchesJob(row, query))).toEqual([rows[0]]);
+  it("puts search, department and open tab into the database query", () => {
+    const query = parseJobsQuery({
+      status: "open",
+      department: "Sales",
+      q: "eng",
+    });
+    expect(jobsWhere(query, { tenant: 3, published: [7, 8] })).toEqual({
+      and: [
+        { tenant: { equals: 3 } },
+        { title: { like: "eng" } },
+        { department: { equals: "Sales" } },
+        { status: { equals: "open" } },
+        { id: { in: [7, 8] } },
+      ],
+    });
+  });
+
+  it("asks for the closed tab by listing status and published ids", () => {
+    expect(
+      jobsWhere(parseJobsQuery({ status: "closed" }), {
+        tenant: 3,
+        published: [],
+      }).and,
+    ).toEqual([
+      { tenant: { equals: 3 } },
+      { status: { equals: "closed" } },
+      { id: { exists: false } },
+    ]);
+  });
+
+  it("asks for the draft tab as everything not published", () => {
+    expect(
+      jobsWhere(parseJobsQuery({ status: "draft" }), {
+        tenant: 3,
+        published: [7],
+      }).and,
+    ).toEqual([{ tenant: { equals: 3 } }, { id: { not_in: [7] } }]);
+  });
+
+  it("leaves the tab out when counting", () => {
+    expect(
+      jobsWhere(parseJobsQuery({ status: "open" }), {
+        tenant: 3,
+        published: [7],
+        skipTab: true,
+      }).and,
+    ).toEqual([{ tenant: { equals: 3 } }]);
   });
 
   it("ignores unknown tabs and trims the search", () => {

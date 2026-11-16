@@ -22,6 +22,7 @@ import { removeRoutes, syncRoutes } from "../routeIndex";
 import { requireBase } from "../siteRouting";
 import { withTenantAccess } from "../tenancy";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
+import { CLOSING_HINT, POSTED_HINT } from "../admin/components/jobs/jobs";
 import { hideSystemField, ui } from "./Products";
 
 const PARTS = "/admin/components/jobs/JobEditorParts";
@@ -140,7 +141,7 @@ export const Jobs = withTenantAccess(
               defaultValue: todayAsPostedDate,
               admin: {
                 date: { pickerAppearance: "dayOnly" },
-                description: "Defaults to today.",
+                description: POSTED_HINT,
               },
             },
             {
@@ -158,8 +159,7 @@ export const Jobs = withTenantAccess(
               },
               admin: {
                 date: { pickerAppearance: "dayAndTime", timeIntervals: 15 },
-                description:
-                  "Optional. After this date it leaves the listing automatically.",
+                description: `${CLOSING_HINT} The time is in the time zone chosen beside it (WIB by default).`,
               },
             },
             {
