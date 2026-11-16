@@ -1,0 +1,104 @@
+@layer dil {
+  // Payload classes: .list-header__title-and-actions (@payloadcms/ui views/List, ListHeader); the Documents list (4i) uploads from a button beside the title
+  .collection-list--documents .list-header__title-and-actions .dil-upload-pdf {
+    margin-left: auto;
+  }
+
+  .dil-upload-docs {
+    position: relative;
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-doc-drop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 96px;
+    border: 2px dashed var(--dil-brand);
+    border-radius: var(--dil-radius-l);
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+    font-size: 15px;
+    font-weight: 700;
+    pointer-events: none;
+  }
+
+  .dil-doc-uploads {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dil-doc-upload {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface);
+
+    > .dil-icon {
+      color: var(--dil-danger);
+      font-size: 24px;
+    }
+  }
+
+  .dil-doc-upload--stopped,
+  .dil-doc-upload--rejected {
+    border-color: var(--dil-danger);
+    background: var(--dil-danger-bg);
+  }
+
+  .dil-doc-upload__text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    font-size: 14px;
+
+    b {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    progress {
+      width: 100%;
+      height: 6px;
+      overflow: hidden;
+      border: 0;
+      border-radius: 999px;
+      appearance: none;
+      background: var(--dil-surface-2);
+      accent-color: var(--dil-brand);
+    }
+  }
+
+  .dil-doc-used {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dil-replace-pdf {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+
+    progress {
+      width: 100%;
+      height: 6px;
+      accent-color: var(--dil-brand);
+    }
+  }
+}

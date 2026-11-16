@@ -12,6 +12,7 @@ async function render(props: UIFieldServerProps, collection: string) {
         Boolean(props.req.user) && isTenantEditorOrAbove(props.req.user!)
       }
       data={data}
+      replaceAction={collection === "documents"}
     />
   );
 }

@@ -456,6 +456,40 @@ export async function findReferrersOf(
   return [...grouped.values()];
 }
 
+export async function findReferrersByTarget(
+  payload: Payload,
+  targets: { collection: string; id: number | string }[],
+  req?: Request,
+): Promise<Map<string, { collection: RoutableCollection; id: string }[]>> {
+  const keys = new Set(
+    targets.map((target) => refKey(target.collection, target.id)),
+  );
+  const rows = await storedRoutes(payload, req, { id: { exists: true } });
+  const found = new Map<string, Map<string, RoutableCollection>>();
+  for (const row of rows) {
+    const referrerId = refId(row.doc.value);
+    if (!referrerId || !Array.isArray(row.refs)) continue;
+    for (const ref of row.refs) {
+      if (!keys.has(ref)) continue;
+      const referrers = found.get(ref) ?? new Map();
+      referrers.set(
+        refKey(row.doc.relationTo, referrerId),
+        row.doc.relationTo as RoutableCollection,
+      );
+      found.set(ref, referrers);
+    }
+  }
+  return new Map(
+    [...found].map(([ref, referrers]) => [
+      ref,
+      [...referrers].map(([key, collection]) => ({
+        collection,
+        id: key.slice(collection.length + 1),
+      })),
+    ]),
+  );
+}
+
 export async function findReferrers(
   payload: Payload,
   collection: string,

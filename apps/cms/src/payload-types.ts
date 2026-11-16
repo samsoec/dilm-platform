@@ -1092,6 +1092,8 @@ export interface Document {
    */
   title: string;
   downloadName?: string | null;
+  usedInCount?: number | null;
+  linkStatus?: string | null;
   uploadedBy?: (number | null) | User;
   trashedBy?: (number | null) | User;
   prefix?: string | null;
@@ -5498,6 +5500,8 @@ export interface DocumentsSelect<T extends boolean = true> {
   tenant?: T;
   title?: T;
   downloadName?: T;
+  usedInCount?: T;
+  linkStatus?: T;
   uploadedBy?: T;
   trashedBy?: T;
   prefix?: T;

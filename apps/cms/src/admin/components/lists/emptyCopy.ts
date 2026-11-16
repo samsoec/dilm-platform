@@ -1,8 +1,9 @@
 import type { IconName } from "../../icons";
+import { DOCUMENT_EMPTY_TEXT } from "../documents/documents";
 import { UPLOAD_LIMITS_TEXT } from "../media/uploadRules";
 
 export type EmptyStateSlug =
-  "cv-submissions" | "ir-documents" | "media" | "consent-logs";
+  "cv-submissions" | "ir-documents" | "documents" | "media" | "consent-logs";
 
 export type EmptyStateCopy = {
   icon: IconName;
@@ -19,6 +20,7 @@ export function isEmptyStateSlug(slug: unknown): slug is EmptyStateSlug {
   return (
     slug === "cv-submissions" ||
     slug === "ir-documents" ||
+    slug === "documents" ||
     slug === "media" ||
     slug === "consent-logs"
   );
@@ -57,6 +59,12 @@ export function emptyCopy(
           "They go live on the Investor page within minutes of publishing.",
         ],
       };
+    case "documents":
+      return {
+        icon: "picture_as_pdf",
+        title: DOCUMENT_EMPTY_TEXT,
+        lines: [],
+      };
     case "media":
       return {
         icon: "photo_library",
@@ -78,6 +86,7 @@ export function emptyCopy(
 const NO_MATCH_ITEMS: Record<EmptyStateSlug, string> = {
   "cv-submissions": "applications",
   "ir-documents": "IR documents",
+  documents: "documents",
   media: "images",
   "consent-logs": "consent records",
 };

@@ -1,3 +1,5 @@
+import { trashBlockedNote } from "../documents/documents";
+import { ReplacePdf } from "../documents/ReplacePdf";
 import { MaterialIcon } from "../MaterialIcon";
 import { PublishBadge } from "./PublishBadge";
 import { ReachBadge } from "./ReachBadge";
@@ -12,11 +14,14 @@ import {
 export function UsedInPanel({
   data,
   canReplace,
+  replaceAction,
 }: {
   data: UsedInData;
   canReplace?: boolean;
+  replaceAction?: boolean;
 }) {
   const count = data.rows.length;
+  const live = data.rows.filter((row) => row.status === "published").length;
   return (
     <section aria-labelledby="dil-panel-used" className="dil-editor-panel">
       <h2 className="dil-editor-panel__title" id="dil-panel-used">
@@ -45,9 +50,16 @@ export function UsedInPanel({
       {data.hidden > 0 && (
         <p className="dil-editor-panel__note">{hiddenText(data.hidden)}</p>
       )}
-      {canReplace && data.unit === "variants" && count > 0 && (
-        <p className="dil-editor-panel__note">{replaceAllText(count)}</p>
+      {replaceAction && live > 0 && (
+        <p className="dil-editor-panel__note">{trashBlockedNote(live)}</p>
       )}
+      {canReplace && replaceAction && <ReplacePdf count={count} />}
+      {canReplace &&
+        !replaceAction &&
+        data.unit === "variants" &&
+        count > 0 && (
+          <p className="dil-editor-panel__note">{replaceAllText(count)}</p>
+        )}
     </section>
   );
 }
