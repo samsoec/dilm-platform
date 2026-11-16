@@ -214,6 +214,12 @@ import { DepartmentField as DepartmentField_8c32e67fdf3d76943c5ce34c1adbdb78 } f
 import { LocationField as LocationField_8c32e67fdf3d76943c5ce34c1adbdb78 } from '../../../admin/components/jobs/JobEditorParts'
 import { JobStatusField as JobStatusField_8c32e67fdf3d76943c5ce34c1adbdb78 } from '../../../admin/components/jobs/JobEditorParts'
 import { JobsView as JobsView_8df16c1d5ea7edf390080d88114caf7d } from '../../../admin/components/jobs/JobsView'
+import { PostHeaderField as PostHeaderField_cb92c40415a69acd06b03fb6a45472ce } from '../../../admin/components/posts/server'
+import { PostActionsField as PostActionsField_cb92c40415a69acd06b03fb6a45472ce } from '../../../admin/components/posts/server'
+import { PostSidebarField as PostSidebarField_cb92c40415a69acd06b03fb6a45472ce } from '../../../admin/components/posts/server'
+import { CategoryDescriptionField as CategoryDescriptionField_cb92c40415a69acd06b03fb6a45472ce } from '../../../admin/components/posts/server'
+import { ExcerptOverflow as ExcerptOverflow_875c528c12186098fbb31ab249687c25 } from '../../../admin/components/posts/PostEditorParts'
+import { PostsView as PostsView_f7b14af4fb8a7bd53d110862034d5b5f } from '../../../admin/components/posts/PostsView'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -430,5 +436,11 @@ export const importMap = {
   "/admin/components/jobs/JobEditorParts#DepartmentField": DepartmentField_8c32e67fdf3d76943c5ce34c1adbdb78,
   "/admin/components/jobs/JobEditorParts#LocationField": LocationField_8c32e67fdf3d76943c5ce34c1adbdb78,
   "/admin/components/jobs/JobEditorParts#JobStatusField": JobStatusField_8c32e67fdf3d76943c5ce34c1adbdb78,
-  "/admin/components/jobs/JobsView#JobsView": JobsView_8df16c1d5ea7edf390080d88114caf7d
+  "/admin/components/jobs/JobsView#JobsView": JobsView_8df16c1d5ea7edf390080d88114caf7d,
+  "/admin/components/posts/server#PostHeaderField": PostHeaderField_cb92c40415a69acd06b03fb6a45472ce,
+  "/admin/components/posts/server#PostActionsField": PostActionsField_cb92c40415a69acd06b03fb6a45472ce,
+  "/admin/components/posts/server#PostSidebarField": PostSidebarField_cb92c40415a69acd06b03fb6a45472ce,
+  "/admin/components/posts/server#CategoryDescriptionField": CategoryDescriptionField_cb92c40415a69acd06b03fb6a45472ce,
+  "/admin/components/posts/PostEditorParts#ExcerptOverflow": ExcerptOverflow_875c528c12186098fbb31ab249687c25,
+  "/admin/components/posts/PostsView#PostsView": PostsView_f7b14af4fb8a7bd53d110862034d5b5f
 }
