@@ -1,3 +1,4 @@
+import { publishImpactEndpoint } from "../publish/impact";
 import { readPublishedOrMembers, tenantEditors } from "../access";
 import { collectionLabels } from "../admin/labels";
 import { navGroup } from "../admin/navGroups";
@@ -20,6 +21,7 @@ import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 export const DetailTemplates = withTenantAccess(
   withUpdatedBy({
     slug: "detail-templates",
+    endpoints: [publishImpactEndpoint("detail-templates")],
     labels: collectionLabels("detail-templates"),
     access: {
       read: readPublishedOrMembers,

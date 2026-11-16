@@ -1,3 +1,4 @@
+import { publishImpactEndpoint } from "../publish/impact";
 import type { ArrayField, Field } from "payload";
 
 import {
@@ -179,6 +180,7 @@ export const Products = withTenantAccess(
   withTrashedBy(
     withUpdatedBy({
       slug: "products",
+      endpoints: [publishImpactEndpoint("products")],
       labels: collectionLabels("products"),
       access: {
         read: readPublishedOrMembers,

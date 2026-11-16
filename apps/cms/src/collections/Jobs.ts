@@ -1,3 +1,4 @@
+import { publishImpactEndpoint } from "../publish/impact";
 import {
   readPublishedOrMembers,
   trashByEditorsDeleteBySuperAdmins,
@@ -55,6 +56,7 @@ export const Jobs = withTenantAccess(
         beforeDelete: [removeRoutes],
       },
       endpoints: [
+        publishImpactEndpoint("jobs"),
         {
           path: "/suggestions",
           method: "get",

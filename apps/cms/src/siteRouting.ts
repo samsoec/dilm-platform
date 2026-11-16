@@ -743,6 +743,31 @@ async function dependentCount(
   );
 }
 
+export async function firstDependency(
+  payload: Payload,
+  req: Request,
+  collection: PageCollection,
+  id: number | string,
+): Promise<
+  { dependency: Dependency; count: number; message: string } | undefined
+> {
+  const page = await loadBasePage(payload, req, collection, String(id));
+  if (!page) return undefined;
+  const [dependency] = await dependenciesOf(payload, req, collection, page);
+  if (!dependency) return undefined;
+  const count = await dependentCount(
+    payload,
+    req,
+    dependency.setting,
+    page.tenant,
+  );
+  return {
+    dependency,
+    count,
+    message: protectionMessage("trash", page.title, dependency, count),
+  };
+}
+
 export async function assertNotBasePage(
   payload: Payload,
   req: Request,

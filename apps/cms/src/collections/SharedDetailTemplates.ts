@@ -1,3 +1,4 @@
+import { publishImpactEndpoint } from "../publish/impact";
 import { readPublishedOrMembers, superAdmins, tenantMembers } from "../access";
 import { collectionLabels } from "../admin/labels";
 import { navGroup } from "../admin/navGroups";
@@ -19,6 +20,7 @@ import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 
 export const SharedDetailTemplates = withUpdatedBy({
   slug: "shared-detail-templates",
+  endpoints: [publishImpactEndpoint("shared-detail-templates")],
   labels: collectionLabels("shared-detail-templates"),
   access: {
     read: readPublishedOrMembers,

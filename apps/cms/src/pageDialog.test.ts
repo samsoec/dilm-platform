@@ -150,6 +150,7 @@ describe("Pages endpoints", () => {
     expect(
       (Pages.endpoints || []).map(({ path, method }) => `${method} ${path}`),
     ).toEqual([
+      "get /:id/publish-impact",
       "get /parent-options",
       "post /check-slug",
       "post /:id/path-impact",
