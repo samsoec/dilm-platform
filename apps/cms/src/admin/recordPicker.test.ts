@@ -44,6 +44,7 @@ describe("record picker", () => {
     expect(query.get("page")).toBe("2");
     expect(query.get("where[title][like]")).toBe("zero");
     expect(query.get("where[tenant][equals]")).toBe("2");
+    expect(query.getAll("where[tenant][equals]")).toEqual(["2"]);
     const shared = new URLSearchParams(
       pickerQuery({
         collection: "posts",

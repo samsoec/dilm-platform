@@ -48,6 +48,12 @@ function ui(name: string, Field: string, position?: "sidebar"): UIField {
   };
 }
 
+export const postsOnPageField = ui(
+  "postsOnPage",
+  EDITOR_COMPONENTS.postsOnPage,
+  "sidebar",
+);
+
 export const forwardsField: CheckboxField = {
   name: "forwards",
   label: "Visitors",
@@ -193,7 +199,7 @@ export function editorFields(parent: RelationshipField): Field[] {
       admin: { ...slugFallbackField.admin, hidden: true },
     },
     ui("editorSidebar", EDITOR_COMPONENTS.sidebar, "sidebar"),
-    ui("postsOnPage", EDITOR_COMPONENTS.postsOnPage, "sidebar"),
+    postsOnPageField,
   ];
 }
 
