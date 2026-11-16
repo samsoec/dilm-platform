@@ -11,7 +11,7 @@ import {
   validationSummary,
   type Impact,
 } from "./confirmations";
-import { urlsFor } from "./impact";
+import { consentBlock, errorStatus, urlsFor, visibleReferrers } from "./impact";
 
 const impact = (over: Partial<Impact> = {}): Impact => ({
   title: "X",
@@ -116,5 +116,58 @@ describe("urlsFor", () => {
       url: "a.com/en/about",
     });
     expect(urlsFor("a.com", { en: "/" })[0]!.url).toBe("a.com/en");
+  });
+});
+
+describe("visibleReferrers", () => {
+  const link = (tenant: string | null) => ({
+    collection: "pages" as const,
+    id: "1",
+    tenant,
+    paths: {},
+  });
+  const editor = {
+    roles: ["tenant-editor"],
+    tenants: [{ tenant: 2 }],
+  };
+
+  it("hides other companies from a tenant editor on shared items", () => {
+    expect(
+      visibleReferrers([link("2"), link("3"), link(null)], editor),
+    ).toEqual([link("2"), link(null)]);
+  });
+
+  it("shows every company to a super admin", () => {
+    expect(
+      visibleReferrers([link("2"), link("3")], { roles: ["super-admin"] }),
+    ).toHaveLength(2);
+  });
+
+  it("keeps a company item to its own company", () => {
+    expect(
+      visibleReferrers([link("2"), link("3")], { roles: ["super-admin"] }, "2"),
+    ).toEqual([link("2")]);
+  });
+});
+
+describe("errorStatus", () => {
+  it("reads a Payload error status", () => {
+    expect(errorStatus({ status: 404 })).toBe(404);
+    expect(errorStatus(new Error("x"))).toBeUndefined();
+  });
+});
+
+describe("consentBlock", () => {
+  const text = {
+    root: { children: [{ children: [{ text: "I agree" }] }] },
+  };
+  it("blocks when a language has no consent text", () => {
+    const block = consentBlock([{ form: { consentText: { en: text } } }]);
+    expect(block?.kind).toBe("consent");
+  });
+  it("passes when all languages have it, or there is no form", () => {
+    const all = Object.fromEntries(["en", "id"].map((code) => [code, text]));
+    expect(consentBlock([{ form: { consentText: all } }])).toBeNull();
+    expect(consentBlock([{ blockType: "hero" }])).toBeNull();
   });
 });

@@ -6,7 +6,13 @@ import type {
 } from "payload";
 import { DETAIL_TYPE_LABELS, type DetailRecordType } from "@dilm/shared-types";
 
-import { hasAnyRole, hasTenantAccess, isTenantEditorOrAbove } from "../access";
+import { consentMissingMessage, isConsentEmpty } from "../blocks/consentForm";
+import {
+  type RoleHolder,
+  hasAnyRole,
+  hasTenantAccess,
+  isTenantEditorOrAbove,
+} from "../access";
 import { countGovernedRecords } from "../detailTemplates";
 import {
   ALL_SITE_COLLECTIONS,
@@ -121,6 +127,40 @@ async function referrerTitle(
   };
 }
 
+export function visibleReferrers(
+  referrers: Referrer[],
+  user: RoleHolder,
+  onlyTenant?: string,
+): Referrer[] {
+  return referrers.filter((link) => {
+    if (link.tenant === null) return true;
+    if (onlyTenant !== undefined && link.tenant !== onlyTenant) return false;
+    return hasTenantAccess(user, link.tenant);
+  });
+}
+
+export function errorStatus(error: unknown): number | undefined {
+  const status = (error as { status?: unknown } | null)?.status;
+  return typeof status === "number" ? status : undefined;
+}
+
+export function consentBlock(layout: unknown): PublishBlock | null {
+  if (!Array.isArray(layout)) return null;
+  const locales = localeCodes();
+  for (const row of layout as {
+    form?: { consentText?: Record<string, unknown> | null } | null;
+  }[]) {
+    const text = row?.form?.consentText;
+    if (text === undefined) continue;
+    const missing = locales.filter((code) => isConsentEmpty(text?.[code]));
+    if (missing.length > 0) {
+      return { kind: "consent", message: consentMissingMessage(missing) };
+    }
+  }
+  return null;
+}
+
+// TODO(DILM-130): scans every page and shared page; narrow with a routes.refs-style index if lists grow.
 async function postPlacements(
   payload: Payload,
   req: PayloadRequest,
@@ -201,6 +241,10 @@ async function trashRefusal(
   return null;
 }
 
+function isPageCollection(collection: string): boolean {
+  return (PAGE_COLLECTIONS as readonly string[]).includes(collection);
+}
+
 async function publishBlock(
   payload: Payload,
   req: PayloadRequest,
@@ -208,6 +252,9 @@ async function publishBlock(
   doc: Doc,
 ): Promise<PublishBlock | null> {
   const tenant = refId(doc.tenant as never);
+  if (isPageCollection(collection)) {
+    return consentBlock((doc as { layout?: unknown }).layout);
+  }
   if (collection === "products" || collection === "solutions") {
     const setting =
       collection === "products" ? "productsPage" : "solutionsPage";
@@ -274,8 +321,10 @@ export async function publishImpact(
       urls: urlsFor(tenant.domain as string, paths),
     }));
 
-  const referrers = (await findReferrers(payload, collection, id, req)).filter(
-    (link) => link.tenant === null || shared || link.tenant === tenantId,
+  const referrers = visibleReferrers(
+    await findReferrers(payload, collection, id, req),
+    req.user,
+    shared ? undefined : tenantId,
   );
   const links = await Promise.all(
     referrers
@@ -349,6 +398,10 @@ export function publishImpactHandler(collection: string): PayloadHandler {
       });
     } catch (error) {
       if (error instanceof Error && error.message === "forbidden") {
+        return json({ message: "Forbidden" }, 403);
+      }
+      const status = errorStatus(error);
+      if (status === 403 || status === 404) {
         return json({ message: "Forbidden" }, 403);
       }
       req.payload.logger.error({
