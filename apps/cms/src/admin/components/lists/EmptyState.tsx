@@ -11,6 +11,7 @@ import { Banner } from "../kit/Banner";
 import { Tag } from "../kit/Tag";
 import { GRID_PATH, isGridView } from "../media/media";
 import { isTrashView } from "../trash/trash";
+import { EmptyUploadDocuments } from "../documents/DocumentsUploader";
 import { UploadPdfButton } from "../ir/IrToolbarClient";
 import {
   emptyCopy,
@@ -142,6 +143,7 @@ export async function EmptyState(props: BeforeListTableServerProps) {
           </p>
         ))}
         {collectionSlug === "ir-documents" && <UploadPdfButton />}
+        {collectionSlug === "documents" && <EmptyUploadDocuments />}
         {collectionSlug === "media" && <EmptyUploadImages />}
         {collectionSlug === "consent-logs" && (
           <Tag icon="lock">Read-only · UU PDP audit trail</Tag>
