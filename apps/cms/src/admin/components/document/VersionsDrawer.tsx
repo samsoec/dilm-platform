@@ -9,7 +9,7 @@ import {
   useTranslation,
 } from "@payloadcms/ui";
 import { formatAdminURL } from "payload/shared";
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useState } from "react";
 
 import { authorName } from "../../authors";
 import type { IconName } from "../../icons";
@@ -20,6 +20,8 @@ import { ConfirmDialog } from "../kit/ConfirmDialog";
 import { LoadingBlock } from "../kit/Loading";
 import { notify } from "../kit/Toast";
 import { MaterialIcon } from "../MaterialIcon";
+import { catalogEntries, type ClientBlockLike } from "../../sectionCatalog";
+import { fieldDiffs, type FieldDiff, sectionsSummary } from "./sectionCompare";
 import { type ChangeKind, compareLines, summarize } from "./versionSummary";
 
 export const VERSIONS_DRAWER_SLUG = "dil-versions";
@@ -29,7 +31,10 @@ const PENDING_TOAST_KEY = "dil-pending-toast";
 type VersionDoc = {
   id: number | string;
   updatedAt: string;
-  version: Record<string, unknown> & { updatedBy?: unknown };
+  version: Record<string, unknown> & {
+    updatedBy?: unknown;
+    _status?: string;
+  };
 };
 
 type Entry = VersionDoc & { number: number };
@@ -66,7 +71,7 @@ function shortDate(value: string): string {
 export function VersionsDrawer() {
   const { collectionSlug, hasSavePermission, id } = useDocumentInfo();
   const {
-    config: { routes, serverURL },
+    config: { localization, routes, serverURL },
     getEntityConfig,
   } = useConfig();
   const { i18n } = useTranslation();
@@ -153,11 +158,39 @@ export function VersionsDrawer() {
   }, [api, collectionSlug, id, locale, open]);
 
   const current = entries?.[0];
+  const drafts = !!entries?.some((entry) => entry.version._status);
+  const liveId = drafts
+    ? entries?.find((entry) => entry.version._status === "published")?.id
+    : current?.id;
+  const nameOf = useMemo(() => {
+    const layout = (
+      entity as
+        | {
+            fields?: {
+              name?: string;
+              blocks?: ClientBlockLike[];
+            }[];
+          }
+        | undefined
+    )?.fields?.find((field) => field.name === "layout");
+    const names = new Map(
+      catalogEntries(layout?.blocks ?? []).map((entry) => [
+        entry.slug,
+        entry.name,
+      ]),
+    );
+    return (slug?: string) => names.get(slug ?? "") ?? slug ?? "Section";
+  }, [entity]);
+  const locales = (
+    (localization ? localization.locales : []) as (string | { code: string })[]
+  ).map((entry) => (typeof entry === "string" ? entry : entry.code));
 
   const restore = async () => {
     if (!restoring || !current) return;
     const response = await fetch(
-      api(`/${collectionSlug}/versions/${restoring.id}`),
+      api(
+        `/${collectionSlug}/versions/${restoring.id}${drafts ? "?draft=true" : ""}`,
+      ),
       { method: "POST", credentials: "include" },
     );
     if (!response.ok) {
@@ -172,7 +205,9 @@ export function VersionsDrawer() {
       PENDING_TOAST_KEY,
       JSON.stringify({
         title: `${name} v${restoring.number} restored as v${current.number + 1}.`,
-        body: `${company?.domain ?? "The site"} will show it within minutes.`,
+        body: drafts
+          ? "It is a new draft. The live site has not changed."
+          : `${company?.domain ?? "The site"} will show it within minutes.`,
       }),
     );
     window.location.reload();
@@ -219,17 +254,26 @@ export function VersionsDrawer() {
                         <b>
                           v{entry.number}
                           {index === 0 && " · Current"}
+                          {entry.version._status && (
+                            <>
+                              {" · "}
+                              {entry.version._status === "published"
+                                ? "Published"
+                                : "Draft"}
+                            </>
+                          )}
                         </b>
                         <span>
                           {[date, author].filter(Boolean).join(" · ")}
                         </span>
                       </div>
-                      {index === 0 ? (
+                      {entry.id === liveId && (
                         <span className="dil-versions__live">
                           <MaterialIcon name="public" />
                           Live
                         </span>
-                      ) : (
+                      )}
+                      {index !== 0 && (
                         <span className="dil-versions__actions">
                           <button
                             onClick={() => setComparing(entry)}
@@ -274,6 +318,9 @@ export function VersionsDrawer() {
                       }
                     : undefined
                 }
+                apiUrl={api}
+                locales={locales}
+                nameOf={nameOf}
                 slug={collectionSlug ?? ""}
               />
             )}
@@ -290,14 +337,23 @@ export function VersionsDrawer() {
       {restoring && current && (
         <ConfirmDialog
           body={
-            <p>
-              This saves v{restoring.number} as a new version (v
-              {current.number + 1}) and updates {company?.domain ?? "the site"}{" "}
-              within minutes. v{current.number} stays in history.
-            </p>
+            drafts ? (
+              <p>
+                This creates a new draft (v{current.number + 1}) from v
+                {restoring.number}. Restoring never changes the live site;
+                review the draft and publish it when it is ready.
+              </p>
+            ) : (
+              <p>
+                This saves v{restoring.number} as a new version (v
+                {current.number + 1}) and updates{" "}
+                {company?.domain ?? "the site"} within minutes. v
+                {current.number} stays in history.
+              </p>
+            )
           }
           busyLabel="Restoring…"
-          confirmLabel="Restore and go live"
+          confirmLabel={drafts ? "Restore as new draft" : "Restore and go live"}
           icon="history"
           onConfirm={restore}
           slug={RESTORE_SLUG}
@@ -316,7 +372,13 @@ function VersionCompare({
   fullHref,
   onClose,
   onRestore,
+  apiUrl,
+  locales,
+  nameOf,
 }: {
+  apiUrl: (path: `/${string}`) => string;
+  locales: string[];
+  nameOf: (slug?: string) => string;
   slug: string;
   older: Entry;
   current: Entry;
@@ -359,6 +421,16 @@ function VersionCompare({
           </div>
         ))}
       </div>
+      {Array.isArray(current.version.layout) && (
+        <SectionsCompare
+          apiUrl={apiUrl}
+          current={current}
+          locales={locales}
+          nameOf={nameOf}
+          older={older}
+          slug={slug}
+        />
+      )}
       <a className="dil-drawer__native" data-dil-native="" href={fullHref}>
         Full field-by-field comparison
       </a>
@@ -368,10 +440,80 @@ function VersionCompare({
         </ActionButton>
         {onRestore && (
           <ActionButton onClick={onRestore} type="button">
-            Restore v{older.number}…
+            {current.version._status
+              ? `Restore v${older.number} as new draft…`
+              : `Restore v${older.number}…`}
           </ActionButton>
         )}
       </div>
+    </div>
+  );
+}
+
+function SectionsCompare({
+  apiUrl,
+  slug,
+  older,
+  current,
+  locales,
+  nameOf,
+}: {
+  apiUrl: (path: `/${string}`) => string;
+  slug: string;
+  older: Entry;
+  current: Entry;
+  locales: string[];
+  nameOf: (slug?: string) => string;
+}) {
+  const [diffs, setDiffs] = useState<FieldDiff[]>();
+  const summary = sectionsSummary(older.version, current.version, nameOf);
+  const lines = [...summary.added, ...summary.removed, ...summary.moved];
+
+  useEffect(() => {
+    const request = new AbortController();
+    const load = (id: number | string) =>
+      fetch(apiUrl(`/${slug}/versions/${id}?locale=all&depth=0`), {
+        credentials: "include",
+        signal: request.signal,
+      }).then((response) => {
+        if (!response.ok) throw new Error(String(response.status));
+        return response.json() as Promise<VersionDoc>;
+      });
+    Promise.all([load(older.id), load(current.id)])
+      .then(([before, after]) =>
+        setDiffs(fieldDiffs(before.version, after.version, nameOf, locales)),
+      )
+      .catch(() => undefined);
+    return () => request.abort();
+  }, [apiUrl, current.id, locales, nameOf, older.id, slug]);
+
+  return (
+    <div className="dil-sections-compare">
+      <h3>Sections</h3>
+      {lines.length === 0 ? (
+        <p>No sections added, removed or moved.</p>
+      ) : (
+        <ul>
+          {lines.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      )}
+      <h3>Changed fields</h3>
+      {!diffs && <p>Loading…</p>}
+      {diffs?.length === 0 && <p>No field changes inside kept sections.</p>}
+      {diffs && diffs.length > 0 && (
+        <ul>
+          {diffs.map((diff) => (
+            <li key={diff.label}>
+              <b>{diff.label}</b>
+              <span>
+                {diff.before} → {diff.after}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
