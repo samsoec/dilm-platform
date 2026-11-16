@@ -4,12 +4,13 @@ import { useConfig, useModal } from "@payloadcms/ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatAdminURL } from "payload/shared";
-import type { KeyboardEvent } from "react";
+import { useState, type KeyboardEvent } from "react";
 
 import { ALL_SITES_COUNT } from "../kit/reach";
 import { ConfirmDialog } from "../kit/ConfirmDialog";
 import { Popover } from "../kit/Popover";
 import { notify } from "../kit/Toast";
+import { PreviewEntries } from "../preview/PreviewMenu";
 import { MaterialIcon } from "../MaterialIcon";
 import { useNewPage } from "./NewPageHost";
 import { addChildPath, type PageRow, type RowActions } from "./pagesModel";
@@ -48,6 +49,7 @@ export function PageRowMenu({
   tabIndex: 0 | -1;
 }) {
   const router = useRouter();
+  const [previewOpen, setPreviewOpen] = useState(false);
   const addChild = useNewPage();
   const { openModal } = useModal();
   const {
@@ -176,16 +178,22 @@ export function PageRowMenu({
                 </Link>
               ))}
             <button
-              aria-disabled="true"
+              aria-expanded={previewOpen}
               className="dil-page-menu__item"
+              onClick={() => setPreviewOpen(true)}
               role="menuitem"
-              title="Preview isn't available yet."
               type="button"
             >
               <MaterialIcon name="visibility" />
               Preview
-              <span className="dil-page-menu__soon">Soon</span>
             </button>
+            {previewOpen && (
+              <PreviewEntries
+                collection={row.collection}
+                id={row.id}
+                itemClassName="dil-page-menu__item"
+              />
+            )}
             <button
               aria-disabled={!actions.unpublish}
               className="dil-page-menu__item"

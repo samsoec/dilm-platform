@@ -84,11 +84,43 @@
     gap: 6px;
   }
 
-  .dil-editor-soon {
-    margin-inline-start: 2px;
+  .dil-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 240px;
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-preview__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dil-preview__sites {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dil-preview__note {
+    margin: 0;
     color: var(--dil-muted);
-    font-size: 11px;
+    font-size: 12px;
+  }
+
+  .dil-preview__retry {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
     font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
   }
 
   .dil-editor-header {

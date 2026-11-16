@@ -35,19 +35,14 @@ import {
 import { allSitesLabel } from "../kit/reach";
 import { SHARED_VIEWER_BANNER } from "../pages/pagesModel";
 import { withAncestorCrumbs, type AncestorCrumb } from "./crumbs";
-import {
-  DOCUMENT_ACTIONS_ID,
-  PREVIEW_UNAVAILABLE,
-  PUBLISH_FOLLOW_UP,
-  viewerNotice,
-} from "./editor";
+import { DOCUMENT_ACTIONS_ID, PUBLISH_FOLLOW_UP, viewerNotice } from "./editor";
+import { PreviewMenu } from "../preview/PreviewMenu";
 import { UrlChangeGuard } from "./UrlChangeGuard";
 import type { UrlSeed } from "./useEditorUrls";
 
 const PUBLISH_SLUG = "dil-editor-publish";
 const UNPUBLISH_SLUG = "dil-editor-unpublish";
 const TRASH_SLUG = "dil-editor-trash";
-const PREVIEW_REASON_ID = "dil-editor-preview-reason";
 
 export function NoControl() {
   return null;
@@ -238,19 +233,9 @@ export function EditorActions({
 
   const controls = (
     <>
-      <ActionButton
-        className="dil-editor-preview"
-        icon="visibility"
-        type="button"
-        unavailableReasonId={PREVIEW_REASON_ID}
-        variant="secondary"
-      >
-        Preview
-        <span className="dil-editor-soon">Soon</span>
-      </ActionButton>
-      <span className="dil-sr-only" id={PREVIEW_REASON_ID}>
-        {PREVIEW_UNAVAILABLE}
-      </span>
+      {id !== undefined && collectionSlug && (
+        <PreviewMenu collection={collectionSlug} id={id} />
+      )}
       {canEdit && (
         <>
           <SaveDraftButton />

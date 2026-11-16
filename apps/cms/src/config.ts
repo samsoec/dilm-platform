@@ -31,6 +31,7 @@ import { Users } from "./collections/Users";
 import { cmsDatabaseAdapter, type PayloadClient } from "./database";
 import { cmsEmailAdapter } from "./email";
 import { localization } from "./localization";
+import { previewLinksHandler, withAdminPreview } from "./previewLinks";
 import { publicBucketStorage } from "./storage";
 import { pageModelPlugins } from "./pageModel";
 import { registerSiteRouting } from "./siteRouting";
@@ -42,6 +43,9 @@ export async function cmsConfig(client: PayloadClient) {
   const runtimeConfig = await getRuntimeConfig();
   registerSiteRouting();
   return buildConfig({
+    endpoints: [
+      { path: "/preview-links", method: "get", handler: previewLinksHandler },
+    ],
     admin: {
       user: Users.slug,
       importMap: {
@@ -73,7 +77,7 @@ export async function cmsConfig(client: PayloadClient) {
         icons: [{ rel: "icon", type: "image/svg+xml", url: "/favicon.svg" }],
       },
     },
-    collections,
+    collections: collections.map(withAdminPreview),
     globals,
     custom: {
       cvRetentionMonths: runtimeConfig.cvRetentionMonths,
