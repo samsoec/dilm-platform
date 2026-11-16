@@ -152,3 +152,8 @@ export function formFieldRows(
         : "",
   }));
 }
+
+export function pinPaths(notePath: string): { x: string; y: string } {
+  const parent = notePath.slice(0, notePath.lastIndexOf("."));
+  return { x: `${parent}.pin.x`, y: `${parent}.pin.y` };
+}

@@ -20,6 +20,7 @@ import {
   overrideState,
   pickedCount,
   pinNote,
+  pinPaths,
   sectionNotes,
   type Overridable,
 } from "../../sectionStates";
@@ -151,8 +152,9 @@ export function ProfileFallback({
 
 export function PinNote({ path }: { path: string }) {
   const { dispatchFields, setModified } = useForm();
-  const x = useFormFields(([fields]) => fields[`${path}.x`]?.value);
-  const y = useFormFields(([fields]) => fields[`${path}.y`]?.value);
+  const pin = pinPaths(path);
+  const x = useFormFields(([fields]) => fields[pin.x]?.value);
+  const y = useFormFields(([fields]) => fields[pin.y]?.value);
   const { hasCompany, entity } = useSiblingCompany(path);
   if (!hasCompany) return null;
   const note = pinNote({ x, y }, entity);
@@ -167,12 +169,12 @@ export function PinNote({ path }: { path: string }) {
             onClick={() => {
               dispatchFields({
                 type: "UPDATE",
-                path: `${path}.x`,
+                path: pin.x,
                 value: null,
               });
               dispatchFields({
                 type: "UPDATE",
-                path: `${path}.y`,
+                path: pin.y,
                 value: null,
               });
               setModified(true);

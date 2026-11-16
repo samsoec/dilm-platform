@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { withSameAsEnTag } from "../fields/layoutEditor";
 
 import {
   formFieldRows,
   overrideState,
   pickedCount,
   pinNote,
+  pinPaths,
   sectionNotes,
   templateOnlyWarning,
 } from "./sectionStates";
@@ -86,5 +88,28 @@ describe("formFieldRows", () => {
       { name: "a", field: "A", label: "L", placeholder: "" },
       { name: "b", field: "b", label: "", placeholder: "" },
     ]);
+  });
+});
+
+describe("pinPaths", () => {
+  it("reads the pin group next to the note, not under it", () => {
+    expect(pinPaths("layout.2.items.1.pinNote")).toEqual({
+      x: "layout.2.items.1.pin.x",
+      y: "layout.2.items.1.pin.y",
+    });
+  });
+});
+
+describe("withSameAsEnTag", () => {
+  it("keeps an existing afterInput component", () => {
+    const field = withSameAsEnTag({
+      name: "label",
+      type: "text",
+      admin: { components: { afterInput: ["/x#Mine"] } },
+    });
+    const list = (field.admin as { components: { afterInput: unknown[] } })
+      .components.afterInput;
+    expect(list).toHaveLength(2);
+    expect(list[0]).toBe("/x#Mine");
   });
 });
