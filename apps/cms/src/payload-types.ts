@@ -384,10 +384,10 @@ export interface Page {
   slug: string;
   forwards?: boolean | null;
   redirectTo?: {
-    type: 'internal' | 'external' | 'reference';
+    type: 'reference' | 'internal' | 'external';
     newTab?: boolean | null;
     /**
-     * Start with /. The site adds the language.
+     * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
      */
     internalPath?: string | null;
     /**
@@ -485,10 +485,10 @@ export interface HeroCarouselBlock {
     buttons?:
       | {
           link: {
-            type: 'internal' | 'external' | 'reference';
+            type: 'reference' | 'internal' | 'external';
             newTab?: boolean | null;
             /**
-             * Start with /. The site adds the language.
+             * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
              */
             internalPath?: string | null;
             /**
@@ -625,10 +625,10 @@ export interface SharedPage {
    */
   slugFallback?: boolean | null;
   redirectTo: {
-    type: 'internal' | 'external' | 'reference';
+    type: 'reference' | 'internal' | 'external';
     newTab?: boolean | null;
     /**
-     * Start with /. The site adds the language.
+     * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
      */
     internalPath?: string | null;
     /**
@@ -1352,10 +1352,10 @@ export interface MediaTextBlock {
   buttons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1443,10 +1443,10 @@ export interface FeatureGridBlock {
   headingButtons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1531,10 +1531,10 @@ export interface FeatureGridBlock {
   footerButtons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1702,10 +1702,10 @@ export interface TimelineBlock {
   buttons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1785,10 +1785,10 @@ export interface CertificationsBlock {
   buttons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1974,10 +1974,10 @@ export interface ImageCarouselBlock {
     image: number | Media;
     label: string;
     link: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2132,10 +2132,10 @@ export interface CtaBannerBlock {
   buttons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -2320,10 +2320,10 @@ export interface ProductsSolutionsTabsBlock {
   ctaCard: {
     text?: string | null;
     link: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2369,10 +2369,10 @@ export interface ProductsSolutionsTabsBlock {
     title?: string | null;
     description?: string | null;
     first: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2415,10 +2415,10 @@ export interface ProductsSolutionsTabsBlock {
     };
     firstStyle: 'primary' | 'light' | 'text';
     second: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2504,10 +2504,10 @@ export interface ProductShowcaseBlock {
   buttons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -2558,10 +2558,10 @@ export interface ProductShowcaseBlock {
   ctaCard: {
     text?: string | null;
     link: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2607,10 +2607,10 @@ export interface ProductShowcaseBlock {
     title?: string | null;
     description?: string | null;
     first: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2653,10 +2653,10 @@ export interface ProductShowcaseBlock {
     };
     firstStyle: 'primary' | 'light' | 'text';
     second: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2742,10 +2742,10 @@ export interface SolutionShowcaseBlock {
   buttons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -2796,10 +2796,10 @@ export interface SolutionShowcaseBlock {
   ctaCard: {
     text?: string | null;
     link: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2845,10 +2845,10 @@ export interface SolutionShowcaseBlock {
     title?: string | null;
     description?: string | null;
     first: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2891,10 +2891,10 @@ export interface SolutionShowcaseBlock {
     };
     firstStyle: 'primary' | 'light' | 'text';
     second: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2980,10 +2980,10 @@ export interface PostShowcaseBlock {
   buttons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -3148,10 +3148,10 @@ export interface JobShowcaseBlock {
   buttons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -3216,10 +3216,10 @@ export interface IrDocumentsBlock {
   sideNav?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -3360,10 +3360,10 @@ export interface EntityMapBlock {
     buttons?:
       | {
           link: {
-            type: 'internal' | 'external' | 'reference';
+            type: 'reference' | 'internal' | 'external';
             newTab?: boolean | null;
             /**
-             * Start with /. The site adds the language.
+             * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
              */
             internalPath?: string | null;
             /**
@@ -3445,10 +3445,10 @@ export interface GroupShowcaseBlock {
   mainImage?: (number | null) | Media;
   mainLogo?: (number | null) | Media;
   mainLink: {
-    type: 'internal' | 'external' | 'reference';
+    type: 'reference' | 'internal' | 'external';
     newTab?: boolean | null;
     /**
-     * Start with /. The site adds the language.
+     * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
      */
     internalPath?: string | null;
     /**
@@ -3684,10 +3684,10 @@ export interface ProductOverviewBlock {
   buttons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -3784,10 +3784,10 @@ export interface ProductSpecificationsBlock {
    */
   contact: {
     link: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -3877,10 +3877,10 @@ export interface SolutionImpactBlock {
   buttons?:
     | {
         link: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -4159,10 +4159,10 @@ export interface PostListingBlock {
     title?: string | null;
     description?: string | null;
     button: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -4330,10 +4330,10 @@ export interface Header {
     | {
         type: 'link' | 'dropdown';
         link?: {
-          type: 'internal' | 'external' | 'reference';
+          type: 'reference' | 'internal' | 'external';
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -4378,10 +4378,10 @@ export interface Header {
         children?:
           | {
               link: {
-                type: 'internal' | 'external' | 'reference';
+                type: 'reference' | 'internal' | 'external';
                 newTab?: boolean | null;
                 /**
-                 * Start with /. The site adds the language.
+                 * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
                  */
                 internalPath?: string | null;
                 /**
@@ -4439,10 +4439,10 @@ export interface Header {
      */
     enabled?: boolean | null;
     link?: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -4516,10 +4516,10 @@ export interface Footer {
       [k: string]: unknown;
     } | null;
     primaryButton: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -4561,10 +4561,10 @@ export interface Footer {
       label?: string | null;
     };
     secondaryButton: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -4615,10 +4615,10 @@ export interface Footer {
         links?:
           | {
               link: {
-                type: 'internal' | 'external' | 'reference';
+                type: 'reference' | 'internal' | 'external';
                 newTab?: boolean | null;
                 /**
-                 * Start with /. The site adds the language.
+                 * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
                  */
                 internalPath?: string | null;
                 /**
@@ -4673,10 +4673,10 @@ export interface Footer {
     label?: string | null;
     logo?: (number | null) | Media;
     link?: {
-      type: 'internal' | 'external' | 'reference';
+      type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -4740,10 +4740,10 @@ export interface SiteMessage {
     buttons?:
       | {
           link: {
-            type: 'internal' | 'external' | 'reference';
+            type: 'reference' | 'internal' | 'external';
             newTab?: boolean | null;
             /**
-             * Start with /. The site adds the language.
+             * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
              */
             internalPath?: string | null;
             /**
@@ -5022,10 +5022,10 @@ export interface Redirect {
    */
   from: string;
   to: {
-    type: 'internal' | 'external' | 'reference';
+    type: 'reference' | 'internal' | 'external';
     newTab?: boolean | null;
     /**
-     * Start with /. The site adds the language.
+     * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
      */
     internalPath?: string | null;
     /**

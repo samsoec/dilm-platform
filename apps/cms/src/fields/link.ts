@@ -16,7 +16,7 @@ import { unscopedRelationship } from "../tenancy";
 import { isHttpsUrl, isInternalPath } from "../validation";
 import { withSameAsEnTag } from "./layoutEditor";
 
-export const LINK_TYPES = ["internal", "external", "reference"] as const;
+export const LINK_TYPES = ["reference", "internal", "external"] as const;
 
 export const REFERENCE_COLLECTIONS = [
   "pages",
@@ -41,7 +41,7 @@ export const REFERENCE_MISSING = "Pick the page or record this link goes to.";
 export type LinkType = (typeof LINK_TYPES)[number];
 
 export const LINK_TYPE_LABELS: Record<LinkType, string> = {
-  internal: "This site",
+  internal: "Path on this site",
   external: "Other site",
   reference: "Page or record",
 };
@@ -145,6 +145,9 @@ function samePick(a: LinkReference | null | undefined, b: LinkReference) {
   );
 }
 
+const LINK_TARGET_FIELD =
+  "/admin/components/fields/LinkTargetField#LinkTargetField";
+
 const PATH_PREFIX = "/admin/components/fields/PathPrefix#PathPrefix";
 
 const TARGET_FIELD: Record<
@@ -198,6 +201,7 @@ function referenceTarget(required: boolean): RelationshipField {
     hooks: { beforeChange: [clearWhenInactive] },
     admin: {
       condition: (_, siblingData) => isActive(siblingData as LinkData),
+      components: { Field: LINK_TARGET_FIELD },
       description:
         "Follows the page or record if it is renamed or moved. Only published ones are offered.",
     },
@@ -231,7 +235,7 @@ function target(
       condition: (_, siblingData) => isActive(siblingData as LinkData),
       description:
         type === "internal"
-          ? "Start with /. The site adds the language."
+          ? "Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can."
           : "A full address starting with https://",
       ...(type === "internal"
         ? {
