@@ -89,7 +89,7 @@ export const videoBlock: Block = {
 
 export const attachmentBlock: Block = {
   slug: "attachment",
-  labels: { singular: "Attachment", plural: "Attachments" },
+  labels: { singular: "PDF attachment", plural: "PDF attachments" },
   fields: [
     {
       name: "document",
