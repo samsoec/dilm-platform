@@ -7,6 +7,9 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "generate:dot-map": "../../node_modules/.bin/tsx scripts/generate-dot-map.ts"
+    "generate:dot-map": "tsx scripts/generate-dot-map.ts"
+  },
+  "devDependencies": {
+    "tsx": "4.22.4"
   }
 }

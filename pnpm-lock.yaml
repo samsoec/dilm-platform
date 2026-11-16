@@ -223,7 +223,11 @@ importers:
         specifier: 3.1141.0
         version: 3.1141.0
 
-  packages/shared-types: {}
+  packages/shared-types:
+    devDependencies:
+      tsx:
+        specifier: 4.22.4
+        version: 4.22.4
 
 packages:
 
