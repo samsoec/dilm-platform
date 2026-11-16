@@ -23,7 +23,7 @@ export function MapPinPicker() {
   const xField = useField<number | null>({ path: "profile.mapPin.x" });
   const yField = useField<number | null>({ path: "profile.mapPin.y" });
   const dots = useMemo(() => dotMapDots(), []);
-  const surface = useRef<HTMLDivElement>(null);
+  const map = useRef<SVGSVGElement>(null);
   const before = useRef<MapPin | null>(null);
   const pin = toPin(xField.value, yField.value);
   const disabled = Boolean(xField.disabled || yField.disabled);
@@ -44,8 +44,9 @@ export function MapPinPicker() {
         className="dil-map-pin__surface"
         onClick={(event) => {
           if (disabled) return;
+          if (!map.current) return;
           const next = pinFromPoint(
-            event.currentTarget.getBoundingClientRect(),
+            map.current.getBoundingClientRect(),
             event.clientX,
             event.clientY,
           );
@@ -66,13 +67,13 @@ export function MapPinPicker() {
           event.preventDefault();
           place(next);
         }}
-        ref={surface}
         role="application"
         tabIndex={0}
       >
         <svg
           aria-hidden="true"
           className="dil-map-pin__svg"
+          ref={map}
           viewBox={`0 0 ${DOT_MAP_WIDTH} ${DOT_MAP_HEIGHT}`}
         >
           {dots.map(([x, y]) => (
@@ -90,7 +91,7 @@ export function MapPinPicker() {
       </div>
       <p className="dil-map-pin__hint">{MAP_PIN_HINT}</p>
       <p aria-live="polite" className="dil-map-pin__readout">
-        {pin ? `x ${pin.x} · y ${pin.y}` : "No pin placed yet"}
+        {pin ? `x ${pin.x}% y ${pin.y}%` : "No pin placed yet"}
       </p>
     </div>
   );

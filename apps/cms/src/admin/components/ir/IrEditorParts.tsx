@@ -27,9 +27,9 @@ import { MaterialIcon } from "../MaterialIcon";
 import {
   CHECKLIST_PATHS,
   companyInitials,
-  summaryLanguageNote,
   DRAFT_NOTE,
   publishChecklist,
+  summaryLanguageNote,
 } from "./irEditor";
 
 export function ListOnly({ children }: { children: ReactNode }) {

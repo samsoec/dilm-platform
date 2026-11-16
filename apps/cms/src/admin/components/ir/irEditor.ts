@@ -1,4 +1,5 @@
 import { IR_LANGUAGE_LABELS } from "../../../irDocumentTypes";
+
 const MB = 1024 * 1024;
 
 export const IR_MAX_BYTES = 50 * MB;

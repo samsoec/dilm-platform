@@ -5,5 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate:dot-map": "../../node_modules/.bin/tsx scripts/generate-dot-map.ts"
   }
 }

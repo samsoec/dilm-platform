@@ -173,6 +173,11 @@ export const IrDocuments = withTenantAccess(
                 "The disclosure date shown on the Investor page. It's not the upload date.",
             },
           },
+          {
+            name: "displayHeading",
+            type: "ui",
+            admin: { components: { Field: `${IR_PARTS}#DisplayHeading` } },
+          },
           withMediaPicker({
             name: "coverImage",
             label: "Cover image",
@@ -180,12 +185,13 @@ export const IrDocuments = withTenantAccess(
             relationTo: "media",
             admin: {
               description: "No cover: the list shows this document-type icon.",
-              components: {
-                beforeInput: [`${IR_PARTS}#DisplayHeading`],
-                afterInput: [`${IR_PARTS}#CoverFallback`],
-              },
             },
           }),
+          {
+            name: "coverFallback",
+            type: "ui",
+            admin: { components: { Field: `${IR_PARTS}#CoverFallback` } },
+          },
           {
             name: "summary",
             type: "textarea",

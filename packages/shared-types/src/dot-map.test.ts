@@ -15,7 +15,10 @@ describe("dot map", () => {
       new URL("./dot-map.svg", import.meta.url),
       "utf8",
     );
-    expect(file.trim()).toBe(dotMapSvg());
+    expect(
+      file.trim(),
+      "dot-map.svg is out of date: run pnpm --filter @dilm/shared-types generate:dot-map",
+    ).toBe(dotMapSvg());
   });
 
   it("has dots over Java and none in the open sea", () => {
@@ -31,6 +34,13 @@ describe("dot map", () => {
     expect(pinFromPoint(box, 0, 900)).toEqual({ x: 0, y: 100 });
     expect(pinFromPoint({ ...box, width: 0 }, 1, 1)).toBeNull();
     expect(pinToViewBox({ x: 50, y: 50 })).toEqual({ cx: 460, cy: 170 });
+  });
+
+  it("maps a click inside an offset box", () => {
+    const box = { left: 108, top: 58, width: 400, height: 200 };
+    expect(pinFromPoint(box, 108, 58)).toEqual({ x: 0, y: 0 });
+    expect(pinFromPoint(box, 308, 108)).toEqual({ x: 50, y: 25 });
+    expect(pinFromPoint(box, 508, 258)).toEqual({ x: 100, y: 100 });
   });
 
   it("nudges with the arrow keys and stays on the map", () => {

@@ -276,7 +276,7 @@
   margin-bottom: var(--base);
 
   &__surface {
-    border: 1px solid var(--dil-border, var(--theme-elevation-150));
+    border: 1px solid var(--dil-line);
     border-radius: 8px;
     color: var(--dil-muted);
     cursor: crosshair;
@@ -284,7 +284,7 @@
     padding: 8px;
 
     &:focus-visible {
-      outline: 2px solid var(--dil-accent, var(--theme-text));
+      outline: 2px solid var(--dil-brand);
       outline-offset: 2px;
     }
   }
@@ -297,8 +297,8 @@
   }
 
   &__marker {
-    fill: var(--dil-accent, #d92d20);
-    stroke: #fff;
+    fill: var(--dil-danger-fill);
+    stroke: var(--dil-surface);
     stroke-width: 3;
   }
 
