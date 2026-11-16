@@ -243,8 +243,6 @@ export function trashBody(input: TrashGuard & { where: string }): string {
 
 export const DOCUMENT_ACTIONS_ID = "dil-document-actions";
 
-export const PREVIEW_UNAVAILABLE = "Preview isn't available yet.";
-
 export const PUBLISH_FOLLOW_UP =
   "It's on the website within minutes. Visitors keep seeing the previous version until then.";
 

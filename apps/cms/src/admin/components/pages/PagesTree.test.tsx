@@ -407,8 +407,8 @@ describe("PagesTree", () => {
       expect(
         within(menu)
           .getByRole("menuitem", { name: /Preview/ })
-          .getAttribute("aria-disabled"),
-      ).toBe("true");
+          .getAttribute("aria-expanded"),
+      ).toBe("false");
     });
 
     it("asks before moving a page to the trash", async () => {

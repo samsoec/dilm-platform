@@ -17,11 +17,11 @@ import { notify } from "../kit/Toast";
 import { ReachBadge } from "../kit/ReachBadge";
 import type { PublishStatus } from "../kit/publication";
 import { ALL_SITES_COUNT, getReach } from "../kit/reach";
+import { PreviewEntries } from "../preview/PreviewMenu";
 import { MaterialIcon } from "../MaterialIcon";
 import { failure } from "../pages/requests";
 import {
   LINKS_NOTE,
-  PREVIEW_UNAVAILABLE,
   placement,
   publishingLines,
   trashBody,
@@ -242,20 +242,7 @@ export function EditorSidebar(props: SidebarProps) {
 
       {props.collection === "shared-pages" && (
         <Panel id="dil-panel-preview" title="Preview on">
-          <ul className="dil-editor-links">
-            {(props.sites ?? []).map((site) => (
-              <li key={site.id}>
-                <ActionButton
-                  icon="visibility"
-                  type="button"
-                  unavailableReason={PREVIEW_UNAVAILABLE}
-                  variant="secondary"
-                >
-                  {site.domain}
-                </ActionButton>
-              </li>
-            ))}
-          </ul>
+          <PreviewEntries collection={props.collection} id={id} />
         </Panel>
       )}
 

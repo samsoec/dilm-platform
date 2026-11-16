@@ -4,6 +4,7 @@ import { readRuntimeConfigFromEnv } from "./env";
 export * from "./config";
 export { MissingEnvError, readRuntimeConfigFromEnv } from "./env";
 export * from "./pool";
+export * from "./preview";
 
 export type RuntimeConfigSource = "env" | "aws";
 
