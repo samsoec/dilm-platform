@@ -33,16 +33,24 @@ function parentOf(path: string): string {
 export function SectionStateNote({
   slug,
   group,
+  path,
 }: {
   slug: string;
   group: string;
+  path?: string;
 }) {
   const { collectionSlug } = useDocumentInfo();
   const recordType = useFormFields(([fields]) => fields.recordType?.value) as
     string | undefined;
+  const highlights = useFormFields(([fields]) =>
+    path && slug === "postArticle"
+      ? fields[`${parentOf(path)}.highlights.items`]?.value
+      : undefined,
+  );
   const notes = sectionNotes(slug, group, {
     collection: collectionSlug,
     recordType,
+    highlights,
   });
   if (notes.length === 0) return null;
   return (

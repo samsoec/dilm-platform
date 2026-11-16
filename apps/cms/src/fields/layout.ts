@@ -57,7 +57,10 @@ export function layoutField(
       className: "dil-layout-field",
       components: {
         Label: "/admin/components/fields/SectionsHeader#SectionsHeader",
-        afterInput: ["/admin/components/fields/SectionCatalog#SectionCatalog"],
+        afterInput: [
+          "/admin/components/fields/SectionCatalog#SectionCatalog",
+          "/admin/components/templates/TokenHelper#TokenHelper",
+        ],
       },
       description: `A page holds at most ${MAX_LAYOUT_BLOCKS} sections.`,
     },

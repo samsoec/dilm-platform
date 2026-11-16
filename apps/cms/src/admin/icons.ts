@@ -32,6 +32,7 @@ export const ICON_NAMES = [
   "contrast",
   "dark_mode",
   "dashboard_customize",
+  "data_object",
   "date_range",
   "delete",
   "delete_forever",
