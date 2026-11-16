@@ -86,6 +86,12 @@ export function isFullEmail(mailbox: string): EmailFieldValidation {
   };
 }
 
+import {
+  CAREER_PAGE_NOTE,
+  PUBLICATION_PAGE_NOTE,
+} from "../admin/components/routing/routing";
+import { routingNote } from "../admin/components/routing/fieldConfig";
+
 const TAB_INTRO = "/admin/components/fields/TabIntro#TabIntro";
 const CHARACTER_LIMIT =
   "/admin/components/fields/CharacterCount#CharacterLimit";
@@ -149,14 +155,16 @@ export const TenantSettings = withTenantAccess(
                 fields: [
                   {
                     name: "careerPage",
-                    label: "Career page",
+                    label: "Career page \u00B7 lists your jobs",
                     type: "relationship",
                     relationTo: "pages",
                     filterOptions: publishedPagesOfCompany,
-                    admin: {
-                      description:
-                        "Every job's URL is this page's URL plus the job's slug.",
-                    },
+                    admin: { description: CAREER_PAGE_NOTE },
+                  },
+                  {
+                    name: "careerPageNote",
+                    type: "ui",
+                    admin: { components: { Field: routingNote("careerPage") } },
                   },
                   {
                     name: "publicationPage",
@@ -164,9 +172,13 @@ export const TenantSettings = withTenantAccess(
                     type: "relationship",
                     relationTo: "pages",
                     filterOptions: publishedPagesOfCompany,
+                    admin: { description: PUBLICATION_PAGE_NOTE },
+                  },
+                  {
+                    name: "publicationPageNote",
+                    type: "ui",
                     admin: {
-                      description:
-                        "Used by the navbar search, the All tab on the post listing and the post breadcrumb. It can't be trashed or unpublished while it is set here.",
+                      components: { Field: routingNote("publicationPage") },
                     },
                   },
                 ],

@@ -1,0 +1,63 @@
+@layer dil {
+  .dil-routing-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    margin-bottom: 20px;
+
+    .dil-readonly-hint {
+      margin: 0;
+    }
+  }
+
+  .dil-routing-note {
+    display: grid;
+    gap: 8px;
+    margin: -8px 0 24px;
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    color: var(--dil-muted);
+
+    code {
+      font-family: var(--dil-font-mono, monospace);
+      color: var(--dil-text, inherit);
+      margin-inline-end: 8px;
+    }
+  }
+
+  .dil-routing-note__line {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+  }
+
+  .dil-routing-note__patterns {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+    }
+  }
+
+  .dil-routing-note__locale {
+    min-width: 72px;
+  }
+
+  .dil-routing-dialog__item p {
+    margin: 0 0 8px;
+  }
+
+  .dil-routing-dialog__languages {
+    margin: 0 0 8px;
+    padding-inline-start: 18px;
+  }
+}

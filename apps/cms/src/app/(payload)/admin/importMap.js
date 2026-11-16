@@ -227,6 +227,9 @@ import { UsedInCountCell as UsedInCountCell_7bb4151832e869f4153422cf60bddfd8 } f
 import { UploadedCell as UploadedCell_7bb4151832e869f4153422cf60bddfd8 } from '../../../admin/components/documents/DocumentCells'
 import { LinkStatusCell as LinkStatusCell_7bb4151832e869f4153422cf60bddfd8 } from '../../../admin/components/documents/DocumentCells'
 import { DocumentsUploader as DocumentsUploader_24733135f9fc4d236948a0ea0d238093 } from '../../../admin/components/documents/DocumentsUploader'
+import { RoutingNote as RoutingNote_1ff0c5a193a1186ec5b3d906d2f52272 } from '../../../admin/components/routing/RoutingNote'
+import { RoutingSaveButton as RoutingSaveButton_57e2beb302d71fdb56104b50c79850c0 } from '../../../admin/components/routing/RoutingSaveButton'
+import { SiteRoutingHeader as SiteRoutingHeader_b5a58f2d2c5f19c6e5561da0ea3d2b86 } from '../../../admin/components/routing/SiteRoutingHeader'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -456,5 +459,8 @@ export const importMap = {
   "/admin/components/documents/DocumentCells#UsedInCountCell": UsedInCountCell_7bb4151832e869f4153422cf60bddfd8,
   "/admin/components/documents/DocumentCells#UploadedCell": UploadedCell_7bb4151832e869f4153422cf60bddfd8,
   "/admin/components/documents/DocumentCells#LinkStatusCell": LinkStatusCell_7bb4151832e869f4153422cf60bddfd8,
-  "/admin/components/documents/DocumentsUploader#DocumentsUploader": DocumentsUploader_24733135f9fc4d236948a0ea0d238093
+  "/admin/components/documents/DocumentsUploader#DocumentsUploader": DocumentsUploader_24733135f9fc4d236948a0ea0d238093,
+  "/admin/components/routing/RoutingNote#RoutingNote": RoutingNote_1ff0c5a193a1186ec5b3d906d2f52272,
+  "/admin/components/routing/RoutingSaveButton#RoutingSaveButton": RoutingSaveButton_57e2beb302d71fdb56104b50c79850c0,
+  "/admin/components/routing/SiteRoutingHeader#SiteRoutingHeader": SiteRoutingHeader_b5a58f2d2c5f19c6e5561da0ea3d2b86
 }
