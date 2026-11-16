@@ -139,6 +139,7 @@ export async function HeaderField(props: UIFieldServerProps) {
       <EditorHeader
         collection={data.collection}
         seed={seedOf(data, parentOf(props))}
+        legalPage={data.legalPage}
         publicationPage={data.publicationPage}
         status={data.status}
         tenant={tenantOf(data)}
@@ -251,6 +252,7 @@ export async function SidebarField(props: UIFieldServerProps) {
       otherLanguage={
         other ? { code: other, label: names.of(other) ?? other } : null
       }
+      legalPages={data.legalPage ? data.legalPages : null}
       publicationPage={data.publicationPage}
       settingsID={data.settingsID}
       savedAt={data.savedAt}

@@ -37,12 +37,15 @@ import { SHARED_VIEWER_BANNER } from "../pages/pagesModel";
 import { withAncestorCrumbs, type AncestorCrumb } from "./crumbs";
 import { DOCUMENT_ACTIONS_ID, PUBLISH_FOLLOW_UP, viewerNotice } from "./editor";
 import { PreviewMenu } from "../preview/PreviewMenu";
+import { LegalDateConfirm } from "../legal/LegalDateConfirm";
+import { useLegalSnapshot } from "../legal/legalForm";
 import { UrlChangeGuard } from "./UrlChangeGuard";
 import type { UrlSeed } from "./useEditorUrls";
 
 const PUBLISH_SLUG = "dil-editor-publish";
 const UNPUBLISH_SLUG = "dil-editor-unpublish";
 const TRASH_SLUG = "dil-editor-trash";
+const LEGAL_DATE_SLUG = "dil-editor-legal-date";
 
 export function NoControl() {
   return null;
@@ -130,6 +133,7 @@ export function EditorActions({
   const title = useFormFields(
     ([fields]) => (fields.title ?? fields.name)?.value,
   ) as string | undefined;
+  const { changed: legalTextChanged } = useLegalSnapshot();
   const [host, setHost] = useState<HTMLElement | null>(null);
   const [busy, setBusy] = useState(false);
   const [problems, setProblems] = useState<FieldProblem[]>([]);
@@ -161,7 +165,7 @@ export function EditorActions({
       return;
     }
     setProblems([]);
-    openModal(PUBLISH_SLUG);
+    openModal(legalTextChanged ? LEGAL_DATE_SLUG : PUBLISH_SLUG);
   };
 
   const publish = async (impactNow?: Impact) => {
@@ -296,6 +300,10 @@ export function EditorActions({
       <UrlChangeGuard domain={seed.domain} />
       {host && createPortal(controls, host)}
       <ValidationSummary problems={problems} />
+      <LegalDateConfirm
+        onContinue={() => openModal(PUBLISH_SLUG)}
+        slug={LEGAL_DATE_SLUG}
+      />
       <PublishConfirm
         collection={collectionSlug}
         id={id}

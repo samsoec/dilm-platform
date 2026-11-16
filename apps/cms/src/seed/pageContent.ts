@@ -1614,7 +1614,7 @@ export function legalLayout(ctx: SeedContext, kind: LegalPage): PageBlock[] {
       ),
       metaLabel: "Legal Information",
       lastUpdatedLabel: "Last Updated",
-      ...(kind === "terms" ? { lastUpdated: LEGAL_UPDATED } : {}),
+      lastUpdated: LEGAL_UPDATED,
     },
     {
       blockType: "richText",

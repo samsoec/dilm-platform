@@ -1,4 +1,5 @@
 import { withSameAsEnTag } from "../fields/layoutEditor";
+import { stampTextHook, validateLastUpdated } from "../legal/legalFields";
 import { headingField } from "./factories";
 import { sectionBlock } from "./sectionBlock";
 
@@ -16,16 +17,39 @@ export const articleHeader = sectionBlock({
   },
   fields: [
     headingField({ align: "left" }),
-    withSameAsEnTag({ name: "metaLabel", type: "text", localized: true }),
+    withSameAsEnTag({
+      name: "metaLabel",
+      label: "Label",
+      type: "text",
+      localized: true,
+    }),
     withSameAsEnTag({
       name: "lastUpdatedLabel",
+      label: "Last updated label",
       type: "text",
       localized: true,
     }),
     {
       name: "lastUpdated",
+      label: "Last updated",
       type: "date",
-      admin: { date: { pickerAppearance: "dayOnly" } },
+      required: true,
+      validate: validateLastUpdated,
+      admin: {
+        date: { pickerAppearance: "dayOnly" },
+        components: {
+          afterInput: [
+            "/admin/components/legal/TextChangedFlag#TextChangedFlag",
+          ],
+        },
+      },
+    },
+    {
+      name: "textStamp",
+      type: "text",
+      localized: true,
+      admin: { hidden: true },
+      hooks: { beforeChange: [stampTextHook] },
     },
   ],
 });
