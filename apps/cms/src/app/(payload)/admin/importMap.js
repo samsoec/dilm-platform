@@ -157,6 +157,12 @@ import { NoControl as NoControl_c6cd29aa8177a060e43b9ccc07ba17de } from '../../.
 /** @type import('payload').ImportMap */
 import { SectionRowLabel as SectionRowLabel_50ef2c16859fd1eb2917e9ebf0eb899a } from '../../../admin/components/fields/SectionRowLabel'
 import { SectionsHeader as SectionsHeader_f06cb4c33585bfc6d213b1d7bf088af0 } from '../../../admin/components/fields/SectionsHeader'
+import { TitleNotice as TitleNotice_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
+import { ButtonStyleField as ButtonStyleField_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
+import { SectionArrayNote as SectionArrayNote_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
+import { ButtonRowLabel as ButtonRowLabel_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
+import { SegmentField as SegmentField_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
+import { VariantField as VariantField_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
   "/admin/components/users/UserCells#RoleCell": RoleCell_5cd97e58844d5c99becf880375f054b9,
@@ -315,4 +321,10 @@ export const importMap = {
   "/admin/components/editor/EditorChrome#NoControl": NoControl_c6cd29aa8177a060e43b9ccc07ba17de,
   "/admin/components/fields/SectionRowLabel#SectionRowLabel": SectionRowLabel_50ef2c16859fd1eb2917e9ebf0eb899a,
   "/admin/components/fields/SectionsHeader#SectionsHeader": SectionsHeader_f06cb4c33585bfc6d213b1d7bf088af0,
+  "/admin/components/fields/SectionKit#TitleNotice": TitleNotice_b91a8bbaaf6aa498d25cba694787cbe9,
+  "/admin/components/fields/SectionKit#ButtonStyleField": ButtonStyleField_b91a8bbaaf6aa498d25cba694787cbe9,
+  "/admin/components/fields/SectionKit#SectionArrayNote": SectionArrayNote_b91a8bbaaf6aa498d25cba694787cbe9,
+  "/admin/components/fields/SectionKit#ButtonRowLabel": ButtonRowLabel_b91a8bbaaf6aa498d25cba694787cbe9,
+  "/admin/components/fields/SectionKit#SegmentField": SegmentField_b91a8bbaaf6aa498d25cba694787cbe9,
+  "/admin/components/fields/SectionKit#VariantField": VariantField_b91a8bbaaf6aa498d25cba694787cbe9,
 }

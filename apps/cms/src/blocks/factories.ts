@@ -33,11 +33,19 @@ import { unscopedRelationship } from "../tenancy";
 
 export const MAX_BUTTONS = 2;
 
+const KIT = "/admin/components/fields/SectionKit";
+
+const ALIGNMENT_ORDER: readonly HeadingAlignment[] = [
+  "left",
+  "center",
+  "split",
+];
+
 export const ICON_PREVIEW_SIZE = 48;
 
 export const BUTTON_STYLE_LABELS: Record<ButtonStyle, string> = {
-  primary: "Filled",
-  light: "White, for dark backgrounds",
+  primary: "Primary",
+  light: "Light",
   text: "Text link",
 };
 
@@ -47,14 +55,14 @@ export const BACKGROUND_LABELS: Record<
 > = {
   default: "Default",
   muted: "Light grey",
-  dark: "Dark navy",
+  dark: "Dark",
   image: "Image",
 };
 
 export const ALIGNMENT_LABELS: Record<HeadingAlignment, string> = {
-  center: "Centered",
   left: "Left",
-  split: "Title left, description right",
+  center: "Center",
+  split: "Split",
 };
 
 export const SOURCE_LABELS: Record<RecordSource, string> = {
@@ -97,8 +105,50 @@ export function headingField({
         required: true,
         defaultValue: align,
         options: options(HEADING_ALIGNMENTS, ALIGNMENT_LABELS),
+        admin: {
+          components: {
+            Field: {
+              path: `${KIT}#SegmentField`,
+              clientProps: {
+                tag: "EN and ID share this",
+                order: ALIGNMENT_ORDER,
+              },
+            },
+          },
+        },
       },
     ],
+  };
+}
+
+export function variantField({
+  name,
+  label,
+  defaultValue,
+  choices,
+  chips = false,
+}: {
+  name: string;
+  label?: string;
+  defaultValue: string;
+  choices: readonly { value: string; label: string }[];
+  chips?: boolean;
+}): SelectField {
+  return {
+    name,
+    ...(label ? { label } : {}),
+    type: "select",
+    required: true,
+    defaultValue,
+    options: choices.map(({ value, label: text }) => ({
+      value,
+      label: text,
+    })),
+    admin: {
+      components: {
+        Field: { path: `${KIT}#VariantField`, clientProps: { chips } },
+      },
+    },
   };
 }
 
@@ -123,6 +173,7 @@ export function buttonsField({
     minRows: 0,
     maxRows,
     labels: { singular: "Button", plural: "Buttons" },
+    admin: { components: { RowLabel: `${KIT}#ButtonRowLabel` } },
     fields: [
       link({ name: "link", required: true }),
       {
@@ -131,6 +182,7 @@ export function buttonsField({
         required: true,
         defaultValue: "primary",
         options: options(BUTTON_STYLES, BUTTON_STYLE_LABELS),
+        admin: { components: { Field: `${KIT}#ButtonStyleField` } },
       },
     ],
   };
@@ -172,6 +224,14 @@ export function appearanceField({
         required: true,
         defaultValue: "default",
         options: options(SECTION_BACKGROUNDS, BACKGROUND_LABELS),
+        admin: {
+          components: {
+            Field: {
+              path: `${KIT}#SegmentField`,
+              clientProps: { imagePath: "backgroundImage" },
+            },
+          },
+        },
       },
       withMediaPicker(
         {

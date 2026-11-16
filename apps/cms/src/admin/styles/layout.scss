@@ -665,4 +665,114 @@
   .dil-section-row__insert:focus-visible {
     display: inline-flex;
   }
+
+  .dil-segment-field,
+  .dil-button-style,
+  .dil-variant-field {
+    margin-bottom: 16px;
+  }
+
+  .dil-segment-field__tag,
+  .dil-style-chip,
+  .dil-title-hint__key {
+    display: inline-flex;
+    margin-inline-start: 8px;
+    padding: 1px 8px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface-2);
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+  }
+
+  .dil-button-style__select {
+    width: 100%;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface);
+    color: var(--dil-ink);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-field-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 6px 0 0;
+    color: var(--dil-muted);
+    font-family: var(--dil-font-sans);
+    font-size: 12px;
+
+    .dil-icon {
+      font-size: 16px;
+    }
+  }
+
+  .dil-field-note--warn {
+    color: var(--dil-warn);
+  }
+
+  .dil-title-hint {
+    margin-top: 6px;
+  }
+
+  .dil-title-hint__key {
+    margin-inline-start: 0;
+  }
+
+  .dil-variant-field__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dil-variant-field__option {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    min-width: 88px;
+    padding: 8px 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-m);
+    background: var(--dil-surface);
+    color: var(--dil-ink-2);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+    cursor: pointer;
+
+    &:focus-within {
+      outline: 2px solid var(--dil-brand);
+      outline-offset: 2px;
+    }
+  }
+
+  .dil-variant-field__options--chips .dil-variant-field__option {
+    min-width: 0;
+    padding: 4px 14px;
+    border-radius: 999px;
+  }
+
+  .dil-variant-field__option--active {
+    border-color: var(--dil-brand-fill);
+    background: var(--dil-sel-bg);
+    color: var(--dil-sel-ink);
+  }
+
+  .dil-variant-field__preview {
+    display: flex;
+    gap: 3px;
+    align-items: flex-end;
+    height: 20px;
+
+    span {
+      width: 8px;
+      height: 100%;
+      border-radius: 2px;
+      background: var(--dil-muted);
+    }
+  }
 }

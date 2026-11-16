@@ -30,6 +30,10 @@ export function withSectionCounters(fields: Field[]): Field[] {
             path: "/admin/components/fields/ArrayCountLabel#ArrayCountLabel",
             clientProps: { inSection: true },
           },
+          afterInput: [
+            ...(next.admin?.components?.afterInput ?? []),
+            "/admin/components/fields/SectionKit#SectionArrayNote",
+          ],
         },
       },
     } as Field;
