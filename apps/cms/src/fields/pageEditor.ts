@@ -35,6 +35,7 @@ export const EDITOR_COMPONENTS = {
   seoImage: `${EDITOR}/server#SeoImageField`,
   seoPreview: `${EDITOR}/server#SeoPreviewField`,
   sidebar: `${EDITOR}/server#SidebarField`,
+  postsOnPage: "/admin/components/records/PostsOnPagePanel#PostsOnPagePanel",
   visitors: `${EDITOR}/PageSettings#VisitorsField`,
   noControl: `${EDITOR}/EditorChrome#NoControl`,
 } as const;
@@ -192,6 +193,7 @@ export function editorFields(parent: RelationshipField): Field[] {
       admin: { ...slugFallbackField.admin, hidden: true },
     },
     ui("editorSidebar", EDITOR_COMPONENTS.sidebar, "sidebar"),
+    ui("postsOnPage", EDITOR_COMPONENTS.postsOnPage, "sidebar"),
   ];
 }
 

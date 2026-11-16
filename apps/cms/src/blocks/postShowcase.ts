@@ -5,13 +5,14 @@ import {
   type PostCardEyebrow,
   type PostLayout,
 } from "@dilm/shared-types";
-import type { FieldHook } from "payload";
+import type { Field, FieldHook } from "payload";
 
 import { withSameAsEnTag } from "../fields/layoutEditor";
 import { pickerScope, validateOnePick } from "../fields/recordPicks";
 import { unscopedRelationship } from "../tenancy";
 import {
   appearanceField,
+  SOURCE_FIELD_COMPONENT,
   buttonsField,
   headingField,
   imageField,
@@ -34,6 +35,31 @@ export const POST_EYEBROW_LABELS: Record<PostCardEyebrow, string> = {
 export const DEFAULT_POST_LIMIT = 3;
 
 export const MAX_POST_LIMIT = MAX_POST_ITEMS;
+
+const POST_CARD_FIELD = "/admin/components/records/PostCardField#PostCardField";
+
+const CATEGORY_CHIPS_FIELD =
+  "/admin/components/records/CategoryChipsField#CategoryChipsField";
+
+const OVERRIDE_FALLBACK =
+  "/admin/components/records/OverrideFallback#OverrideFallback";
+
+function withOverride<T extends Field>(field: T): T {
+  const tagged = withSameAsEnTag(field);
+  const components = (
+    tagged.admin as { components?: { afterInput?: string[] } }
+  ).components;
+  return {
+    ...tagged,
+    admin: {
+      ...tagged.admin,
+      components: {
+        ...components,
+        afterInput: [...(components?.afterInput ?? []), OVERRIDE_FALLBACK],
+      },
+    },
+  } as T;
+}
 
 type BlockData = { source?: string | null };
 
@@ -72,6 +98,7 @@ export const postShowcase = sectionBlock({
         { value: "manual", label: "Hand-picked" },
         { value: "latest", label: "Latest" },
       ],
+      admin: { components: { Field: SOURCE_FIELD_COMPONENT } },
     },
     {
       name: "items",
@@ -96,16 +123,17 @@ export const postShowcase = sectionBlock({
           admin: {
             description:
               "Published posts only; a post card links to that post.",
+            components: { Field: POST_CARD_FIELD },
           },
         }),
-        withSameAsEnTag({ name: "eyebrow", type: "text", localized: true }),
-        withSameAsEnTag({ name: "title", type: "text", localized: true }),
-        withSameAsEnTag({
+        withOverride({ name: "eyebrow", type: "text", localized: true }),
+        withOverride({ name: "title", type: "text", localized: true }),
+        withOverride({
           name: "description",
           type: "textarea",
           localized: true,
         }),
-        imageField({ name: "image", label: "Photo (optional)" }),
+        imageField({ name: "image", label: "Override image" }),
       ],
     },
     {
@@ -116,6 +144,7 @@ export const postShowcase = sectionBlock({
       maxDepth: 0,
       hooks: { beforeChange: [clearUnless("latest", null)] },
       admin: {
+        components: { Field: CATEGORY_CHIPS_FIELD },
         condition: whenBlock("source", "manual", "latest"),
         description: "Leave empty to use posts from every category.",
       },

@@ -4,6 +4,7 @@ import { MAX_HIGHLIGHTS } from "@dilm/shared-types";
 import { withSameAsEnTag } from "../fields/layoutEditor";
 import { pickerScope, validateManyPicks } from "../fields/recordPicks";
 import { unscopedRelationship } from "../tenancy";
+import { RECORD_PICKS_FIELD } from "./factories";
 
 export function highlightsField(description: string): GroupField {
   return {
@@ -24,6 +25,7 @@ export function highlightsField(description: string): GroupField {
         filterOptions: pickerScope,
         validate: validateManyPicks,
         admin: {
+          components: { Field: RECORD_PICKS_FIELD },
           description: `Up to ${MAX_HIGHLIGHTS} published posts of this company.`,
         },
       }),

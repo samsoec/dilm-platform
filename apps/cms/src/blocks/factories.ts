@@ -35,6 +35,11 @@ export const MAX_BUTTONS = 2;
 
 const KIT = "/admin/components/fields/SectionKit";
 
+export const RECORD_PICKS_FIELD =
+  "/admin/components/records/RecordPicksField#RecordPicksField";
+
+export const SOURCE_FIELD_COMPONENT = `${KIT}#SegmentField`;
+
 const ALIGNMENT_ORDER: readonly HeadingAlignment[] = [
   "left",
   "center",
@@ -300,6 +305,7 @@ export function recordPickerFields({
     required: true,
     defaultValue: defaultSource,
     options: options(sources, SOURCE_LABELS),
+    admin: { components: { Field: SOURCE_FIELD_COMPONENT } },
   };
   const fields: Field[] = [source];
   if (sources.includes("manual")) {
@@ -314,7 +320,10 @@ export function recordPickerFields({
       ...(filterOptions ? { maxDepth: 1, filterOptions } : {}),
       ...(validate ? { validate } : {}),
       hooks: { beforeChange: [clearUnlessSource("manual")] },
-      admin: { condition: sourceIs("manual") },
+      admin: {
+        condition: sourceIs("manual"),
+        components: { Field: RECORD_PICKS_FIELD },
+      },
     };
     fields.push(filterOptions ? unscopedRelationship(items) : items);
   }
