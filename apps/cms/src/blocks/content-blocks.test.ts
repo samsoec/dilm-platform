@@ -489,6 +489,7 @@ describe("richText (§4.5.14)", () => {
       "body",
       "showTableOfContents",
       "tocTitle",
+      "tocAnchors",
     ]);
     expect(field("body")).toMatchObject({
       type: "richText",
@@ -543,6 +544,7 @@ describe("articleHeader (§4.5.38)", () => {
       "metaLabel",
       "lastUpdatedLabel",
       "lastUpdated",
+      "textStamp",
     ]);
     expect(
       (findField(subfields(field("heading")), "align") as SelectField)

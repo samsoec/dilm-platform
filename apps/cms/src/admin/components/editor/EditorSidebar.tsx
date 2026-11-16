@@ -30,6 +30,8 @@ import {
 } from "./editor";
 import { PREVIEW_LISTING_TITLE } from "../publication/publication";
 import { PublicationPanel } from "../publication/PublicationPanel";
+import { LegalPanel } from "../legal/LegalPanel";
+import type { LegalEntry } from "../../data/legalPages";
 import { useLiveStatus } from "./EditorHeader";
 
 const UNPUBLISH_SLUG = "dil-editor-unpublish";
@@ -52,6 +54,7 @@ export type SidebarProps = {
   languageName: string;
   otherLanguage: { code: string; label: string } | null;
   publicationPage?: boolean;
+  legalPages?: LegalEntry[] | null;
   settingsID?: string | null;
 };
 
@@ -251,6 +254,10 @@ export function EditorSidebar(props: SidebarProps) {
             <PreviewEntries collection={props.collection} id={id} />
           </Panel>
         </>
+      )}
+
+      {props.legalPages && (
+        <LegalPanel currentId={String(id)} pages={props.legalPages} />
       )}
 
       {props.collection === "shared-pages" && (

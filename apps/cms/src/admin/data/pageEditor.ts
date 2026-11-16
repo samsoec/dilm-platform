@@ -28,6 +28,11 @@ import {
   type PublishStatus,
 } from "../components/kit/publication";
 import { peopleNames } from "./pagesTree";
+import {
+  hasArticleHeader,
+  loadLegalPages,
+  type LegalEntry,
+} from "./legalPages";
 
 type Context = { payload: Payload; user: TypedUser };
 
@@ -70,6 +75,8 @@ export type PageEditorData = {
   translation: TranslationCount;
   publicationPage: boolean;
   settingsID: string | null;
+  legalPage: boolean;
+  legalPages: LegalEntry[];
 };
 
 const UNTRANSLATED_SKIP = new Set(["slug", "path"]);
@@ -327,6 +334,7 @@ async function load(
     ancestorTitles,
     sites,
     publication,
+    legalPages,
   ] = await Promise.all([
     tenant === null
       ? undefined
@@ -394,6 +402,9 @@ async function load(
     ),
     collection === "shared-pages" ? allSites(context) : [],
     publicationState(context, collection, tenant, id),
+    collection === "pages" && tenant !== null && hasArticleHeader(doc.layout)
+      ? loadLegalPages(context, tenant, locale)
+      : undefined,
   ]);
 
   const savedBy = idText(doc.updatedBy);
@@ -443,6 +454,8 @@ async function load(
     links,
     translation: countTranslations(fields, doc),
     ...publication,
+    legalPage: legalPages !== undefined,
+    legalPages: legalPages ?? [],
   };
 }
 
@@ -483,6 +496,8 @@ export function blankEditorData(
     translation: { translated: 0, total: 0 },
     publicationPage: false,
     settingsID: null,
+    legalPage: false,
+    legalPages: [],
     ...overrides,
   };
 }

@@ -241,6 +241,8 @@ import { SummaryLanguageNote as SummaryLanguageNote_e05db7d652f5a712500fa0647c5a
 import { CategoryTabsField as CategoryTabsField_9291b222fe6bef4ad0747dfdc063915d } from '../../../admin/components/publication/CategoryTabsField'
 import { FeaturedNewest as FeaturedNewest_8163c6dee7ae2a46071ad6d780e2cc5b } from '../../../admin/components/publication/FeaturedNewest'
 import { TokenChips as TokenChips_6fb29fa8c15549956cf1a097fb717545 } from '../../../admin/components/publication/TokenChips'
+import { TextChangedFlag as TextChangedFlag_8605708db795378a6bcf8ef107e10925 } from '../../../admin/components/legal/TextChangedFlag'
+import { TocSummary as TocSummary_e4e608a49fb60a281dbcf2decc4d0e85 } from '../../../admin/components/legal/TocSummary'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -485,4 +487,6 @@ export const importMap = {
   "/admin/components/ir/IrEditorParts#DisplayHeading": DisplayHeading_e05db7d652f5a712500fa0647c5af374,
   "/admin/components/ir/IrEditorParts#CoverFallback": CoverFallback_e05db7d652f5a712500fa0647c5af374,
   "/admin/components/ir/IrEditorParts#SummaryLanguageNote": SummaryLanguageNote_e05db7d652f5a712500fa0647c5af374,
+  "/admin/components/legal/TextChangedFlag#TextChangedFlag": TextChangedFlag_8605708db795378a6bcf8ef107e10925,
+  "/admin/components/legal/TocSummary#TocSummary": TocSummary_e4e608a49fb60a281dbcf2decc4d0e85,
 }

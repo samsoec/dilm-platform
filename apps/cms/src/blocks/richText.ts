@@ -1,5 +1,7 @@
 import { withSameAsEnTag } from "../fields/layoutEditor";
 import { richTextBodyField } from "../fields/richTextBody";
+import { tocAnchorsHook } from "../legal/legalFields";
+import { TOC_BUILT_FROM, TOC_TOGGLE_LABEL } from "../legal/legalText";
 import { headingField, whenBlock } from "./factories";
 import { sectionBlock } from "./sectionBlock";
 
@@ -22,17 +24,31 @@ export const richText = sectionBlock({
       name: "showTableOfContents",
       type: "checkbox",
       defaultValue: false,
-      label: "Show an On This Page list",
-      admin: {
-        description: "Built from the main (H2) headings of the text.",
-      },
+      label: TOC_TOGGLE_LABEL,
+      admin: { description: TOC_BUILT_FROM },
     },
     withSameAsEnTag({
       name: "tocTitle",
       type: "text",
       localized: true,
-      label: "On This Page title",
+      label: "List title",
       admin: { condition: whenBlock("showTableOfContents", "false", "true") },
     }),
+    {
+      name: "tocSummary",
+      type: "ui",
+      admin: {
+        components: {
+          Field: "/admin/components/legal/TocSummary#TocSummary",
+        },
+      },
+    },
+    {
+      name: "tocAnchors",
+      type: "json",
+      localized: true,
+      admin: { hidden: true },
+      hooks: { beforeChange: [tocAnchorsHook] },
+    },
   ],
 });

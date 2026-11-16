@@ -9,6 +9,7 @@ import { PublishBadge } from "../kit/PublishBadge";
 import { ReachBadge } from "../kit/ReachBadge";
 import { getPublishStatus, type PublishStatus } from "../kit/publication";
 import { getReach } from "../kit/reach";
+import { LEGAL_PAGE_TAG } from "../../../legal/legalText";
 import { PUBLICATION_TAG } from "../publication/publication";
 import { useEditorUrls, type UrlSeed } from "./useEditorUrls";
 
@@ -43,6 +44,7 @@ export type EditorHeaderProps = {
   tenant: { id: number | string; domain?: string } | null;
   untitled: string;
   publicationPage?: boolean;
+  legalPage?: boolean;
 };
 
 export function EditorHeader({
@@ -52,6 +54,7 @@ export function EditorHeader({
   tenant,
   untitled,
   publicationPage,
+  legalPage,
 }: EditorHeaderProps) {
   const title = useFormFields(([fields]) => fields.title?.value) as
     string | undefined;
@@ -76,6 +79,9 @@ export function EditorHeader({
         <h1 className="dil-editor-title">{title?.trim() || untitled}</h1>
         {publicationPage && (
           <span className="dil-editor-header__tag">{PUBLICATION_TAG}</span>
+        )}
+        {legalPage && (
+          <span className="dil-editor-header__tag">{LEGAL_PAGE_TAG}</span>
         )}
         <PublishBadge status={live} />
         {!shared && <ReachBadge reach={reach} />}

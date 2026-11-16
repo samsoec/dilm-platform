@@ -2217,10 +2217,19 @@ export interface RichTextBlock {
     [k: string]: unknown;
   };
   /**
-   * Built from the main (H2) headings of the text.
+   * Built from the H2 headings below
    */
   showTableOfContents?: boolean | null;
   tocTitle?: string | null;
+  tocAnchors?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'richText';
@@ -2255,7 +2264,8 @@ export interface ArticleHeaderBlock {
   };
   metaLabel?: string | null;
   lastUpdatedLabel?: string | null;
-  lastUpdated?: string | null;
+  lastUpdated: string;
+  textStamp?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'articleHeader';
@@ -6326,6 +6336,7 @@ export interface RichTextBlockSelect<T extends boolean = true> {
   body?: T;
   showTableOfContents?: T;
   tocTitle?: T;
+  tocAnchors?: T;
   id?: T;
   blockName?: T;
 }
@@ -6345,6 +6356,7 @@ export interface ArticleHeaderBlockSelect<T extends boolean = true> {
   metaLabel?: T;
   lastUpdatedLabel?: T;
   lastUpdated?: T;
+  textStamp?: T;
   id?: T;
   blockName?: T;
 }
