@@ -11,6 +11,7 @@ import {
 import {
   CATEGORY_HERO_NOTE,
   CATEGORY_LISTING_NOTE,
+  CATEGORY_LISTING_SOURCE_WARNING,
   highlightsCountText,
   NEIGHBOURS_NOTE,
   POST_LEFT_OUT_NOTE,
@@ -45,11 +46,13 @@ export type SectionContext = {
   collection?: string | null;
   recordType?: string | null;
   highlights?: unknown;
+  source?: unknown;
 };
 
 export type SectionNote = {
   tone: "info" | "warning";
   text: string;
+  setCurrentCategory?: boolean;
   link?: { href: string; label: string };
 };
 
@@ -93,7 +96,15 @@ export function sectionNotes(
       notes.push({ tone: "info", text: CATEGORY_HERO_NOTE });
     }
     if (slug === "postListing") {
-      notes.push({ tone: "info", text: CATEGORY_LISTING_NOTE });
+      notes.push(
+        context.source === "currentCategory"
+          ? { tone: "info", text: CATEGORY_LISTING_NOTE }
+          : {
+              tone: "warning",
+              text: CATEGORY_LISTING_SOURCE_WARNING,
+              setCurrentCategory: true,
+            },
+      );
     }
   }
   if (group === "Current company") {

@@ -74,6 +74,9 @@ export const CATEGORY_HERO_NOTE =
 export const CATEGORY_LISTING_NOTE =
   "Lists this category's posts, with its own side list of highlighted posts.";
 
+export const CATEGORY_LISTING_SOURCE_WARNING =
+  "On the category template the list should be drawn from This category, or every category page shows the same posts.";
+
 export function categoryDrawsNote(paths: readonly string[]): string {
   const list = paths.length > 0 ? joinNames([...paths]) : "no category pages";
   return `Draws ${list}. Their SEO uses the category's name, description and cover.`;

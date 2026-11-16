@@ -103,8 +103,16 @@ describe("section notes in templates", () => {
     expect(
       sectionNotes("publicationHero", "Hero", { recordType: "post" }),
     ).toHaveLength(0);
+    const listing = sectionNotes("postListing", "Records", {
+      recordType: "category",
+      source: "all",
+    });
+    expect(listing[0].setCurrentCategory).toBe(true);
     expect(
-      sectionNotes("postListing", "Records", { recordType: "category" }),
-    ).toHaveLength(1);
+      sectionNotes("postListing", "Records", {
+        recordType: "category",
+        source: "currentCategory",
+      })[0].setCurrentCategory,
+    ).toBeUndefined();
   });
 });
