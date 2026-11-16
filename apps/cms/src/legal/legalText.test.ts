@@ -12,7 +12,11 @@ import {
   tocEntries,
   tocSummary,
 } from "./legalText";
-import { stampTextHook, tocAnchorsHook } from "./legalFields";
+import {
+  stampTextHook,
+  tocAnchorsHook,
+  validateLastUpdated,
+} from "./legalFields";
 
 const heading = (tag: string, text: string) => ({
   type: "heading",
@@ -44,15 +48,17 @@ describe("table of contents", () => {
   it("derives the anchors on the server and clears them when off", () => {
     const value = body(heading("h2", "Cookies"));
     expect(
-      hook(tocAnchorsHook, {
-        siblingData: { body: value, showTableOfContents: true },
-      }),
+      JSON.parse(
+        hook(tocAnchorsHook, {
+          siblingData: { body: value, showTableOfContents: true },
+        }) as string,
+      ),
     ).toEqual([{ text: "Cookies", anchor: "cookies" }]);
     expect(
       hook(tocAnchorsHook, {
         siblingData: { body: value, showTableOfContents: false },
       }),
-    ).toEqual([]);
+    ).toBe("[]");
   });
 });
 
@@ -65,6 +71,20 @@ describe("last updated", () => {
       LEGAL_DATE_INVALID,
     );
     expect(checkLastUpdated("2026-11-01T00:00:00Z", now)).toBe(true);
+  });
+
+  it("only demands the date when publishing", () => {
+    const check = (value: unknown, data: object) =>
+      (validateLastUpdated as unknown as (v: unknown, o: object) => unknown)(
+        value,
+        { data },
+      );
+    expect(check(undefined, { _status: "draft" })).toBe(true);
+    expect(check(undefined, {})).toBe(true);
+    expect(check(undefined, { _status: "published" })).toBe(
+      LEGAL_DATE_REQUIRED,
+    );
+    expect(check("nope", { _status: "draft" })).toBe(LEGAL_DATE_INVALID);
   });
 
   it("is a required, validated field on the block", () => {
@@ -110,9 +130,17 @@ describe("last updated", () => {
         previousValue: undefined,
       }),
     ).toBe(current);
-    expect(textChangedSince(current, changed, "2026-11-01")).toBe(true);
-    expect(textChangedSince(current, current, "2026-11-01")).toBe(false);
-    expect(textChangedSince(undefined, changed, "2026-11-01")).toBe(false);
-    expect(textChangedSince(current, changed, undefined)).toBe(false);
+    expect(textChangedSince(current, changed, "2026-11-01", "2026-11-01")).toBe(
+      true,
+    );
+    expect(textChangedSince(current, current, "2026-11-01", "2026-11-01")).toBe(
+      false,
+    );
+    expect(
+      textChangedSince(undefined, changed, "2026-11-01", "2026-11-01"),
+    ).toBe(false);
+    expect(textChangedSince(current, changed, undefined, undefined)).toBe(
+      false,
+    );
   });
 });

@@ -6,7 +6,10 @@ import {
   type TocEntry,
 } from "../../../legal/legalText";
 
-export type FieldState = Record<string, { value?: unknown } | undefined>;
+export type FieldState = Record<
+  string,
+  { value?: unknown; initialValue?: unknown } | undefined
+>;
 
 export type LegalSnapshot = {
   changed: boolean;
@@ -15,13 +18,24 @@ export type LegalSnapshot = {
   toc: { on: boolean; title: string; entries: TocEntry[] } | null;
 };
 
+const EMPTY: LegalSnapshot = {
+  changed: false,
+  hasDate: false,
+  headings: 0,
+  toc: null,
+};
+
 function rowsOf(fields: FieldState): Record<string, unknown>[] {
   const rows: Record<string, unknown>[] = [];
   for (const [key, state] of Object.entries(fields)) {
     const match = /^layout\.(\d+)\.([A-Za-z]+)$/.exec(key);
     if (!match) continue;
     const index = Number(match[1]);
-    rows[index] = { ...rows[index], [match[2]]: state?.value };
+    rows[index] = {
+      ...rows[index],
+      [match[2]]: state?.value,
+      [`${match[2]}Saved`]: state?.initialValue,
+    };
   }
   return Array.from(rows, (row) => row ?? {});
 }
@@ -34,6 +48,7 @@ export function rowIndexOf(path: string | undefined): number | undefined {
 export function legalSnapshot(fields: FieldState, row?: number): LegalSnapshot {
   const rows = rowsOf(fields);
   const header = rows.find((entry) => entry.blockType === "articleHeader");
+  if (!header && row === undefined) return EMPTY;
   const text =
     row !== undefined && rows[row]?.blockType === "richText"
       ? rows[row]
@@ -57,6 +72,7 @@ export function legalSnapshot(fields: FieldState, row?: number): LegalSnapshot {
           header.textStamp,
           layoutFingerprint(rows),
           header.lastUpdated,
+          header.lastUpdatedSaved,
         )
       : false,
     hasDate: Boolean(header?.lastUpdated),

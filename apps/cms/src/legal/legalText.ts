@@ -13,7 +13,7 @@ export const LEGAL_DATE_REQUIRED =
   "Set the Last updated date before publishing. Saving a draft works without it.";
 
 export const LEGAL_DATE_INVALID =
-  "Choose a valid Last updated date that is not in the future.";
+  "Choose a valid Last updated date, no more than a day ahead.";
 
 export const TOC_EMPTY_NOTICE =
   '"On this page" is on, but the body has no H2 headings yet, so the list will be empty. Add numbered H2s, or turn the list off.';
@@ -168,9 +168,11 @@ export function textChangedSince(
   stamp: unknown,
   current: string,
   date: unknown,
+  savedDate: unknown,
 ): boolean {
   return (
     dayOf(date) !== null &&
+    dayOf(date) === dayOf(savedDate) &&
     typeof stamp === "string" &&
     stamp !== "" &&
     stamp !== current

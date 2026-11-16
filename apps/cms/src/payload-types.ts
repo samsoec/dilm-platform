@@ -2221,15 +2221,7 @@ export interface RichTextBlock {
    */
   showTableOfContents?: boolean | null;
   tocTitle?: string | null;
-  tocAnchors?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+  tocAnchors?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'richText';

@@ -7,8 +7,13 @@ import {
   tocEntries,
 } from "./legalText";
 
-export const validateLastUpdated: DateFieldValidation = (value) =>
-  checkLastUpdated(value);
+export const validateLastUpdated: DateFieldValidation = (value, { data }) => {
+  const publishing = (data as { _status?: unknown } | undefined)?._status;
+  if (publishing !== "published" && (value === null || value === undefined)) {
+    return true;
+  }
+  return checkLastUpdated(value);
+};
 
 export const stampTextHook: FieldHook = ({
   data,
@@ -29,7 +34,7 @@ export const stampTextHook: FieldHook = ({
 export const tocAnchorsHook: FieldHook = ({ previousValue, siblingData }) => {
   const row = siblingData as
     { body?: unknown; showTableOfContents?: unknown } | undefined;
-  if (row?.showTableOfContents !== true) return [];
-  if (row.body === undefined) return previousValue ?? [];
-  return tocEntries(row.body);
+  if (row?.showTableOfContents !== true) return "[]";
+  if (row.body === undefined) return previousValue ?? "[]";
+  return JSON.stringify(tocEntries(row.body));
 };

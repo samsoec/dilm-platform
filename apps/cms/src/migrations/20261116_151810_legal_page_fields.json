@@ -17191,7 +17191,7 @@
         },
         "toc_anchors": {
           "name": "toc_anchors",
-          "type": "jsonb",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -33755,7 +33755,7 @@
         },
         "toc_anchors": {
           "name": "toc_anchors",
-          "type": "jsonb",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -50441,7 +50441,7 @@
         },
         "toc_anchors": {
           "name": "toc_anchors",
-          "type": "jsonb",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -66971,7 +66971,7 @@
         },
         "toc_anchors": {
           "name": "toc_anchors",
-          "type": "jsonb",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -91385,7 +91385,7 @@
         },
         "toc_anchors": {
           "name": "toc_anchors",
-          "type": "jsonb",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -107572,7 +107572,7 @@
         },
         "toc_anchors": {
           "name": "toc_anchors",
-          "type": "jsonb",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -123462,7 +123462,7 @@
         },
         "toc_anchors": {
           "name": "toc_anchors",
-          "type": "jsonb",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -139184,7 +139184,7 @@
         },
         "toc_anchors": {
           "name": "toc_anchors",
-          "type": "jsonb",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         },
@@ -159503,6 +159503,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "ec379c0e-08a4-427b-8233-7eb80848547a",
+  "id": "8cf5e355-bf4c-4704-9c7f-15c285163d3e",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

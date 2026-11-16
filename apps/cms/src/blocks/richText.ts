@@ -45,7 +45,7 @@ export const richText = sectionBlock({
     },
     {
       name: "tocAnchors",
-      type: "json",
+      type: "text",
       localized: true,
       admin: { hidden: true },
       hooks: { beforeChange: [tocAnchorsHook] },
