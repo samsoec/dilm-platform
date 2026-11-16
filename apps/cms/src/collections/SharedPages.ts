@@ -1,3 +1,4 @@
+import { publishImpactEndpoint } from "../publish/impact";
 import { readPublishedOrMembers, superAdmins, tenantMembers } from "../access";
 import { collectionLabels } from "../admin/labels";
 import { navGroup } from "../admin/navGroups";
@@ -28,6 +29,7 @@ import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 export const SharedPages = withTrashedBy(
   withUpdatedBy({
     slug: "shared-pages",
+    endpoints: [publishImpactEndpoint("shared-pages")],
     labels: collectionLabels("shared-pages"),
     access: {
       read: readPublishedOrMembers,

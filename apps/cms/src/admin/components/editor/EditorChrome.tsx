@@ -18,8 +18,20 @@ import { createPortal } from "react-dom";
 import { VersionsDrawer } from "../document/VersionsDrawer";
 import { ActionButton } from "../kit/ActionButton";
 import { Banner } from "../kit/Banner";
-import { ConfirmDialog } from "../kit/ConfirmDialog";
 import { notify } from "../kit/Toast";
+import { PURGE_NOTICE, refreshingSites } from "../../../publish/confirmations";
+import { refreshStatusOf } from "../publish/refreshStatus";
+import {
+  PublishConfirm,
+  TrashConfirm,
+  UnpublishConfirm,
+  ValidationSummary,
+} from "../publish/PublishConfirmations";
+import {
+  fieldProblems,
+  type FieldProblem,
+  type Impact,
+} from "../../../publish/confirmations";
 import { withAncestorCrumbs, type AncestorCrumb } from "./crumbs";
 import {
   DOCUMENT_ACTIONS_ID,
@@ -28,9 +40,11 @@ import {
   viewerNotice,
 } from "./editor";
 import { UrlChangeGuard } from "./UrlChangeGuard";
-import { useEditorUrls, type UrlSeed } from "./useEditorUrls";
+import type { UrlSeed } from "./useEditorUrls";
 
 const PUBLISH_SLUG = "dil-editor-publish";
+const UNPUBLISH_SLUG = "dil-editor-unpublish";
+const TRASH_SLUG = "dil-editor-trash";
 const PREVIEW_REASON_ID = "dil-editor-preview-reason";
 
 export function NoControl() {
@@ -89,11 +103,12 @@ export function EditorActions({
     id,
     collectionSlug,
     hasSavePermission,
+    hasPublishedDoc,
     setHasPublishedDoc,
     setMostRecentVersionIsAutosaved,
     setUnpublishedVersionCount,
   } = useDocumentInfo();
-  const { submit, validateForm } = useForm();
+  const { getFields, getData, reset, submit, validateForm } = useForm();
   const { openModal } = useModal();
   const { code: locale } = useLocale();
   const {
@@ -101,9 +116,9 @@ export function EditorActions({
   } = useConfig();
   const title = useFormFields(([fields]) => fields.title?.value) as
     string | undefined;
-  const { rows } = useEditorUrls(seed);
   const [host, setHost] = useState<HTMLElement | null>(null);
   const [busy, setBusy] = useState(false);
+  const [problems, setProblems] = useState<FieldProblem[]>([]);
 
   useEffect(() => {
     setHost(document.getElementById(DOCUMENT_ACTIONS_ID));
@@ -121,12 +136,21 @@ export function EditorActions({
     if (busy) return;
     if (!(await validateForm())) {
       await submit({ action, overrides: { _status: "published" } });
+      setProblems(
+        fieldProblems(
+          getFields() as Record<
+            string,
+            { valid?: boolean; errorMessage?: string }
+          >,
+        ),
+      );
       return;
     }
+    setProblems([]);
     openModal(PUBLISH_SLUG);
   };
 
-  const publish = async () => {
+  const publish = async (impactNow?: Impact) => {
     const result = await submit({
       action,
       overrides: { _status: "published" },
@@ -136,12 +160,68 @@ export function EditorActions({
     setHasPublishedDoc(true);
     setUnpublishedVersionCount(0);
     setMostRecentVersionIsAutosaved(false);
-    notify({
-      tone: "success",
-      title: `Published "${name}".`,
-      body: PUBLISH_FOLLOW_UP,
-    });
+    const status = await refreshStatusOf(
+      routes.api,
+      serverURL,
+      collectionSlug,
+      id,
+    );
+    if (status === "failed") {
+      notify({ tone: "info", icon: "sync_problem", ...PURGE_NOTICE });
+    } else {
+      notify({
+        tone: "success",
+        title: `Published "${name}".`,
+        body: refreshingSites(impactNow) ?? PUBLISH_FOLLOW_UP,
+      });
+    }
     router.refresh();
+  };
+
+  const unpublish = async () => {
+    const response = await fetch(action, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ _status: "draft" }),
+    }).catch(() => undefined);
+    if (!response?.ok) {
+      notify({
+        tone: "error",
+        title: `Couldn't unpublish "${name}".`,
+        body: "Try again.",
+      });
+      return;
+    }
+    await reset({ ...(getData() as object), _status: "draft" });
+    setHasPublishedDoc(false);
+    setUnpublishedVersionCount(1);
+    notify({ tone: "success", title: `Unpublished "${name}".` });
+    router.refresh();
+  };
+
+  const trash = async () => {
+    const response = await fetch(action, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deletedAt: new Date().toISOString() }),
+    }).catch(() => undefined);
+    if (!response?.ok) {
+      notify({
+        tone: "error",
+        title: `Couldn't move "${name}" to the trash.`,
+        body: "Try again.",
+      });
+      return;
+    }
+    notify({ tone: "success", title: `Moved "${name}" to the trash.` });
+    router.push(
+      formatAdminURL({
+        adminRoute: routes.admin,
+        path: `/collections/${collectionSlug}`,
+      }),
+    );
   };
 
   const controls = (
@@ -162,6 +242,24 @@ export function EditorActions({
       {canEdit && (
         <>
           <SaveDraftButton />
+          {hasPublishedDoc && (
+            <ActionButton
+              onClick={() => openModal(UNPUBLISH_SLUG)}
+              type="button"
+              variant="secondary"
+            >
+              Unpublish…
+            </ActionButton>
+          )}
+          {id !== undefined && (
+            <ActionButton
+              onClick={() => openModal(TRASH_SLUG)}
+              type="button"
+              variant="secondary"
+            >
+              Move to trash…
+            </ActionButton>
+          )}
           <ActionButton
             busy={busy}
             icon="public"
@@ -182,34 +280,42 @@ export function EditorActions({
       <VersionsDrawer />
       <UrlChangeGuard domain={seed.domain} />
       {host && createPortal(controls, host)}
-      <ConfirmDialog
-        body={
-          <>
-            <p>It goes live at</p>
-            <ul className="dil-editor-publish__urls">
-              {rows.map((row) => (
-                <li key={row.locale}>
-                  <code>{row.display}</code>
-                </li>
-              ))}
-            </ul>
-            <p>{PUBLISH_FOLLOW_UP}</p>
-          </>
-        }
-        busyLabel="Publishing…"
-        confirmLabel="Publish now"
-        icon="public"
-        onConfirm={async () => {
+      <ValidationSummary problems={problems} />
+      <PublishConfirm
+        collection={collectionSlug}
+        id={id}
+        name={name}
+        onConfirm={async (impact) => {
           setBusy(true);
           try {
-            await publish();
+            await publish(impact);
           } finally {
             setBusy(false);
           }
         }}
         slug={PUBLISH_SLUG}
-        title={`Publish "${name}"?`}
-        tone="go-live"
+      />
+      <UnpublishConfirm
+        collection={collectionSlug}
+        id={id}
+        name={name}
+        onConfirm={unpublish}
+        slug={UNPUBLISH_SLUG}
+      />
+      <TrashConfirm
+        collection={collectionSlug}
+        id={id}
+        messagesHref={formatAdminURL({
+          adminRoute: routes.admin,
+          path: "/globals/site-messages",
+        })}
+        name={name}
+        onConfirm={trash}
+        settingsHref={formatAdminURL({
+          adminRoute: routes.admin,
+          path: "/globals/tenant-settings",
+        })}
+        slug={TRASH_SLUG}
       />
     </>
   );

@@ -1,3 +1,4 @@
+import { publishImpactEndpoint } from "../publish/impact";
 import {
   trashByEditorsDeleteBySuperAdmins,
   readPublishedOrMembers,
@@ -50,6 +51,7 @@ export const Pages = withTenantAccess(
         versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
         trash: true,
         endpoints: [
+          publishImpactEndpoint("pages"),
           {
             path: "/parent-options",
             method: "get",

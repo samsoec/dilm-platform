@@ -1,3 +1,4 @@
+import { publishImpactEndpoint } from "../publish/impact";
 import {
   readPublishedOrMembers,
   trashByEditorsDeleteBySuperAdmins,
@@ -27,6 +28,7 @@ export const Posts = withTenantAccess(
   withTrashedBy(
     withUpdatedBy({
       slug: "posts",
+      endpoints: [publishImpactEndpoint("posts")],
       labels: collectionLabels("posts"),
       access: {
         read: readPublishedOrMembers,
