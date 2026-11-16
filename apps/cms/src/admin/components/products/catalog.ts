@@ -1,5 +1,10 @@
 import type { Where } from "payload";
 
+import {
+  hasTenantAccess,
+  isTenantEditorOrAbove,
+  type RoleHolder,
+} from "../../../access";
 import { joinNames } from "../../../paths";
 import type { PublishStatus } from "../kit/publication";
 import type { SearchParams } from "../lists/statusQuery";
@@ -52,10 +57,14 @@ export function catalogWhere(query: CatalogQuery): Where {
     clauses.push({
       or: [
         { name: { like: query.search } },
-        { formula: { like: query.search } },
         { casNumber: { like: query.search } },
       ],
     });
+  }
+  if (query.status === "published") {
+    clauses.push({ _status: { equals: "published" } });
+  } else if (query.status) {
+    clauses.push({ _status: { not_equals: "published" } });
   }
   return clauses.length > 0 ? { and: clauses } : {};
 }
@@ -125,4 +134,11 @@ export function savedText(value: string | null | undefined): string {
   if (!value) return "";
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? "" : SAVED_FORMAT.format(date);
+}
+
+export function canEditProduct(
+  user: RoleHolder,
+  owner: number | string,
+): boolean {
+  return isTenantEditorOrAbove(user) && hasTenantAccess(user, owner);
 }

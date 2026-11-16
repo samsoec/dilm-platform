@@ -5,7 +5,7 @@ import type { ListViewServerProps } from "payload";
 import { formatAdminURL } from "payload/shared";
 import { Suspense } from "react";
 
-import { isSuperAdmin, type RoleHolder } from "../../../access";
+import type { RoleHolder } from "../../../access";
 import {
   type CatalogCompany,
   type CatalogData,
@@ -23,6 +23,7 @@ import type { SearchParams } from "../lists/statusQuery";
 import {
   ALL_COMPANIES,
   CATALOG_STATUSES,
+  canEditProduct,
   catalogHref,
   emptyCatalogText,
   ownerLabel,
@@ -34,7 +35,7 @@ import {
 } from "./catalog";
 import { STATUS_SETS } from "../kit/status";
 
-type Viewer = { canCreate: boolean; superAdmin: boolean };
+type Viewer = { canCreate: boolean; user: RoleHolder };
 
 function Heading({
   createHref,
@@ -134,7 +135,7 @@ function Toolbar({
           <input name="status" type="hidden" value={query.status} />
         )}
         <label className="dil-sr-only" htmlFor="dil-products-search">
-          Search by name, formula or CAS number
+          Search by name or CAS number
         </label>
         <input
           className="dil-products__search-input"
@@ -142,7 +143,7 @@ function Toolbar({
           id="dil-products-search"
           maxLength={SEARCH_MAX_LENGTH}
           name="q"
-          placeholder="Search by name, formula or CAS number"
+          placeholder="Search by name or CAS number"
           type="search"
         />
         <ActionButton icon="search" type="submit" variant="secondary">
@@ -182,7 +183,7 @@ function Table({
         </thead>
         <tbody>
           {data.rows.map((row) => {
-            const locked = !viewer.superAdmin && row.owner !== selected;
+            const locked = !canEditProduct(viewer.user, row.owner);
             const owner = names.get(row.owner) ?? "Another company";
             return (
               <tr
@@ -409,7 +410,7 @@ async function CatalogBody(props: ListViewServerProps & { viewer: Viewer }) {
 export function ProductsView(props: ListViewServerProps) {
   const viewer: Viewer = {
     canCreate: Boolean(props.permissions?.collections?.products?.create),
-    superAdmin: isSuperAdmin(props.user as RoleHolder),
+    user: props.user as RoleHolder,
   };
   return (
     <div className="collection-list dil-pages-view">

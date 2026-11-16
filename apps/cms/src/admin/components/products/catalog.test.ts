@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  canEditProduct,
   catalogHref,
   catalogWhere,
   emptyCatalogText,
@@ -51,10 +52,10 @@ describe("catalogWhere", () => {
     ).toEqual({});
   });
 
-  it("scopes to an owner and searches name, formula and CAS number", () => {
+  it("scopes to an owner and searches name and CAS number", () => {
     const where = catalogWhere({ owner: "2", status: undefined, search: "64" });
     expect(JSON.stringify(where)).toContain('"tenant":{"equals":"2"}');
-    for (const field of ["name", "formula", "casNumber"]) {
+    for (const field of ["name", "casNumber"]) {
       expect(JSON.stringify(where)).toContain(`"${field}":{"like":"64"}`);
     }
   });
@@ -110,5 +111,51 @@ describe("PR-02 and PR-08 copy", () => {
     expect(emptyCatalogText("Liku Telaga", 0, [], undefined)).toBe(
       "Liku Telaga has no products yet.",
     );
+  });
+});
+
+describe("canEditProduct", () => {
+  const editorAB = {
+    roles: ["tenant-editor"],
+    tenants: [{ tenant: 1 }, { tenant: 2 }],
+  } as never;
+  const viewerA = {
+    roles: ["tenant-viewer"],
+    tenants: [{ tenant: 1 }],
+  } as never;
+  const superAdmin = { roles: ["super-admin"] } as never;
+
+  it("lets an editor of two companies edit both", () => {
+    expect(canEditProduct(editorAB, 1)).toBe(true);
+    expect(canEditProduct(editorAB, "2")).toBe(true);
+    expect(canEditProduct(editorAB, 3)).toBe(false);
+  });
+
+  it("keeps a viewer read-only even on their own company", () => {
+    expect(canEditProduct(viewerA, 1)).toBe(false);
+  });
+
+  it("lets a Super Admin edit everything", () => {
+    expect(canEditProduct(superAdmin, 3)).toBe(true);
+  });
+});
+
+describe("status in the query", () => {
+  it("filters published and not-published in the query", () => {
+    const base = { owner: "all", search: "" };
+    expect(
+      JSON.stringify(catalogWhere({ ...base, status: "published" })),
+    ).toContain('"_status":{"equals":"published"}');
+    expect(
+      JSON.stringify(catalogWhere({ ...base, status: "draft" })),
+    ).toContain('"_status":{"not_equals":"published"}');
+  });
+
+  it("does not search the formula", () => {
+    expect(
+      JSON.stringify(
+        catalogWhere({ owner: "all", status: undefined, search: "H2SO4" }),
+      ),
+    ).not.toContain("formula");
   });
 });

@@ -1,10 +1,8 @@
-import { cookies } from "next/headers";
 import type { UIFieldServerProps } from "payload";
 
-import { isSuperAdmin, type RoleHolder } from "../../../access";
-import { selectedTenantID, TENANT_COOKIE } from "../../data/sidebar";
+import type { RoleHolder } from "../../../access";
 import { Banner } from "../kit/Banner";
-import { ownerBannerText } from "./catalog";
+import { canEditProduct, ownerBannerText } from "./catalog";
 
 export async function ProductOwnerBanner({
   data,
@@ -16,13 +14,7 @@ export async function ProductOwnerBanner({
     number | string | { id: number | string } | undefined;
   if (!user || tenant === undefined || tenant === null) return null;
   const owner = String(typeof tenant === "object" ? tenant.id : tenant);
-  const selected = selectedTenantID(
-    user as RoleHolder,
-    (await cookies()).get(TENANT_COOKIE)?.value,
-  );
-  if (isSuperAdmin(user as RoleHolder) || owner === String(selected)) {
-    return null;
-  }
+  if (canEditProduct(user as RoleHolder, owner)) return null;
   try {
     const { docs } = await payload.find({
       collection: "tenants",
