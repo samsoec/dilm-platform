@@ -35,6 +35,7 @@ export const EDITOR_COMPONENTS = {
   seoImage: `${EDITOR}/server#SeoImageField`,
   seoPreview: `${EDITOR}/server#SeoPreviewField`,
   sidebar: `${EDITOR}/server#SidebarField`,
+  postsOnPage: "/admin/components/records/PostsOnPagePanel#PostsOnPagePanel",
   visitors: `${EDITOR}/PageSettings#VisitorsField`,
   noControl: `${EDITOR}/EditorChrome#NoControl`,
 } as const;
@@ -46,6 +47,12 @@ function ui(name: string, Field: string, position?: "sidebar"): UIField {
     admin: { ...(position ? { position } : {}), components: { Field } },
   };
 }
+
+export const postsOnPageField = ui(
+  "postsOnPage",
+  EDITOR_COMPONENTS.postsOnPage,
+  "sidebar",
+);
 
 export const forwardsField: CheckboxField = {
   name: "forwards",
@@ -192,6 +199,7 @@ export function editorFields(parent: RelationshipField): Field[] {
       admin: { ...slugFallbackField.admin, hidden: true },
     },
     ui("editorSidebar", EDITOR_COMPONENTS.sidebar, "sidebar"),
+    postsOnPageField,
   ];
 }
 

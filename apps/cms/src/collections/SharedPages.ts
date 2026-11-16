@@ -4,6 +4,7 @@ import { collectionLabels } from "../admin/labels";
 import { navGroup } from "../admin/navGroups";
 import { rejectTokensOutsideTemplates } from "../detailTemplates";
 import { withTrashedBy } from "../fields/authoring";
+import { postsOnPageField } from "../fields/pageEditor";
 import { pageFields, parentField } from "../fields/pageFields";
 import { withUpdatedBy } from "../fields/updatedBy";
 import {
@@ -66,6 +67,9 @@ export const SharedPages = withTrashedBy(
       defaultColumns: ["title", "slug", "parent", "_status", "updatedAt"],
     },
     custom: { nav: { icon: "public", order: 2 } },
-    fields: pageFields(parentField("shared-pages", false), false),
+    fields: [
+      ...pageFields(parentField("shared-pages", false), false),
+      postsOnPageField,
+    ],
   }),
 );

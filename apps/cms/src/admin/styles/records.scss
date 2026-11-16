@@ -1,0 +1,132 @@
+@layer dil {
+  .dil-record-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 12px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+    font-family: var(--dil-font-sans);
+  }
+
+  .dil-record-picker__note,
+  .dil-record-picker__meta,
+  .dil-record-picker__empty,
+  .dil-record-picks__meta,
+  .dil-post-card__meta,
+  .dil-post-card__link {
+    margin: 0;
+    color: var(--dil-muted);
+  }
+
+  .dil-record-picker__bar,
+  .dil-record-picker__chips,
+  .dil-record-picker__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dil-record-picker__bar input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+  }
+
+  .dil-record-picker__footer {
+    justify-content: space-between;
+  }
+
+  .dil-record-picker__chip {
+    padding: 2px 10px;
+    border: 1px solid var(--dil-line);
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+
+    &[aria-pressed="true"] {
+      font-weight: 600;
+      border-color: currentcolor;
+    }
+  }
+
+  .dil-record-picker__rows,
+  .dil-record-picks__list {
+    max-height: 360px;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+  }
+
+  .dil-record-picker__row,
+  .dil-record-picks__item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+  }
+
+  .dil-record-picker__row:has(:disabled) {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .dil-record-picker__title,
+  .dil-record-picks__title {
+    font-weight: 600;
+  }
+
+  .dil-record-picks__item {
+    margin-bottom: 4px;
+    border: 1px solid var(--dil-line);
+    border-radius: var(--dil-radius-s);
+  }
+
+  .dil-record-picks__handle,
+  .dil-record-picks__remove {
+    border: 0;
+    background: transparent;
+    cursor: grab;
+  }
+
+  .dil-record-picks__remove {
+    margin-inline-start: auto;
+    cursor: pointer;
+  }
+
+  .dil-record-picks__other {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--dil-muted);
+  }
+
+  .dil-post-card__picked {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .dil-override-fallback {
+    display: block;
+    color: var(--dil-muted);
+    font-style: italic;
+  }
+
+  .dil-posts-on-page__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dil-posts-on-page__number {
+    color: var(--dil-muted);
+    font-weight: 700;
+  }
+}

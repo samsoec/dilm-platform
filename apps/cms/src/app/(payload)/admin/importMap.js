@@ -78,9 +78,9 @@ import { ApplicationView as ApplicationView_dadab5058eb4d2024b8c7d5fc6e34474 } f
 import { LocaleBanner as LocaleBanner_6e922f404c87f00d1c61cd1cda241d71 } from '../../../admin/components/fields/LocaleBanner'
 import { ValidationSummary as ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2 } from '../../../admin/components/fields/ValidationSummary'
 import { SourcedFromPanel as SourcedFromPanel_5c55509d5c0ba2360d16a128794e5b0d } from '../../../admin/components/fields/SourcedFromPanel'
-import { LinkTargetField as LinkTargetField_459ef087053a8172042ceb7f64d0ce6d } from '../../../admin/components/fields/LinkTargetField'
 import { NavTypeField as NavTypeField_8694bf897a6746ab2199d0709a24c346 } from '../../../admin/components/fields/NavTypeField'
 import { PathPrefix as PathPrefix_ee56f462e1df17b24b760ddd7386e5b7 } from '../../../admin/components/fields/PathPrefix'
+import { LinkTargetField as LinkTargetField_459ef087053a8172042ceb7f64d0ce6d } from '../../../admin/components/fields/LinkTargetField'
 import { SameAsEnTag as SameAsEnTag_4e5f1095615c1ec350a3e95bc7f13ee9 } from '../../../admin/components/fields/SameAsEnTag'
 import { ArrayCountLabel as ArrayCountLabel_640892f7df83aaebc977cc56c785029c } from '../../../admin/components/fields/ArrayCountLabel'
 import { ArrayLimitNote as ArrayLimitNote_a3e50ded41523764bcb0b09ceeb17fa2 } from '../../../admin/components/fields/ArrayLimitNote'
@@ -94,19 +94,53 @@ import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8c
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ParagraphFeatureClient as ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { TitleNotice as TitleNotice_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
 import { ColumnRowLabel as ColumnRowLabel_d7a74f343adbd5aa0b681db641f8edd6 } from '../../../admin/components/fields/RowLabels'
 import { CopyrightPreview as CopyrightPreview_3a45fcb568830af1d46c04277b75bda3 } from '../../../admin/components/fields/CopyrightPreview'
-import { SuperscriptFeatureClient as SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { SubscriptFeatureClient as SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { UnorderedListFeatureClient as UnorderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { OrderedListFeatureClient as OrderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { HeaderField as HeaderField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { ActionsField as ActionsField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { TabMarksField as TabMarksField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SectionsPanelField as SectionsPanelField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { ButtonStyleField as ButtonStyleField_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
+import { SectionArrayNote as SectionArrayNote_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
+import { ButtonRowLabel as ButtonRowLabel_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
+import { SectionRowLabel as SectionRowLabel_50ef2c16859fd1eb2917e9ebf0eb899a } from '../../../admin/components/fields/SectionRowLabel'
+import { SegmentField as SegmentField_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
+import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { VariantField as VariantField_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
 import { TableFeatureClient as TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { OrderedListFeatureClient as OrderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { UnorderedListFeatureClient as UnorderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { RecordPicksField as RecordPicksField_b1773b18d0045ad82cc0a87921be383f } from '../../../admin/components/records/RecordPicksField'
+import { PostCardField as PostCardField_182937fa4e496a2d07b528fcf84723e8 } from '../../../admin/components/records/PostCardField'
+import { OverrideFallback as OverrideFallback_86c938bd78e79200bf6b002678b8ded6 } from '../../../admin/components/records/OverrideFallback'
+import { CategoryChipsField as CategoryChipsField_d1f0d31ef78dec4b384e054e64654b7c } from '../../../admin/components/records/CategoryChipsField'
+import { SectionsHeader as SectionsHeader_f06cb4c33585bfc6d213b1d7bf088af0 } from '../../../admin/components/fields/SectionsHeader'
+import { SectionCatalog as SectionCatalog_c4f108d0e0c1be793f0221cf630611ba } from '../../../admin/components/fields/SectionCatalog'
+import { SlugNote as SlugNote_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { VisitorsField as VisitorsField_39d623e47254e0a5925afe7cf0a96938 } from '../../../admin/components/editor/PageSettings'
+import { ForwardNoteField as ForwardNoteField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SeoTitleField as SeoTitleField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SeoDescriptionField as SeoDescriptionField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SeoImageField as SeoImageField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SeoPreviewField as SeoPreviewField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { SidebarField as SidebarField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
+import { PostsOnPagePanel as PostsOnPagePanel_ad41897aabca1a3b5959be43390a6c74 } from '../../../admin/components/records/PostsOnPagePanel'
+import { NoControl as NoControl_c6cd29aa8177a060e43b9ccc07ba17de } from '../../../admin/components/editor/EditorChrome'
+import { PagesView as PagesView_647f8fec1475ea4224d3b14fcac631aa } from '../../../admin/components/pages/PagesView'
+import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
+import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
+import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
+import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
+import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
+import { SuperscriptFeatureClient as SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { SubscriptFeatureClient as SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { PostCategoryNote as PostCategoryNote_1e5ba80d75161286b1b9a1e0c135b79e } from '../../../admin/components/editor/PostCategoryNote'
+import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { QueryPresetsAccessCell as QueryPresetsAccessCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { QueryPresetsWhereCell as QueryPresetsWhereCell_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { QueryPresetsWhereField as QueryPresetsWhereField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
@@ -137,34 +171,10 @@ import { NeedsAttentionWidget as NeedsAttentionWidget_ea192f5d98e48dd0016d07dce7
 import { TranslationWidget as TranslationWidget_f2fa3a2f832d3dee7a4aabf3599be638 } from '../../../admin/components/dashboard/Translation'
 import { SiteLayoutWidget as SiteLayoutWidget_d47b3268301ee6262ea516856058e959 } from '../../../admin/components/dashboard/SiteLayout'
 import { LatestIrWidget as LatestIrWidget_7d30844fb4e083d96810b84b413ef411 } from '../../../admin/components/dashboard/LatestIr'
-import { PagesView as PagesView_647f8fec1475ea4224d3b14fcac631aa } from '../../../admin/components/pages/PagesView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
-import { HeaderField as HeaderField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { ActionsField as ActionsField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { TabMarksField as TabMarksField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { SectionsPanelField as SectionsPanelField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { SlugNote as SlugNote_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { PostCategoryNote as PostCategoryNote_1e5ba80d75161286b1b9a1e0c135b79e } from '../../../admin/components/editor/PostCategoryNote'
-import { VisitorsField as VisitorsField_39d623e47254e0a5925afe7cf0a96938 } from '../../../admin/components/editor/PageSettings'
-import { ForwardNoteField as ForwardNoteField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { SeoTitleField as SeoTitleField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { SeoDescriptionField as SeoDescriptionField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { SeoImageField as SeoImageField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { SeoPreviewField as SeoPreviewField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { SidebarField as SidebarField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
-import { NoControl as NoControl_c6cd29aa8177a060e43b9ccc07ba17de } from '../../../admin/components/editor/EditorChrome'
 
 /** @type import('payload').ImportMap */
-import { SectionRowLabel as SectionRowLabel_50ef2c16859fd1eb2917e9ebf0eb899a } from '../../../admin/components/fields/SectionRowLabel'
-import { SectionCatalog as SectionCatalog_c4f108d0e0c1be793f0221cf630611ba } from '../../../admin/components/fields/SectionCatalog'
-import { SectionsHeader as SectionsHeader_f06cb4c33585bfc6d213b1d7bf088af0 } from '../../../admin/components/fields/SectionsHeader'
-import { TitleNotice as TitleNotice_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
-import { ButtonStyleField as ButtonStyleField_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
-import { SectionArrayNote as SectionArrayNote_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
-import { ButtonRowLabel as ButtonRowLabel_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
-import { SegmentField as SegmentField_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
-import { VariantField as VariantField_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
   "/admin/components/users/UserCells#RoleCell": RoleCell_5cd97e58844d5c99becf880375f054b9,
@@ -246,9 +256,9 @@ export const importMap = {
   "/admin/components/fields/LocaleBanner#LocaleBanner": LocaleBanner_6e922f404c87f00d1c61cd1cda241d71,
   "/admin/components/fields/ValidationSummary#ValidationSummary": ValidationSummary_33683dfdcb07eb5f57adeae5a2fedad2,
   "/admin/components/fields/SourcedFromPanel#SourcedFromPanel": SourcedFromPanel_5c55509d5c0ba2360d16a128794e5b0d,
-  "/admin/components/fields/LinkTargetField#LinkTargetField": LinkTargetField_459ef087053a8172042ceb7f64d0ce6d,
   "/admin/components/fields/NavTypeField#NavTypeField": NavTypeField_8694bf897a6746ab2199d0709a24c346,
   "/admin/components/fields/PathPrefix#PathPrefix": PathPrefix_ee56f462e1df17b24b760ddd7386e5b7,
+  "/admin/components/fields/LinkTargetField#LinkTargetField": LinkTargetField_459ef087053a8172042ceb7f64d0ce6d,
   "/admin/components/fields/SameAsEnTag#SameAsEnTag": SameAsEnTag_4e5f1095615c1ec350a3e95bc7f13ee9,
   "/admin/components/fields/ArrayCountLabel#ArrayCountLabel": ArrayCountLabel_640892f7df83aaebc977cc56c785029c,
   "/admin/components/fields/ArrayLimitNote#ArrayLimitNote": ArrayLimitNote_a3e50ded41523764bcb0b09ceeb17fa2,
@@ -262,19 +272,53 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ParagraphFeatureClient": ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/admin/components/fields/SectionKit#TitleNotice": TitleNotice_b91a8bbaaf6aa498d25cba694787cbe9,
   "/admin/components/fields/RowLabels#ColumnRowLabel": ColumnRowLabel_d7a74f343adbd5aa0b681db641f8edd6,
   "/admin/components/fields/CopyrightPreview#CopyrightPreview": CopyrightPreview_3a45fcb568830af1d46c04277b75bda3,
-  "@payloadcms/richtext-lexical/client#SuperscriptFeatureClient": SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/richtext-lexical/client#SubscriptFeatureClient": SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#LinkFeatureClient": LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/richtext-lexical/client#UnorderedListFeatureClient": UnorderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/richtext-lexical/client#HeadingFeatureClient": HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@payloadcms/richtext-lexical/client#OrderedListFeatureClient": OrderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/admin/components/editor/server#HeaderField": HeaderField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#ActionsField": ActionsField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#TabMarksField": TabMarksField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SectionsPanelField": SectionsPanelField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/fields/SectionKit#ButtonStyleField": ButtonStyleField_b91a8bbaaf6aa498d25cba694787cbe9,
+  "/admin/components/fields/SectionKit#SectionArrayNote": SectionArrayNote_b91a8bbaaf6aa498d25cba694787cbe9,
+  "/admin/components/fields/SectionKit#ButtonRowLabel": ButtonRowLabel_b91a8bbaaf6aa498d25cba694787cbe9,
+  "/admin/components/fields/SectionRowLabel#SectionRowLabel": SectionRowLabel_50ef2c16859fd1eb2917e9ebf0eb899a,
+  "/admin/components/fields/SectionKit#SegmentField": SegmentField_b91a8bbaaf6aa498d25cba694787cbe9,
+  "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/admin/components/fields/SectionKit#VariantField": VariantField_b91a8bbaaf6aa498d25cba694787cbe9,
   "@payloadcms/richtext-lexical/client#TableFeatureClient": TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#UploadFeatureClient": UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#OrderedListFeatureClient": OrderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#UnorderedListFeatureClient": UnorderedListFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#HeadingFeatureClient": HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/admin/components/records/RecordPicksField#RecordPicksField": RecordPicksField_b1773b18d0045ad82cc0a87921be383f,
+  "/admin/components/records/PostCardField#PostCardField": PostCardField_182937fa4e496a2d07b528fcf84723e8,
+  "/admin/components/records/OverrideFallback#OverrideFallback": OverrideFallback_86c938bd78e79200bf6b002678b8ded6,
+  "/admin/components/records/CategoryChipsField#CategoryChipsField": CategoryChipsField_d1f0d31ef78dec4b384e054e64654b7c,
+  "/admin/components/fields/SectionsHeader#SectionsHeader": SectionsHeader_f06cb4c33585bfc6d213b1d7bf088af0,
+  "/admin/components/fields/SectionCatalog#SectionCatalog": SectionCatalog_c4f108d0e0c1be793f0221cf630611ba,
+  "/admin/components/editor/server#SlugNote": SlugNote_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/PageSettings#VisitorsField": VisitorsField_39d623e47254e0a5925afe7cf0a96938,
+  "/admin/components/editor/server#ForwardNoteField": ForwardNoteField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SeoTitleField": SeoTitleField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SeoDescriptionField": SeoDescriptionField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SeoImageField": SeoImageField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SeoPreviewField": SeoPreviewField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/editor/server#SidebarField": SidebarField_baabe6231b786d2a57d52d56a1611534,
+  "/admin/components/records/PostsOnPagePanel#PostsOnPagePanel": PostsOnPagePanel_ad41897aabca1a3b5959be43390a6c74,
+  "/admin/components/editor/EditorChrome#NoControl": NoControl_c6cd29aa8177a060e43b9ccc07ba17de,
+  "/admin/components/pages/PagesView#PagesView": PagesView_647f8fec1475ea4224d3b14fcac631aa,
+  "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
+  "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
+  "@payloadcms/plugin-seo/client#MetaDescriptionComponent": MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860,
+  "@payloadcms/plugin-seo/client#MetaImageComponent": MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860,
+  "@payloadcms/plugin-seo/client#PreviewComponent": PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
+  "@payloadcms/richtext-lexical/client#SuperscriptFeatureClient": SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@payloadcms/richtext-lexical/client#SubscriptFeatureClient": SubscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/admin/components/editor/PostCategoryNote#PostCategoryNote": PostCategoryNote_1e5ba80d75161286b1b9a1e0c135b79e,
+  "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/next/client#QueryPresetsAccessCell": QueryPresetsAccessCell_2b8867833a34864a02ddf429b0728a40,
   "@payloadcms/next/client#QueryPresetsWhereCell": QueryPresetsWhereCell_2b8867833a34864a02ddf429b0728a40,
   "@payloadcms/next/client#QueryPresetsWhereField": QueryPresetsWhereField_2b8867833a34864a02ddf429b0728a40,
@@ -305,30 +349,6 @@ export const importMap = {
   "/admin/components/dashboard/Translation#TranslationWidget": TranslationWidget_f2fa3a2f832d3dee7a4aabf3599be638,
   "/admin/components/dashboard/SiteLayout#SiteLayoutWidget": SiteLayoutWidget_d47b3268301ee6262ea516856058e959,
   "/admin/components/dashboard/LatestIr#LatestIrWidget": LatestIrWidget_7d30844fb4e083d96810b84b413ef411,
-  "/admin/components/pages/PagesView#PagesView": PagesView_647f8fec1475ea4224d3b14fcac631aa,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
-  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
-  "/admin/components/editor/server#HeaderField": HeaderField_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/server#ActionsField": ActionsField_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/server#TabMarksField": TabMarksField_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/server#SectionsPanelField": SectionsPanelField_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/server#SlugNote": SlugNote_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/PostCategoryNote#PostCategoryNote": PostCategoryNote_1e5ba80d75161286b1b9a1e0c135b79e,
-  "/admin/components/editor/PageSettings#VisitorsField": VisitorsField_39d623e47254e0a5925afe7cf0a96938,
-  "/admin/components/editor/server#ForwardNoteField": ForwardNoteField_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/server#SeoTitleField": SeoTitleField_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/server#SeoDescriptionField": SeoDescriptionField_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/server#SeoImageField": SeoImageField_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/server#SeoPreviewField": SeoPreviewField_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/server#SidebarField": SidebarField_baabe6231b786d2a57d52d56a1611534,
-  "/admin/components/editor/EditorChrome#NoControl": NoControl_c6cd29aa8177a060e43b9ccc07ba17de,
-  "/admin/components/fields/SectionRowLabel#SectionRowLabel": SectionRowLabel_50ef2c16859fd1eb2917e9ebf0eb899a,
-  "/admin/components/fields/SectionCatalog#SectionCatalog": SectionCatalog_c4f108d0e0c1be793f0221cf630611ba,
-  "/admin/components/fields/SectionsHeader#SectionsHeader": SectionsHeader_f06cb4c33585bfc6d213b1d7bf088af0,
-  "/admin/components/fields/SectionKit#TitleNotice": TitleNotice_b91a8bbaaf6aa498d25cba694787cbe9,
-  "/admin/components/fields/SectionKit#ButtonStyleField": ButtonStyleField_b91a8bbaaf6aa498d25cba694787cbe9,
-  "/admin/components/fields/SectionKit#SectionArrayNote": SectionArrayNote_b91a8bbaaf6aa498d25cba694787cbe9,
-  "/admin/components/fields/SectionKit#ButtonRowLabel": ButtonRowLabel_b91a8bbaaf6aa498d25cba694787cbe9,
-  "/admin/components/fields/SectionKit#SegmentField": SegmentField_b91a8bbaaf6aa498d25cba694787cbe9,
-  "/admin/components/fields/SectionKit#VariantField": VariantField_b91a8bbaaf6aa498d25cba694787cbe9,
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }
