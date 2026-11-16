@@ -4,10 +4,8 @@ import { useForm, useFormFields } from "@payloadcms/ui";
 import type { BlocksFieldLabelClientComponent } from "payload";
 import { useEffect } from "react";
 
-import { clampMove, movedText, sectionCountText } from "../../sectionRows";
+import { altArrowMove, movedText, sectionCountText } from "../../sectionRows";
 import { announce } from "./announce";
-
-const ROW_ID = /^(.+)-row-(\d+)$/;
 
 export const SectionsHeader: BlocksFieldLabelClientComponent = ({
   field,
@@ -21,22 +19,14 @@ export const SectionsHeader: BlocksFieldLabelClientComponent = ({
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (
-        !event.altKey ||
-        (event.key !== "ArrowUp" && event.key !== "ArrowDown") ||
-        !(event.target instanceof Element)
-      ) {
-        return;
-      }
+      if (!(event.target instanceof Element)) return;
       const row = event.target.closest(
         `[id^="${fieldPath.split(".").join("-")}-row-"]`,
       );
-      const match = row ? ROW_ID.exec(row.id) : null;
-      if (!match) return;
+      const move = altArrowMove(event, row?.id, fieldPath, count);
+      if (!move) return;
       event.preventDefault();
-      const from = Number(match[2]);
-      const to = clampMove(from, event.key === "ArrowUp" ? -1 : 1, count);
-      if (to === from) return;
+      const { from, to } = move;
       moveFieldRow({ moveFromIndex: from, moveToIndex: to, path: fieldPath });
       setModified(true);
       const name =

@@ -56,10 +56,13 @@ export function sectionSummary(
   return record ? "Filled from the record" : "";
 }
 
+const NOT_ITEMS = new Set(["buttons"]);
+
 export function itemCount(data: SectionData | null | undefined): number {
   if (!data) return 0;
-  return Object.values(data).reduce<number>(
-    (sum, value) => sum + (Array.isArray(value) ? value.length : 0),
+  return Object.entries(data).reduce<number>(
+    (sum, [key, value]) =>
+      sum + (Array.isArray(value) && !NOT_ITEMS.has(key) ? value.length : 0),
     0,
   );
 }
@@ -92,4 +95,122 @@ export function droppedText(name: string, index: number, count: number) {
 
 export function cancelledText(name: string, index: number, count: number) {
   return `${name}, move cancelled. Back at position ${index + 1} of ${count}.`;
+}
+
+export type PickupState = { pickedUp: boolean; origin: number };
+
+export type PickupResult = {
+  state: PickupState;
+  moveTo?: number;
+  announce?: string;
+  handled: boolean;
+};
+
+export function pickupKey(
+  state: PickupState,
+  key: string,
+  index: number,
+  count: number,
+  name: string,
+): PickupResult {
+  const confirm = key === " " || key === "Enter";
+  if (!state.pickedUp) {
+    if (!confirm) return { state, handled: false };
+    return {
+      state: { pickedUp: true, origin: index },
+      announce: pickedUpText(name, index, count),
+      handled: true,
+    };
+  }
+  if (key === "ArrowUp" || key === "ArrowDown") {
+    const to = clampMove(index, key === "ArrowUp" ? -1 : 1, count);
+    return {
+      state,
+      handled: true,
+      ...(to === index
+        ? {}
+        : { moveTo: to, announce: movedText(name, to, count) }),
+    };
+  }
+  if (confirm) {
+    return {
+      state: { ...state, pickedUp: false },
+      announce: droppedText(name, index, count),
+      handled: true,
+    };
+  }
+  if (key === "Escape") {
+    return {
+      state: { ...state, pickedUp: false },
+      ...(state.origin === index ? {} : { moveTo: state.origin }),
+      announce: cancelledText(name, state.origin, count),
+      handled: true,
+    };
+  }
+  return { state, handled: false };
+}
+
+const ROW_ID = /^(.+)-row-(\d+)$/;
+
+export function altArrowMove(
+  event: { altKey: boolean; key: string },
+  rowId: string | undefined,
+  fieldPath: string,
+  count: number,
+): { from: number; to: number } | null {
+  if (!event.altKey || !rowId) return null;
+  if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return null;
+  const match = ROW_ID.exec(rowId);
+  if (!match || match[1] !== fieldPath.split(".").join("-")) return null;
+  const from = Number(match[2]);
+  const to = clampMove(from, event.key === "ArrowUp" ? -1 : 1, count);
+  return to === from ? null : { from, to };
+}
+
+export type MenuActionId =
+  "up" | "down" | "insertAbove" | "insertBelow" | "duplicate" | "remove";
+
+export function menuActions(index: number, count: number) {
+  return [
+    { id: "up", label: "Move up", hint: "⌥↑", disabled: index === 0 },
+    {
+      id: "down",
+      label: "Move down",
+      hint: "⌥↓",
+      disabled: index >= count - 1,
+    },
+    { id: "insertAbove", label: "Insert above", disabled: false },
+    { id: "insertBelow", label: "Insert below", disabled: false },
+    { id: "duplicate", label: "Duplicate", disabled: false },
+    { id: "remove", label: "Remove…", disabled: false },
+  ] as { id: MenuActionId; label: string; hint?: string; disabled: boolean }[];
+}
+
+export type MenuHandlers = {
+  move: (to: number) => void;
+  openCatalog: (index: number) => void;
+  duplicate: () => void;
+  confirmRemove: () => void;
+};
+
+export function runMenuAction(
+  id: MenuActionId,
+  index: number,
+  count: number,
+  handlers: MenuHandlers,
+) {
+  switch (id) {
+    case "up":
+      return handlers.move(clampMove(index, -1, count));
+    case "down":
+      return handlers.move(clampMove(index, 1, count));
+    case "insertAbove":
+      return handlers.openCatalog(index);
+    case "insertBelow":
+      return handlers.openCatalog(index + 1);
+    case "duplicate":
+      return handlers.duplicate();
+    case "remove":
+      return handlers.confirmRemove();
+  }
 }

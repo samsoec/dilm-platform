@@ -3,6 +3,39 @@ import type { DetailRecordType, PageBlockGroup } from "@dilm/shared-types";
 
 import { tableNamed } from "./factories";
 
+export function withSectionCounters(fields: Field[]): Field[] {
+  return fields.map((field) => {
+    let next = field;
+    if ("fields" in next && Array.isArray(next.fields)) {
+      next = { ...next, fields: withSectionCounters(next.fields) } as Field;
+    }
+    if ("tabs" in next && Array.isArray(next.tabs)) {
+      next = {
+        ...next,
+        tabs: next.tabs.map((tab) => ({
+          ...tab,
+          fields: withSectionCounters(tab.fields),
+        })),
+      } as Field;
+    }
+    if (next.type !== "array" || !next.maxRows) return next;
+    if (next.admin?.components?.Label) return next;
+    return {
+      ...next,
+      admin: {
+        ...next.admin,
+        components: {
+          ...next.admin?.components,
+          Label: {
+            path: "/admin/components/fields/ArrayCountLabel#ArrayCountLabel",
+            clientProps: { inSection: true },
+          },
+        },
+      },
+    } as Field;
+  });
+}
+
 export type BlockCatalog = {
   name: string;
   purpose: string;
@@ -32,6 +65,7 @@ export function sectionBlock({
   const singular = catalog?.name ?? label;
   return {
     ...block,
+    fields: withSectionCounters(block.fields),
     ...(tableName ? { dbName: tableNamed(tableName) } : {}),
     ...(singular
       ? {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormFields } from "@payloadcms/ui";
-import type { ArrayFieldLabelClientComponent } from "payload";
+import type { ArrayField } from "payload";
 
 import { countText } from "../../layoutEditor";
 
@@ -14,9 +14,14 @@ function labelText(label: unknown, name: string): string {
   return name;
 }
 
-export const ArrayCountLabel: ArrayFieldLabelClientComponent = ({
+export const ArrayCountLabel = ({
   field,
   path,
+  inSection,
+}: {
+  field?: Pick<ArrayField, "name" | "label" | "maxRows">;
+  path?: string;
+  inSection?: boolean;
 }) => {
   const name = field?.name ?? "";
   const fieldPath = path ?? name;
@@ -29,7 +34,7 @@ export const ArrayCountLabel: ArrayFieldLabelClientComponent = ({
         labelText(field?.label, name),
         count,
         field?.maxRows,
-        fieldPath.includes("."),
+        !inSection && fieldPath.includes("."),
       )}
     </span>
   );

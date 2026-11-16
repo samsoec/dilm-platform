@@ -1,7 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
+  altArrowMove,
   clampMove,
+  menuActions,
+  pickupKey,
+  runMenuAction,
+  type PickupState,
   itemCount,
   pickedUpText,
   positionText,
@@ -61,5 +66,120 @@ describe("section rows", () => {
     expect(pickedUpText("Timeline", 3, 7)).toBe(
       "Timeline, picked up. Position 4 of 7. Arrow keys to move, Space to drop, Escape to cancel.",
     );
+  });
+
+  it("does not count buttons as items", () => {
+    expect(itemCount({ buttons: [{}, {}], entries: [{}] })).toBe(1);
+  });
+
+  describe("keyboard pick-up", () => {
+    const idle: PickupState = { pickedUp: false, origin: 0 };
+
+    it("picks up on Space and announces", () => {
+      const r = pickupKey(idle, " ", 3, 7, "Timeline");
+      expect(r.state).toEqual({ pickedUp: true, origin: 3 });
+      expect(r.announce).toContain("Position 4 of 7");
+    });
+
+    it("ignores other keys while idle", () => {
+      expect(pickupKey(idle, "ArrowDown", 3, 7, "Timeline").handled).toBe(
+        false,
+      );
+    });
+
+    it("moves with arrows and stops at the ends", () => {
+      const held: PickupState = { pickedUp: true, origin: 3 };
+      expect(pickupKey(held, "ArrowDown", 3, 7, "T").moveTo).toBe(4);
+      expect(pickupKey(held, "ArrowUp", 0, 7, "T").moveTo).toBeUndefined();
+    });
+
+    it("drops on Space", () => {
+      const r = pickupKey({ pickedUp: true, origin: 3 }, " ", 5, 7, "T");
+      expect(r.state.pickedUp).toBe(false);
+      expect(r.moveTo).toBeUndefined();
+      expect(r.announce).toBe("T, dropped at position 6 of 7.");
+    });
+
+    it("returns to the origin on Escape", () => {
+      const r = pickupKey({ pickedUp: true, origin: 3 }, "Escape", 5, 7, "T");
+      expect(r.state.pickedUp).toBe(false);
+      expect(r.moveTo).toBe(3);
+    });
+  });
+
+  describe("Alt+Arrow", () => {
+    it("moves the row the focus is in", () => {
+      expect(
+        altArrowMove(
+          { altKey: true, key: "ArrowDown" },
+          "layout-row-2",
+          "layout",
+          5,
+        ),
+      ).toEqual({ from: 2, to: 3 });
+    });
+
+    it("ignores plain arrows, other fields and the ends", () => {
+      expect(
+        altArrowMove(
+          { altKey: false, key: "ArrowUp" },
+          "layout-row-2",
+          "layout",
+          5,
+        ),
+      ).toBeNull();
+      expect(
+        altArrowMove(
+          { altKey: true, key: "ArrowUp" },
+          "other-row-2",
+          "layout",
+          5,
+        ),
+      ).toBeNull();
+      expect(
+        altArrowMove(
+          { altKey: true, key: "ArrowUp" },
+          "layout-row-0",
+          "layout",
+          5,
+        ),
+      ).toBeNull();
+    });
+  });
+
+  describe("row menu", () => {
+    const handlers = () => ({
+      move: vi.fn(),
+      openCatalog: vi.fn(),
+      duplicate: vi.fn(),
+      confirmRemove: vi.fn(),
+    });
+
+    it("lists the six actions and disables moves at the ends", () => {
+      const actions = menuActions(0, 3);
+      expect(actions.map((a) => a.label)).toEqual([
+        "Move up",
+        "Move down",
+        "Insert above",
+        "Insert below",
+        "Duplicate",
+        "Remove…",
+      ]);
+      expect(actions[0].disabled).toBe(true);
+      expect(menuActions(2, 3)[1].disabled).toBe(true);
+    });
+
+    it("dispatches each action", () => {
+      const h = handlers();
+      runMenuAction("down", 1, 4, h);
+      runMenuAction("insertAbove", 1, 4, h);
+      runMenuAction("insertBelow", 1, 4, h);
+      runMenuAction("duplicate", 1, 4, h);
+      runMenuAction("remove", 1, 4, h);
+      expect(h.move).toHaveBeenCalledWith(2);
+      expect(h.openCatalog.mock.calls).toEqual([[1], [2]]);
+      expect(h.duplicate).toHaveBeenCalledOnce();
+      expect(h.confirmRemove).toHaveBeenCalledOnce();
+    });
   });
 });

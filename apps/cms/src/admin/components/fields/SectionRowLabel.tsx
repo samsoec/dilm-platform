@@ -1,16 +1,17 @@
 "use client";
 
 import { useForm, useFormFields, useModal, useRowLabel } from "@payloadcms/ui";
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useState, type KeyboardEvent } from "react";
 
 import {
-  cancelledText,
-  clampMove,
-  droppedText,
+  menuActions,
+  type MenuActionId,
+  type PickupState,
   movedText,
-  pickedUpText,
+  pickupKey,
   positionText,
   removeCopy,
+  runMenuAction,
   type SectionData,
   sectionSummary,
   variantText,
@@ -50,45 +51,55 @@ export function SectionRowLabel({
   const { moveFieldRow, removeFieldRow, dispatchFields, setModified } =
     useForm();
   const { openModal } = useModal();
-  const [pickedUp, setPickedUp] = useState(false);
-  const origin = useRef(index);
+  const [pickup, setPickup] = useState<PickupState>({
+    pickedUp: false,
+    origin: index,
+  });
+  const pickedUp = pickup.pickedUp;
   const dialog = `remove-section-${path}`;
   const variant = variantText(data?.variant);
   const summary = sectionSummary(data, record);
   const copy = removeCopy(name, data);
 
-  const move = (to: number) => {
+  const move = (to: number, say = true) => {
     if (to === index) return;
     moveFieldRow({ moveFromIndex: index, moveToIndex: to, path: arrayPath });
     setModified(true);
-    announce(movedText(name, to, count));
+    if (say) announce(movedText(name, to, count));
   };
-  const step = (delta: number) => move(clampMove(index, delta, count));
-
   const onHandleKey = (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (!pickedUp) {
-      if (event.key === " " || event.key === "Enter") {
-        event.preventDefault();
-        origin.current = index;
-        setPickedUp(true);
-        announce(pickedUpText(name, index, count));
-      }
-      return;
-    }
-    if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-      event.preventDefault();
-      step(event.key === "ArrowUp" ? -1 : 1);
-    } else if (event.key === " " || event.key === "Enter") {
-      event.preventDefault();
-      setPickedUp(false);
-      announce(droppedText(name, index, count));
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      event.stopPropagation();
-      setPickedUp(false);
-      move(origin.current);
-      announce(cancelledText(name, origin.current, count));
-    }
+    const result = pickupKey(pickup, event.key, index, count, name);
+    if (!result.handled) return;
+    event.preventDefault();
+    if (event.key === "Escape") event.stopPropagation();
+    setPickup(result.state);
+    if (result.moveTo !== undefined) move(result.moveTo, false);
+    if (result.announce) announce(result.announce);
+  };
+
+  const handlers = {
+    move,
+    openCatalog: (at: number) => openCatalog(arrayPath, at),
+    duplicate: () => {
+      dispatchFields({
+        type: "DUPLICATE_ROW",
+        path: arrayPath,
+        rowIndex: index,
+      });
+      setModified(true);
+    },
+    confirmRemove: () => openModal(dialog),
+  };
+  const icons: Record<
+    MenuActionId,
+    Parameters<typeof MaterialIcon>[0]["name"]
+  > = {
+    up: "expand_less",
+    down: "arrow_downward",
+    insertAbove: "add",
+    insertBelow: "add",
+    duplicate: "view_list",
+    remove: "delete",
   };
 
   return (
@@ -99,7 +110,7 @@ export function SectionRowLabel({
         aria-label={`Move ${name}, position ${index + 1} of ${count}`}
         aria-pressed={pickedUp}
         className="dil-section-row__handle"
-        onBlur={() => pickedUp && setPickedUp(false)}
+        onBlur={() => setPickup((current) => ({ ...current, pickedUp: false }))}
         onKeyDown={onHandleKey}
         type="button"
       >
@@ -122,62 +133,26 @@ export function SectionRowLabel({
           label={<span className="dil-sr-only">Section menu for {name}</span>}
           trailingIcon={null}
         >
-          {(close) => {
-            const item = (
-              label: string,
-              icon: Parameters<typeof MaterialIcon>[0]["name"],
-              run: () => void,
-              hint?: string,
-              disabled = false,
-            ) => (
-              <button
-                className="dil-section-row__item"
-                disabled={disabled}
-                onClick={() => {
-                  close();
-                  run();
-                }}
-                type="button"
-              >
-                <MaterialIcon name={icon} />
-                {label}
-                {hint && <kbd>{hint}</kbd>}
-              </button>
-            );
-            return (
-              <div className="dil-section-row__items" role="group">
-                {item(
-                  "Move up",
-                  "expand_less",
-                  () => step(-1),
-                  "⌥↑",
-                  index === 0,
-                )}
-                {item(
-                  "Move down",
-                  "arrow_downward",
-                  () => step(1),
-                  "⌥↓",
-                  index >= count - 1,
-                )}
-                {item("Insert above", "add", () =>
-                  openCatalog(arrayPath, index),
-                )}
-                {item("Insert below", "add", () =>
-                  openCatalog(arrayPath, index + 1),
-                )}
-                {item("Duplicate", "view_list", () => {
-                  dispatchFields({
-                    type: "DUPLICATE_ROW",
-                    path: arrayPath,
-                    rowIndex: index,
-                  });
-                  setModified(true);
-                })}
-                {item("Remove…", "delete", () => openModal(dialog))}
-              </div>
-            );
-          }}
+          {(close) => (
+            <div className="dil-section-row__items" role="group">
+              {menuActions(index, count).map((action) => (
+                <button
+                  className="dil-section-row__item"
+                  disabled={action.disabled}
+                  key={action.id}
+                  onClick={() => {
+                    close();
+                    runMenuAction(action.id, index, count, handlers);
+                  }}
+                  type="button"
+                >
+                  <MaterialIcon name={icons[action.id]} />
+                  {action.label}
+                  {action.hint && <kbd>{action.hint}</kbd>}
+                </button>
+              ))}
+            </div>
+          )}
         </Popover>
       </span>
       <button
