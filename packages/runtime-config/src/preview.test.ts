@@ -1,3 +1,5 @@
+import { createHmac } from "node:crypto";
+
 import { describe, expect, it } from "vitest";
 
 import { signPreviewToken, verifyPreviewToken } from "./preview";
@@ -40,6 +42,23 @@ describe("preview tokens", () => {
         now,
       ).ok,
     ).toBe(false);
+  });
+
+  it("refuses to sign or verify with an empty secret", () => {
+    expect(() => signPreviewToken("/en", "", now)).toThrow();
+    const forged = `${now + 1000}.${createHmac("sha256", "")
+      .update(`/en\n${now + 1000}`)
+      .digest("hex")}`;
+    expect(verifyPreviewToken(forged, "/en", "", now)).toEqual({
+      ok: false,
+      reason: "unconfigured",
+    });
+  });
+
+  it("rejects a non-numeric expiry", () => {
+    expect(verifyPreviewToken("abc.deadbeef", "/en", secret, now).ok).toBe(
+      false,
+    );
   });
 
   it("rejects malformed tokens", () => {

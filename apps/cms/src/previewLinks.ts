@@ -170,6 +170,7 @@ export function withAdminPreview<
       collection: "tenants",
       depth: 0,
       limit: 1,
+      sort: "id",
       overrideAccess: false,
       user: req.user,
       ...(owner ? { where: { id: { equals: owner } } } : {}),
