@@ -53,10 +53,9 @@ describe("supporting products (SL-01)", () => {
     expect(shownFeatured({ ids: [3], featured: 8 })).toBe(3);
   });
 
-  it("adds without duplicates and respects the cap", () => {
+  it("adds without duplicates ", () => {
     expect(addSupporting(state, 4)).toBe(state);
     expect(addSupporting(state, 5).ids).toEqual([4, 7, 9, 5]);
-    expect(addSupporting(state, 5, 3)).toBe(state);
   });
 
   it("moves rows and ignores out-of-range moves", () => {

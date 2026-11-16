@@ -145,7 +145,6 @@ import { ProductHeaderField as ProductHeaderField_e5427e3530a8a9e3f536213c9665e1
 import { ProductActionsField as ProductActionsField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
 import { ProductTabMarksField as ProductTabMarksField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
 import { ProductSidebarField as ProductSidebarField_e5427e3530a8a9e3f536213c9665e1e0 } from '../../../admin/components/products/server'
-import { SolutionUsedInField as SolutionUsedInField_94c1c8163c4a39ab9265dafedbf8f48c } from '../../../admin/components/usedIn/server'
 import { DocumentUsedInField as DocumentUsedInField_94c1c8163c4a39ab9265dafedbf8f48c } from '../../../admin/components/usedIn/server'
 import { ShortDescriptionLabel as ShortDescriptionLabel_e9d058a5011d059c4ef16bf3020ca48f } from '../../../admin/components/products/ProductEditorParts'
 import { SuperscriptFeatureClient as SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -358,7 +357,6 @@ export const importMap = {
   "/admin/components/products/server#ProductActionsField": ProductActionsField_e5427e3530a8a9e3f536213c9665e1e0,
   "/admin/components/products/server#ProductTabMarksField": ProductTabMarksField_e5427e3530a8a9e3f536213c9665e1e0,
   "/admin/components/products/server#ProductSidebarField": ProductSidebarField_e5427e3530a8a9e3f536213c9665e1e0,
-  "/admin/components/usedIn/server#SolutionUsedInField": SolutionUsedInField_94c1c8163c4a39ab9265dafedbf8f48c,
   "/admin/components/usedIn/server#DocumentUsedInField": DocumentUsedInField_94c1c8163c4a39ab9265dafedbf8f48c,
   "/admin/components/products/ProductEditorParts#ShortDescriptionLabel": ShortDescriptionLabel_e9d058a5011d059c4ef16bf3020ca48f,
   "@payloadcms/richtext-lexical/client#SuperscriptFeatureClient": SuperscriptFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,

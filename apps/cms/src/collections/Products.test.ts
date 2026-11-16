@@ -362,7 +362,7 @@ describe("solutions (§4.6.2)", () => {
     });
   });
 
-  it("has the five editor tabs in order", () => {
+  it("has the four editor tabs in order", () => {
     const tabs = Solutions.fields.find(
       (field) => field.type === "tabs",
     ) as TabsField;

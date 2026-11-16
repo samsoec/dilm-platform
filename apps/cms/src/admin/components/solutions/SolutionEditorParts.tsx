@@ -31,10 +31,8 @@ import {
   productsByIdQuery,
   removeSupporting,
   SUPPORTING_HINT,
-  supportingCountText,
   tagCountText,
   toggleFeatured,
-  MAX_SUPPORTING_PRODUCTS,
   type Id,
   type Picked,
 } from "./solutionEditor";
@@ -301,9 +299,6 @@ export function SupportingProductsField({ path }: { path?: string }) {
     <div className="dil-supporting field-type">
       <span className="dil-tags__head">
         <FieldLabel label="Supporting products" />
-        <span className="dil-array-count">
-          {supportingCountText(ids.length)}
-        </span>
       </span>
       <p className="dil-supporting__hint">{SUPPORTING_HINT}</p>
       {ids.length === 0 ? (
@@ -402,11 +397,6 @@ export function SupportingProductsField({ path }: { path?: string }) {
               Couldn&apos;t load products. Try again.
             </p>
           )}
-          {ids.length >= MAX_SUPPORTING_PRODUCTS && (
-            <p className="dil-supporting__note">
-              A solution holds {MAX_SUPPORTING_PRODUCTS} supporting products.
-            </p>
-          )}
           <ul className="dil-supporting__choices">
             {choices.map((product) => (
               <li className="dil-supporting__choice" key={String(product.id)}>
@@ -420,11 +410,6 @@ export function SupportingProductsField({ path }: { path?: string }) {
                   icon="add"
                   onClick={() => apply(addSupporting(state, product.id))}
                   type="button"
-                  unavailableReason={
-                    ids.length >= MAX_SUPPORTING_PRODUCTS
-                      ? "The list is full."
-                      : undefined
-                  }
                   variant="secondary"
                 >
                   Add

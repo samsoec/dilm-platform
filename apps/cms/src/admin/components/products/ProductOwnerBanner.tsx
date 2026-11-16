@@ -6,7 +6,7 @@ import { canEditProduct, ownerBannerText } from "./catalog";
 
 async function ownerBanner(
   { data, payload, req }: UIFieldServerProps,
-  noun: string,
+  noun?: string,
 ) {
   const user = req.user;
   const tenant = data?.tenant as
@@ -40,7 +40,7 @@ async function ownerBanner(
 }
 
 export function ProductOwnerBanner(props: UIFieldServerProps) {
-  return ownerBanner(props, "product");
+  return ownerBanner(props);
 }
 
 export function SolutionOwnerBanner(props: UIFieldServerProps) {

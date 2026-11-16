@@ -1,7 +1,6 @@
 export const SUPPORTING_HINT =
   "Pick from every company's published products. The star marks the featured card; it must be one of these. Removing the featured product clears it, and the first product is used.";
 
-export const MAX_SUPPORTING_PRODUCTS = 12;
 export const SEARCH_LIMIT = 8;
 
 export type Id = number | string;
@@ -23,15 +22,8 @@ function same(a: Id | null, b: Id | null): boolean {
   return a !== null && b !== null && String(a) === String(b);
 }
 
-export function addSupporting(
-  state: Picked,
-  id: Id,
-  max = MAX_SUPPORTING_PRODUCTS,
-): Picked {
-  if (
-    state.ids.length >= max ||
-    state.ids.some((existing) => same(existing, id))
-  ) {
+export function addSupporting(state: Picked, id: Id): Picked {
+  if (state.ids.some((existing) => same(existing, id))) {
     return state;
   }
   return { ...state, ids: [...state.ids, id] };
@@ -80,10 +72,6 @@ export function supportingTabText(count: number): string {
   return ` · ${count}`;
 }
 
-export function supportingCountText(count: number): string {
-  return `${count} of ${MAX_SUPPORTING_PRODUCTS}`;
-}
-
 export function featuredNote(
   state: Picked,
   names: ReadonlyMap<string, string>,
@@ -123,7 +111,7 @@ export function productSearchQuery(search: string, locale: string): string {
   params.set("where[_status][equals]", "published");
   if (search.trim()) params.set("where[name][like]", search.trim());
   params.set("sort", "name");
-  params.set("limit", String(SEARCH_LIMIT + MAX_SUPPORTING_PRODUCTS));
+  params.set("limit", String(SEARCH_LIMIT * 4));
   params.set("depth", "0");
   params.set("locale", locale);
   params.set("fallback-locale", "en");
@@ -133,7 +121,7 @@ export function productSearchQuery(search: string, locale: string): string {
 export function productsByIdQuery(ids: readonly Id[], locale: string): string {
   const params = new URLSearchParams();
   ids.forEach((id, index) => params.set(`where[id][in][${index}]`, String(id)));
-  params.set("limit", String(MAX_SUPPORTING_PRODUCTS));
+  params.set("limit", String(Math.max(ids.length, 1)));
   params.set("depth", "0");
   params.set("locale", locale);
   params.set("fallback-locale", "en");

@@ -114,8 +114,9 @@ export function solutionsText(count: number): string {
   return `${count} ${count === 1 ? "solution" : "solutions"}`;
 }
 
-export function ownerBannerText(owner: string, noun = "product"): string {
-  return `Owned by ${owner}. Only ${owner} editors or a Super Admin can change it. You can view this ${noun} and pick it into your pages.`;
+export function ownerBannerText(owner: string, noun?: string): string {
+  const view = noun ? `view this ${noun}` : "view it";
+  return `Owned by ${owner}. Only ${owner} editors or a Super Admin can change it. You can ${view} and pick it into your pages.`;
 }
 
 export function emptyCatalogText(
