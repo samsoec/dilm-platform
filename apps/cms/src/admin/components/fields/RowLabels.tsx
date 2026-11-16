@@ -20,6 +20,7 @@ import {
   type SocialPlatform,
 } from "../../data/socialPlatforms";
 import { MaterialIcon } from "../MaterialIcon";
+import { announce } from "./announce";
 import { SameAsEnBadge, useSameAsDefault } from "./SameAsEnTag";
 
 function RowLabel({
@@ -62,18 +63,6 @@ function RowLabel({
       {same && <SameAsEnBadge />}
     </span>
   );
-}
-
-function announce(message: string) {
-  let region = document.getElementById("dil-row-announcer");
-  if (!region) {
-    region = document.createElement("div");
-    region.id = "dil-row-announcer";
-    region.className = "dil-sr-only";
-    region.setAttribute("aria-live", "assertive");
-    document.body.append(region);
-  }
-  region.textContent = message;
 }
 
 function useMoveAnnouncement(

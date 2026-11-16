@@ -155,6 +155,8 @@ import { SidebarField as SidebarField_baabe6231b786d2a57d52d56a1611534 } from '.
 import { NoControl as NoControl_c6cd29aa8177a060e43b9ccc07ba17de } from '../../../admin/components/editor/EditorChrome'
 
 /** @type import('payload').ImportMap */
+import { SectionRowLabel as SectionRowLabel_50ef2c16859fd1eb2917e9ebf0eb899a } from '../../../admin/components/fields/SectionRowLabel'
+import { SectionsHeader as SectionsHeader_f06cb4c33585bfc6d213b1d7bf088af0 } from '../../../admin/components/fields/SectionsHeader'
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
   "/admin/components/users/UserCells#RoleCell": RoleCell_5cd97e58844d5c99becf880375f054b9,
@@ -311,4 +313,6 @@ export const importMap = {
   "/admin/components/editor/server#SeoPreviewField": SeoPreviewField_baabe6231b786d2a57d52d56a1611534,
   "/admin/components/editor/server#SidebarField": SidebarField_baabe6231b786d2a57d52d56a1611534,
   "/admin/components/editor/EditorChrome#NoControl": NoControl_c6cd29aa8177a060e43b9ccc07ba17de,
+  "/admin/components/fields/SectionRowLabel#SectionRowLabel": SectionRowLabel_50ef2c16859fd1eb2917e9ebf0eb899a,
+  "/admin/components/fields/SectionsHeader#SectionsHeader": SectionsHeader_f06cb4c33585bfc6d213b1d7bf088af0,
 }

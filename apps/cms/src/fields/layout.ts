@@ -54,6 +54,10 @@ export function layoutField(
     maxRows: MAX_LAYOUT_BLOCKS,
     blocks: layoutBlocks(blocks, exclude),
     admin: {
+      className: "dil-layout-field",
+      components: {
+        Label: "/admin/components/fields/SectionsHeader#SectionsHeader",
+      },
       description: `A page holds at most ${MAX_LAYOUT_BLOCKS} sections.`,
     },
   };
