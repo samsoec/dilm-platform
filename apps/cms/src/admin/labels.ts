@@ -22,6 +22,10 @@ export const COLLECTION_LABELS = {
     singular: { en: "Career application", id: "Lamaran kerja" },
     plural: { en: "Career applications", id: "Lamaran kerja" },
   },
+  "contact-submissions": {
+    singular: { en: "Contact message", id: "Pesan kontak" },
+    plural: { en: "Contact messages", id: "Pesan kontak" },
+  },
   "consent-logs": {
     singular: { en: "Consent record", id: "Catatan persetujuan" },
     plural: { en: "Consent records", id: "Catatan persetujuan" },

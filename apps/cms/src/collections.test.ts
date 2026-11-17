@@ -9,6 +9,7 @@ import type {
   RelationshipField,
   SelectFieldSingleValidation,
 } from "payload";
+import { CONTACT_FIELD_LIMITS } from "@dilm/shared-types";
 import { describe, expect, it } from "vitest";
 
 import { type Role, superAdminsOrSelf, tenantMembers } from "./access";
@@ -16,6 +17,7 @@ import { validateBrandColor } from "./admin/brandColor";
 import { ICON_NAMES } from "./admin/icons";
 import { type CollectionNav, navGroupByLabel } from "./admin/navGroups";
 import { collections, globals } from "./collections";
+import { ContactSubmissions } from "./collections/ContactSubmissions";
 import { CvSubmissions } from "./collections/CvSubmissions";
 import { IrDocuments } from "./collections/IrDocuments";
 import { Tenants } from "./collections/Tenants";
@@ -47,6 +49,7 @@ const TENANT_SCOPED = [
   "ir-documents",
   "documents",
   "cv-submissions",
+  "contact-submissions",
   "header",
   "footer",
   "site-messages",
@@ -138,7 +141,7 @@ describe("the collections", () => {
     for (const { slug } of ALL) {
       expect(collection(slug).slug).toBe(slug);
     }
-    expect(ALL).toHaveLength(22);
+    expect(ALL).toHaveLength(23);
   });
 
   it("put every content collection under a required tenant", async () => {
@@ -234,6 +237,7 @@ describe("the sidebar navigation (FR-UI-01 to FR-UI-03)", () => {
       footer: "call_to_action",
       "site-messages": "campaign",
       "cv-submissions": "badge",
+      "contact-submissions": "mail",
       "consent-logs": "verified_user",
       "ir-documents": "description",
       documents: "picture_as_pdf",
@@ -730,6 +734,77 @@ describe("cv-submissions", () => {
       expect(await call(submissions, "create", as)).toBe(false);
     }
     expect(await call(submissions, "delete", editor)).toBe(false);
+    expect(await call(submissions, "delete", superAdmin)).toBe(true);
+  });
+});
+
+describe("contact-submissions", () => {
+  const SYSTEM_FIELDS = [
+    "submissionId",
+    "fullName",
+    "company",
+    "workEmail",
+    "phone",
+    "message",
+    "locale",
+    "submittedAt",
+    "teamNotifiedAt",
+    "senderNotifiedAt",
+  ];
+
+  it("has the contract fields and limits", () => {
+    expect(fieldNames(ContactSubmissions.fields)).toEqual(SYSTEM_FIELDS);
+    expect(field(ContactSubmissions, "submissionId")).toMatchObject({
+      unique: true,
+      index: true,
+    });
+    for (const [name, max] of Object.entries(CONTACT_FIELD_LIMITS)) {
+      expect(field(ContactSubmissions, name)).toMatchObject({
+        maxLength: max,
+      });
+    }
+    expect(field(ContactSubmissions, "locale")).toMatchObject({
+      options: ["en", "id"],
+    });
+    expect(ContactSubmissions.versions).toBeUndefined();
+    expect(ContactSubmissions.trash).toBeUndefined();
+  });
+
+  it("keeps every field read-only for every role", async () => {
+    const submissions = (await configured())("contact-submissions");
+
+    for (const name of SYSTEM_FIELDS) {
+      expect(field(submissions, name)).toMatchObject({
+        admin: { readOnly: true },
+      });
+      for (const as of [superAdmin, editor, viewer]) {
+        expect(fieldAllows(submissions, name, "create", as)).toBe(false);
+        expect(fieldAllows(submissions, name, "update", as)).toBe(false);
+      }
+    }
+  });
+
+  it("is readable by every role, scoped to their companies", async () => {
+    const submissions = (await configured())("contact-submissions");
+
+    for (const as of [superAdmin, editor, viewer]) {
+      expect(await call(submissions, "read", as)).toBeTruthy();
+    }
+    expect(await call(submissions, "read", null)).toBeFalsy();
+    expect(
+      submissions.fields.some((f) => "name" in f && f.name === "tenant"),
+    ).toBe(true);
+  });
+
+  it("can't be created or updated by anyone, only deleted by Super Admins", async () => {
+    const submissions = (await configured())("contact-submissions");
+
+    for (const as of [superAdmin, editor, viewer]) {
+      expect(await call(submissions, "create", as)).toBe(false);
+      expect(await call(submissions, "update", as)).toBe(false);
+    }
+    expect(await call(submissions, "delete", editor)).toBe(false);
+    expect(await call(submissions, "delete", viewer)).toBe(false);
     expect(await call(submissions, "delete", superAdmin)).toBe(true);
   });
 });
