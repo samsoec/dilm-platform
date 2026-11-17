@@ -46,7 +46,7 @@ describe.skipIf(!database)(
         depth: 0,
       });
       tenant = docs[0]!.id as number;
-    });
+    }, 600_000);
 
     afterAll(async () => {
       await payload?.destroy();
