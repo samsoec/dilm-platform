@@ -75,6 +75,20 @@ describe("recordConsent", () => {
 });
 
 describe("consent-logs schema", () => {
+  it("holds exactly the allowed fields and nothing identifying", () => {
+    const names = ConsentLogs.fields
+      .map((field) => ("name" in field ? field.name : undefined))
+      .filter(Boolean)
+      .sort();
+
+    expect(names).toEqual(
+      ["consentType", "policyVersion", "relatedRecordId", "timestamp"].sort(),
+    );
+    for (const banned of ["ip", "ipAddress", "userAgent", "content", "form"]) {
+      expect(names).not.toContain(banned);
+    }
+  });
+
   it("indexes consentType and relatedRecordId uniquely", () => {
     expect(ConsentLogs.indexes).toEqual([
       { fields: ["consentType", "relatedRecordId"], unique: true },
