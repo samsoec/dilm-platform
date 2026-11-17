@@ -2,6 +2,7 @@ import type { GlobalConfig } from "payload";
 
 import { Categories } from "./Categories";
 import { ConsentLogs } from "./ConsentLogs";
+import { ContactSubmissions } from "./ContactSubmissions";
 import { CvSubmissions } from "./CvSubmissions";
 import { DetailTemplates } from "./DetailTemplates";
 import { Documents } from "./Documents";
@@ -33,6 +34,7 @@ export const collections = [
   IrDocuments,
   Documents,
   CvSubmissions,
+  ContactSubmissions,
   Header,
   Footer,
   SiteMessages,

@@ -75,6 +75,7 @@ export interface Config {
     'ir-documents': IrDocument;
     documents: Document;
     'cv-submissions': CvSubmission;
+    'contact-submissions': ContactSubmission;
     header: Header;
     footer: Footer;
     'site-messages': SiteMessage;
@@ -106,6 +107,7 @@ export interface Config {
     'ir-documents': IrDocumentsSelect<false> | IrDocumentsSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
     'cv-submissions': CvSubmissionsSelect<false> | CvSubmissionsSelect<true>;
+    'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     'site-messages': SiteMessagesSelect<false> | SiteMessagesSelect<true>;
@@ -4311,6 +4313,28 @@ export interface CvSubmission {
   createdAt: string;
 }
 /**
+ * Messages sent from the contact form, written by the system and kept read-only.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-submissions".
+ */
+export interface ContactSubmission {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  submissionId: string;
+  fullName: string;
+  company: string;
+  workEmail: string;
+  phone?: string | null;
+  message: string;
+  locale: 'en' | 'id';
+  submittedAt: string;
+  teamNotifiedAt?: string | null;
+  senderNotifiedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
  */
@@ -5123,6 +5147,10 @@ export interface PayloadLockedDocument {
         value: number | CvSubmission;
       } | null)
     | ({
+        relationTo: 'contact-submissions';
+        value: number | ContactSubmission;
+      } | null)
+    | ({
         relationTo: 'header';
         value: number | Header;
       } | null)
@@ -5543,6 +5571,25 @@ export interface CvSubmissionsSelect<T extends boolean = true> {
   externalSyncStatus?: T;
   externalSyncAttempts?: T;
   externalSyncTriedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-submissions_select".
+ */
+export interface ContactSubmissionsSelect<T extends boolean = true> {
+  tenant?: T;
+  submissionId?: T;
+  fullName?: T;
+  company?: T;
+  workEmail?: T;
+  phone?: T;
+  message?: T;
+  locale?: T;
+  submittedAt?: T;
+  teamNotifiedAt?: T;
+  senderNotifiedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
