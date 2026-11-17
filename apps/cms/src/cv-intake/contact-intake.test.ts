@@ -58,7 +58,7 @@ const sentAt = new Date("2026-09-27T03:00:00Z");
 
 let payload: ReturnType<typeof fakePayload>;
 
-function run(contactSteps?: Record<string, ContactStep>) {
+function run(contactSteps: Record<string, ContactStep> = {}) {
   return processContactMessage(
     { payload: payload as unknown as Payload, contactSteps },
     message,
