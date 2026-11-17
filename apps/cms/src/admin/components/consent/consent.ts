@@ -13,6 +13,22 @@ export const CONSENT_TYPE_ICONS: Record<string, IconName> = {
   "contact-form": "mail",
 };
 
+export const RELATED_COLLECTIONS = {
+  "career-application": "cv-submissions",
+  "contact-form": "contact-submissions",
+} as const;
+
+export type RelatedCollection =
+  (typeof RELATED_COLLECTIONS)[keyof typeof RELATED_COLLECTIONS];
+
+export function relatedCollection(
+  consentType: unknown,
+): RelatedCollection | undefined {
+  return typeof consentType === "string" && consentType in RELATED_COLLECTIONS
+    ? RELATED_COLLECTIONS[consentType as keyof typeof RELATED_COLLECTIONS]
+    : undefined;
+}
+
 const STAMP = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "short",

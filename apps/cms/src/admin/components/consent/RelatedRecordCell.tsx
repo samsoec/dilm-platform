@@ -1,6 +1,6 @@
 import type { DefaultServerCellComponentProps } from "payload";
 
-import { relatedApplicationURL } from "./related";
+import { relatedRecordURL } from "./related";
 
 export async function RelatedRecordCell({
   cellData,
@@ -8,7 +8,7 @@ export async function RelatedRecordCell({
   rowData,
 }: DefaultServerCellComponentProps) {
   const value = typeof cellData === "string" ? cellData : "";
-  const href = await relatedApplicationURL(payload, rowData.consentType, value);
+  const href = await relatedRecordURL(payload, rowData.consentType, value);
   return href ? (
     <a className="dil-consent__mono dil-consent__related" href={href}>
       {value}

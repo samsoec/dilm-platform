@@ -250,6 +250,10 @@ import { PolicyVersionWarning as PolicyVersionWarning_a194ef5925e05041dff3708298
 import { NotFoundPreview as NotFoundPreview_a194ef5925e05041dff37082987d360b } from '../../../admin/components/siteMessages/SiteMessagesParts'
 import { CookieBannerPreview as CookieBannerPreview_a194ef5925e05041dff37082987d360b } from '../../../admin/components/siteMessages/SiteMessagesParts'
 import { ConsentNotes as ConsentNotes_a194ef5925e05041dff37082987d360b } from '../../../admin/components/siteMessages/SiteMessagesParts'
+import { SenderCell as SenderCell_e2b9f71bb4e0d9279198df477267e1b8 } from '../../../admin/components/contact/ContactCells'
+import { SubmittedCell as SubmittedCell_e2b9f71bb4e0d9279198df477267e1b8 } from '../../../admin/components/contact/ContactCells'
+import { DeliveryCell as DeliveryCell_e2b9f71bb4e0d9279198df477267e1b8 } from '../../../admin/components/contact/ContactCells'
+import { ContactMessageView as ContactMessageView_c7b4b481ab6984e3ec6cc0bbd35a3833 } from '../../../admin/components/contact/ContactMessageView'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -503,4 +507,8 @@ export const importMap = {
   "/admin/components/siteMessages/SiteMessagesParts#NotFoundPreview": NotFoundPreview_a194ef5925e05041dff37082987d360b,
   "/admin/components/siteMessages/SiteMessagesParts#CookieBannerPreview": CookieBannerPreview_a194ef5925e05041dff37082987d360b,
   "/admin/components/siteMessages/SiteMessagesParts#ConsentNotes": ConsentNotes_a194ef5925e05041dff37082987d360b,
+  "/admin/components/contact/ContactCells#SenderCell": SenderCell_e2b9f71bb4e0d9279198df477267e1b8,
+  "/admin/components/contact/ContactCells#SubmittedCell": SubmittedCell_e2b9f71bb4e0d9279198df477267e1b8,
+  "/admin/components/contact/ContactCells#DeliveryCell": DeliveryCell_e2b9f71bb4e0d9279198df477267e1b8,
+  "/admin/components/contact/ContactMessageView#ContactMessageView": ContactMessageView_c7b4b481ab6984e3ec6cc0bbd35a3833,
 }

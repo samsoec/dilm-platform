@@ -17,6 +17,10 @@ const NOTES: Record<string, ListIntroNote> = {
     icon: "info",
     text: "No Create button: records come from the website.",
   },
+  "contact-submissions": {
+    icon: "info",
+    text: "No Create button: messages arrive from the Contact page of the company's site.",
+  },
 };
 
 async function tenantDomain({
