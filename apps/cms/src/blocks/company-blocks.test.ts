@@ -354,6 +354,7 @@ describe("contactInquiry (§4.5.26)", () => {
       "description",
       "fields",
       "consentText",
+      "privacyPolicyVersion",
       "submitLabel",
       "successMessage",
       "errorMessage",

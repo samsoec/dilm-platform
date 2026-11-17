@@ -23,6 +23,7 @@ import { CompletenessPanel as CompletenessPanel_99b50e81f07f42a9ece8c35f5f2e1c77
 import { MediaPickerField as MediaPickerField_c1a0497f67f40c4b5a41bd7dd6573213 } from '../../../admin/components/media/MediaPickerField'
 import { TabIntro as TabIntro_b11e3c6d7c067629e5bc1d6294b75ba1 } from '../../../admin/components/fields/TabIntro'
 import { CareersNotice as CareersNotice_4ec7abca466eaed7a6d39b518b93e551 } from '../../../admin/components/fields/CareersNotice'
+import { PrivacyPolicyVersionWarning as PrivacyPolicyVersionWarning_698a4998af15d7d3612833601b2fad7c } from '../../../admin/components/fields/PrivacyPolicyVersionWarning'
 import { LaunchRequiredLabel as LaunchRequiredLabel_0b876ba66792ba4b7921bebf7f495f98 } from '../../../admin/components/fields/LaunchRequiredLabel'
 import { PlatformSelect as PlatformSelect_e5a3ed79f2c8e344cb6082339e06e6c8 } from '../../../admin/components/fields/PlatformSelect'
 import { SocialRowLabel as SocialRowLabel_d7a74f343adbd5aa0b681db641f8edd6 } from '../../../admin/components/fields/RowLabels'
@@ -276,6 +277,7 @@ export const importMap = {
   "/admin/components/media/MediaPickerField#MediaPickerField": MediaPickerField_c1a0497f67f40c4b5a41bd7dd6573213,
   "/admin/components/fields/TabIntro#TabIntro": TabIntro_b11e3c6d7c067629e5bc1d6294b75ba1,
   "/admin/components/fields/CareersNotice#CareersNotice": CareersNotice_4ec7abca466eaed7a6d39b518b93e551,
+  "/admin/components/fields/PrivacyPolicyVersionWarning#PrivacyPolicyVersionWarning": PrivacyPolicyVersionWarning_698a4998af15d7d3612833601b2fad7c,
   "/admin/components/fields/LaunchRequiredLabel#LaunchRequiredLabel": LaunchRequiredLabel_0b876ba66792ba4b7921bebf7f495f98,
   "/admin/components/fields/PlatformSelect#PlatformSelect": PlatformSelect_e5a3ed79f2c8e344cb6082339e06e6c8,
   "/admin/components/fields/RowLabels#SocialRowLabel": SocialRowLabel_d7a74f343adbd5aa0b681db641f8edd6,

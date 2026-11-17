@@ -38,7 +38,7 @@ describe("tenant-settings data shape (FR-UI-44)", () => {
         tabs.tabs.map((tab) => [tab.label, topLevelNames(tab.fields)]),
       ),
     ).toEqual({
-      General: ["siteName", "routing"],
+      General: ["siteName", "routing", "privacyPolicyVersion"],
       Brand: ["brand"],
       Contact: ["contactEmail", "contactPhone", "waLink"],
       Careers: ["recruiterEmail"],
