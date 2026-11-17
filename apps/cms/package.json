@@ -24,6 +24,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "verify:cv-intake": "pnpm payload run src/cv-intake/verify-cv-intake.ts",
+    "verify:form-intake": "pnpm payload run src/cv-intake/verify-form-intake.ts",
     "verify:login-lockout": "pnpm payload run src/seed/verify-login-lockout.ts"
   },
   "dependencies": {
