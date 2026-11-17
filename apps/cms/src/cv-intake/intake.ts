@@ -33,7 +33,7 @@ export class CvIntakeError extends AggregateError {
 
 type Step = (submission: CvSubmission) => Promise<void>;
 
-async function findTenant(payload: Payload, slug: TenantSlug) {
+export async function findTenant(payload: Payload, slug: TenantSlug) {
   const {
     docs: [tenant],
   } = await payload.find({
