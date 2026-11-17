@@ -4,6 +4,7 @@ import type { SQSEvent, SQSRecord } from "aws-lambda";
 import { getPayload, type Payload } from "payload";
 
 import { cmsConfig } from "../config";
+import { processContactMessage } from "./contact-intake";
 import { type CvIntakeContext, processCvMessage } from "./intake";
 
 let context: Promise<CvIntakeContext> | undefined;
@@ -38,12 +39,13 @@ export async function processRecord(
   });
   try {
     const message = parseQueueMessage(record.body);
-    if (message.kind !== "cv") {
-      throw new Error(`No consumer for ${message.kind} messages yet`);
+    if (message.kind === "contact") {
+      await processContactMessage(intake, message, sentAt(record));
+    } else {
+      await processCvMessage(intake, message, sentAt(record));
     }
-    await processCvMessage(intake, message, sentAt(record));
   } catch (error) {
-    log.error({ err: error }, "CV intake failed; SQS will redeliver");
+    log.error({ err: error }, "Intake failed; SQS will redeliver");
     throw error;
   }
 }
