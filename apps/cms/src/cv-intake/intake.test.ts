@@ -20,6 +20,7 @@ function fakePayload() {
       { id: 11, tenant: 2, recruiterEmail: null },
     ],
     "cv-submissions": [],
+    "consent-logs": [],
   };
   let nextId = 100;
   const matches = (doc: Doc, where: Where) =>
@@ -158,7 +159,7 @@ describe("processCvMessage", () => {
     await run();
 
     expect(stored()).toHaveLength(1);
-    expect(payload.create).toHaveBeenCalledTimes(1);
+    expect(payload.create).toHaveBeenCalledTimes(2);
     expect(payload.sendEmail).toHaveBeenCalledTimes(2);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
@@ -247,5 +248,66 @@ describe("processCvMessage", () => {
 
     await expect(run()).rejects.toThrow(/not seeded/);
     expect(stored()).toHaveLength(0);
+  });
+
+  it("records consent after the upsert and before any email or webhook call", async () => {
+    const order: string[] = [];
+    payload.create.mockImplementation(
+      async ({ collection, data }: { collection: string; data: object }) => {
+        order.push(`create:${collection}`);
+        const doc = { id: 500 + order.length, ...data };
+        payload.tables[collection]!.push(doc);
+        return { ...doc };
+      },
+    );
+    payload.sendEmail.mockImplementation(async () => {
+      order.push("email");
+    });
+    fetchMock.mockImplementation(async () => {
+      order.push("webhook");
+      return new Response(null, { status: 202 });
+    });
+
+    await run();
+
+    expect(order).toEqual([
+      "create:cv-submissions",
+      "create:consent-logs",
+      "email",
+      "email",
+      "webhook",
+    ]);
+    expect(payload.tables["consent-logs"]).toEqual([
+      expect.objectContaining({
+        tenant: 1,
+        consentType: "career-application",
+        relatedRecordId: "sub-1",
+        policyVersion: "2026-01",
+        timestamp: sentAt.toISOString(),
+      }),
+    ]);
+  });
+
+  it("sends nothing and throws when the consent write fails", async () => {
+    payload.create.mockImplementation(
+      async ({ collection, data }: { collection: string; data: object }) => {
+        if (collection === "consent-logs") throw new Error("db down");
+        const doc = { id: 600, ...data };
+        payload.tables[collection]!.push(doc);
+        return { ...doc };
+      },
+    );
+
+    await expect(run()).rejects.toThrow("db down");
+
+    expect(payload.sendEmail).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("writes no second consent record on redelivery", async () => {
+    await run();
+    await run();
+
+    expect(payload.tables["consent-logs"]).toHaveLength(1);
   });
 });
