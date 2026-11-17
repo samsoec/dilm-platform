@@ -2,6 +2,7 @@ import type { JobPlatformConfig } from "@dilm/runtime-config";
 import type { CvQueueMessage, TenantSlug } from "@dilm/shared-types";
 import type { Payload } from "payload";
 
+import { recordConsent } from "../consent/recordConsent";
 import { tenantSender } from "../email";
 import { SYSTEM_WRITE } from "../fields/systemWrite";
 import type { CvSubmission, Tenant } from "../payload-types";
@@ -120,6 +121,14 @@ export async function processCvMessage(
     tenant,
     submittedAt,
   );
+  await recordConsent({
+    payload,
+    tenant: tenant.id,
+    consentType: "career-application",
+    relatedRecordId: message.submissionId,
+    policyVersion: message.consent.policyVersion,
+    timestamp: submittedAt,
+  });
   const log = payload.logger.child({ submissionId: submission.submissionId });
 
   const stamp = async (data: Partial<CvSubmission>) => {

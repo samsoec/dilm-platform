@@ -13,6 +13,7 @@ import type { SQSRecord } from "aws-lambda";
 import { getPayload } from "payload";
 
 import { cmsConfig } from "../config";
+import { SYSTEM_WRITE } from "../fields/systemWrite";
 import { processRecord } from "./handler";
 import {
   IDEMPOTENCY_HEADER,
@@ -31,7 +32,7 @@ if (process.argv.includes("--help")) {
       "résumé in the private MinIO bucket, starts a request-capture server " +
       "as the job-platform webhook (failing its first call), then hands the " +
       "consumer the same synthetic SQS message three times. It checks there " +
-      "is one cv-submissions record, one applicant and one recruiter email " +
+      "is one cv-submissions record, one consent record, one applicant and one recruiter email " +
       "in Mailpit, and exactly one accepted, correctly signed webhook call. " +
       "The record and résumé are deleted afterwards. Local only: needs " +
       "RUNTIME_CONFIG_SOURCE=env, SMTP_HOST (Mailpit) and seeded tenants.",
@@ -124,6 +125,19 @@ function delivery(receiveCount: number): SQSRecord {
     eventSourceARN: "arn:aws:sqs:ap-southeast-3:000000000000:dilm-local-cv",
     awsRegion: "ap-southeast-3",
   };
+}
+
+async function consentRecords() {
+  return (
+    await payload.find({
+      collection: "consent-logs",
+      where: {
+        consentType: { equals: "career-application" },
+        relatedRecordId: { equals: submissionId },
+      },
+      depth: 0,
+    })
+  ).docs;
 }
 
 async function mailpitCount(to: string): Promise<number> {
@@ -227,6 +241,13 @@ try {
     "notification timestamps not both set",
   );
 
+  const consents = await consentRecords();
+  check(
+    consents.length === 1 &&
+      consents[0]?.policyVersion === message.consent.policyVersion,
+    `${consents.length} consent records, expected exactly 1 with policy version ${message.consent.policyVersion}`,
+  );
+
   const applicantEmails = await mailpitCount(message.fields.email);
   const recruiterEmails = await mailpitCount(RECRUITER);
   payload.logger.info(
@@ -262,6 +283,11 @@ try {
     );
   }
 } finally {
+  await payload.delete({
+    collection: "consent-logs",
+    where: { relatedRecordId: { equals: submissionId } },
+    context: SYSTEM_WRITE,
+  });
   await payload.delete({
     collection: "cv-submissions",
     where: { submissionId: { equals: submissionId } },
