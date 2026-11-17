@@ -1,18 +1,30 @@
-import type { ContactQueueMessage } from "@dilm/shared-types";
+import type { ContactQueueMessage, TenantSlug } from "@dilm/shared-types";
 import type { Payload } from "payload";
 
 import { recordConsent } from "../consent/recordConsent";
+import { tenantSender } from "../email";
 import { SYSTEM_WRITE } from "../fields/systemWrite";
 import type { ContactSubmission, Tenant } from "../payload-types";
+import { senderConfirmation, teamNotification } from "./contact-emails";
 import { type CvIntakeContext, findTenant } from "./intake";
+
+export interface ContactStepContext {
+  payload: Payload;
+  now: () => Date;
+}
 
 export type ContactStep = (
   submission: ContactSubmission,
   tenant: Tenant,
+  context: ContactStepContext,
 ) => Promise<void>;
 
 export interface ContactIntakeContext extends CvIntakeContext {
   contactSteps?: Record<string, ContactStep>;
+}
+
+function oneLine(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
 }
 
 export class ContactIntakeError extends AggregateError {
@@ -28,12 +40,72 @@ export class ContactIntakeError extends AggregateError {
   }
 }
 
-export const notifyTeam: ContactStep = async () => {
-  // TODO(DILM-166): email the tenant's contact inbox and stamp teamNotifiedAt
+async function contactEmail(payload: Payload, tenant: Tenant) {
+  const {
+    docs: [settings],
+  } = await payload.find({
+    collection: "tenant-settings",
+    where: { tenant: { equals: tenant.id } },
+    limit: 1,
+    depth: 0,
+  });
+  if (!settings?.contactEmail) {
+    throw new Error(
+      `Tenant "${tenant.slug}" has no contactEmail in tenant-settings`,
+    );
+  }
+  return settings.contactEmail;
+}
+
+async function stampNotified(
+  { payload, now }: ContactStepContext,
+  submission: ContactSubmission,
+  flag: "teamNotifiedAt" | "senderNotifiedAt",
+) {
+  await payload.update({
+    collection: "contact-submissions",
+    id: submission.id,
+    data: { [flag]: now().toISOString() },
+    context: SYSTEM_WRITE,
+    depth: 0,
+  });
+}
+
+export const notifyTeam: ContactStep = async (submission, tenant, context) => {
+  if (submission.teamNotifiedAt) return;
+  const { payload } = context;
+  const slug = tenant.slug as TenantSlug;
+  await payload.sendEmail({
+    from: tenantSender(slug),
+    to: await contactEmail(payload, tenant),
+    replyTo: oneLine(submission.workEmail),
+    ...teamNotification(submission, slug),
+  });
+  await stampNotified(context, submission, "teamNotifiedAt");
+  payload.logger.info(
+    { submissionId: submission.submissionId },
+    "team notification sent",
+  );
 };
 
-export const notifySender: ContactStep = async () => {
-  // TODO(DILM-166): email the sender a confirmation and stamp senderNotifiedAt
+export const notifySender: ContactStep = async (
+  submission,
+  tenant,
+  context,
+) => {
+  if (submission.senderNotifiedAt) return;
+  const { payload } = context;
+  const slug = tenant.slug as TenantSlug;
+  await payload.sendEmail({
+    from: tenantSender(slug),
+    to: oneLine(submission.workEmail),
+    ...senderConfirmation(submission, slug),
+  });
+  await stampNotified(context, submission, "senderNotifiedAt");
+  payload.logger.info(
+    { submissionId: submission.submissionId },
+    "sender confirmation sent",
+  );
 };
 
 async function findSubmission(payload: Payload, submissionId: string) {
@@ -101,7 +173,10 @@ export async function processContactMessage(
   const errors: unknown[] = [];
   for (const [name, step] of Object.entries(steps)) {
     try {
-      await step(submission, tenant);
+      await step(submission, tenant, {
+        payload,
+        now: context.now ?? (() => new Date()),
+      });
     } catch (error) {
       payload.logger.error(
         { submissionId: message.submissionId, step: name },
