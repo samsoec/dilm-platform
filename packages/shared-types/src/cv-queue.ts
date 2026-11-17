@@ -1,3 +1,4 @@
+import { CONTENT_LOCALES } from "./detail-templates";
 import { TENANT_SLUGS, type TenantSlug } from "./tenant";
 
 export interface CvSubmissionFields {
@@ -7,12 +8,47 @@ export interface CvSubmissionFields {
   position: string;
 }
 
+type ContentLocale = (typeof CONTENT_LOCALES)[number];
+
+export interface QueueConsent {
+  policyVersion: string;
+}
+
 export interface CvQueueMessage {
+  kind: "cv";
   submissionId: string;
   tenant: TenantSlug;
   fields: CvSubmissionFields;
   resumeFileKey: string;
+  consent: QueueConsent;
 }
+
+export interface ContactSubmissionFields {
+  fullName: string;
+  company: string;
+  workEmail: string;
+  phone: string;
+  message: string;
+}
+
+export interface ContactQueueMessage {
+  kind: "contact";
+  submissionId: string;
+  tenant: TenantSlug;
+  locale: ContentLocale;
+  fields: ContactSubmissionFields;
+  consent: QueueConsent;
+}
+
+export type QueueMessage = CvQueueMessage | ContactQueueMessage;
+
+export const CONTACT_FIELD_LIMITS = {
+  fullName: 120,
+  company: 160,
+  workEmail: 254,
+  phone: 32,
+  message: 4000,
+} as const satisfies Record<keyof ContactSubmissionFields, number>;
 
 export const CV_CONSUMER_TIMEOUT_SECONDS = 60;
 export const CV_CONSUMER_MAX_CONCURRENCY = 2;
@@ -28,12 +64,18 @@ export class InvalidCvQueueMessageError extends Error {
   }
 }
 
-const FIELD_NAMES = [
+const CV_FIELD_NAMES = [
   "applicantName",
   "email",
   "phone",
   "position",
 ] as const satisfies readonly (keyof CvSubmissionFields)[];
+
+const CONTACT_FIELD_NAMES = Object.keys(
+  CONTACT_FIELD_LIMITS,
+) as (keyof ContactSubmissionFields)[];
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -43,7 +85,16 @@ function nonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim() !== "";
 }
 
-export function parseCvQueueMessage(body: string): CvQueueMessage {
+function trimmedFields<Name extends string>(
+  names: readonly Name[],
+  fields: Record<string, unknown>,
+): Record<Name, string> {
+  return Object.fromEntries(
+    names.map((name) => [name, (fields[name] as string).trim()]),
+  ) as Record<Name, string>;
+}
+
+export function parseQueueMessage(body: string): QueueMessage {
   let raw: unknown;
   try {
     raw = JSON.parse(body);
@@ -53,27 +104,68 @@ export function parseCvQueueMessage(body: string): CvQueueMessage {
   if (!isRecord(raw)) {
     throw new InvalidCvQueueMessageError(["body is not a JSON object"]);
   }
+  if (raw.kind !== "cv" && raw.kind !== "contact") {
+    throw new InvalidCvQueueMessageError(["kind must be one of cv, contact"]);
+  }
+  const kind = raw.kind;
 
   const problems: string[] = [];
   if (!nonEmptyString(raw.submissionId)) problems.push("submissionId missing");
   if (!TENANT_SLUGS.includes(raw.tenant as TenantSlug)) {
     problems.push(`tenant must be one of ${TENANT_SLUGS.join(", ")}`);
   }
-  if (!nonEmptyString(raw.resumeFileKey)) {
+  if (kind === "contact" && !CONTENT_LOCALES.includes(raw.locale as never)) {
+    problems.push(`locale must be one of ${CONTENT_LOCALES.join(", ")}`);
+  }
+  if (kind === "cv" && !nonEmptyString(raw.resumeFileKey)) {
     problems.push("resumeFileKey missing");
   }
+  const consent = isRecord(raw.consent) ? raw.consent : {};
+  if (!nonEmptyString(consent.policyVersion)) {
+    problems.push("consent.policyVersion missing");
+  }
   const fields = isRecord(raw.fields) ? raw.fields : {};
-  for (const name of FIELD_NAMES) {
-    if (!nonEmptyString(fields[name])) problems.push(`fields.${name} missing`);
+  const names: readonly string[] =
+    kind === "cv" ? CV_FIELD_NAMES : CONTACT_FIELD_NAMES;
+  for (const name of names) {
+    const value = fields[name];
+    if (!nonEmptyString(value)) {
+      problems.push(`fields.${name} missing`);
+      continue;
+    }
+    if (kind === "contact") {
+      const limit = CONTACT_FIELD_LIMITS[name as keyof ContactSubmissionFields];
+      if (value.trim().length > limit) {
+        problems.push(`fields.${name} is longer than ${limit} characters`);
+      }
+    }
+  }
+  if (
+    kind === "contact" &&
+    nonEmptyString(fields.workEmail) &&
+    !EMAIL_PATTERN.test(fields.workEmail.trim())
+  ) {
+    problems.push("fields.workEmail is not an email address");
   }
   if (problems.length > 0) throw new InvalidCvQueueMessageError(problems);
 
-  return {
+  const common = {
     submissionId: raw.submissionId as string,
     tenant: raw.tenant as TenantSlug,
-    resumeFileKey: raw.resumeFileKey as string,
-    fields: Object.fromEntries(
-      FIELD_NAMES.map((name) => [name, (fields[name] as string).trim()]),
-    ) as unknown as CvSubmissionFields,
+    consent: { policyVersion: (consent.policyVersion as string).trim() },
+  };
+  if (kind === "cv") {
+    return {
+      kind,
+      ...common,
+      resumeFileKey: raw.resumeFileKey as string,
+      fields: trimmedFields(CV_FIELD_NAMES, fields),
+    };
+  }
+  return {
+    kind,
+    ...common,
+    locale: raw.locale as ContentLocale,
+    fields: trimmedFields(CONTACT_FIELD_NAMES, fields),
   };
 }

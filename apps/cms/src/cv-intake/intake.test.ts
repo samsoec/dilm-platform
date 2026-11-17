@@ -69,6 +69,7 @@ function fakePayload() {
 }
 
 const message: CvQueueMessage = {
+  kind: "cv",
   submissionId: "sub-1",
   tenant: "duniakimia",
   fields: {
@@ -78,6 +79,7 @@ const message: CvQueueMessage = {
     position: "Process Engineer",
   },
   resumeFileKey: "cv/duniakimia/sub-1.pdf",
+  consent: { policyVersion: "2026-01" },
 };
 const sentAt = new Date("2026-09-27T03:00:00Z");
 const jobPlatform = {

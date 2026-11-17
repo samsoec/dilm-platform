@@ -94,6 +94,7 @@ const check = (ok: boolean, failure: string) => {
 const submissionId = randomUUID();
 const resumeFileKey = `cv/${TENANT}/${submissionId}.pdf`;
 const message: CvQueueMessage = {
+  kind: "cv",
   submissionId,
   tenant: TENANT,
   fields: {
@@ -103,6 +104,7 @@ const message: CvQueueMessage = {
     position: "Verification Engineer",
   },
   resumeFileKey,
+  consent: { policyVersion: "2026-01" },
 };
 
 function delivery(receiveCount: number): SQSRecord {
