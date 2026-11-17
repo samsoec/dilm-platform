@@ -50,6 +50,7 @@ export const ConsentLogs = withTenantAccess({
       },
     },
   },
+  indexes: [{ fields: ["consentType", "relatedRecordId"], unique: true }],
   defaultSort: "-timestamp",
   custom: {
     nav: { icon: "verified_user", order: 2 },
