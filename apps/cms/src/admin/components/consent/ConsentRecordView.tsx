@@ -9,7 +9,7 @@ import {
   timestampText,
 } from "./consent";
 import { ConsentStepNav } from "./ConsentStepNav";
-import { relatedApplicationURL } from "./related";
+import { relatedRecordURL } from "./related";
 
 function text(value: unknown): string {
   return typeof value === "string" ? value : "";
@@ -25,7 +25,7 @@ export async function ConsentRecordView({
   });
   const consentType = text(doc.consentType);
   const related = text(doc.relatedRecordId);
-  const relatedURL = await relatedApplicationURL(payload, consentType, related);
+  const relatedURL = await relatedRecordURL(payload, consentType, related);
   const stamp = timestampText(doc.timestamp);
 
   return (

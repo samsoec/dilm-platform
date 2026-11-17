@@ -6,6 +6,12 @@ import { navGroup } from "../admin/navGroups";
 import { collectionLabels } from "../admin/labels";
 import { withTenantAccess } from "../tenancy";
 
+const CELLS = {
+  sender: "/admin/components/contact/ContactCells#SenderCell",
+  submitted: "/admin/components/contact/ContactCells#SubmittedCell",
+  delivery: "/admin/components/contact/ContactCells#DeliveryCell",
+};
+
 function systemManaged<T extends Field>(field: T): T {
   return {
     ...field,
@@ -29,15 +35,21 @@ export const ContactSubmissions = withTenantAccess({
     useAsTitle: "fullName",
     description:
       "Messages sent from the contact form, written by the system and kept read-only.",
-    listSearchableFields: ["fullName", "company", "workEmail"],
-    defaultColumns: [
-      "fullName",
-      "company",
-      "workEmail",
-      "submittedAt",
-      "teamNotifiedAt",
-    ],
+    listSearchableFields: ["fullName", "workEmail"],
+    defaultColumns: ["fullName", "company", "submittedAt", "teamNotifiedAt"],
     pagination: { defaultLimit: 20, limits: [20, 50, 100] },
+    components: {
+      Description: "/admin/components/lists/ListIntro#ListIntro",
+      beforeListTable: ["/admin/components/lists/EmptyState#EmptyState"],
+      views: {
+        edit: {
+          default: {
+            Component:
+              "/admin/components/contact/ContactMessageView#ContactMessageView",
+          },
+        },
+      },
+    },
   },
   defaultSort: "-submittedAt",
   custom: {
@@ -53,9 +65,11 @@ export const ContactSubmissions = withTenantAccess({
     }),
     systemManaged({
       name: "fullName",
+      label: "Sender",
       type: "text",
       required: true,
       maxLength: CONTACT_FIELD_LIMITS.fullName,
+      admin: { components: { Cell: CELLS.sender } },
     }),
     systemManaged({
       name: "company",
@@ -91,12 +105,13 @@ export const ContactSubmissions = withTenantAccess({
       label: "Submitted",
       type: "date",
       required: true,
-      admin: dateTime,
+      admin: { ...dateTime, components: { Cell: CELLS.submitted } },
     }),
     systemManaged({
       name: "teamNotifiedAt",
+      label: "Email delivery",
       type: "date",
-      admin: dateTime,
+      admin: { ...dateTime, components: { Cell: CELLS.delivery } },
     }),
     systemManaged({
       name: "senderNotifiedAt",

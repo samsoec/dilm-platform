@@ -3,7 +3,12 @@ import { DOCUMENT_EMPTY_TEXT } from "../documents/documents";
 import { UPLOAD_LIMITS_TEXT } from "../media/uploadRules";
 
 export type EmptyStateSlug =
-  "cv-submissions" | "ir-documents" | "documents" | "media" | "consent-logs";
+  | "cv-submissions"
+  | "contact-submissions"
+  | "ir-documents"
+  | "documents"
+  | "media"
+  | "consent-logs";
 
 export type EmptyStateCopy = {
   icon: IconName;
@@ -19,6 +24,7 @@ export const RECRUITER_BANNER =
 export function isEmptyStateSlug(slug: unknown): slug is EmptyStateSlug {
   return (
     slug === "cv-submissions" ||
+    slug === "contact-submissions" ||
     slug === "ir-documents" ||
     slug === "documents" ||
     slug === "media" ||
@@ -49,6 +55,14 @@ export function emptyCopy(
         title: "No applications yet",
         lines: [
           `They arrive here automatically when someone applies on the careers page of ${domain ?? "the company website"}.`,
+        ],
+      };
+    case "contact-submissions":
+      return {
+        icon: "mail",
+        title: "No contact messages yet",
+        lines: [
+          `They arrive here automatically when someone sends a message from the Contact page of ${domain ?? "the company website"}.`,
         ],
       };
     case "ir-documents":
@@ -85,6 +99,7 @@ export function emptyCopy(
 
 const NO_MATCH_ITEMS: Record<EmptyStateSlug, string> = {
   "cv-submissions": "applications",
+  "contact-submissions": "contact messages",
   "ir-documents": "IR documents",
   documents: "documents",
   media: "images",
