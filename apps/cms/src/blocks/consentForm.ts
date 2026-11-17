@@ -13,6 +13,7 @@ import type {
 } from "payload";
 
 import { withSameAsEnTag } from "../fields/layoutEditor";
+import { attachPrivacyPolicyVersion } from "../consent/privacyPolicyVersion";
 import { localization } from "../localization";
 
 export const consentEditor = () =>
@@ -162,6 +163,13 @@ export function applicationFormFields<Name extends string>(
       fields: names.map((name) => wordingGroup(name, labels[name])),
     },
     consentText,
+    {
+      name: "privacyPolicyVersion",
+      type: "text",
+      virtual: true,
+      admin: { hidden: true, readOnly: true },
+      hooks: { afterRead: [attachPrivacyPolicyVersion] },
+    },
     withSameAsEnTag({ name: "submitLabel", type: "text", localized: true }),
     withSameAsEnTag({
       name: "successMessage",

@@ -23,6 +23,7 @@ import {
 } from "../siteRouting";
 import { revalidateEntityReferrers } from "../publishRevalidation";
 import { revalidateTenantLayout, stubRevalidator } from "../revalidation";
+import { PRIVACY_POLICY_VERSION_HINT } from "../consent/privacyPolicyVersion";
 import { withTenantAccess } from "../tenancy";
 import {
   isGa4MeasurementId,
@@ -92,6 +93,8 @@ import {
 } from "../admin/components/routing/routing";
 import { routingNote } from "../admin/components/routing/fieldConfig";
 
+const PRIVACY_POLICY_VERSION_WARNING =
+  "/admin/components/fields/PrivacyPolicyVersionWarning#PrivacyPolicyVersionWarning";
 const TAB_INTRO = "/admin/components/fields/TabIntro#TabIntro";
 const CHARACTER_LIMIT =
   "/admin/components/fields/CharacterCount#CharacterLimit";
@@ -182,6 +185,25 @@ export const TenantSettings = withTenantAccess(
                     },
                   },
                 ],
+              },
+              {
+                name: "privacyPolicyVersion",
+                label: "Privacy Policy version",
+                type: "text",
+                required: true,
+                localized: false,
+                admin: {
+                  className: "dil-mono-input",
+                  placeholder: "2026-11",
+                  description: PRIVACY_POLICY_VERSION_HINT,
+                },
+              },
+              {
+                name: "privacyPolicyVersionWarning",
+                type: "ui",
+                admin: {
+                  components: { Field: PRIVACY_POLICY_VERSION_WARNING },
+                },
               },
             ],
           },

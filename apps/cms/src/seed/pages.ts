@@ -3,6 +3,7 @@ import {
   TENANT_SLUGS,
   type TenantSlug,
 } from "@dilm/shared-types";
+import { PRIVACY_POLICY_VERSION_START } from "../consent/privacyPolicyVersion";
 import type { CollectionSlug, Payload, Where } from "payload";
 import sharp from "sharp";
 
@@ -475,7 +476,12 @@ async function ensureTenantSettings(
       collection: "tenant-settings",
       locale: EN,
       depth: 0,
-      data: { tenant, siteName: TENANT_NAMES[slug], routing } as never,
+      data: {
+        tenant,
+        siteName: TENANT_NAMES[slug],
+        routing,
+        privacyPolicyVersion: PRIVACY_POLICY_VERSION_START,
+      } as never,
     });
     await payload.update({
       collection: "tenant-settings",
@@ -495,7 +501,9 @@ async function ensureTenantSettings(
       ? {}
       : { publicationPage: routing.publicationPage }),
   };
-  if (Object.keys(missing).length === 0) {
+  const lacksVersion = !(existing as { privacyPolicyVersion?: string | null })
+    .privacyPolicyVersion;
+  if (Object.keys(missing).length === 0 && !lacksVersion) {
     outcomes[label] = "skipped";
     return;
   }
@@ -503,7 +511,12 @@ async function ensureTenantSettings(
     collection: "tenant-settings",
     id: existing.id,
     depth: 0,
-    data: { routing: missing } as never,
+    data: {
+      ...(Object.keys(missing).length > 0 ? { routing: missing } : {}),
+      ...(lacksVersion
+        ? { privacyPolicyVersion: PRIVACY_POLICY_VERSION_START }
+        : {}),
+    } as never,
   });
   outcomes[label] = "created";
 }

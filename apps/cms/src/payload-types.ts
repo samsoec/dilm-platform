@@ -243,6 +243,10 @@ export interface TenantSetting {
      */
     publicationPage?: (number | null) | Page;
   };
+  /**
+   * Recorded with every form consent. Change it whenever the Privacy Policy changes in a way that affects consent, for example 2026-11.
+   */
+  privacyPolicyVersion: string;
   brand?: {
     /**
      * Header on white, footer on light.
@@ -3614,6 +3618,7 @@ export interface ContactInquiryBlock {
       };
       [k: string]: unknown;
     } | null;
+    privacyPolicyVersion?: string | null;
     submitLabel?: string | null;
     successMessage?: string | null;
     errorMessage?: string | null;
@@ -4054,6 +4059,7 @@ export interface JobDetailBlock {
       };
       [k: string]: unknown;
     } | null;
+    privacyPolicyVersion?: string | null;
     submitLabel?: string | null;
     successMessage?: string | null;
     errorMessage?: string | null;
@@ -5360,6 +5366,7 @@ export interface TenantSettingsSelect<T extends boolean = true> {
         careerPage?: T;
         publicationPage?: T;
       };
+  privacyPolicyVersion?: T;
   brand?:
     | T
     | {
@@ -6960,6 +6967,7 @@ export interface ContactInquiryBlockSelect<T extends boolean = true> {
                   };
             };
         consentText?: T;
+        privacyPolicyVersion?: T;
         submitLabel?: T;
         successMessage?: T;
         errorMessage?: T;
@@ -7203,6 +7211,7 @@ export interface JobDetailBlockSelect<T extends boolean = true> {
                   };
             };
         consentText?: T;
+        privacyPolicyVersion?: T;
         submitLabel?: T;
         successMessage?: T;
         errorMessage?: T;

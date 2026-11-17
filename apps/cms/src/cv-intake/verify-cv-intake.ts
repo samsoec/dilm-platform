@@ -175,6 +175,7 @@ const settings = existingSettings
       data: {
         tenant: tenant.id,
         siteName: "Intake check",
+        privacyPolicyVersion: "2026-11",
         recruiterEmail: RECRUITER,
       },
     });

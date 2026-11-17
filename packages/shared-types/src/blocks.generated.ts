@@ -3234,6 +3234,7 @@ export interface ContactInquiryBlock {
       };
       [k: string]: unknown;
     } | null;
+    privacyPolicyVersion?: string | null;
     submitLabel?: string | null;
     successMessage?: string | null;
     errorMessage?: string | null;
@@ -3650,6 +3651,7 @@ export interface JobDetailBlock {
       };
       [k: string]: unknown;
     } | null;
+    privacyPolicyVersion?: string | null;
     submitLabel?: string | null;
     successMessage?: string | null;
     errorMessage?: string | null;
