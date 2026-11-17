@@ -53,6 +53,28 @@ if (
   process.exit(2);
 }
 
+const LOCAL_HOSTS = ["localhost", "127.0.0.1", "::1", "[::1]"];
+const hostOf = (value: string) => {
+  try {
+    return new URL(value).hostname;
+  } catch {
+    return value;
+  }
+};
+const nonLocal = [
+  ["DATABASE_HOST", process.env.DATABASE_HOST ?? "(unset)"],
+  ["MAILPIT_URL", hostOf(MAILPIT_URL)],
+  ...(runtimeConfig.storage.endpointOverride
+    ? [["S3 endpoint", hostOf(runtimeConfig.storage.endpointOverride.url)]]
+    : [["S3 endpoint", "(none: real AWS)"]]),
+].filter(([, host]) => !LOCAL_HOSTS.includes(host as string));
+if (nonLocal.length > 0) {
+  console.error(
+    `verify:form-intake changes tenant settings and deletes consent rows, so it only runs against the local stack. Not local: ${nonLocal.map(([name, host]) => `${name}=${host}`).join(", ")}.`,
+  );
+  process.exit(2);
+}
+
 const logged: string[] = [];
 const logSink = new Writable({
   write(chunk, _encoding, done) {
@@ -373,47 +395,67 @@ try {
   );
   check(
     (await cvRows()).length === 0 && (await contactRows()).length === 0,
-    "a deleted submission can still be found, so the admin would link it",
+    "a deleted submission can still be looked up by its reference, so the admin would still link it",
   );
 } finally {
+  const cleanup = async (name: string, step: () => Promise<unknown>) => {
+    try {
+      await step();
+    } catch (error) {
+      failures.push(`cleanup "${name}" failed: ${(error as Error).message}`);
+    }
+  };
+  await cleanup("restore tenant-settings", async () => {
+    if (existingSettings) {
+      await payload.update({
+        collection: "tenant-settings",
+        id: settings.id,
+        data: {
+          recruiterEmail: existingSettings.recruiterEmail ?? null,
+          contactEmail: existingSettings.contactEmail ?? null,
+        },
+      });
+    } else {
+      await payload.delete({ collection: "tenant-settings", id: settings.id });
+    }
+  });
   for (const id of [cvId, contactId]) {
-    await payload.delete({
-      collection: "consent-logs",
-      where: { relatedRecordId: { equals: id } },
-      context: SYSTEM_WRITE,
-    });
-  }
-  await payload.delete({
-    collection: "cv-submissions",
-    where: { submissionId: { equals: cvId } },
-  });
-  await payload.delete({
-    collection: "contact-submissions",
-    where: { submissionId: { equals: contactId } },
-  });
-  await s3.send(
-    new DeleteObjectCommand({
-      Bucket: storage.privateBucket,
-      Key: resumeFileKey,
-    }),
-  );
-  for (const address of [APPLICANT, RECRUITER, SENDER, TEAM]) {
-    await fetch(
-      `${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:"${address}"`)}`,
-      { method: "DELETE" },
+    await cleanup(`consent-logs ${id}`, () =>
+      payload.delete({
+        collection: "consent-logs",
+        where: { relatedRecordId: { equals: id } },
+        context: SYSTEM_WRITE,
+      }),
     );
   }
-  if (existingSettings) {
-    await payload.update({
-      collection: "tenant-settings",
-      id: settings.id,
-      data: {
-        recruiterEmail: existingSettings.recruiterEmail ?? null,
-        contactEmail: existingSettings.contactEmail ?? null,
-      },
+  await cleanup("cv-submissions", () =>
+    payload.delete({
+      collection: "cv-submissions",
+      where: { submissionId: { equals: cvId } },
+    }),
+  );
+  await cleanup("contact-submissions", () =>
+    payload.delete({
+      collection: "contact-submissions",
+      where: { submissionId: { equals: contactId } },
+    }),
+  );
+  await cleanup("resume object", () =>
+    s3.send(
+      new DeleteObjectCommand({
+        Bucket: storage.privateBucket,
+        Key: resumeFileKey,
+      }),
+    ),
+  );
+  for (const address of [APPLICANT, RECRUITER, SENDER, TEAM]) {
+    await cleanup(`Mailpit messages to ${address}`, async () => {
+      const response = await fetch(
+        `${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:"${address}"`)}`,
+        { method: "DELETE" },
+      );
+      if (!response.ok) throw new Error(`Mailpit answered ${response.status}`);
     });
-  } else {
-    await payload.delete({ collection: "tenant-settings", id: settings.id });
   }
 }
 
