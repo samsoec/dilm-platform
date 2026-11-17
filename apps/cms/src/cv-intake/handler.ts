@@ -1,5 +1,5 @@
 import { getRuntimeConfig } from "@dilm/runtime-config";
-import { parseCvQueueMessage } from "@dilm/shared-types";
+import { parseQueueMessage } from "@dilm/shared-types";
 import type { SQSEvent, SQSRecord } from "aws-lambda";
 import { getPayload, type Payload } from "payload";
 
@@ -37,7 +37,10 @@ export async function processRecord(
     receiveCount: Number(record.attributes.ApproximateReceiveCount),
   });
   try {
-    const message = parseCvQueueMessage(record.body);
+    const message = parseQueueMessage(record.body);
+    if (message.kind !== "cv") {
+      throw new Error(`No consumer for ${message.kind} messages yet`);
+    }
     await processCvMessage(intake, message, sentAt(record));
   } catch (error) {
     log.error({ err: error }, "CV intake failed; SQS will redeliver");
