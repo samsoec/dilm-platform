@@ -275,7 +275,7 @@ export const migrations = [
   {
     up: migration_20261117_062715_consent_logs_unique.up,
     down: migration_20261117_062715_consent_logs_unique.down,
-    name: '20261117_062715_consent_logs_unique',
+    name: '20261117_062715_consent_logs_unique'
   },
   {
     up: migration_20261117_064501_privacy_policy_version.up,
