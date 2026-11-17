@@ -43,6 +43,7 @@ import * as migration_20261116_090443_products_formula_text from './20261116_090
 import * as migration_20261116_123912_redirects_created_by from './20261116_123912_redirects_created_by';
 import * as migration_20261116_151810_legal_page_fields from './20261116_151810_legal_page_fields';
 import * as migration_20261117_060701_contact_submissions from './20261117_060701_contact_submissions';
+import * as migration_20261117_062715_consent_logs_unique from './20261117_062715_consent_logs_unique';
 
 export const migrations = [
   {
@@ -268,6 +269,11 @@ export const migrations = [
   {
     up: migration_20261117_060701_contact_submissions.up,
     down: migration_20261117_060701_contact_submissions.down,
-    name: '20261117_060701_contact_submissions'
+    name: '20261117_060701_contact_submissions',
+  },
+  {
+    up: migration_20261117_062715_consent_logs_unique.up,
+    down: migration_20261117_062715_consent_logs_unique.down,
+    name: '20261117_062715_consent_logs_unique'
   },
 ];
