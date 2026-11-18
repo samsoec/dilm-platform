@@ -1,8 +1,10 @@
 import { SendEmailCommand } from "@aws-sdk/client-sesv2";
+import { senderSetting } from "@dilm/shared-types";
 import type { EmailAdapter, Payload, SendEmailOptions } from "payload";
 import { describe, expect, it } from "vitest";
 
 import {
+  emailSenderSetting,
   emailTransport,
   FALLBACK_SENDER_TENANT,
   tenantOfSender,
@@ -172,5 +174,65 @@ describe("emailTransport", () => {
       port: 1025,
     });
     expect(transport.transporter.name).toBe("SMTP");
+  });
+});
+
+describe("withTenantSender with a shared sender", () => {
+  const setting = senderSetting("dev-mail@example.org");
+
+  it("sends every tenant from the shared address, named and tagged by tenant", async () => {
+    const { adapter, sent } = capturingAdapter();
+    const { payload } = fakePayload([editor("duniakimia")]);
+    await withTenantSender(
+      adapter,
+      setting,
+    )({ payload }).sendEmail({
+      from: PAYLOAD_DEFAULT_FROM,
+      to: "editor@duniakimia.test",
+      subject: "Reset your password",
+    });
+    expect(sent[0]!.from).toEqual({
+      name: "Dunia Kimia Utama",
+      address: "dev-mail@example.org",
+    });
+    expect(sent[0]!.subject).toBe("[Dunia Kimia Utama] Reset your password");
+  });
+
+  it("keeps the tenant of a message already set to a tenant address", async () => {
+    const { adapter, sent } = capturingAdapter();
+    const { payload, lookups } = fakePayload([]);
+    await withTenantSender(
+      adapter,
+      setting,
+    )({ payload }).sendEmail({
+      from: "noreply@likutelaga.com",
+      to: "someone@example.test",
+      subject: "New application",
+    });
+    expect(sent[0]!.from).toEqual({
+      name: "Liku Telaga",
+      address: "dev-mail@example.org",
+    });
+    expect(lookups).toEqual([]);
+  });
+
+  it("is chosen from the runtime config", () => {
+    expect(emailSenderSetting({ transport: "ses", region: "x" })).toEqual({
+      mode: "tenant",
+    });
+    expect(
+      emailSenderSetting({
+        transport: "ses",
+        region: "x",
+        sharedSender: {
+          address: "dev-mail@example.org",
+          identity: "example.org",
+        },
+      }),
+    ).toEqual({
+      mode: "shared",
+      address: "dev-mail@example.org",
+      identity: "example.org",
+    });
   });
 });

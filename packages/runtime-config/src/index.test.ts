@@ -113,6 +113,25 @@ describe("readRuntimeConfigFromEnv", () => {
     expect(config.queue).toBeUndefined();
   });
 
+  it("reads the shared SES sender when one is set", () => {
+    const config = readRuntimeConfigFromEnv({
+      DATABASE_HOST: "db",
+      DATABASE_NAME: "payload",
+      DATABASE_USER: "payload_app",
+      DATABASE_PASSWORD: "secret",
+      PAYLOAD_SECRET: "secret",
+      S3_PUBLIC_BUCKET: "p",
+      S3_PRIVATE_BUCKET: "c",
+      SES_SHARED_SENDER: "Dev@Example.org",
+      SES_SHARED_SENDER_IDENTITY: "example.org",
+    });
+    expect(config.email).toEqual({
+      transport: "ses",
+      region: "ap-southeast-3",
+      sharedSender: { address: "dev@example.org", identity: "example.org" },
+    });
+  });
+
   it("requires credentials alongside an endpoint override", () => {
     expect(() =>
       readRuntimeConfigFromEnv({ ...envExample, S3_SECRET_ACCESS_KEY: "" }),

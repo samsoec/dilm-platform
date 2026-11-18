@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { sesSendPolicy } from "./ses";
+import { sesSendPolicy, sesSenderSetting } from "./ses";
 
 const policy = sesSendPolicy({
   partition: "aws",
@@ -32,5 +32,61 @@ describe("sesSendPolicy", () => {
       "noreply@duniakimia.com",
       "noreply@likutelaga.com",
     ]);
+  });
+});
+
+describe("sesSendPolicy with a shared sender", () => {
+  const shared = sesSendPolicy(
+    { partition: "aws", region: "ap-southeast-3", accountId: "123456789012" },
+    sesSenderSetting("staging", {
+      SES_SHARED_SENDER: "Dev-Mail@example.org",
+      SES_SHARED_SENDER_IDENTITY: "example.org",
+    }),
+  );
+  const [sharedStatement] = shared.Statement;
+
+  it("scopes to the one identity, the configuration set and the one address", () => {
+    expect(sharedStatement!.Resource).toEqual([
+      "arn:aws:ses:ap-southeast-3:123456789012:identity/example.org",
+      "arn:aws:ses:ap-southeast-3:123456789012:configuration-set/dilm-transactional",
+    ]);
+    expect(sharedStatement!.Condition.StringEquals["ses:FromAddress"]).toEqual([
+      "dev-mail@example.org",
+    ]);
+    expect(JSON.stringify(shared)).not.toContain("*");
+  });
+
+  it("defaults the identity to the address itself", () => {
+    const setting = sesSenderSetting("staging", {
+      SES_SHARED_SENDER: "dev@example.org",
+    });
+    expect(setting).toEqual({
+      mode: "shared",
+      address: "dev@example.org",
+      identity: "dev@example.org",
+    });
+  });
+});
+
+describe("sesSenderSetting", () => {
+  it("uses the tenant senders when nothing is set", () => {
+    for (const stage of ["dev", "staging", "production"]) {
+      expect(sesSenderSetting(stage, {})).toEqual({ mode: "tenant" });
+      expect(sesSenderSetting(stage, { SES_SHARED_SENDER: " " })).toEqual({
+        mode: "tenant",
+      });
+    }
+  });
+
+  it("refuses a shared sender on production", () => {
+    expect(() =>
+      sesSenderSetting("production", { SES_SHARED_SENDER: "a@example.org" }),
+    ).toThrow(/production/i);
+  });
+
+  it("rejects a value that is not an email address", () => {
+    expect(() =>
+      sesSenderSetting("staging", { SES_SHARED_SENDER: "example.org" }),
+    ).toThrow(/email address/);
   });
 });

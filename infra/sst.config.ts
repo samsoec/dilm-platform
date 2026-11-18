@@ -26,25 +26,33 @@ export default $config({
   },
 
   async run() {
-    const { sesSendPolicy } = await import("./src/ses");
+    const {
+      SES_CONFIGURATION_SET: sesConfigurationSet,
+      sesSendPolicy,
+      sesSenderSetting,
+    } = await import("./src/ses");
     const database = await import("./src/database");
     const storage = await import("./src/storage");
     const production = $app.stage === "production";
+    const senderSetting = sesSenderSetting($app.stage);
 
     const caller = aws.getCallerIdentityOutput({});
     const partition = aws.getPartitionOutput({});
     const payloadSesSend = new aws.iam.Policy("PayloadSesSend", {
       name: `dilm-${$app.stage}-payload-ses-send`,
       description:
-        "Payload (admin/API function and CV consumer) may send only as noreply@ of the three tenant SES identities (FR-CMS-22).",
+        "Payload (admin/API function and CV consumer) may send only as the stage's sender identities: noreply@ of the three tenant domains, or the one shared sender when SES_SHARED_SENDER is set (FR-CMS-22).",
       policy: $resolve([partition.partition, caller.accountId]).apply(
         ([partitionName, accountId]) =>
           JSON.stringify(
-            sesSendPolicy({
-              partition: partitionName,
-              region: REGION,
-              accountId,
-            }),
+            sesSendPolicy(
+              {
+                partition: partitionName,
+                region: REGION,
+                accountId,
+              },
+              senderSetting,
+            ),
           ),
       ),
     });
@@ -306,6 +314,17 @@ export default $config({
       ]),
     });
 
+    new sst.Linkable("EmailSender", {
+      properties: {
+        mode: senderSetting.mode,
+        address: senderSetting.mode === "shared" ? senderSetting.address : "",
+        identity: senderSetting.mode === "shared" ? senderSetting.identity : "",
+        configurationSet: sesConfigurationSet,
+      },
+    });
+    // TODO(DILM-12): set SES_SHARED_SENDER and SES_SHARED_SENDER_IDENTITY on
+    // the Payload function and the CV consumer from the EmailSender linkable
+    // when its mode is "shared".
     // TODO(DILM-38): give the Payload function
     // `concurrency: { reserved: database.payloadReservedConcurrency($app.stage) }`
     // and link it (and the CV consumer) to the Database linkable on dev.
