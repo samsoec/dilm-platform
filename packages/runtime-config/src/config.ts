@@ -70,6 +70,7 @@ export interface RuntimeConfig {
   database: DatabaseConfig;
   cvRetentionMonths: number;
   payloadSecret: string;
+  previewSecret?: string;
   storage: StorageConfig;
   email: EmailConfig;
   queue?: QueueConfig;

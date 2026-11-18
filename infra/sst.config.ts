@@ -34,6 +34,8 @@ export default $config({
     const database = await import("./src/database");
     const storage = await import("./src/storage");
     const gateway = await import("./src/gateway");
+    const parameters = await import("./src/parameters");
+    const { randomBytes } = await import("node:crypto");
     const production = $app.stage === "production";
     const senderSetting = sesSenderSetting($app.stage);
 
@@ -225,8 +227,9 @@ export default $config({
       databaseMasterSecretArn = dbCluster.masterUserSecrets.apply(
         (secrets) => secrets[0].secretArn,
       );
-      // TODO(DILM-12): set DATABASE_SECRET_ARN on the Payload function from
-      // the Database linkable's secretArn (a partial ARN, valid as SecretId).
+      // TODO(DILM-38): link the Payload function and the CV consumer to the
+      // Database linkable; the runtime-config loader reads secretArn (a
+      // partial ARN, valid as SecretId) from SST_RESOURCE_Database.
     }
 
     const bucketSecurity = (
@@ -323,6 +326,39 @@ export default $config({
         configurationSet: sesConfigurationSet,
       },
     });
+    parameters.RUNTIME_PARAMETER_NAMES.map((name) => {
+      const placeholder = name === "JOB_PLATFORM_WEBHOOK_URL";
+      return new aws.ssm.Parameter(
+        `RuntimeParameter${name}`,
+        {
+          name: `${parameters.parameterPrefix($app.stage)}/${name}`,
+          type: "SecureString",
+          tier: "Standard",
+          description: `Runtime config ${name} for the ${$app.stage} stage. Created with a generated value (a placeholder for the job-platform webhook until its contract is confirmed); replace it with aws ssm put-parameter --overwrite, Pulumi never reverts it.`,
+          value: placeholder
+            ? parameters.JOB_PLATFORM_WEBHOOK_PLACEHOLDER_URL
+            : randomBytes(32).toString("hex"),
+        },
+        { ignoreChanges: ["value"] },
+      );
+    });
+    new sst.Linkable("RuntimeConfigParameters", {
+      properties: { prefix: parameters.parameterPrefix($app.stage) },
+      include: [
+        sst.aws.permission({
+          actions: ["ssm:GetParameter", "ssm:GetParameters"],
+          resources: $resolve([partition.partition, caller.accountId]).apply(
+            ([partitionName, accountId]) =>
+              parameters.parameterArns({
+                partition: partitionName,
+                region: REGION,
+                accountId,
+                stage: $app.stage,
+              }),
+          ),
+        }),
+      ],
+    });
     const adminIps = gateway.adminAllowedIps($app.stage);
     const adminPolicy = JSON.stringify(gateway.adminResourcePolicy(adminIps));
     const adminApi = new aws.apigateway.RestApi("AdminApi", {
@@ -414,15 +450,12 @@ export default $config({
     // adminUrl: the stage path prefix /<stage> must be honoured by cookies
     // and admin routes (or add a base-path mapping). Verify login, logout,
     // file downloads and the first request after an Aurora pause (29s).
-    // TODO(DILM-12): set SES_SHARED_SENDER and SES_SHARED_SENDER_IDENTITY on
-    // the Payload function and the CV consumer from the EmailSender linkable
-    // when its mode is "shared".
+    // TODO(DILM-38): link EmailSender, RuntimeConfigParameters and both
+    // bucket linkables to the Payload function and the CV consumer; the
+    // runtime-config loader reads them from SST_RESOURCE_*.
     // TODO(DILM-38): give the Payload function
     // `concurrency: { reserved: database.payloadReservedConcurrency($app.stage) }`
     // and link it (and the CV consumer) to the Database linkable on dev.
-    // TODO(DILM-12): set S3_PUBLIC_BUCKET and S3_PRIVATE_BUCKET on the Payload
-    // function and the CV consumer from the PublicBucket and CvPrivateBucket
-    // linkables, and link both to them; no S3 keys, the function role signs.
     // TODO(DILM Track 1/2): define the CV queue and the web/cms
     // Lambdas here; attach payloadSesSend to the cms and CV-consumer function
     // roles via `policies: [payloadSesSend.arn]`.

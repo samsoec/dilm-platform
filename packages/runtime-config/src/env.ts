@@ -174,6 +174,7 @@ export function readRuntimeConfigFromEnv(env: Env): RuntimeConfig {
       DEFAULT_CV_RETENTION_MONTHS,
     ),
     payloadSecret: read.required("PAYLOAD_SECRET"),
+    previewSecret: read.optional("PREVIEW_SECRET"),
     storage: {
       region,
       publicBucket: read.required("S3_PUBLIC_BUCKET"),
