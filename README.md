@@ -1060,6 +1060,30 @@ Next.js and Payload applications land in their own tickets, as does
 `infra/sst.config.ts`, currently an empty app with the stages and region wired
 up.
 
+## Observability and cost guardrails
+
+Every Lambda log group (Payload, CV consumer, rotation) keeps 30 days
+(`LOG_RETENTION` in `infra/src/observability.ts`). Eight CloudWatch alarms per
+stage, all in ap-southeast-3 with missing data treated as not breaching, post
+to one SNS topic `dilm-<stage>-alarms`: CV dead-letter depth, Payload errors
+and throttles, CV consumer errors, SES bounce and complaint rate (account
+level), the job-platform webhook failure count (the CV consumer prints one
+CloudWatch EMF line per failed call), and Aurora held at its 1 ACU maximum
+for 30 minutes (Aurora stages only).
+
+The subscriber comes from the deploy-time variable `ALARM_EMAIL` (repository
+variable, wired into the three workflows). It is optional on `dev` and
+`staging`, where the deploy logs that the topic has no subscriber; it is
+required on `production`. Repository variables are not masked in a public
+repo's logs, so the address appears in them. AWS emails a confirmation link
+that must be clicked once.
+
+Budgets exist once per account, not per stage:
+`BUDGET_BASELINE_USD=.. BUDGET_CEILING_USD=.. BUDGET_EMAIL=.. scripts/bootstrap-budgets.sh`
+(Backend Spec §15 figures, kept out of the repo). AWS Budgets is a global
+service, so the CloudFormation stack lives in ap-southeast-3 and nothing of
+ours exists in us-east-1.
+
 ## CI/CD
 
 | Workflow                | Trigger         | Does                                                                           |

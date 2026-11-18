@@ -39,6 +39,8 @@ export default $config({
     const payload = await import("./src/payload");
     const rotation = await import("./src/rotation");
     const queue = await import("./src/queue");
+    const observability = await import("./src/observability");
+    const { WEBHOOK_FAILURE_STAGE_ENV } = await import("@dilm/shared-types");
     const { randomBytes } = await import("node:crypto");
     const production = $app.stage === "production";
     const senderSetting = sesSenderSetting($app.stage);
@@ -229,6 +231,7 @@ export default $config({
         runtime: "nodejs22.x",
         architecture: "arm64",
         timeout: "2 minutes",
+        logging: { retention: observability.LOG_RETENTION },
         copyFiles: [
           {
             from: "src/rotation/ap-southeast-3-bundle.pem",
@@ -445,6 +448,7 @@ export default $config({
       architecture: "arm64",
       memory: payload.PAYLOAD_MEMORY,
       timeout: payload.PAYLOAD_TIMEOUT,
+      logging: { retention: observability.LOG_RETENTION },
       link: [
         databaseLinkable,
         publicBucketLinkable,
@@ -707,7 +711,8 @@ export default $config({
       },
     });
     const cvConsumerSettings = queue.cvConsumerSettings();
-    cvQueue.subscribe(
+    const cvConsumerTls = queue.cvConsumerDatabaseTls($app.stage);
+    const cvSubscriber = cvQueue.subscribe(
       {
         handler: queue.CV_CONSUMER_HANDLER,
         runtime: "nodejs22.x",
@@ -721,7 +726,12 @@ export default $config({
         ],
         policies: payloadSesSend.arn.apply((arn) => [arn]),
         nodejs: { install: ["sharp"] },
-        ...queue.cvConsumerDatabaseTls($app.stage),
+        logging: { retention: observability.LOG_RETENTION },
+        ...cvConsumerTls,
+        environment: {
+          ...("environment" in cvConsumerTls ? cvConsumerTls.environment : {}),
+          [WEBHOOK_FAILURE_STAGE_ENV]: $app.stage,
+        },
       },
       {
         batch: { size: cvConsumerSettings.batchSize },
@@ -734,7 +744,46 @@ export default $config({
         },
       },
     );
+    const alarmPlan = observability.alarmEmailPlan(
+      $app.stage,
+      process.env.ALARM_EMAIL,
+    );
+    if (alarmPlan.log) console.warn(alarmPlan.log);
+    const alarmTopic = new aws.sns.Topic("AlarmTopic", {
+      name: observability.alarmTopicName($app.stage),
+    });
+    if (alarmPlan.email) {
+      new aws.sns.TopicSubscription("AlarmEmail", {
+        topic: alarmTopic.arn,
+        protocol: "email",
+        endpoint: alarmPlan.email,
+      });
+    }
+    for (const spec of observability.alarmSpecs({
+      stage: $app.stage,
+      payloadFunctionName: payloadFunction.name as unknown as string,
+      cvConsumerFunctionName: cvSubscriber.nodes.function
+        .name as unknown as string,
+      auroraClusterIdentifier: `dilm-${$app.stage}-db`,
+    })) {
+      new aws.cloudwatch.MetricAlarm(`Alarm${spec.key}`, {
+        name: spec.name,
+        alarmDescription: spec.description,
+        namespace: spec.namespace,
+        metricName: spec.metricName,
+        dimensions: spec.dimensions,
+        statistic: spec.statistic,
+        period: spec.periodSeconds,
+        evaluationPeriods: spec.evaluationPeriods,
+        datapointsToAlarm: spec.datapointsToAlarm,
+        threshold: spec.threshold,
+        comparisonOperator: spec.comparisonOperator,
+        treatMissingData: spec.treatMissingData,
+        alarmActions: [alarmTopic.arn],
+      });
+    }
     return {
+      alarmTopicArn: alarmTopic.arn,
       region: REGION,
       stage: $app.stage,
       adminUrl,

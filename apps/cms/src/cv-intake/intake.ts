@@ -1,5 +1,9 @@
 import type { JobPlatformConfig } from "@dilm/runtime-config";
-import type { CvQueueMessage, TenantSlug } from "@dilm/shared-types";
+import {
+  type CvQueueMessage,
+  type TenantSlug,
+  WEBHOOK_FAILURE_STAGE_ENV,
+} from "@dilm/shared-types";
 import type { Payload } from "payload";
 
 import { recordConsent } from "../consent/recordConsent";
@@ -7,7 +11,7 @@ import { tenantSender } from "../email";
 import { SYSTEM_WRITE } from "../fields/systemWrite";
 import type { CvSubmission, Tenant } from "../payload-types";
 import { applicantConfirmation, recruiterNotification } from "./emails";
-import { postToJobPlatform } from "./webhook";
+import { postToJobPlatform, webhookFailureMetricLine } from "./webhook";
 
 export interface CvIntakeContext {
   payload: Payload;
@@ -178,6 +182,12 @@ export async function processCvMessage(
     try {
       await postToJobPlatform(jobPlatform, current, slug, context.fetch);
     } catch (error) {
+      console.log(
+        webhookFailureMetricLine(
+          process.env[WEBHOOK_FAILURE_STAGE_ENV],
+          Date.now(),
+        ),
+      );
       await stamp({ externalSyncStatus: "failed", ...tried() });
       throw error;
     }

@@ -1,7 +1,11 @@
 import { createHmac } from "node:crypto";
 
 import type { JobPlatformConfig } from "@dilm/runtime-config";
-import type { TenantSlug } from "@dilm/shared-types";
+import {
+  type TenantSlug,
+  WEBHOOK_FAILURE_METRIC,
+  WEBHOOK_METRIC_NAMESPACE,
+} from "@dilm/shared-types";
 
 import type { CvSubmission } from "../payload-types";
 
@@ -17,6 +21,26 @@ export class JobPlatformError extends Error {
     super(message);
     this.name = "JobPlatformError";
   }
+}
+
+export function webhookFailureMetricLine(
+  stage: string | undefined,
+  timestamp: number,
+): string {
+  return JSON.stringify({
+    _aws: {
+      Timestamp: timestamp,
+      CloudWatchMetrics: [
+        {
+          Namespace: WEBHOOK_METRIC_NAMESPACE,
+          Dimensions: [["Stage"]],
+          Metrics: [{ Name: WEBHOOK_FAILURE_METRIC, Unit: "Count" }],
+        },
+      ],
+    },
+    Stage: stage ?? "unknown",
+    [WEBHOOK_FAILURE_METRIC]: 1,
+  });
 }
 
 export function signWebhookBody(body: string, secret: string): string {

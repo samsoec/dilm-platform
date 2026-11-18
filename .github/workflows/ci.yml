@@ -53,6 +53,7 @@ jobs:
         run: pnpm diff --stage staging
         env:
           ADMIN_ALLOWED_IPS: ${{ vars.ADMIN_ALLOWED_IPS || '192.0.2.1' }}
+          ALARM_EMAIL: ${{ vars.ALARM_EMAIL }}
 
   migrations:
     name: Payload migrations
