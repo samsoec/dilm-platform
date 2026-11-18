@@ -231,21 +231,14 @@ export default $config({
             to: "ca-bundle.pem",
           },
         ],
-        permissions: $resolve([
-          partition.partition,
-          caller.accountId,
-          masterSecretArn,
-        ]).apply(([partitionName, accountId, masterArn]) =>
-          rotation
-            .rotationLambdaPolicy(
-              { partition: partitionName, region: REGION, accountId },
-              payloadAppSecretName,
-              masterArn,
-            )
-            .Statement.map((statement) => ({
-              actions: statement.Action,
-              resources: statement.Resource,
-            })),
+        permissions: $resolve([payloadAppSecret.arn, masterSecretArn]).apply(
+          ([payloadArn, masterArn]) =>
+            rotation
+              .rotationLambdaPolicy(payloadArn, masterArn)
+              .Statement.map((statement) => ({
+                actions: statement.Action,
+                resources: statement.Resource,
+              })),
         ),
       });
       const rotationInvoke = new aws.lambda.Permission(

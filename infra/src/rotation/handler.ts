@@ -86,10 +86,13 @@ async function createSecret(event: RotationEvent) {
   ) {
     return;
   }
-  const current = (await readSecret(
-    event.SecretId,
-    "AWSCURRENT",
-  )) as unknown as PayloadAppSecret;
+  const current = (await readSecret(event.SecretId, "AWSCURRENT")) as
+    PayloadAppSecret | undefined;
+  if (current === undefined) {
+    throw new Error(
+      "The secret has no AWSCURRENT value; run scripts/db/create-payload-app-role.sh.",
+    );
+  }
   const { RandomPassword } = await client.send(
     new GetRandomPasswordCommand({
       PasswordLength: ROTATION_PASSWORD_LENGTH,

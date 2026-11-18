@@ -1,5 +1,4 @@
 import { PAYLOAD_DATABASE_USER } from "./database";
-import type { AwsScope } from "./ses";
 
 export const PAYLOAD_APP_ROTATION_DAYS = 30;
 export const ROTATION_CLONE_SUFFIX = "_clone";
@@ -7,13 +6,6 @@ export const ROTATION_PASSWORD_LENGTH = 40;
 
 const ROLE_NAME = /^[a-z_][a-z0-9_]{0,62}$/;
 const SAFE_PASSWORD = /^[A-Za-z0-9]{32,128}$/;
-
-export function payloadAppSecretArnPattern(
-  { partition, region, accountId }: AwsScope,
-  secretName: string,
-): string {
-  return `arn:${partition}:secretsmanager:${region}:${accountId}:secret:${secretName}-*`;
-}
 
 export function alternateUsername(
   current: string,
@@ -63,14 +55,16 @@ export function pendingUserStatements({
     `ALTER ROLE ${role} WITH LOGIN PASSWORD ${literal}`,
   ];
   if (pendingUser !== base) {
-    statements.push(`GRANT ${quoteRole(base)} TO ${role}`);
+    statements.push(
+      `GRANT ${quoteRole(base)} TO ${role}`,
+      `ALTER ROLE ${role} SET ROLE ${quoteRole(base)}`,
+    );
   }
   return statements;
 }
 
 export function rotationLambdaPolicy(
-  scope: AwsScope,
-  secretName: string,
+  payloadAppSecretArn: string,
   masterSecretArn: string,
 ) {
   return {
@@ -85,7 +79,7 @@ export function rotationLambdaPolicy(
           "secretsmanager:PutSecretValue",
           "secretsmanager:UpdateSecretVersionStage",
         ],
-        Resource: [payloadAppSecretArnPattern(scope, secretName)],
+        Resource: [payloadAppSecretArn],
       },
       {
         Sid: "ReadMasterSecretOnly",

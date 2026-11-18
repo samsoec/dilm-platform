@@ -1029,7 +1029,25 @@ Warm functions: the database pool reads the secret once per cold start. Its
 the user and password from the latest cached secret for each new connection,
 and on an authentication error (`28P01`/`28000`) it re-reads the secret, at
 most once per 10 seconds, so the next connection uses the rotated login. That
-one request fails; there is no per-request `GetSecretValue`. Alternating users
+one request fails and the next one works (it is not a literal retry); there is no per-request `GetSecretValue`. Alternating users
 means this only matters for a container older than one rotation cycle.
+
+Ownership: the clone is granted `payload_app` and has `ALTER ROLE ... SET ROLE
+payload_app`, so after login every session acts as `payload_app` and tables
+created through either login are owned by `payload_app`. Otherwise a migration
+run after rotation 1 would create tables owned by the clone and ALTER/DROP
+would fail after rotation 2. Checked on a scratch Postgres 16: logging in as
+the clone, `current_user` is `payload_app` and a created table is owned by it.
+
+Operating notes:
+
+- A `dilm-<stage>-payload-app` secret left over from the earlier script flow
+  makes the deploy fail with "already exists"; delete it (force, no recovery
+  window) or `pulumi import` it first, then re-run the role script.
+- `masterarn` inside the secret goes stale if the cluster is ever replaced,
+  until the role script is re-run.
+- Rotation sends `ALTER ROLE ... PASSWORD '<text>'` to the database, so keep
+  `log_statement` off (`none`) in the cluster parameter group; do not enable
+  `ddl` or `all`.
 
 `rds-db:connect` is only granted by the `Database` linkable on `dev`.
