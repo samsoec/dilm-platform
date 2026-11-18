@@ -36,6 +36,7 @@ export default $config({
     const gateway = await import("./src/gateway");
     const parameters = await import("./src/parameters");
     const rotation = await import("./src/rotation");
+    const queue = await import("./src/queue");
     const { randomBytes } = await import("node:crypto");
     const production = $app.stage === "production";
     const senderSetting = sesSenderSetting($app.stage);
@@ -61,6 +62,7 @@ export default $config({
       ),
     });
 
+    let databaseLinkable: sst.Linkable<Record<string, unknown>>;
     let databaseHost: $util.Output<string> | undefined;
     let databaseMasterSecretArn: $util.Output<string> | undefined;
     let databaseNetwork:
@@ -94,7 +96,7 @@ export default $config({
         role: database.CI_DEPLOY_ROLE_NAME,
         policyArn: payloadDbConnect.arn,
       });
-      new sst.Linkable("Database", {
+      databaseLinkable = new sst.Linkable("Database", {
         properties: {
           auth: "iam",
           host: cluster.endpoint,
@@ -262,7 +264,7 @@ export default $config({
         },
         { dependsOn: [rotationInvoke] },
       );
-      new sst.Linkable("Database", {
+      databaseLinkable = new sst.Linkable("Database", {
         properties: {
           auth: "secret",
           host: dbCluster.endpoint,
@@ -280,7 +282,7 @@ export default $config({
       });
       databaseHost = dbCluster.endpoint;
       databaseMasterSecretArn = masterSecretArn;
-      // TODO(DILM-38): link the Payload function and the CV consumer to the
+      // TODO(DILM-38): link the Payload function to the
       // Database linkable; the runtime-config loader reads secretArn (a
       // partial ARN, valid as SecretId) from SST_RESOURCE_Database.
     }
@@ -361,7 +363,7 @@ export default $config({
         },
       ],
     });
-    new sst.Linkable("CvPrivateBucket", {
+    const cvPrivateBucketLinkable = new sst.Linkable("CvPrivateBucket", {
       properties: { name: cvBucket.bucket },
       include: bucketAccess(cvBucket, [
         "s3:GetObject",
@@ -371,7 +373,7 @@ export default $config({
       ]),
     });
 
-    new sst.Linkable("EmailSender", {
+    const emailSenderLinkable = new sst.Linkable("EmailSender", {
       properties: {
         mode: senderSetting.mode,
         address: senderSetting.mode === "shared" ? senderSetting.address : "",
@@ -395,23 +397,26 @@ export default $config({
         { ignoreChanges: ["value"] },
       );
     });
-    new sst.Linkable("RuntimeConfigParameters", {
-      properties: { prefix: parameters.parameterPrefix($app.stage) },
-      include: [
-        sst.aws.permission({
-          actions: ["ssm:GetParameter", "ssm:GetParameters"],
-          resources: $resolve([partition.partition, caller.accountId]).apply(
-            ([partitionName, accountId]) =>
-              parameters.parameterArns({
-                partition: partitionName,
-                region: REGION,
-                accountId,
-                stage: $app.stage,
-              }),
-          ),
-        }),
-      ],
-    });
+    const runtimeConfigParametersLinkable = new sst.Linkable(
+      "RuntimeConfigParameters",
+      {
+        properties: { prefix: parameters.parameterPrefix($app.stage) },
+        include: [
+          sst.aws.permission({
+            actions: ["ssm:GetParameter", "ssm:GetParameters"],
+            resources: $resolve([partition.partition, caller.accountId]).apply(
+              ([partitionName, accountId]) =>
+                parameters.parameterArns({
+                  partition: partitionName,
+                  region: REGION,
+                  accountId,
+                  stage: $app.stage,
+                }),
+            ),
+          }),
+        ],
+      },
+    );
     const adminIps = gateway.adminAllowedIps($app.stage);
     const adminPolicy = JSON.stringify(gateway.adminResourcePolicy(adminIps));
     const adminApi = new aws.apigateway.RestApi("AdminApi", {
@@ -504,18 +509,63 @@ export default $config({
     // and admin routes (or add a base-path mapping). Verify login, logout,
     // file downloads and the first request after an Aurora pause (29s).
     // TODO(DILM-38): link EmailSender, RuntimeConfigParameters and both
-    // bucket linkables to the Payload function and the CV consumer; the
+    // bucket linkables to the Payload function (the CV consumer has its own); the
     // runtime-config loader reads them from SST_RESOURCE_*.
     // TODO(DILM-38): give the Payload function
     // `concurrency: { reserved: database.payloadReservedConcurrency($app.stage) }`
-    // and link it (and the CV consumer) to the Database linkable on dev.
-    // TODO(DILM Track 1/2): define the CV queue and the web/cms
-    // Lambdas here; attach payloadSesSend to the cms and CV-consumer function
-    // roles via `policies: [payloadSesSend.arn]`.
-    // TODO(DILM-8): subscribe apps/cms/src/cv-intake/handler.handler to the
-    // CV queue outside the VPC, using the CV_CONSUMER_* and CV_QUEUE_*
-    // constants from @dilm/shared-types: batch.size, function timeout, and
-    // transform.eventSourceMapping scalingConfig.maximumConcurrency.
+    // and link it to the Database linkable.
+    // TODO(DILM Track 1/2): define the web/cms Lambdas here; attach
+    // payloadSesSend to the cms function role via `policies: [payloadSesSend.arn]`.
+    const cvDeadLetterQueue = new sst.aws.Queue("CvDeadLetterQueue", {
+      transform: {
+        queue: (args) => {
+          args.name = queue.cvDeadLetterQueueName($app.stage);
+          args.messageRetentionSeconds = queue.CV_DLQ_RETENTION_SECONDS;
+          args.sqsManagedSseEnabled = true;
+        },
+      },
+    });
+    const cvQueueSettings = queue.cvQueueSettings();
+    const cvQueue = new sst.aws.Queue("CvQueue", {
+      visibilityTimeout: cvQueueSettings.visibilityTimeout,
+      dlq: {
+        queue: cvDeadLetterQueue.arn,
+        retry: cvQueueSettings.maxReceiveCount,
+      },
+      transform: {
+        queue: (args) => {
+          args.name = queue.cvQueueName($app.stage);
+          args.messageRetentionSeconds = cvQueueSettings.retentionSeconds;
+          args.sqsManagedSseEnabled = true;
+        },
+      },
+    });
+    const cvConsumerSettings = queue.cvConsumerSettings();
+    cvQueue.subscribe(
+      {
+        handler: queue.CV_CONSUMER_HANDLER,
+        runtime: "nodejs22.x",
+        architecture: "arm64",
+        timeout: cvConsumerSettings.timeout,
+        link: [
+          databaseLinkable,
+          cvPrivateBucketLinkable,
+          emailSenderLinkable,
+          runtimeConfigParametersLinkable,
+        ],
+        policies: payloadSesSend.arn.apply((arn) => [arn]),
+      },
+      {
+        batch: { size: cvConsumerSettings.batchSize },
+        transform: {
+          eventSourceMapping: (args) => {
+            args.scalingConfig = {
+              maximumConcurrency: cvConsumerSettings.maximumConcurrency,
+            };
+          },
+        },
+      },
+    );
     return {
       region: REGION,
       stage: $app.stage,
@@ -524,6 +574,8 @@ export default $config({
       publicBucket: publicBucket.bucket,
       cvPrivateBucket: cvBucket.bucket,
       cvRetentionMonths,
+      cvQueueUrl: cvQueue.url,
+      cvDeadLetterQueueUrl: cvDeadLetterQueue.url,
       databaseHost,
       databaseMasterSecretArn,
       databaseSecurityGroupId: databaseNetwork?.securityGroupId,
