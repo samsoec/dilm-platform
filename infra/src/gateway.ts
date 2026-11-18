@@ -40,34 +40,3 @@ export function adminAllowedIps(
   }
   return cidrs;
 }
-
-export function adminResourcePolicy(allowedIps: string[]) {
-  return {
-    Version: "2012-10-17",
-    Statement: [
-      {
-        Sid: "AllowAdminIps",
-        Effect: "Allow",
-        Principal: "*",
-        Action: "execute-api:Invoke",
-        Resource: "execute-api:/*",
-      },
-      {
-        Sid: "DenyEveryoneElse",
-        Effect: "Deny",
-        Principal: "*",
-        Action: "execute-api:Invoke",
-        Resource: "execute-api:/*",
-        Condition: { NotIpAddress: { "aws:SourceIp": allowedIps } },
-      },
-    ],
-  };
-}
-
-export function adminBaseUrl(
-  apiId: string,
-  region: string,
-  stage: string,
-): string {
-  return `https://${apiId}.execute-api.${region}.amazonaws.com/${stage}`;
-}

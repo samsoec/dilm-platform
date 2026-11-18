@@ -34,6 +34,7 @@ export default $config({
     const database = await import("./src/database");
     const storage = await import("./src/storage");
     const gateway = await import("./src/gateway");
+    const edge = await import("./src/edge");
     const parameters = await import("./src/parameters");
     const payload = await import("./src/payload");
     const rotation = await import("./src/rotation");
@@ -416,15 +417,14 @@ export default $config({
       },
     );
     const adminIps = gateway.adminAllowedIps($app.stage);
-    const adminPolicy = JSON.stringify(gateway.adminResourcePolicy(adminIps));
+    const viewerRequestCode = edge.adminViewerRequestCode(adminIps);
     const adminBinaryMediaTypes = ["*/*"];
     const adminApi = new aws.apigateway.RestApi("AdminApi", {
       name: `dilm-${$app.stage}-admin`,
       description:
-        "CMS admin entry on the default execute-api URL; the resource policy admits only the allowlisted IPs before any integration runs (DILM-10).",
+        "CMS admin origin behind CloudFront; every method requires the API key that only the CloudFront origin sends, and the IP allowlist is enforced at the CloudFront edge (DILM-10, DILM-38).",
       endpointConfiguration: { types: "REGIONAL" },
       binaryMediaTypes: adminBinaryMediaTypes,
-      policy: adminPolicy,
     });
     const adminProxy = new aws.apigateway.Resource("AdminApiProxy", {
       restApi: adminApi.id,
@@ -467,6 +467,7 @@ export default $config({
     const adminIntegrationConfig = {
       httpMethod: "ANY",
       authorization: "NONE",
+      apiKeyRequired: true,
       type: "AWS_PROXY",
       integrationHttpMethod: "POST",
     };
@@ -479,6 +480,7 @@ export default $config({
         resourceId,
         httpMethod: adminIntegrationConfig.httpMethod,
         authorization: adminIntegrationConfig.authorization,
+        apiKeyRequired: adminIntegrationConfig.apiKeyRequired,
       });
       const integration = new aws.apigateway.Integration(
         `AdminApi${name}Payload`,
@@ -504,7 +506,6 @@ export default $config({
             (ids) =>
               JSON.stringify([
                 ...ids,
-                adminPolicy,
                 adminIntegrationConfig,
                 payloadFunction.nodes.function.invokeArn,
               ]),
@@ -529,13 +530,157 @@ export default $config({
         },
       });
     }
-    const adminUrl = $interpolate`https://${adminApi.id}.execute-api.${REGION}.amazonaws.com/${adminStage.stageName}`;
-    // TODO(DILM-38): Payload's serverURL and cookies under the /<stage> path
-    // of adminUrl. The API Gateway proxy hands OpenNext the path without the
-    // stage, so a Next basePath cannot work; use a custom domain (base-path
-    // mapping) or CloudFront in front, then set serverURL to that origin.
-    // TODO(DILM-38): serve /_next/static and public files (S3 behind the
-    // gateway or CloudFront); the Lambda alone does not serve them.
+    const adminOriginKey = new aws.apigateway.ApiKey("AdminApiOriginKey", {
+      name: `dilm-${$app.stage}-admin-origin`,
+      description:
+        "Secret the CloudFront origin sends as x-api-key; API Gateway refuses any request without it, so the execute-api URL is no bypass.",
+      enabled: true,
+    });
+    const adminUsagePlan = new aws.apigateway.UsagePlan("AdminApiUsagePlan", {
+      name: `dilm-${$app.stage}-admin-origin`,
+      apiStages: [{ apiId: adminApi.id, stage: adminStage.stageName }],
+    });
+    new aws.apigateway.UsagePlanKey("AdminApiUsagePlanKey", {
+      keyId: adminOriginKey.id,
+      keyType: "API_KEY",
+      usagePlanId: adminUsagePlan.id,
+    });
+
+    const staticBucketName = edge.staticBucketName($app.stage);
+    const staticBucket = new aws.s3.Bucket("CmsStaticBucket", {
+      bucket: staticBucketName,
+      forceDestroy: !production,
+    });
+    new aws.s3.BucketPublicAccessBlock("CmsStaticPublicAccess", {
+      bucket: staticBucket.id,
+      blockPublicAcls: true,
+      blockPublicPolicy: true,
+      ignorePublicAcls: true,
+      restrictPublicBuckets: true,
+    });
+    new aws.s3.BucketServerSideEncryptionConfiguration("CmsStaticEncryption", {
+      bucket: staticBucket.id,
+      rules: [
+        { applyServerSideEncryptionByDefault: { sseAlgorithm: "AES256" } },
+      ],
+    });
+    const staticAssets = edge.listStaticAssets(
+      $dev
+        ? edge.assetsDir($cli.paths.root)
+        : edge.assertAssetsBuilt($cli.paths.root),
+    );
+    const staticObjects = staticAssets.map(
+      (asset) =>
+        new aws.s3.BucketObjectv2(`CmsStatic/${asset.key}`, {
+          bucket: staticBucket.id,
+          key: asset.key,
+          source: $asset(asset.file),
+          contentType: asset.contentType,
+          cacheControl: asset.cacheControl,
+        }),
+    );
+    const staticAccessControl = new aws.cloudfront.OriginAccessControl(
+      "CmsStaticAccessControl",
+      {
+        name: `dilm-${$app.stage}-cms-static`,
+        originAccessControlOriginType: "s3",
+        signingBehavior: "always",
+        signingProtocol: "sigv4",
+      },
+    );
+    const adminEdgeFunction = new aws.cloudfront.Function("AdminEdgeFunction", {
+      name: `dilm-${$app.stage}-admin-edge`,
+      runtime: "cloudfront-js-2.0",
+      comment:
+        "Admits only the allowlisted viewer IPs and forwards the viewer host as x-forwarded-host (DILM-10, DILM-38).",
+      publish: true,
+      code: viewerRequestCode,
+    });
+    const edgeFunctionAssociations = [
+      {
+        eventType: "viewer-request",
+        functionArn: adminEdgeFunction.arn,
+      },
+    ];
+    const adminDistribution = new aws.cloudfront.Distribution(
+      "AdminDistribution",
+      {
+        enabled: true,
+        comment: `dilm-${$app.stage} CMS admin`,
+        isIpv6Enabled: false,
+        httpVersion: "http2",
+        priceClass: "PriceClass_100",
+        origins: [
+          {
+            originId: "api",
+            domainName: $interpolate`${adminApi.id}.execute-api.${REGION}.amazonaws.com`,
+            originPath: $interpolate`/${adminStage.stageName}`,
+            customOriginConfig: {
+              httpPort: 80,
+              httpsPort: 443,
+              originProtocolPolicy: "https-only",
+              originSslProtocols: ["TLSv1.2"],
+              originReadTimeout: edge.ORIGIN_READ_TIMEOUT_SECONDS,
+            },
+            customHeaders: [
+              { name: edge.ORIGIN_KEY_HEADER, value: adminOriginKey.value },
+            ],
+          },
+          {
+            originId: "static",
+            domainName: staticBucket.bucketRegionalDomainName,
+            originAccessControlId: staticAccessControl.id,
+          },
+        ],
+        defaultCacheBehavior: {
+          targetOriginId: "api",
+          viewerProtocolPolicy: "redirect-to-https",
+          allowedMethods: [
+            "GET",
+            "HEAD",
+            "OPTIONS",
+            "PUT",
+            "POST",
+            "PATCH",
+            "DELETE",
+          ],
+          cachedMethods: ["GET", "HEAD"],
+          cachePolicyId: edge.CACHING_DISABLED_POLICY_ID,
+          originRequestPolicyId: edge.ALL_VIEWER_EXCEPT_HOST_POLICY_ID,
+          compress: false,
+          functionAssociations: edgeFunctionAssociations,
+        },
+        orderedCacheBehaviors: edge
+          .staticPathPatterns(staticAssets.map((asset) => asset.key))
+          .map((pathPattern) => ({
+            pathPattern,
+            targetOriginId: "static",
+            viewerProtocolPolicy: "redirect-to-https",
+            allowedMethods: ["GET", "HEAD"],
+            cachedMethods: ["GET", "HEAD"],
+            cachePolicyId: edge.CACHING_OPTIMIZED_POLICY_ID,
+            compress: true,
+            functionAssociations: edgeFunctionAssociations,
+          })),
+        restrictions: { geoRestriction: { restrictionType: "none" } },
+        viewerCertificate: { cloudfrontDefaultCertificate: true },
+      },
+      { dependsOn: staticObjects },
+    );
+    new aws.s3.BucketPolicy("CmsStaticPolicy", {
+      bucket: staticBucket.id,
+      policy: $resolve([partition.partition, adminDistribution.arn]).apply(
+        ([partitionName, distributionArn]) =>
+          JSON.stringify(
+            edge.staticBucketPolicy(
+              partitionName,
+              staticBucketName,
+              distributionArn,
+            ),
+          ),
+      ),
+    });
+    const adminUrl = $interpolate`https://${adminDistribution.domainName}`;
     // TODO(DILM Track 1/2): define the web Lambda here.
     const cvDeadLetterQueue = new sst.aws.Queue("CvDeadLetterQueue", {
       transform: {
