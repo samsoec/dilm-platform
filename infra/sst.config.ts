@@ -177,15 +177,13 @@ export default $config({
           parameters: database.auroraParameters(),
         },
       );
-      // TODO(DILM-172): pin the Aurora minor (e.g. 16.x) once it can be read
-      // from describe-orderable-db-instance-options; major 16 until then.
       const dbCluster = new aws.rds.Cluster(
         "DatabaseCluster",
         {
           clusterIdentifier: `dilm-${$app.stage}-db`,
           engine: database.AURORA_ENGINE,
           engineMode: "provisioned",
-          engineVersion: database.AURORA_MAJOR_VERSION,
+          engineVersion: database.AURORA_ENGINE_VERSION,
           databaseName: database.PAYLOAD_DATABASE_NAME,
           masterUsername: database.AURORA_MASTER_USERNAME,
           manageMasterUserPassword: true,

@@ -7,6 +7,7 @@ export const CI_DEPLOY_ROLE_NAME = "dilm-github-deploy";
 
 export const AURORA_ENGINE = "aurora-postgresql";
 export const AURORA_MAJOR_VERSION = "16";
+export const AURORA_ENGINE_VERSION = `${AURORA_MAJOR_VERSION}.15`;
 export const AURORA_PARAMETER_FAMILY = `aurora-postgresql${AURORA_MAJOR_VERSION}`;
 export const AURORA_MASTER_USERNAME = "dilm_admin";
 export const AURORA_BACKUP_RETENTION_DAYS = 7;
