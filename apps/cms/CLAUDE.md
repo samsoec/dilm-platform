@@ -20,6 +20,9 @@ pnpm --filter cms qa:shots --path /admin/collections/pages --name pages
 - `check:migrations` does apply, roll back, re-apply and the
   "nothing left to generate" check on its own scratch database. Never do that
   by hand, and never against the shared dev database `dilm`.
+- Deploys run `sst deploy` before the migration, so new code is live on the
+  old schema if a migration fails. Migrations must be expand-then-contract,
+  compatible with the previous code version; drop or rename in a later release.
 - `qa:shots` signs in as the three QA roles and saves screenshots per width
   and theme under the gitignored `docs/qa-shots/`. Open only the screenshots
   you need to judge a state; every image you open is paid for again on each
