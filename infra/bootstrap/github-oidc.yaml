@@ -93,6 +93,9 @@ Resources:
                   - iam:CreatePolicyVersion
                   - iam:DeletePolicyVersion
                   - iam:ListPolicyVersions
+                  - iam:TagPolicy
+                  - iam:UntagPolicy
+                  - iam:ListPolicyTags
                   - iam:CreateServiceLinkedRole
                 Resource:
                   - !Sub arn:aws:iam::${AWS::AccountId}:role/dilm-*
@@ -147,6 +150,9 @@ Resources:
                   - iam:CreatePolicyVersion
                   - iam:DeletePolicyVersion
                   - iam:ListPolicyVersions
+                  - iam:TagPolicy
+                  - iam:UntagPolicy
+                  - iam:ListPolicyTags
                   - iam:CreateServiceLinkedRole
                 Resource:
                   - !Sub arn:aws:iam::${AWS::AccountId}:role/dilm-*

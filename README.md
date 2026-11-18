@@ -698,6 +698,10 @@ It prints two role ARNs. Wire them up in GitHub:
 
 The template is [`infra/bootstrap/github-oidc.yaml`](infra/bootstrap/github-oidc.yaml).
 
+When that template changes (for example a new IAM action the deploy roles
+need), run the same command again on every account that already has the
+stack: it updates the roles in place, and the role ARNs stay the same.
+
 ## Dev database (Free plan)
 
 The CMS Development phase runs on an AWS **Free-plan** account, which only
