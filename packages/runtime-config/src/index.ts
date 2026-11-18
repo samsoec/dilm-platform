@@ -1,7 +1,14 @@
 import type { RuntimeConfig } from "./config";
+import { readRuntimeConfigFromAws } from "./aws";
 import { readRuntimeConfigFromEnv } from "./env";
 
 export * from "./config";
+export {
+  readRuntimeConfigFromAws,
+  readSstResource,
+  SSM_PARAMETER_NAMES,
+} from "./aws";
+export type { AwsConfigProviders } from "./aws";
 export { MissingEnvError, readRuntimeConfigFromEnv } from "./env";
 export * from "./pool";
 export * from "./preview";
@@ -24,16 +31,15 @@ export async function loadRuntimeConfig(env: Env): Promise<RuntimeConfig> {
   if (runtimeConfigSource(env) === "env") {
     return readRuntimeConfigFromEnv(env);
   }
-  // TODO(DILM-12): resolve the payload_app secret from Secrets Manager, the
-  // rest from SSM and SST Resource bindings, into this same RuntimeConfig shape.
-  throw new Error(
-    "The AWS runtime-config loader is not implemented yet (DILM-12). Set RUNTIME_CONFIG_SOURCE=env to read from environment variables.",
-  );
+  return readRuntimeConfigFromAws(env);
 }
 
 let cached: Promise<RuntimeConfig> | undefined;
 
 export function getRuntimeConfig(): Promise<RuntimeConfig> {
-  cached ??= loadRuntimeConfig(process.env);
+  cached ??= loadRuntimeConfig(process.env).catch((error: unknown) => {
+    cached = undefined;
+    throw error;
+  });
   return cached;
 }

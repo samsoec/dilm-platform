@@ -213,7 +213,24 @@ describe("loadRuntimeConfig", () => {
     });
   });
 
-  it("refuses the AWS source until DILM-12 lands", async () => {
-    await expect(loadRuntimeConfig({})).rejects.toThrow(/DILM-12/);
+  it("asks for the SSM prefix on the AWS source", async () => {
+    await expect(loadRuntimeConfig({})).rejects.toThrow(
+      /RuntimeConfigParameters/,
+    );
+  });
+});
+
+describe("getRuntimeConfig", () => {
+  it("loads once and hands every caller the same object", async () => {
+    const { getRuntimeConfig } = await import("./index");
+    const previous = { ...process.env };
+    Object.assign(process.env, envExample, { RUNTIME_CONFIG_SOURCE: "env" });
+    try {
+      const first = await getRuntimeConfig();
+      process.env.PAYLOAD_SECRET = "changed";
+      expect(await getRuntimeConfig()).toBe(first);
+    } finally {
+      process.env = previous;
+    }
   });
 });

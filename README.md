@@ -774,8 +774,9 @@ SES_SHARED_SENDER_IDENTITY=example.org                        # only when a doma
 
 The send policy then names exactly that identity, the `dilm-transactional`
 configuration set and that one `From` address. The CMS reads the same
-setting (`SES_SHARED_SENDER`, `SES_SHARED_SENDER_IDENTITY`, or the
-`EmailSender` SST linkable) and sends every tenant's mail from the shared
+setting (`SES_SHARED_SENDER` and `SES_SHARED_SENDER_IDENTITY` with
+`RUNTIME_CONFIG_SOURCE=env`, or the `EmailSender` SST linkable with the `aws`
+source) and sends every tenant's mail from the shared
 address, keeping the tenant's name as the From name and prefixing the subject
 with `[<tenant name>]`. `production` refuses `SES_SHARED_SENDER`.
 
@@ -985,3 +986,27 @@ up.
 Both deploy workflows will run `pnpm --filter @dilm/cms migrate` before
 `sst deploy` once Aurora exists (DILM-38): the runner connects to Aurora's
 public endpoint over TLS as `payload_app` (Backend Spec §8.1, §13).
+
+## Runtime config on AWS
+
+With `RUNTIME_CONFIG_SOURCE=aws` (the default), `loadRuntimeConfig` builds the
+same `RuntimeConfig` as the env source from three places, once per cold start
+(`getRuntimeConfig()` caches the promise in module scope, so there is never a
+Secrets Manager or SSM call on the request path):
+
+- SST linkables, read from the `SST_RESOURCE_<Name>` variables SST injects
+  into a linked function: `Database` (the `payload_app` secret ARN, or the
+  IAM endpoint on dev), `PublicBucket`, `CvPrivateBucket`, `EmailSender`,
+  `RuntimeConfigParameters` and, once it exists, `CvQueue`.
+- SSM `SecureString` parameters (standard tier) under `/dilm/<stage>/`:
+  `PAYLOAD_SECRET`, `PREVIEW_SECRET`, `JOB_PLATFORM_WEBHOOK_URL`,
+  `JOB_PLATFORM_WEBHOOK_SECRET`, fetched in one `GetParameters` call. SST
+  creates them with a generated value (the webhook URL with a placeholder)
+  and never reverts a value you change:
+  `aws ssm put-parameter --name /dilm/staging/PAYLOAD_SECRET --type SecureString --overwrite --value ...`.
+  Linking `RuntimeConfigParameters` grants `ssm:GetParameter(s)` on exactly
+  those four ARNs.
+- The `payload_app` secret, read by the database pool when
+  `DATABASE_AUTH=secret`, cached per ARN for the life of the container.
+
+`rds-db:connect` is only granted by the `Database` linkable on `dev`.
