@@ -502,6 +502,42 @@ MinIO's official Docker images were discontinued in late 2025, so the stack
 uses [`pgsty/minio`](https://hub.docker.com/r/pgsty/minio), a
 community-maintained build of the same server, pinned to a fixed release.
 
+## Bootstrapping an empty CMS database
+
+`scripts/bootstrap-cms.sh --stage <staging|production|local> --email <address>`
+takes an empty database to a usable CMS: migrate, `seed:tenants`, the first
+Super Admin (`seed:admin`) and, with `--demo`, `seed:layout` + `seed:pages`.
+Re-running it changes nothing: no migration, tenant, user or page is
+duplicated, and an existing user (so an existing Super Admin's password) is
+never touched. On staging and production it signs in as `payload_app` through
+the `dilm-<stage>-payload-app` secret over verified TLS, like the deploy
+migration step, and never uses the Aurora master login.
+
+It is an operator-run script, not a workflow, so the password is typed at a
+hidden prompt or generated and shown once on the terminal
+(`--generate-password`); `BOOTSTRAP_ADMIN_PASSWORD` is the CI route, from a
+repository secret (it is masked in GitHub Actions). Production needs
+`--confirm-production` and never gets demo content. Run `--help` for details.
+
+Things to know:
+
+- A generated password lands in terminal scrollback, and in any
+  `2>&1 | tee` or `script` session wrapped around the command. Change it after
+  the first sign-in.
+- `--demo` is for empty databases only. The demo seed matches pages by path, so
+  it would recreate a demo page an editor renamed or moved.
+- Production also needs the AWS account id typed (or
+  `BOOTSTRAP_CONFIRM_ACCOUNT`); `--stage local` refuses a non-local
+  `DATABASE_HOST`.
+- Super Admin recovery. A locked account clears itself after 10 minutes (5
+  failed attempts), or a Super Admin can unlock it in the admin panel; the
+  forgot-password email works for a Super Admin who still has a mailbox.
+  If the only Super Admin was deleted (a Super Admin cannot delete themselves,
+  so this needs database access) or lost the role while other users remain,
+  run `pnpm --filter cms grant:super-admin <email>` against the stage's
+  database for an existing user. If no users remain, re-run this script.
+  There is no other recovery path in the repo.
+
 ## Database migrations
 
 A migration is a committed file in `apps/cms/src/migrations/` that describes
