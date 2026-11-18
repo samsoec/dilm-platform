@@ -548,6 +548,16 @@ migration to an empty Postgres 16, then runs `migrate:create --skip-empty` and
 fails if that writes a file — meaning a collection changed without its
 migration being committed.
 
+### Postgres version
+
+Every environment runs Postgres 16: `compose.yaml` and the CI job use
+`postgres:16-alpine`, and staging and production Aurora (DILM-5) must use an
+Aurora PostgreSQL 16 engine version. Pick the minor from
+`aws rds describe-orderable-db-instance-options --engine aurora-postgresql
+--db-instance-class db.serverless --region ap-southeast-3` when DILM-5 pins
+it, and check it against the `dev` express cluster's `EngineVersion`
+(`aws rds describe-db-clusters --db-cluster-identifier dilm-dev-db`).
+
 ## Code quality
 
 One command per check, run from the repo root over every package:
