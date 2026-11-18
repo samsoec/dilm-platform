@@ -5,12 +5,14 @@ import { withTenantAccess } from "../tenancy";
 import { withTrashedBy, withUploadedBy } from "../fields/authoring";
 import { collectionLabels } from "../admin/labels";
 import { GRID_PATH } from "../admin/components/media/media";
+import { checkImageUpload } from "../uploads/imageFiles";
 
 export const Media = withTenantAccess(
   withTrashedBy(
     withUploadedBy({
       slug: "media",
       labels: collectionLabels("media"),
+      hooks: { beforeOperation: [checkImageUpload] },
       admin: {
         group: navGroup("media"),
         defaultColumns: [

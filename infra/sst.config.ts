@@ -28,6 +28,8 @@ export default $config({
   async run() {
     const { sesSendPolicy } = await import("./src/ses");
     const database = await import("./src/database");
+    const storage = await import("./src/storage");
+    const production = $app.stage === "production";
 
     const caller = aws.getCallerIdentityOutput({});
     const partition = aws.getPartitionOutput({});
@@ -157,7 +159,6 @@ export default $config({
           parameters: database.auroraParameters(),
         },
       );
-      const production = $app.stage === "production";
       // TODO(DILM-172): pin the Aurora minor (e.g. 16.x) once it can be read
       // from describe-orderable-db-instance-options; major 16 until then.
       const dbCluster = new aws.rds.Cluster(
@@ -219,10 +220,99 @@ export default $config({
       // the Database linkable's secretArn (a partial ARN, valid as SecretId).
     }
 
+    const bucketSecurity = (
+      logicalName: string,
+      bucket: aws.s3.Bucket,
+      name: string,
+    ) => {
+      new aws.s3.BucketPublicAccessBlock(`${logicalName}PublicAccess`, {
+        bucket: bucket.id,
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true,
+      });
+      new aws.s3.BucketServerSideEncryptionConfiguration(
+        `${logicalName}Encryption`,
+        {
+          bucket: bucket.id,
+          rules: [
+            { applyServerSideEncryptionByDefault: { sseAlgorithm: "AES256" } },
+          ],
+        },
+      );
+      new aws.s3.BucketPolicy(`${logicalName}TlsOnly`, {
+        bucket: bucket.id,
+        policy: partition.partition.apply((partitionName) =>
+          JSON.stringify(
+            storage.secureTransportOnlyPolicy(partitionName, name),
+          ),
+        ),
+      });
+    };
+    const bucketAccess = (bucket: aws.s3.Bucket, actions: string[]) => [
+      sst.aws.permission({
+        actions,
+        resources: [bucket.arn, $interpolate`${bucket.arn}/*`],
+      }),
+    ];
+
+    const publicBucketName = storage.publicBucketName($app.stage);
+    const publicBucket = new aws.s3.Bucket("PublicBucket", {
+      bucket: publicBucketName,
+      forceDestroy: !production,
+    });
+    bucketSecurity("PublicBucket", publicBucket, publicBucketName);
+    new sst.Linkable("PublicBucket", {
+      properties: {
+        name: publicBucket.bucket,
+        prefixes: [...storage.PUBLIC_BUCKET_PREFIXES],
+      },
+      include: bucketAccess(publicBucket, [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket",
+        "s3:AbortMultipartUpload",
+      ]),
+    });
+
+    const cvRetentionMonths = storage.cvRetentionMonths();
+    const cvBucketName = storage.privateBucketName($app.stage);
+    const cvBucket = new aws.s3.Bucket("CvPrivateBucket", {
+      bucket: cvBucketName,
+      forceDestroy: !production,
+    });
+    bucketSecurity("CvPrivateBucket", cvBucket, cvBucketName);
+    new aws.s3.BucketLifecycleConfiguration("CvPrivateLifecycle", {
+      bucket: cvBucket.id,
+      rules: [
+        {
+          id: `expire-cv-after-${cvRetentionMonths}-months`,
+          status: "Enabled",
+          filter: {},
+          expiration: { days: storage.cvRetentionDays(cvRetentionMonths) },
+          abortIncompleteMultipartUpload: { daysAfterInitiation: 7 },
+        },
+      ],
+    });
+    new sst.Linkable("CvPrivateBucket", {
+      properties: { name: cvBucket.bucket },
+      include: bucketAccess(cvBucket, [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:ListBucket",
+      ]),
+    });
+
     // TODO(DILM-38): give the Payload function
     // `concurrency: { reserved: database.payloadReservedConcurrency($app.stage) }`
     // and link it (and the CV consumer) to the Database linkable on dev.
-    // TODO(DILM Track 1/2): define the S3 buckets, CV queue and the web/cms
+    // TODO(DILM-12): set S3_PUBLIC_BUCKET and S3_PRIVATE_BUCKET on the Payload
+    // function and the CV consumer from the PublicBucket and CvPrivateBucket
+    // linkables, and link both to them; no S3 keys, the function role signs.
+    // TODO(DILM Track 1/2): define the CV queue and the web/cms
     // Lambdas here; attach payloadSesSend to the cms and CV-consumer function
     // roles via `policies: [payloadSesSend.arn]`.
     // TODO(DILM-8): subscribe apps/cms/src/cv-intake/handler.handler to the
@@ -233,6 +323,9 @@ export default $config({
       region: REGION,
       stage: $app.stage,
       payloadSesSendPolicy: payloadSesSend.arn,
+      publicBucket: publicBucket.bucket,
+      cvPrivateBucket: cvBucket.bucket,
+      cvRetentionMonths,
       databaseHost,
       databaseMasterSecretArn,
       databaseSecurityGroupId: databaseNetwork?.securityGroupId,
