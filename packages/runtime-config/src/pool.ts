@@ -1,3 +1,5 @@
+import type { Client, ClientConfig } from "pg";
+
 import type {
   DatabaseConfig,
   DatabaseEndpoint,
@@ -18,6 +20,7 @@ export interface DatabasePoolConfig
   extends DatabaseEndpoint, DatabasePoolOptions {
   password: DatabasePasswordSource;
   ssl: false | { rejectUnauthorized: true };
+  Client?: new (config?: ClientConfig) => Client;
 }
 
 export interface DatabaseCredentialProviders {
@@ -113,8 +116,95 @@ function cachedSecret(
         throw error;
       });
     secretCache.set(secretArn, credential);
+    credential.then(
+      (value) => latestCredential.set(secretArn, value),
+      () => undefined,
+    );
   }
   return credential;
+}
+
+const AUTH_FAILURE_CODES = new Set(["28P01", "28000"]);
+const MIN_MILLIS_BETWEEN_SECRET_REFRESHES = 10_000;
+
+export function isAuthFailure(error: unknown): boolean {
+  const code = (error as { code?: unknown } | null)?.code;
+  return typeof code === "string" && AUTH_FAILURE_CODES.has(code);
+}
+
+const latestCredential = new Map<string, RdsSecretCredential>();
+const lastRefresh = new Map<string, { at: number; done: Promise<void> }>();
+
+function refreshSecret(
+  secretArn: string,
+  region: string,
+  providers: DatabaseCredentialProviders,
+  now: () => number = Date.now,
+): Promise<void> {
+  const previous = lastRefresh.get(secretArn);
+  if (
+    previous !== undefined &&
+    now() - previous.at < MIN_MILLIS_BETWEEN_SECRET_REFRESHES
+  ) {
+    return previous.done;
+  }
+  secretCache.delete(secretArn);
+  const done = cachedSecret(secretArn, region, providers).then(
+    () => undefined,
+    () => undefined,
+  );
+  lastRefresh.set(secretArn, { at: now(), done });
+  return done;
+}
+
+async function rotationAwareClient(
+  secretArn: string,
+  region: string,
+  providers: DatabaseCredentialProviders,
+): Promise<NonNullable<DatabasePoolConfig["Client"]>> {
+  const { default: pg } = await import("pg");
+  class RotationAwareClient extends pg.Client {
+    constructor(config?: ClientConfig) {
+      const credential = latestCredential.get(secretArn);
+      super(
+        credential === undefined
+          ? config
+          : { ...config, user: credential.user, password: credential.password },
+      );
+    }
+
+    override connect(): Promise<Client>;
+    override connect(
+      callback:
+        ((error: Error) => void) | ((error: null, client: Client) => void),
+    ): void;
+    override connect(
+      callback?:
+        ((error: Error) => void) | ((error: null, client: Client) => void),
+    ): Promise<Client> | void {
+      if (callback === undefined) {
+        return super.connect().catch(async (error: unknown) => {
+          if (isAuthFailure(error)) {
+            await refreshSecret(secretArn, region, providers);
+          }
+          throw error;
+        });
+      }
+      super.connect((error: Error | null, client?: Client) => {
+        if (error !== null && error !== undefined && isAuthFailure(error)) {
+          void refreshSecret(secretArn, region, providers).then(() =>
+            (callback as (error: Error) => void)(error),
+          );
+          return;
+        }
+        (callback as (error: Error | null, client?: Client) => void)(
+          error,
+          client,
+        );
+      });
+    }
+  }
+  return RotationAwareClient;
 }
 
 function endpointOf({
@@ -128,6 +218,8 @@ function endpointOf({
 
 export function clearDatabaseSecretCache(): void {
   secretCache.clear();
+  latestCredential.clear();
+  lastRefresh.clear();
 }
 
 export async function databasePoolConfig(
@@ -157,7 +249,16 @@ export async function databasePoolConfig(
         database.region,
         providers,
       );
-      return { ...credential, ssl: VERIFIED_TLS, ...options };
+      return {
+        ...credential,
+        ssl: VERIFIED_TLS,
+        ...options,
+        Client: await rotationAwareClient(
+          database.secretArn,
+          database.region,
+          providers,
+        ),
+      };
     }
   }
 }

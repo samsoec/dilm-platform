@@ -16,6 +16,9 @@ export const SSM_PARAMETER_NAMES = [
   "JOB_PLATFORM_WEBHOOK_URL",
   "JOB_PLATFORM_WEBHOOK_SECRET",
 ] as const;
+const REQUIRED_SSM_PARAMETER_NAMES: readonly SsmParameterName[] = [
+  "PAYLOAD_SECRET",
+];
 export type SsmParameterName = (typeof SSM_PARAMETER_NAMES)[number];
 
 export interface AwsConfigProviders {
@@ -30,7 +33,7 @@ export const awsConfigProviders: AwsConfigProviders = {
   async ssmParameters(prefix, names, region) {
     const { GetParametersCommand, SSMClient } =
       await import("@aws-sdk/client-ssm");
-    const { Parameters = [] } = await new SSMClient({
+    const { Parameters = [], InvalidParameters = [] } = await new SSMClient({
       region,
     }).send(
       new GetParametersCommand({
@@ -38,6 +41,14 @@ export const awsConfigProviders: AwsConfigProviders = {
         WithDecryption: true,
       }),
     );
+    const unknown = REQUIRED_SSM_PARAMETER_NAMES.filter((name) =>
+      InvalidParameters.includes(`${prefix}/${name}`),
+    );
+    if (unknown.length > 0) {
+      throw new Error(
+        `SSM does not know the required parameter(s): ${unknown.join(", ")} under ${prefix}.`,
+      );
+    }
     const found: Partial<Record<SsmParameterName, string>> = {};
     for (const { Name, Value } of Parameters) {
       if (Name === undefined || Value === undefined) continue;
@@ -55,7 +66,11 @@ export function readSstResource(
   if (raw === undefined || raw === "") return undefined;
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed === "object" && parsed !== null) {
+    if (
+      typeof parsed === "object" &&
+      parsed !== null &&
+      !Array.isArray(parsed)
+    ) {
       return parsed as Record<string, unknown>;
     }
   } catch {
@@ -86,6 +101,14 @@ function text(
   return value;
 }
 
+function portOf(resource: Record<string, unknown>): number {
+  const port = Number(resource.port ?? 5432);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error(`The Database resource has a malformed "port".`);
+  }
+  return port;
+}
+
 function databaseFromResource(env: Env, region: string): DatabaseConfig {
   const resource = requiredResource(env, "Database");
   const auth = text(resource, "Database", "auth");
@@ -100,7 +123,7 @@ function databaseFromResource(env: Env, region: string): DatabaseConfig {
     return {
       auth,
       host: text(resource, "Database", "host"),
-      port: Number(resource.port ?? 5432),
+      port: portOf(resource),
       database: text(resource, "Database", "database"),
       user: text(resource, "Database", "username"),
       region,

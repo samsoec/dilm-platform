@@ -1,6 +1,17 @@
 import { describe, expect, it, vi } from "vitest";
 
+const ssmSend = vi.hoisted(() => vi.fn());
+vi.mock("@aws-sdk/client-ssm", () => ({
+  SSMClient: class {
+    send = ssmSend;
+  },
+  GetParametersCommand: class {
+    constructor(public input: unknown) {}
+  },
+}));
+
 import {
+  awsConfigProviders,
   readRuntimeConfigFromAws,
   readSstResource,
   type AwsConfigProviders,
@@ -114,12 +125,67 @@ describe("readRuntimeConfigFromAws", () => {
       ),
     ).rejects.toThrow(/WEBHOOK_SECRET is missing/);
   });
+
+  it("rejects a malformed database port", async () => {
+    for (const port of ["abc", 0, 70000, 54.5]) {
+      await expect(
+        readRuntimeConfigFromAws(
+          {
+            ...env,
+            SST_RESOURCE_Database: JSON.stringify({
+              auth: "iam",
+              host: "h",
+              port,
+              database: "dilm",
+              username: "payload_app",
+            }),
+          },
+          providers({ PAYLOAD_SECRET: "ps" }),
+        ),
+      ).rejects.toThrow(/malformed "port"/);
+    }
+  });
+});
+
+describe("awsConfigProviders.ssmParameters", () => {
+  it("fails loudly, without values, when a required name is unknown", async () => {
+    ssmSend.mockResolvedValueOnce({
+      Parameters: [{ Name: "/dilm/staging/PREVIEW_SECRET", Value: "leak" }],
+      InvalidParameters: ["/dilm/staging/PAYLOAD_SECRET"],
+    });
+    const failure = awsConfigProviders.ssmParameters(
+      "/dilm/staging",
+      ["PAYLOAD_SECRET", "PREVIEW_SECRET"],
+      "ap-southeast-3",
+    );
+    await expect(failure).rejects.toThrow(/PAYLOAD_SECRET/);
+    await expect(
+      failure.catch((error: Error) => error.message),
+    ).resolves.not.toContain("leak");
+  });
+
+  it("tolerates unknown optional names", async () => {
+    ssmSend.mockResolvedValueOnce({
+      Parameters: [{ Name: "/dilm/staging/PAYLOAD_SECRET", Value: "ps" }],
+      InvalidParameters: ["/dilm/staging/PREVIEW_SECRET"],
+    });
+    await expect(
+      awsConfigProviders.ssmParameters(
+        "/dilm/staging",
+        ["PAYLOAD_SECRET", "PREVIEW_SECRET"],
+        "ap-southeast-3",
+      ),
+    ).resolves.toEqual({ PAYLOAD_SECRET: "ps" });
+  });
 });
 
 describe("readSstResource", () => {
   it("rejects malformed JSON and returns undefined when absent", () => {
     expect(readSstResource({}, "X")).toBeUndefined();
     expect(() => readSstResource({ SST_RESOURCE_X: "{" }, "X")).toThrow(
+      /not a JSON object/,
+    );
+    expect(() => readSstResource({ SST_RESOURCE_X: "[1]" }, "X")).toThrow(
       /not a JSON object/,
     );
   });

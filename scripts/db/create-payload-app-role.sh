@@ -7,12 +7,16 @@ usage() {
 Usage: scripts/db/create-payload-app-role.sh --stage staging|production
 
 Creates the least-privilege payload_app role on the Aurora cluster of a stage
-and stores its password in the Secrets Manager secret dilm-<stage>-payload-app
-(JSON: username, password, host, port, dbname).
+and writes its first value into the Secrets Manager secret
+dilm-<stage>-payload-app (JSON: username, password, host, port, dbname,
+masterarn). The secret itself, its 30-day alternating-users rotation and the
+rotation Lambda are created by `pnpm deploy` (infra/sst.config.ts), so deploy
+the stage first. Rotation never runs before this first value exists.
 
 payload_app owns the public schema of the dilm database and has no superuser,
 createdb or createrole rights. The RDS-managed master secret is read only here,
-to connect once; app code never receives it. Re-running rotates the password.
+to connect once; app code never receives it. Re-running resets payload_app to a new password and reseeds the secret (it
+switches the secret back to payload_app if rotation had moved it to the clone).
 The cluster must accept your IP (security group dilm-<stage>-db is open on
 5432) and may take ~15s to resume from auto-pause.
 
@@ -71,14 +75,11 @@ SQL
   -v ON_ERROR_STOP=1 -v app_user="$APP_USER" -v dbname="$DB"
 
 secret_json=$(APP_PASSWORD="$app_password" jq -n --arg u "$APP_USER" --arg h "$host" \
-  --argjson port "$port" --arg d "$DB" \
-  '{username:$u,password:env.APP_PASSWORD,host:$h,port:$port,dbname:$d}')
+  --argjson port "$port" --arg d "$DB" --arg m "$master_arn" \
+  '{username:$u,password:env.APP_PASSWORD,host:$h,port:$port,dbname:$d,masterarn:$m}')
 
-if aws secretsmanager describe-secret --region "$REGION" --secret-id "$SECRET_NAME" >/dev/null 2>&1; then
-  aws secretsmanager put-secret-value --region "$REGION" \
-    --secret-id "$SECRET_NAME" --secret-string file:///dev/stdin <<<"$secret_json" >/dev/null
-else
-  aws secretsmanager create-secret --region "$REGION" \
-    --name "$SECRET_NAME" --secret-string file:///dev/stdin <<<"$secret_json" >/dev/null
-fi
+aws secretsmanager describe-secret --region "$REGION" --secret-id "$SECRET_NAME" >/dev/null 2>&1 \
+  || { echo "secret $SECRET_NAME does not exist; deploy the stage first" >&2; exit 1; }
+aws secretsmanager put-secret-value --region "$REGION" \
+  --secret-id "$SECRET_NAME" --secret-string file:///dev/stdin <<<"$secret_json" >/dev/null
 echo "payload_app ready; secret $SECRET_NAME updated"
