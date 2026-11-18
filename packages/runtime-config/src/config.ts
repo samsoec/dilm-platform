@@ -46,7 +46,11 @@ export interface StorageConfig {
 }
 
 export type EmailConfig =
-  | { transport: "ses"; region: string }
+  | {
+      transport: "ses";
+      region: string;
+      sharedSender?: { address: string; identity: string };
+    }
   | { transport: "smtp"; host: string; port: number };
 
 export interface QueueConfig {

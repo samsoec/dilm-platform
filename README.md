@@ -762,6 +762,28 @@ three root domains. That last condition matters because a verified domain
 identity also lets SES send from any of its subdomains. The policy is built
 in `infra/src/ses.ts` from the same tenant list the CMS uses.
 
+### Staging without the tenant domains
+
+On an account that cannot verify the three tenant domains (the personal
+staging account before DNS control), set one shared sender at deploy time:
+
+```bash
+SES_SHARED_SENDER=dev-mail@example.org pnpm deploy:staging   # address, or an address under a verified domain
+SES_SHARED_SENDER_IDENTITY=example.org                        # only when a domain identity covers the address
+```
+
+The send policy then names exactly that identity, the `dilm-transactional`
+configuration set and that one `From` address. The CMS reads the same
+setting (`SES_SHARED_SENDER`, `SES_SHARED_SENDER_IDENTITY`, or the
+`EmailSender` SST linkable) and sends every tenant's mail from the shared
+address, keeping the tenant's name as the From name and prefixing the subject
+with `[<tenant name>]`. `production` refuses `SES_SHARED_SENDER`.
+
+To use it: verify the identity (`aws sesv2 create-email-identity
+--email-identity <address-or-domain>` and click the link or add the DNS
+records), set `dilm-transactional` as its default configuration set, and,
+while the account is in the SES sandbox, verify each recipient the same way.
+
 ## CV intake consumer
 
 A career application reaches the CMS as a message on the CV queue: the

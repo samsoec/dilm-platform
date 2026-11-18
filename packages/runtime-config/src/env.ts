@@ -120,6 +120,24 @@ function readDatabaseConfig(read: EnvReader, region: string): DatabaseConfig {
   };
 }
 
+function readSharedSender(
+  read: EnvReader,
+): { address: string; identity: string } | undefined {
+  const address = read.optional("SES_SHARED_SENDER");
+  if (address === undefined) return undefined;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(address)) {
+    throw new Error(
+      `SES_SHARED_SENDER must be an email address, got "${address}".`,
+    );
+  }
+  return {
+    address: address.toLowerCase(),
+    identity: (
+      read.optional("SES_SHARED_SENDER_IDENTITY") ?? address
+    ).toLowerCase(),
+  };
+}
+
 export function readRuntimeConfigFromEnv(env: Env): RuntimeConfig {
   const read = new EnvReader(env);
   const region = read.optional("AWS_REGION") ?? AWS_REGION;
@@ -127,7 +145,7 @@ export function readRuntimeConfigFromEnv(env: Env): RuntimeConfig {
   const smtpHost = read.optional("SMTP_HOST");
   const email: EmailConfig =
     smtpHost === undefined
-      ? { transport: "ses", region }
+      ? { transport: "ses", region, sharedSender: readSharedSender(read) }
       : {
           transport: "smtp",
           host: smtpHost,

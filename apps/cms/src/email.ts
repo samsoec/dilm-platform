@@ -3,7 +3,10 @@ import type { EmailConfig } from "@dilm/runtime-config";
 import {
   TENANT_NAMES,
   TENANT_SLUGS,
+  senderAddress,
+  senderSetting,
   tenantSenderAddress,
+  type SenderSetting,
   type TenantSlug,
 } from "@dilm/shared-types";
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
@@ -21,8 +24,29 @@ export const FALLBACK_SENDER_TENANT: TenantSlug = "indoacid";
 
 type AddressLike = string | { address: string } | undefined;
 
-export function tenantSender(slug: TenantSlug): Sender {
-  return { name: TENANT_NAMES[slug], address: tenantSenderAddress(slug) };
+export function emailSenderSetting(config: EmailConfig): SenderSetting {
+  return config.transport === "ses" && config.sharedSender !== undefined
+    ? senderSetting(config.sharedSender.address, config.sharedSender.identity)
+    : { mode: "tenant" };
+}
+
+export function tenantSender(
+  slug: TenantSlug,
+  setting: SenderSetting = { mode: "tenant" },
+): Sender {
+  return {
+    name: TENANT_NAMES[slug],
+    address: senderAddress(slug, setting),
+  };
+}
+
+function withTenantSubject(
+  subject: SendEmailOptions["subject"],
+  slug: TenantSlug,
+  setting: SenderSetting,
+): SendEmailOptions["subject"] {
+  if (setting.mode !== "shared" || typeof subject !== "string") return subject;
+  return `[${TENANT_NAMES[slug]}] ${subject}`;
 }
 
 function addressOf(value: AddressLike | AddressLike[]): string | undefined {
@@ -64,7 +88,10 @@ export async function recipientTenant(
   return slug ?? FALLBACK_SENDER_TENANT;
 }
 
-export function withTenantSender(adapter: EmailAdapter): EmailAdapter {
+export function withTenantSender(
+  adapter: EmailAdapter,
+  setting: SenderSetting = { mode: "tenant" },
+): EmailAdapter {
   return ({ payload }) => {
     const inner = adapter({ payload });
     return {
@@ -73,7 +100,11 @@ export function withTenantSender(adapter: EmailAdapter): EmailAdapter {
         const slug =
           tenantOfSender(message.from) ??
           (await recipientTenant(payload, message.to));
-        return inner.sendEmail({ ...message, from: tenantSender(slug) });
+        return inner.sendEmail({
+          ...message,
+          from: tenantSender(slug, setting),
+          subject: withTenantSubject(message.subject, slug, setting),
+        });
       },
     };
   };
@@ -105,5 +136,6 @@ export async function cmsEmailAdapter(
       transport: emailTransport(config),
       skipVerify: true,
     }),
+    emailSenderSetting(config),
   );
 }
