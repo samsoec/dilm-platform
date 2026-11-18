@@ -337,6 +337,16 @@ export default $config({
       parentId: adminApi.rootResourceId,
       pathPart: "{proxy+}",
     });
+    const adminMockConfig = {
+      httpMethod: "ANY",
+      authorization: "NONE",
+      type: "MOCK",
+      statusCode: "503",
+      requestTemplates: { "application/json": '{"statusCode": 503}' },
+      responseTemplates: {
+        "application/json": '{"message": "CMS not deployed yet"}',
+      },
+    };
     const adminMethods = [
       { name: "Root", resourceId: adminApi.rootResourceId },
       { name: "Proxy", resourceId: adminProxy.id },
@@ -344,8 +354,8 @@ export default $config({
       const method = new aws.apigateway.Method(`AdminApi${name}Any`, {
         restApi: adminApi.id,
         resourceId,
-        httpMethod: "ANY",
-        authorization: "NONE",
+        httpMethod: adminMockConfig.httpMethod,
+        authorization: adminMockConfig.authorization,
       });
       const integration = new aws.apigateway.Integration(
         `AdminApi${name}Placeholder`,
@@ -353,8 +363,8 @@ export default $config({
           restApi: adminApi.id,
           resourceId,
           httpMethod: method.httpMethod,
-          type: "MOCK",
-          requestTemplates: { "application/json": '{"statusCode": 503}' },
+          type: adminMockConfig.type,
+          requestTemplates: adminMockConfig.requestTemplates,
         },
       );
       const methodResponse = new aws.apigateway.MethodResponse(
@@ -373,9 +383,7 @@ export default $config({
           resourceId,
           httpMethod: method.httpMethod,
           statusCode: methodResponse.statusCode,
-          responseTemplates: {
-            "application/json": '{"message": "CMS not deployed yet"}',
-          },
+          responseTemplates: adminMockConfig.responseTemplates,
         },
         { dependsOn: [integration] },
       );
@@ -387,7 +395,7 @@ export default $config({
         restApi: adminApi.id,
         triggers: {
           redeployment: $resolve(adminMethods.flat().map((r) => r.id)).apply(
-            (ids) => JSON.stringify([...ids, adminPolicy]),
+            (ids) => JSON.stringify([...ids, adminPolicy, adminMockConfig]),
           ),
         },
       },
