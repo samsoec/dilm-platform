@@ -40,6 +40,12 @@ jobs:
       # new version goes live (Backend Spec §13), once Aurora and the AWS
       # runtime-config loader (DILM-12) exist for it to connect with.
 
+      - name: Install SST providers
+        run: pnpm --filter infra exec sst install --stage staging
+
+      - name: Build the Payload Lambda bundle
+        run: pnpm --filter @dilm/cms build:open-next
+
       - name: Deploy
         run: pnpm deploy:staging
         env:

@@ -417,11 +417,13 @@ export default $config({
     );
     const adminIps = gateway.adminAllowedIps($app.stage);
     const adminPolicy = JSON.stringify(gateway.adminResourcePolicy(adminIps));
+    const adminBinaryMediaTypes = ["*/*"];
     const adminApi = new aws.apigateway.RestApi("AdminApi", {
       name: `dilm-${$app.stage}-admin`,
       description:
         "CMS admin entry on the default execute-api URL; the resource policy admits only the allowlisted IPs before any integration runs (DILM-10).",
       endpointConfiguration: { types: "REGIONAL" },
+      binaryMediaTypes: adminBinaryMediaTypes,
       policy: adminPolicy,
     });
     const adminProxy = new aws.apigateway.Resource("AdminApiProxy", {
@@ -431,13 +433,13 @@ export default $config({
     });
     const concurrencyPlan = payload.payloadConcurrencyPlan(
       $app.stage,
-      database.databaseMode($app.stage) === "express"
-        ? undefined
-        : await payload.readAccountConcurrencyLimit(REGION),
+      await payload.accountConcurrencyLimit($app.stage, REGION),
     );
     if (concurrencyPlan.warning) console.warn(concurrencyPlan.warning);
     const payloadFunction = new sst.aws.Function("PayloadCms", {
-      bundle: payload.PAYLOAD_BUNDLE_DIR,
+      bundle: $dev
+        ? payload.payloadBundleDir($cli.paths.root)
+        : payload.assertPayloadBundleBuilt($cli.paths.root),
       handler: payload.PAYLOAD_HANDLER,
       runtime: "nodejs22.x",
       architecture: "arm64",
