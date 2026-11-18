@@ -16,8 +16,9 @@ the stage already in the environment.
   3. runs `pnpm --filter @dilm/cms migrate` through the runtime-config
      DATABASE_AUTH=secret path, over TLS verified against the bundled
      ap-southeast-3 RDS CA (NODE_EXTRA_CA_CERTS)
-  4. retries only connection failures, so a paused cluster has time to resume;
-     a failing migration itself is never retried
+  4. retries only connection-establishment errors, and only while no
+     `Migrating:` line has been printed, so a paused cluster has time to
+     resume but a migration that started is never run twice
 
 Tuning (environment): MIGRATE_ATTEMPTS (default 4), MIGRATE_RETRY_SECONDS
 (default 20), MIGRATE_COMMAND (default `pnpm --filter @dilm/cms migrate`).
@@ -47,13 +48,26 @@ unseeded() {
   exit 1
 }
 
-secret_arn=$(aws secretsmanager describe-secret --region "$REGION" \
-  --secret-id "$SECRET_NAME" --query ARN --output text) \
-  || { echo "Secret $SECRET_NAME not found; the infra deploy must create it first." >&2; exit 1; }
+err=$(mktemp)
+log=$(mktemp)
+trap 'rm -f "$log" "$err"' EXIT
 
-secret_json=$(aws secretsmanager get-secret-value --region "$REGION" \
-  --secret-id "$secret_arn" --query SecretString --output text 2>/dev/null) \
-  || unseeded
+aws_failure() {
+  local code
+  code=$(grep -oE '\((AccessDenied[A-Za-z]*|ResourceNotFoundException|[A-Za-z]+Exception)\)' "$err" | head -1 | tr -d '()')
+  echo "$1 (aws error: ${code:-unknown}). Check the deploy role and that the infra deploy created the secret." >&2
+}
+
+secret_arn=$(aws secretsmanager describe-secret --region "$REGION" \
+  --secret-id "$SECRET_NAME" --query ARN --output text 2>"$err") \
+  || { aws_failure "Could not read secret $SECRET_NAME"; exit 1; }
+
+if ! secret_json=$(aws secretsmanager get-secret-value --region "$REGION" \
+  --secret-id "$secret_arn" --query SecretString --output text 2>"$err"); then
+  if grep -q ResourceNotFoundException "$err"; then unseeded; fi
+  aws_failure "Could not read the value of secret $SECRET_NAME"
+  exit 1
+fi
 for key in username password host dbname; do
   value=$(jq -r --arg k "$key" '.[$k] // empty' <<<"$secret_json" 2>/dev/null) || unseeded
   [[ -n "$value" ]] || unseeded
@@ -72,9 +86,7 @@ export PAYLOAD_SECRET=migrations-do-not-sign-anything
 export S3_PUBLIC_BUCKET="dilm-$STAGE-public"
 export S3_PRIVATE_BUCKET="dilm-$STAGE-cv-private"
 
-log=$(mktemp)
-trap 'rm -f "$log"' EXIT
-transient='ECONNREFUSED|ETIMEDOUT|ECONNRESET|timeout|terminated unexpectedly|starting up|resuming|EHOSTUNREACH'
+transient='ECONNREFUSED|ETIMEDOUT|ECONNRESET|EHOSTUNREACH|Connection terminated due to connection timeout|timeout expired|the database system is (starting up|resuming)|Connection terminated unexpectedly'
 
 attempt=1
 while true; do
@@ -84,7 +96,7 @@ while true; do
   status=${PIPESTATUS[0]}
   set -e
   [[ $status -eq 0 ]] && exit 0
-  if [[ $attempt -ge $ATTEMPTS ]] || ! grep -qiE "$transient" "$log"; then
+  if [[ $attempt -ge $ATTEMPTS ]] || grep -q "Migrating:" "$log" || ! grep -qE "$transient" "$log"; then
     echo "Migration failed (attempt $attempt of $ATTEMPTS). The new application version is already deployed on the old schema; fix forward or redeploy the previous commit." >&2
     exit "$status"
   fi

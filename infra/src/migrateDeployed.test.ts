@@ -14,6 +14,8 @@ const script = path.resolve(__dirname, "../../scripts/ci/migrate-deployed.sh");
 
 function run(options: {
   secret?: string | null;
+  describeError?: string;
+  valueError?: string;
   migrate: string;
   stage?: string;
 }) {
@@ -25,8 +27,8 @@ function run(options: {
     path.join(bin, "aws"),
     `#!/bin/sh
 case "$*" in
-  *describe-secret*) echo arn:aws:secretsmanager:ap-southeast-3:1:secret:x ;;
-  *get-secret-value*) ${options.secret === null ? "exit 255" : `printf '%s' '${secret}'`} ;;
+  *describe-secret*) ${options.describeError ? `echo "An error occurred (${options.describeError}) when calling" >&2; exit 254` : "echo arn:aws:secretsmanager:ap-southeast-3:1:secret:x"} ;;
+  *get-secret-value*) ${options.secret === null ? `echo "An error occurred (${options.valueError ?? "ResourceNotFoundException"}) when calling" >&2; exit 254` : `printf '%s' '${secret}'`} ;;
 esac
 `,
   );
@@ -89,6 +91,38 @@ describe("migrate-deployed.sh", () => {
     expect(result.stderr).toContain("create-payload-app-role.sh");
   });
 
+  it("reports an access error instead of calling the secret unseeded", () => {
+    const describe = run({
+      migrate: "exit 0",
+      secret: seeded,
+      describeError: "AccessDeniedException",
+    });
+    expect(describe.status).toBe(1);
+    expect(describe.stderr).toContain("AccessDeniedException");
+    expect(describe.stderr).not.toContain("create-payload-app-role");
+    const value = run({
+      migrate: "exit 0",
+      secret: null,
+      valueError: "AccessDeniedException",
+    });
+    expect(value.status).toBe(1);
+    expect(value.stderr).toContain("AccessDeniedException");
+    expect(value.stderr).not.toContain("create-payload-app-role");
+  });
+
+  it("never prints the password and masks before migrate output", () => {
+    const result = run({ migrate: "echo migrate-output", secret: seeded });
+    expect(result.stdout + result.stderr).not.toMatch(
+      /(?<!::add-mask::)s3cret-pw/,
+    );
+    expect(
+      result.stdout.indexOf("::add-mask::s3cret-pw"),
+    ).toBeGreaterThanOrEqual(0);
+    expect(result.stdout.indexOf("::add-mask::s3cret-pw")).toBeLessThan(
+      result.stdout.indexOf("migrate-output"),
+    );
+  });
+
   it("masks the credential before running", () => {
     const result = run({ migrate: "exit 0", secret: seeded });
     expect(result.status).toBe(0);
@@ -111,6 +145,33 @@ describe("migrate-deployed.sh", () => {
     });
     expect(result.status).toBe(1);
     expect(result.attempts).toBe(3);
+  });
+
+  it("does not retry a statement timeout", () => {
+    const result = run({
+      migrate:
+        'echo "Migrating: 20250101_add" ; echo "canceling statement due to statement timeout" >&2; exit 1',
+      secret: seeded,
+    });
+    expect(result.status).toBe(1);
+    expect(result.attempts).toBe(1);
+  });
+
+  it("does not retry when a migration name contains timeout", () => {
+    const result = run({
+      migrate:
+        'echo "Migrating: 20250101_add_timeout"; echo "connect ECONNRESET" >&2; exit 1',
+      secret: seeded,
+    });
+    expect(result.attempts).toBe(1);
+  });
+
+  it("does not retry a lock timeout error with no connection error", () => {
+    const result = run({
+      migrate: 'echo "canceling statement due to lock timeout" >&2; exit 1',
+      secret: seeded,
+    });
+    expect(result.attempts).toBe(1);
   });
 
   it("never retries a failing migration", () => {

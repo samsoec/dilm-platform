@@ -548,6 +548,12 @@ migration to an empty Postgres 16, then runs `migrate:create --skip-empty` and
 fails if that writes a file — meaning a collection changed without its
 migration being committed.
 
+The staging and production deploy workflows run `sst deploy` first and then
+`scripts/ci/migrate-deployed.sh`, so for a moment the new code is live on the
+old schema, and stays there if a migration fails. Write every migration
+expand-then-contract: it must work with the previous code version, so add
+columns and tables in one release and drop or rename them in a later one.
+
 ### Postgres version
 
 Every environment runs Postgres 16: `compose.yaml` and the CI job use
