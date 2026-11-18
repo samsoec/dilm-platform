@@ -31,6 +31,8 @@ function promptHidden(question: string): Promise<string> {
   });
 }
 
+let generated: string | undefined;
+
 async function readPassword(): Promise<string> {
   if (process.env.BOOTSTRAP_ADMIN_PASSWORD) {
     return process.env.BOOTSTRAP_ADMIN_PASSWORD;
@@ -43,9 +45,7 @@ async function readPassword(): Promise<string> {
       );
     }
     const password = generatePassword();
-    process.stderr.write(
-      `\nGenerated Super Admin password (shown once, store it now):\n${password}\n\n`,
-    );
+    generated = password;
     return password;
   }
   if (!process.stdin.isTTY) {
@@ -63,9 +63,8 @@ const problem = emailProblem(email);
 if (problem) fail(problem);
 
 const payload = await getPayload({ config });
-let password: string | undefined;
 const outcome = await ensureFirstSuperAdmin(payload, email!, async () => {
-  password = await readPassword();
+  const password = await readPassword();
   const bad = passwordProblem(password);
   if (bad) fail(bad);
   return password;
@@ -78,6 +77,11 @@ const messages = {
   "other-super-admin-exists": `a Super Admin already exists: nothing created for ${email}`,
 } as const;
 console.log(messages[outcome]);
+if (outcome === "created" && generated) {
+  process.stderr.write(
+    `\nGenerated Super Admin password (shown once, store it now):\n${generated}\n\n`,
+  );
+}
 
 await payload.destroy();
 process.exit(0);

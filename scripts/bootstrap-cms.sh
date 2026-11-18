@@ -38,6 +38,11 @@ refused on production altogether. In GitHub Actions, run it from a step whose
 password comes from a repository secret; the database login and the password
 are masked in the log.
 
+Production also asks for the AWS account id to be typed (or
+BOOTSTRAP_CONFIRM_ACCOUNT set to it); the account id and region are printed to
+stderr before the database is touched. --demo is for empty databases only.
+The local stage refuses a DATABASE_HOST that is not localhost.
+
 Exit codes: 0 done (or nothing to do), 1 a step failed, 2 bad usage or refused.
 USAGE
 }
@@ -49,8 +54,8 @@ DEMO=0
 CONFIRM_PRODUCTION=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --stage) STAGE="${2:-}"; shift 2 ;;
-    --email) EMAIL="${2:-}"; shift 2 ;;
+    --stage) [[ $# -ge 2 ]] || { echo "--stage needs a value." >&2; exit 2; }; STAGE="$2"; shift 2 ;;
+    --email) [[ $# -ge 2 ]] || { echo "--email needs a value." >&2; exit 2; }; EMAIL="$2"; shift 2 ;;
     --generate-password) GENERATE=1; shift ;;
     --demo) DEMO=1; shift ;;
     --confirm-production) CONFIRM_PRODUCTION=1; shift ;;
@@ -71,11 +76,38 @@ fi
 REGION=ap-southeast-3
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
-if [[ -n "${BOOTSTRAP_ADMIN_PASSWORD:-}" && "${GITHUB_ACTIONS:-}" == "true" ]]; then
-  echo "::add-mask::$BOOTSTRAP_ADMIN_PASSWORD"
+if [[ "$STAGE" == "local" ]]; then
+  db_host="${DATABASE_HOST:-}"
+  if [[ -z "$db_host" && -f "$ROOT/.env" ]]; then
+    db_host=$(sed -n 's/^DATABASE_HOST=//p' "$ROOT/.env" | tail -1 | tr -d "\"'")
+  fi
+  case "${db_host:-localhost}" in
+    localhost|127.0.0.1|::1|postgres) ;;
+    *) refuse "--stage local refuses DATABASE_HOST=$db_host: it is not a local database. Use --stage staging or production for Aurora." ;;
+  esac
+  case "${DATABASE_AUTH:-password}" in
+    password) ;;
+    *) refuse "--stage local needs DATABASE_AUTH=password (or unset), not ${DATABASE_AUTH}." ;;
+  esac
+fi
+
+ADMIN_PASSWORD="${BOOTSTRAP_ADMIN_PASSWORD:-}"
+unset BOOTSTRAP_ADMIN_PASSWORD
+if [[ -n "$ADMIN_PASSWORD" && "${GITHUB_ACTIONS:-}" == "true" ]]; then
+  echo "::add-mask::$ADMIN_PASSWORD"
 fi
 
 if [[ "$STAGE" != "local" ]]; then
+  account=$(aws sts get-caller-identity --query Account --output text 2>/dev/null) \
+    || { echo "Could not identify the AWS account. Check AWS credentials." >&2; exit 1; }
+  echo "AWS account $account, region $REGION, stage $STAGE" >&2
+  if [[ "$STAGE" == "production" ]]; then
+    typed="${BOOTSTRAP_CONFIRM_ACCOUNT:-}"
+    if [[ -z "$typed" && -t 0 ]]; then
+      read -r -p "Type the AWS account id to bootstrap production: " typed
+    fi
+    [[ "$typed" == "$account" ]] || refuse "Production needs the AWS account id typed at the prompt (or BOOTSTRAP_CONFIRM_ACCOUNT=$account for a non-interactive run). Nothing was changed."
+  fi
   secret_name="dilm-$STAGE-payload-app"
   secret_arn=$(aws secretsmanager describe-secret --region "$REGION" \
     --secret-id "$secret_name" --query ARN --output text 2>/dev/null) \
@@ -103,6 +135,7 @@ pnpm --filter @dilm/cms seed:tenants
 
 echo "== seed:admin"
 BOOTSTRAP_ADMIN_EMAIL="$EMAIL" \
+  BOOTSTRAP_ADMIN_PASSWORD="$ADMIN_PASSWORD" \
   BOOTSTRAP_GENERATE_PASSWORD="$GENERATE" \
   pnpm --filter @dilm/cms seed:admin
 
