@@ -1140,8 +1140,14 @@ identities, budgets). Nothing else is created by hand.
    twice: this is the check that stops you deploying to the wrong account. If it
    says the token expired, run `aws login` again.
 
-3. **IAM permissions.** Phase 1 uses an administrator-level login of your own
-   account. The least-privilege policy for phase 2 has been requested from the
+3. **IAM permissions.** Two logins of the same account. The one-time
+   CloudFormation scripts in step 3 (`bootstrap-aws.sh`, `bootstrap-ses.sh`,
+   `bootstrap-budgets.sh`) and the SES identity commands in step 6 need an
+   administrator-level login (`dilm-spike` above, after `aws login`). The
+   deploy and everything after it run as the least-privilege IAM user
+   `dilm-sam-staging`, which is refused CloudFormation, OIDC-provider and SES
+   calls by design: put `AWS_PROFILE=dilm-spike` in front of just those
+   commands. The least-privilege policy for phase 2 has been requested from the
    client and is not in this repo yet (see "Known gaps"). The CI deploy roles
    created in step 3 carry `PowerUserAccess`.
 4. **Lambda concurrency quota.** A new or personal account is capped at 10
@@ -1261,11 +1267,11 @@ allowlist"). For a local deploy, `export` the same names in your shell instead.
 Phase 1: do step 6 (the shared sender) before 4.4, because the deploy bakes
 the sender into the email permissions.
 
-1. **Pin the Aurora minor version.** Today `infra/sst.config.ts` passes only
-   the major version `16` (marked `TODO(DILM-172)`). Aurora may reject a bare
-   major. List the allowed minors, then put one into the `engineVersion` line
-   of the cluster (replacing `database.AURORA_MAJOR_VERSION` and deleting the
-   TODO), and merge that through a pull request:
+1. **Aurora engine version.** The cluster is pinned to
+   `AURORA_ENGINE_VERSION` in `infra/src/database.ts` (16.15, the newest
+   non-Limitless 16.x that `db.serverless` offered in ap-southeast-3 on
+   2026-11-19). To move it, list what the region offers and change that
+   constant through a pull request:
 
    ```bash
    aws rds describe-orderable-db-instance-options --engine aurora-postgresql \
@@ -1273,10 +1279,6 @@ the sender into the email permissions.
      --query 'OrderableDBInstanceOptions[].EngineVersion' --output text \
      | tr '\t' '\n' | grep '^16\.' | sort -uV
    ```
-
-   Expected: a list such as `16.x`, one per line. Pick the newest one that
-   every account you will deploy to lists. If you skip this and the deploy
-   fails on the cluster with an engine version error, this is the fix.
 
 2. **Delete a leftover `payload_app` secret.** An earlier flow created
    `dilm-<stage>-payload-app` with a script; the deploy now owns it and fails
@@ -1734,7 +1736,6 @@ them blocks the checklist above; each needs a decision or a follow-up ticket.
 - [ ] **Allowlisted IPs in public logs.** Repository variables are not masked, so
       the four IPs, `ALARM_EMAIL` and the shared sender show in Actions logs.
       Accepted so far; moving them to secrets is the owner's decision.
-- [ ] **Aurora minor pin.** Step 4.1 must be done once by hand and committed.
 
 ## CI/CD
 
