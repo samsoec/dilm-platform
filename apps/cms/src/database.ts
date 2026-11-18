@@ -16,8 +16,6 @@ export async function cmsDatabaseAdapter(
   client: PayloadClient = "cms",
   providers?: DatabaseCredentialProviders,
 ): Promise<PostgresAdapterArgs> {
-  // TODO(DILM-38): add the RDS CA bundle to `ssl` for the staging/production
-  // Aurora cluster; the dev express gateway presents an AWS public-root cert.
   return {
     pool: await databasePoolConfig(database, client, providers),
     migrationDir,

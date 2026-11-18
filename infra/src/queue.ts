@@ -9,7 +9,7 @@ import {
 
 export const CV_DLQ_RETENTION_SECONDS = 14 * 24 * 60 * 60;
 export const CV_QUEUE_RETENTION_SECONDS = 4 * 24 * 60 * 60;
-export const CV_CONSUMER_HANDLER = "apps/cms/src/cv-intake/handler.handler";
+export const CV_CONSUMER_HANDLER = "src/cv-consumer.handler";
 
 export function cvQueueName(stage: string): string {
   return `dilm-${stage}-cv-intake`;

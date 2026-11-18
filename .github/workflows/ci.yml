@@ -46,6 +46,9 @@ jobs:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ap-southeast-3
 
+      - name: Build the Payload Lambda bundle
+        run: pnpm --filter @dilm/cms build:open-next
+
       - name: sst diff (staging)
         run: pnpm diff --stage staging
         env:
