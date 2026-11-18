@@ -40,3 +40,5 @@ jobs:
 
       - name: Deploy
         run: pnpm deploy:production
+        env:
+          ADMIN_ALLOWED_IPS: ${{ vars.ADMIN_ALLOWED_IPS }}

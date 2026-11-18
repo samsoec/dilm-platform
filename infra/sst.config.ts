@@ -33,6 +33,7 @@ export default $config({
     } = await import("./src/ses");
     const database = await import("./src/database");
     const storage = await import("./src/storage");
+    const gateway = await import("./src/gateway");
     const production = $app.stage === "production";
     const senderSetting = sesSenderSetting($app.stage);
 
@@ -322,6 +323,89 @@ export default $config({
         configurationSet: sesConfigurationSet,
       },
     });
+    const adminIps = gateway.adminAllowedIps($app.stage);
+    const adminPolicy = JSON.stringify(gateway.adminResourcePolicy(adminIps));
+    const adminApi = new aws.apigateway.RestApi("AdminApi", {
+      name: `dilm-${$app.stage}-admin`,
+      description:
+        "CMS admin entry on the default execute-api URL; the resource policy admits only the allowlisted IPs before any integration runs (DILM-10).",
+      endpointConfiguration: { types: "REGIONAL" },
+      policy: adminPolicy,
+    });
+    const adminProxy = new aws.apigateway.Resource("AdminApiProxy", {
+      restApi: adminApi.id,
+      parentId: adminApi.rootResourceId,
+      pathPart: "{proxy+}",
+    });
+    const adminMethods = [
+      { name: "Root", resourceId: adminApi.rootResourceId },
+      { name: "Proxy", resourceId: adminProxy.id },
+    ].map(({ name, resourceId }) => {
+      const method = new aws.apigateway.Method(`AdminApi${name}Any`, {
+        restApi: adminApi.id,
+        resourceId,
+        httpMethod: "ANY",
+        authorization: "NONE",
+      });
+      const integration = new aws.apigateway.Integration(
+        `AdminApi${name}Placeholder`,
+        {
+          restApi: adminApi.id,
+          resourceId,
+          httpMethod: method.httpMethod,
+          type: "MOCK",
+          requestTemplates: { "application/json": '{"statusCode": 503}' },
+        },
+      );
+      const methodResponse = new aws.apigateway.MethodResponse(
+        `AdminApi${name}PlaceholderStatus`,
+        {
+          restApi: adminApi.id,
+          resourceId,
+          httpMethod: method.httpMethod,
+          statusCode: "503",
+        },
+      );
+      new aws.apigateway.IntegrationResponse(
+        `AdminApi${name}PlaceholderResponse`,
+        {
+          restApi: adminApi.id,
+          resourceId,
+          httpMethod: method.httpMethod,
+          statusCode: methodResponse.statusCode,
+          responseTemplates: {
+            "application/json": '{"message": "CMS not deployed yet"}',
+          },
+        },
+        { dependsOn: [integration] },
+      );
+      return integration;
+    });
+    const adminDeployment = new aws.apigateway.Deployment(
+      "AdminApiDeployment",
+      {
+        restApi: adminApi.id,
+        triggers: {
+          redeployment: $resolve(adminMethods.map((m) => m.id)).apply((ids) =>
+            JSON.stringify([...ids, adminPolicy]),
+          ),
+        },
+      },
+      { dependsOn: adminMethods },
+    );
+    const adminStage = new aws.apigateway.Stage("AdminApiStage", {
+      restApi: adminApi.id,
+      deployment: adminDeployment.id,
+      stageName: $app.stage,
+    });
+    const adminUrl = $interpolate`https://${adminApi.id}.execute-api.${REGION}.amazonaws.com/${adminStage.stageName}`;
+    // TODO(DILM-38): replace the MOCK integrations above with a
+    // Lambda proxy integration to the Payload function (AWS_PROXY, ANY on the
+    // root and on {proxy+}), add the lambda:InvokeFunction permission for
+    // this API, and set Payload's serverURL/NEXT_PUBLIC_SERVER_URL to
+    // adminUrl: the stage path prefix /<stage> must be honoured by cookies
+    // and admin routes (or add a base-path mapping). Verify login, logout,
+    // file downloads and the first request after an Aurora pause (29s).
     // TODO(DILM-12): set SES_SHARED_SENDER and SES_SHARED_SENDER_IDENTITY on
     // the Payload function and the CV consumer from the EmailSender linkable
     // when its mode is "shared".
@@ -341,6 +425,7 @@ export default $config({
     return {
       region: REGION,
       stage: $app.stage,
+      adminUrl,
       payloadSesSendPolicy: payloadSesSend.arn,
       publicBucket: publicBucket.bucket,
       cvPrivateBucket: cvBucket.bucket,
