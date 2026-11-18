@@ -366,7 +366,7 @@ export default $config({
           statusCode: "503",
         },
       );
-      new aws.apigateway.IntegrationResponse(
+      const integrationResponse = new aws.apigateway.IntegrationResponse(
         `AdminApi${name}PlaceholderResponse`,
         {
           restApi: adminApi.id,
@@ -379,19 +379,19 @@ export default $config({
         },
         { dependsOn: [integration] },
       );
-      return integration;
+      return [method, integration, methodResponse, integrationResponse];
     });
     const adminDeployment = new aws.apigateway.Deployment(
       "AdminApiDeployment",
       {
         restApi: adminApi.id,
         triggers: {
-          redeployment: $resolve(adminMethods.map((m) => m.id)).apply((ids) =>
-            JSON.stringify([...ids, adminPolicy]),
+          redeployment: $resolve(adminMethods.flat().map((r) => r.id)).apply(
+            (ids) => JSON.stringify([...ids, adminPolicy]),
           ),
         },
       },
-      { dependsOn: adminMethods },
+      { dependsOn: adminMethods.flat() },
     );
     const adminStage = new aws.apigateway.Stage("AdminApiStage", {
       restApi: adminApi.id,

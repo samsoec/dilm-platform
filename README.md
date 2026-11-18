@@ -801,7 +801,12 @@ ADMIN_ALLOWED_IPS=203.0.113.1,203.0.113.2,203.0.113.3,198.51.100.4 pnpm deploy:s
 
 In CI the same value is the repository variable `ADMIN_ALLOWED_IPS` (the PR
 `sst diff` falls back to a documentation address when it is unset; the deploy
-workflows do not). Only single IPv4 addresses are accepted, at most four, and
+workflows do not). The repository is public and GitHub variables are not masked, so the
+allowlisted IPs show up in `sst diff` and deploy logs (the policy JSON). That
+exposure is accepted for now; moving the value to a secret is a decision for
+the owner.
+
+Only single IPv4 addresses are accepted, at most four, and
 an empty list fails the deploy, so the API never opens by accident.
 
 Runbook (DILM-175): changing the allowlist means changing the variable and
