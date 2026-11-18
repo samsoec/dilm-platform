@@ -1202,7 +1202,13 @@ allowlist"). For a local deploy, `export` the same names in your shell instead.
 
    ```bash
    gh secret set AWS_DEPLOY_ROLE_ARN --body "<dilm-github-deploy role ARN>"
+   gh secret set AWS_DEPLOY_ROLE_ARN --env staging --body "<dilm-github-deploy role ARN>"
+   gh secret set AWS_DEPLOY_ROLE_ARN --env production --body "<dilm-github-deploy-production role ARN>"
    ```
+
+   The repo-level one serves CI and staging; the `--env` ones are the
+   environment secrets (create the environment first, see below). Set the
+   production one only when you get to production.
 
    The `staging` GitHub Environment is created by GitHub the first time the
    staging workflow runs, or on purpose with
@@ -1270,9 +1276,24 @@ the sender into the email permissions.
 
 2. **Delete a leftover `payload_app` secret.** An earlier flow created
    `dilm-<stage>-payload-app` with a script; the deploy now owns it and fails
-   with "already exists" if it is there. Check, and delete only if it exists:
+   with "already exists" if it is there.
+
+   **Only before the first deploy of this stage, and only if this stack did not
+   create the secret. After a deploy, never delete it:** the stack owns it and
+   rotation is attached to it, so deleting it takes the live app's database
+   login down and leaves the stack out of step with AWS. After a deploy, if the
+   secret is empty or its value is wrong, re-seed it with
+   `scripts/db/create-payload-app-role.sh --stage staging` (safe to re-run);
+   if it was deleted by hand, restore it with
+   `aws secretsmanager restore-secret --secret-id dilm-staging-payload-app --region ap-southeast-3`
+   when it is still in its recovery window, otherwise run
+   `pnpm --filter infra exec sst refresh --stage staging`, redeploy and re-seed.
+   `sst refresh` was not tried here.
+
+   First confirm the account, since this deletes without a recovery window:
 
    ```bash
+   aws sts get-caller-identity
    aws secretsmanager describe-secret --secret-id dilm-staging-payload-app \
      --region ap-southeast-3 --query Name
    aws secretsmanager delete-secret --secret-id dilm-staging-payload-app \
@@ -1298,6 +1319,7 @@ the sender into the email permissions.
    export ADMIN_ALLOWED_IPS="<ip1>,<ip2>,<ip3>,<ip4>"
    export ALARM_EMAIL="<address>"
    export SES_SHARED_SENDER="<verified sender address>"   # phase 1 only, see step 6
+   export SES_SHARED_SENDER_IDENTITY="<domain>"           # only if a verified domain covers the address; empty means use the address
    pnpm diff --stage staging
    ```
 
@@ -1506,9 +1528,11 @@ aws secretsmanager list-secrets --region ap-southeast-3 \
   --query 'SecretList[].[Name,RotationEnabled]' --output text
 ```
 
-Expected: exactly two lines: the RDS-managed master (`rds!cluster-...`) and
-`dilm-staging-payload-app`, the latter with `True`. Anything else is a leftover
-from an old flow: delete it.
+Expected: exactly two lines, the names `rds!cluster-...` (the RDS-managed
+master) and `dilm-staging-payload-app`. Judge by the count and the names:
+the master secret usually also reports `True` for rotation because RDS rotates
+it itself. Anything else is a leftover from an old flow; check what it belongs
+to before deleting it.
 
 **9.6 Manual rotation (the same checks for the 30-day schedule).**
 
@@ -1566,7 +1590,7 @@ Expected: `403`, and four `true` values (repeat for `publicBucket`).
 | 10       | Use "Forgot password" for a verified recipient: the mail arrives from the shared sender (phase 1) or the tenant `noreply@` address (phase 2).                                                                   |
 | 11       | 9.3 and 9.4.                                                                                                                                                                                                    |
 | 12       | 9.5, plus `git log -p` shows no secrets and `aws ssm get-parameters-by-path` (step 7) shows only encrypted values.                                                                                              |
-| 13       | Switch the admin language between `en` and `id`; adding a locale is a configuration entry (look for the locale list in `apps/cms/src`).                                                                         |
+| 13       | Switch the admin language between `en` and `id`; adding a locale is an entry in `locales` in `apps/cms/src/localization.ts` (currently `en` and `id`).                                                          |
 
 ### 10. Cost note
 
@@ -1578,6 +1602,15 @@ Cost alarms come from step 3.2. Check the figure in the Billing console after
 the first week; do not trust this paragraph for an amount.
 
 ### 11. Undo, teardown and rollback
+
+**Warning: the next three commands destroy things.** Before each one, stop and:
+
+1. Run `aws sts get-caller-identity` and confirm the account is the one you
+   mean. Phase 2 puts the client account behind the same commands and the same
+   stage names; `echo $AWS_PROFILE` must be the intended profile.
+2. Confirm nobody needs the data. Removing a stage deletes its database.
+3. For the `dev` express cluster `dilm-dev-db`: it holds the only copy of the
+   dev data and deleting it is irreversible.
 
 **Remove the staging stack** (disposable stage; the other stages are not
 touched):
