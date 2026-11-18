@@ -48,6 +48,12 @@ export default $config({
     });
 
     let databaseHost: $util.Output<string> | undefined;
+    let databaseNetwork:
+      | {
+          subnetGroupName: $util.Output<string>;
+          securityGroupId: $util.Output<string>;
+        }
+      | undefined;
     if (database.databaseMode($app.stage) === "express") {
       const cluster = aws.rds.getClusterOutput({
         clusterIdentifier: database.DEV_EXPRESS_CLUSTER_ID,
@@ -90,8 +96,60 @@ export default $config({
       });
       databaseHost = cluster.endpoint;
     } else {
-      // TODO(DILM-5): provision the locked-architecture Aurora cluster (VPC,
-      // public subnets, force_ssl parameter group) for staging/production.
+      const { DB_VPC_CIDR, DB_AZ_COUNT, dbSubnetCidrs, dbIngressRules } =
+        await import("./src/network");
+      const zones = aws.getAvailabilityZonesOutput({ state: "available" });
+      const dbVpc = new aws.ec2.Vpc("DatabaseVpc", {
+        cidrBlock: DB_VPC_CIDR,
+        enableDnsSupport: true,
+        enableDnsHostnames: true,
+        tags: { Name: `dilm-${$app.stage}-db` },
+      });
+      const dbGateway = new aws.ec2.InternetGateway("DatabaseGateway", {
+        vpcId: dbVpc.id,
+        tags: { Name: `dilm-${$app.stage}-db` },
+      });
+      const dbRoutes = new aws.ec2.RouteTable("DatabaseRoutes", {
+        vpcId: dbVpc.id,
+        routes: [{ cidrBlock: "0.0.0.0/0", gatewayId: dbGateway.id }],
+        tags: { Name: `dilm-${$app.stage}-db` },
+      });
+      const dbSubnets = dbSubnetCidrs().map((cidrBlock, i) => {
+        const subnet = new aws.ec2.Subnet(`DatabaseSubnet${i}`, {
+          vpcId: dbVpc.id,
+          cidrBlock,
+          availabilityZone: zones.names.apply((names) => names[i]),
+          mapPublicIpOnLaunch: false,
+          tags: { Name: `dilm-${$app.stage}-db-${i}` },
+        });
+        new aws.ec2.RouteTableAssociation(`DatabaseSubnetRoutes${i}`, {
+          subnetId: subnet.id,
+          routeTableId: dbRoutes.id,
+        });
+        return subnet;
+      });
+      const dbSubnetGroup = new aws.rds.SubnetGroup("DatabaseSubnetGroup", {
+        name: `dilm-${$app.stage}-db`,
+        description: `Public DB subnets in ${DB_AZ_COUNT} AZs for the Aurora cluster`,
+        subnetIds: dbSubnets.map((s) => s.id),
+      });
+      const dbSecurityGroup = new aws.ec2.SecurityGroup(
+        "DatabaseSecurityGroup",
+        {
+          name: `dilm-${$app.stage}-db`,
+          description: "Aurora Postgres, reachable from Lambda without a VPC",
+          vpcId: dbVpc.id,
+          ingress: dbIngressRules(),
+          tags: { Name: `dilm-${$app.stage}-db` },
+        },
+      );
+      databaseNetwork = {
+        subnetGroupName: dbSubnetGroup.name,
+        securityGroupId: dbSecurityGroup.id,
+      };
+      // TODO(DILM-5): provision the locked-architecture Aurora cluster on
+      // databaseNetwork (subnet group + security group above), with a
+      // force_ssl parameter group, for staging/production.
       // Use an Aurora PostgreSQL 16.x engine version (DILM-172), minor pinned.
       // TODO(DILM-12): grant secretsmanager:GetSecretValue on the payload_app
       // secret and expose its ARN as DATABASE_SECRET_ARN (auth "secret").
@@ -112,6 +170,7 @@ export default $config({
       stage: $app.stage,
       payloadSesSendPolicy: payloadSesSend.arn,
       databaseHost,
+      databaseSecurityGroupId: databaseNetwork?.securityGroupId,
     };
   },
 });
