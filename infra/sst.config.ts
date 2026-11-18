@@ -554,6 +554,8 @@ export default $config({
           runtimeConfigParametersLinkable,
         ],
         policies: payloadSesSend.arn.apply((arn) => [arn]),
+        nodejs: { install: ["sharp"] },
+        ...queue.cvConsumerDatabaseTls($app.stage),
       },
       {
         batch: { size: cvConsumerSettings.batchSize },

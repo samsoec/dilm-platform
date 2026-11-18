@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  cvConsumerDatabaseTls,
   cvConsumerSettings,
   cvDeadLetterQueueName,
   cvQueueName,
@@ -30,5 +31,25 @@ describe("cv queue", () => {
       batchSize: 1,
       maximumConcurrency: 2,
     });
+  });
+});
+
+describe("cvConsumerDatabaseTls", () => {
+  it("ships the RDS CA to the consumer on Aurora stages", () => {
+    for (const stage of ["staging", "production"]) {
+      expect(cvConsumerDatabaseTls(stage)).toEqual({
+        copyFiles: [
+          {
+            from: "src/rotation/ap-southeast-3-bundle.pem",
+            to: "ca-bundle.pem",
+          },
+        ],
+        environment: { NODE_EXTRA_CA_CERTS: "/var/task/ca-bundle.pem" },
+      });
+    }
+  });
+
+  it("leaves the express dev stage alone", () => {
+    expect(cvConsumerDatabaseTls("dev")).toEqual({});
   });
 });

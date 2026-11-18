@@ -573,6 +573,14 @@ the `payload_app` role and write the first value into the
 "Rotation of the `payload_app` secret" below). Production
 has deletion protection and a final snapshot and is retained on removal.
 
+The runtime-config pool verifies TLS against Node's default CAs, which lack
+the Amazon RDS CA. The CV consumer therefore ships
+`infra/src/rotation/ap-southeast-3-bundle.pem` as `ca-bundle.pem` and sets
+`NODE_EXTRA_CA_CERTS=/var/task/ca-bundle.pem` on Aurora stages. DILM-38 must
+do the same for the Payload function (or change `pool.ts`). The consumer also
+installs `sharp` as an external package, because `config.ts` imports it and
+esbuild cannot bundle its native binary.
+
 ## Code quality
 
 One command per check, run from the repo root over every package:
