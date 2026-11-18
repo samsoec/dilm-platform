@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+set +x
 
 usage() {
   cat <<'USAGE'
@@ -50,10 +51,9 @@ master_password=$(aws secretsmanager get-secret-value --region "$REGION" \
   --secret-id "$master_arn" --query SecretString --output text | jq -r '.password')
 app_password=$(openssl rand -base64 36 | tr -dc 'A-Za-z0-9' | head -c 40)
 
-PGPASSWORD="$master_password" PGSSLMODE=require psql \
-  "host=$host port=$port dbname=$DB user=$master_user connect_timeout=60" \
-  -v ON_ERROR_STOP=1 -v app_user="$APP_USER" -v app_password="$app_password" \
-  -v dbname="$DB" <<'SQL'
+{
+  printf "\\set app_password '%s'\n" "$app_password"
+  cat <<'SQL'
 SELECT format('CREATE ROLE %I LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD %L', :'app_user', :'app_password')
 WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'app_user')
 \gexec
@@ -66,16 +66,19 @@ SELECT format('ALTER SCHEMA public OWNER TO %I', :'app_user')
 SELECT format('GRANT CONNECT ON DATABASE %I TO %I', :'dbname', :'app_user')
 \gexec
 SQL
+} | PGPASSWORD="$master_password" PGSSLMODE=require psql \
+  "host=$host port=$port dbname=$DB user=$master_user connect_timeout=60" \
+  -v ON_ERROR_STOP=1 -v app_user="$APP_USER" -v dbname="$DB"
 
-secret_json=$(jq -n --arg u "$APP_USER" --arg p "$app_password" --arg h "$host" \
+secret_json=$(APP_PASSWORD="$app_password" jq -n --arg u "$APP_USER" --arg h "$host" \
   --argjson port "$port" --arg d "$DB" \
-  '{username:$u,password:$p,host:$h,port:$port,dbname:$d}')
+  '{username:$u,password:env.APP_PASSWORD,host:$h,port:$port,dbname:$d}')
 
 if aws secretsmanager describe-secret --region "$REGION" --secret-id "$SECRET_NAME" >/dev/null 2>&1; then
   aws secretsmanager put-secret-value --region "$REGION" \
-    --secret-id "$SECRET_NAME" --secret-string "$secret_json" >/dev/null
+    --secret-id "$SECRET_NAME" --secret-string file:///dev/stdin <<<"$secret_json" >/dev/null
 else
   aws secretsmanager create-secret --region "$REGION" \
-    --name "$SECRET_NAME" --secret-string "$secret_json" >/dev/null
+    --name "$SECRET_NAME" --secret-string file:///dev/stdin <<<"$secret_json" >/dev/null
 fi
 echo "payload_app ready; secret $SECRET_NAME updated"
