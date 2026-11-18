@@ -1,3 +1,7 @@
+import { createDecipheriv } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { isAbsolute, join } from "node:path";
+
 import {
   AWS_REGION,
   DEFAULT_CV_RETENTION_MONTHS,
@@ -58,25 +62,59 @@ export const awsConfigProviders: AwsConfigProviders = {
   },
 };
 
+const encryptedResources = new Map<string, Record<string, unknown>>();
+
+function encryptedSstResources(env: Env): Record<string, unknown> | undefined {
+  const key = env.SST_KEY;
+  const file = env.SST_KEY_FILE;
+  if (!key || !file) return undefined;
+  const path = isAbsolute(file)
+    ? file
+    : join(env.LAMBDA_TASK_ROOT ?? process.cwd(), file);
+  const cached = encryptedResources.get(path);
+  if (cached) return cached;
+  const data = readFileSync(path);
+  const decipher = createDecipheriv(
+    "aes-256-gcm",
+    Buffer.from(key, "base64"),
+    Buffer.alloc(12, 0),
+  );
+  decipher.setAuthTag(data.subarray(-16));
+  const plain = Buffer.concat([
+    decipher.update(data.subarray(0, -16)),
+    decipher.final(),
+  ]).toString("utf8");
+  const resources = JSON.parse(plain) as Record<string, unknown>;
+  encryptedResources.set(path, resources);
+  return resources;
+}
+
+function asObject(
+  value: unknown,
+  name: string,
+): Record<string, unknown> | undefined {
+  if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  throw new Error(`SST_RESOURCE_${name} is not a JSON object.`);
+}
+
 export function readSstResource(
   env: Env,
   name: string,
 ): Record<string, unknown> | undefined {
   const raw = env[`SST_RESOURCE_${name}`];
-  if (raw === undefined || raw === "") return undefined;
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    if (
-      typeof parsed === "object" &&
-      parsed !== null &&
-      !Array.isArray(parsed)
-    ) {
-      return parsed as Record<string, unknown>;
+  if (raw !== undefined && raw !== "") {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      throw new Error(`SST_RESOURCE_${name} is not a JSON object.`);
     }
-  } catch {
-    throw new Error(`SST_RESOURCE_${name} is not a JSON object.`);
+    return asObject(parsed, name);
   }
-  throw new Error(`SST_RESOURCE_${name} is not a JSON object.`);
+  const linked = encryptedSstResources(env)?.[name];
+  return linked === undefined ? undefined : asObject(linked, name);
 }
 
 function requiredResource(env: Env, name: string): Record<string, unknown> {
