@@ -6,9 +6,9 @@
     "node": ">=20.20"
   },
   "scripts": {
-    "deploy:dev": "pnpm --filter infra deploy --stage dev",
-    "deploy:staging": "pnpm --filter infra deploy --stage staging",
-    "deploy:production": "pnpm --filter infra deploy --stage production",
+    "deploy:dev": "pnpm --filter infra run deploy --stage dev",
+    "deploy:staging": "pnpm --filter infra run deploy --stage staging",
+    "deploy:production": "pnpm --filter infra run deploy --stage production",
     "diff": "pnpm --filter infra diff",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
