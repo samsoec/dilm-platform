@@ -87,6 +87,35 @@ describe("cmsDatabaseAdapter", () => {
     expect(pool?.ssl).toEqual({ rejectUnauthorized: true });
   });
 
+  it("verifies Aurora's certificate and gives up before API Gateway's 29 s", async () => {
+    const { pool } = await cmsDatabaseAdapter(
+      {
+        auth: "secret",
+        secretArn: "arn:aws:secretsmanager:ap-southeast-3:1:secret:s-abc",
+        region: "ap-southeast-3",
+      },
+      "aws",
+      migrationDir,
+      "cms",
+      {
+        iamAuthToken: () => Promise.reject(new Error("not used")),
+        secretString: () =>
+          Promise.resolve(
+            JSON.stringify({
+              host: "db.example",
+              port: 5432,
+              dbname: "dilm",
+              username: "payload_app",
+              password: "x",
+            }),
+          ),
+      },
+    );
+    expect(pool?.ssl).toEqual({ rejectUnauthorized: true });
+    expect(pool?.connectionTimeoutMillis).toBeGreaterThanOrEqual(20_000);
+    expect(pool?.connectionTimeoutMillis).toBeLessThan(29_000);
+  });
+
   it("reads migrations from the committed directory", async () => {
     const adapter = await cmsDatabaseAdapter(local, "aws", migrationDir);
     expect(adapter.migrationDir).toBe(migrationDir);

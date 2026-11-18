@@ -35,6 +35,7 @@ export default $config({
     const storage = await import("./src/storage");
     const gateway = await import("./src/gateway");
     const parameters = await import("./src/parameters");
+    const payload = await import("./src/payload");
     const rotation = await import("./src/rotation");
     const queue = await import("./src/queue");
     const { randomBytes } = await import("node:crypto");
@@ -282,9 +283,6 @@ export default $config({
       });
       databaseHost = dbCluster.endpoint;
       databaseMasterSecretArn = masterSecretArn;
-      // TODO(DILM-38): link the Payload function to the
-      // Database linkable; the runtime-config loader reads secretArn (a
-      // partial ARN, valid as SecretId) from SST_RESOURCE_Database.
     }
 
     const bucketSecurity = (
@@ -330,7 +328,7 @@ export default $config({
       forceDestroy: !production,
     });
     bucketSecurity("PublicBucket", publicBucket, publicBucketName);
-    new sst.Linkable("PublicBucket", {
+    const publicBucketLinkable = new sst.Linkable("PublicBucket", {
       properties: {
         name: publicBucket.bucket,
         prefixes: [...storage.PUBLIC_BUCKET_PREFIXES],
@@ -431,15 +429,44 @@ export default $config({
       parentId: adminApi.rootResourceId,
       pathPart: "{proxy+}",
     });
-    const adminMockConfig = {
+    const concurrencyPlan = payload.payloadConcurrencyPlan(
+      $app.stage,
+      database.databaseMode($app.stage) === "express"
+        ? undefined
+        : await payload.readAccountConcurrencyLimit(REGION),
+    );
+    if (concurrencyPlan.warning) console.warn(concurrencyPlan.warning);
+    const payloadFunction = new sst.aws.Function("PayloadCms", {
+      bundle: payload.PAYLOAD_BUNDLE_DIR,
+      handler: payload.PAYLOAD_HANDLER,
+      runtime: "nodejs22.x",
+      architecture: "arm64",
+      memory: payload.PAYLOAD_MEMORY,
+      timeout: payload.PAYLOAD_TIMEOUT,
+      link: [
+        databaseLinkable,
+        publicBucketLinkable,
+        cvPrivateBucketLinkable,
+        emailSenderLinkable,
+        runtimeConfigParametersLinkable,
+      ],
+      policies: payloadSesSend.arn.apply((arn) => [arn]),
+      concurrency: concurrencyPlan.reserved
+        ? { reserved: concurrencyPlan.reserved }
+        : undefined,
+      ...payload.payloadFunctionTls($app.stage),
+    });
+    const adminInvoke = new aws.lambda.Permission("AdminApiInvokePayload", {
+      action: "lambda:InvokeFunction",
+      function: payloadFunction.name,
+      principal: "apigateway.amazonaws.com",
+      sourceArn: $interpolate`${adminApi.executionArn}/*/*`,
+    });
+    const adminIntegrationConfig = {
       httpMethod: "ANY",
       authorization: "NONE",
-      type: "MOCK",
-      statusCode: "503",
-      requestTemplates: { "application/json": '{"statusCode": 503}' },
-      responseTemplates: {
-        "application/json": '{"message": "CMS not deployed yet"}',
-      },
+      type: "AWS_PROXY",
+      integrationHttpMethod: "POST",
     };
     const adminMethods = [
       { name: "Root", resourceId: adminApi.rootResourceId },
@@ -448,40 +475,23 @@ export default $config({
       const method = new aws.apigateway.Method(`AdminApi${name}Any`, {
         restApi: adminApi.id,
         resourceId,
-        httpMethod: adminMockConfig.httpMethod,
-        authorization: adminMockConfig.authorization,
+        httpMethod: adminIntegrationConfig.httpMethod,
+        authorization: adminIntegrationConfig.authorization,
       });
       const integration = new aws.apigateway.Integration(
-        `AdminApi${name}Placeholder`,
+        `AdminApi${name}Payload`,
         {
           restApi: adminApi.id,
           resourceId,
           httpMethod: method.httpMethod,
-          type: adminMockConfig.type,
-          requestTemplates: adminMockConfig.requestTemplates,
+          type: adminIntegrationConfig.type,
+          integrationHttpMethod: adminIntegrationConfig.integrationHttpMethod,
+          uri: payloadFunction.nodes.function.invokeArn,
+          timeoutMilliseconds: 29_000,
         },
+        { dependsOn: [adminInvoke] },
       );
-      const methodResponse = new aws.apigateway.MethodResponse(
-        `AdminApi${name}PlaceholderStatus`,
-        {
-          restApi: adminApi.id,
-          resourceId,
-          httpMethod: method.httpMethod,
-          statusCode: "503",
-        },
-      );
-      const integrationResponse = new aws.apigateway.IntegrationResponse(
-        `AdminApi${name}PlaceholderResponse`,
-        {
-          restApi: adminApi.id,
-          resourceId,
-          httpMethod: method.httpMethod,
-          statusCode: methodResponse.statusCode,
-          responseTemplates: adminMockConfig.responseTemplates,
-        },
-        { dependsOn: [integration] },
-      );
-      return [method, integration, methodResponse, integrationResponse];
+      return [method, integration];
     });
     const adminDeployment = new aws.apigateway.Deployment(
       "AdminApiDeployment",
@@ -489,7 +499,13 @@ export default $config({
         restApi: adminApi.id,
         triggers: {
           redeployment: $resolve(adminMethods.flat().map((r) => r.id)).apply(
-            (ids) => JSON.stringify([...ids, adminPolicy, adminMockConfig]),
+            (ids) =>
+              JSON.stringify([
+                ...ids,
+                adminPolicy,
+                adminIntegrationConfig,
+                payloadFunction.nodes.function.invokeArn,
+              ]),
           ),
         },
       },
@@ -500,22 +516,25 @@ export default $config({
       deployment: adminDeployment.id,
       stageName: $app.stage,
     });
+    if (concurrencyPlan.apiThrottle) {
+      new aws.apigateway.MethodSettings("AdminApiThrottle", {
+        restApi: adminApi.id,
+        stageName: adminStage.stageName,
+        methodPath: "*/*",
+        settings: {
+          throttlingRateLimit: concurrencyPlan.apiThrottle.rateLimit,
+          throttlingBurstLimit: concurrencyPlan.apiThrottle.burstLimit,
+        },
+      });
+    }
     const adminUrl = $interpolate`https://${adminApi.id}.execute-api.${REGION}.amazonaws.com/${adminStage.stageName}`;
-    // TODO(DILM-38): replace the MOCK integrations above with a
-    // Lambda proxy integration to the Payload function (AWS_PROXY, ANY on the
-    // root and on {proxy+}), add the lambda:InvokeFunction permission for
-    // this API, and set Payload's serverURL/NEXT_PUBLIC_SERVER_URL to
-    // adminUrl: the stage path prefix /<stage> must be honoured by cookies
-    // and admin routes (or add a base-path mapping). Verify login, logout,
-    // file downloads and the first request after an Aurora pause (29s).
-    // TODO(DILM-38): link EmailSender, RuntimeConfigParameters and both
-    // bucket linkables to the Payload function (the CV consumer has its own); the
-    // runtime-config loader reads them from SST_RESOURCE_*.
-    // TODO(DILM-38): give the Payload function
-    // `concurrency: { reserved: database.payloadReservedConcurrency($app.stage) }`
-    // and link it to the Database linkable.
-    // TODO(DILM Track 1/2): define the web/cms Lambdas here; attach
-    // payloadSesSend to the cms function role via `policies: [payloadSesSend.arn]`.
+    // TODO(DILM-38): Payload's serverURL and cookies under the /<stage> path
+    // of adminUrl. The API Gateway proxy hands OpenNext the path without the
+    // stage, so a Next basePath cannot work; use a custom domain (base-path
+    // mapping) or CloudFront in front, then set serverURL to that origin.
+    // TODO(DILM-38): serve /_next/static and public files (S3 behind the
+    // gateway or CloudFront); the Lambda alone does not serve them.
+    // TODO(DILM Track 1/2): define the web Lambda here.
     const cvDeadLetterQueue = new sst.aws.Queue("CvDeadLetterQueue", {
       transform: {
         queue: (args) => {
