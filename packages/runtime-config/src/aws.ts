@@ -1,7 +1,3 @@
-import { createDecipheriv } from "node:crypto";
-import { readFileSync } from "node:fs";
-import { isAbsolute, join } from "node:path";
-
 import {
   AWS_REGION,
   DEFAULT_CV_RETENTION_MONTHS,
@@ -68,6 +64,9 @@ function encryptedSstResources(env: Env): Record<string, unknown> | undefined {
   const key = env.SST_KEY;
   const file = env.SST_KEY_FILE;
   if (!key || !file) return undefined;
+  const { createDecipheriv } = process.getBuiltinModule("node:crypto");
+  const { readFileSync } = process.getBuiltinModule("node:fs");
+  const { isAbsolute, join } = process.getBuiltinModule("node:path");
   const path = isAbsolute(file)
     ? file
     : join(env.LAMBDA_TASK_ROOT ?? process.cwd(), file);
