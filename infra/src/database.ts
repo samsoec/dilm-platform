@@ -11,6 +11,7 @@ export const AURORA_ENGINE_VERSION = `${AURORA_MAJOR_VERSION}.15`;
 export const AURORA_PARAMETER_FAMILY = `aurora-postgresql${AURORA_MAJOR_VERSION}`;
 export const AURORA_MASTER_USERNAME = "dilm_admin";
 export const AURORA_BACKUP_RETENTION_DAYS = 7;
+export const AURORA_BACKUP_RETENTION_DAYS_ENV = "AURORA_BACKUP_RETENTION_DAYS";
 
 const PAYLOAD_RESERVED_CONCURRENCY = 10;
 
@@ -18,6 +19,27 @@ export type DatabaseMode = "express" | "aurora";
 
 export function databaseMode(stage: string): DatabaseMode {
   return stage === "dev" ? "express" : "aurora";
+}
+
+export function auroraBackupRetentionDays(
+  stage: string,
+  value: string | undefined = process.env[AURORA_BACKUP_RETENTION_DAYS_ENV],
+): number {
+  if (value === undefined || value.trim() === "") {
+    return AURORA_BACKUP_RETENTION_DAYS;
+  }
+  const days = Number(value);
+  if (!Number.isInteger(days) || days < 1 || days > 35) {
+    throw new Error(
+      `${AURORA_BACKUP_RETENTION_DAYS_ENV} must be a whole number of days from 1 to 35, got "${value}".`,
+    );
+  }
+  if (stage === "production" && days < AURORA_BACKUP_RETENTION_DAYS) {
+    throw new Error(
+      `${AURORA_BACKUP_RETENTION_DAYS_ENV}=${days} is below the ${AURORA_BACKUP_RETENTION_DAYS}-day backup retention production requires.`,
+    );
+  }
+  return days;
 }
 
 export function payloadReservedConcurrency(stage: string): number | undefined {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  auroraBackupRetentionDays,
   auroraParameters,
   auroraPayloadAppSecretName,
   auroraScaling,
@@ -75,5 +76,28 @@ describe("Aurora settings", () => {
     expect(auroraPayloadAppSecretName("staging")).toBe(
       "dilm-staging-payload-app",
     );
+  });
+});
+
+describe("auroraBackupRetentionDays", () => {
+  it("keeps 7 days when the override is unset or empty", () => {
+    expect(auroraBackupRetentionDays("staging", undefined)).toBe(7);
+    expect(auroraBackupRetentionDays("production", "")).toBe(7);
+  });
+
+  it("lets staging drop to the 1 day a Free-plan account allows", () => {
+    expect(auroraBackupRetentionDays("staging", "1")).toBe(1);
+  });
+
+  it("refuses less than 7 days on production", () => {
+    expect(() => auroraBackupRetentionDays("production", "1")).toThrow(
+      /production requires/,
+    );
+  });
+
+  it("refuses values RDS would reject", () => {
+    expect(() => auroraBackupRetentionDays("staging", "0")).toThrow();
+    expect(() => auroraBackupRetentionDays("staging", "36")).toThrow();
+    expect(() => auroraBackupRetentionDays("staging", "2.5")).toThrow();
   });
 });

@@ -192,7 +192,7 @@ export default $config({
           vpcSecurityGroupIds: [dbSecurityGroup.id],
           dbClusterParameterGroupName: dbParameterGroup.name,
           serverlessv2ScalingConfiguration: database.auroraScaling(),
-          backupRetentionPeriod: database.AURORA_BACKUP_RETENTION_DAYS,
+          backupRetentionPeriod: database.auroraBackupRetentionDays($app.stage),
           deletionProtection: production,
           skipFinalSnapshot: !production,
           finalSnapshotIdentifier: production
