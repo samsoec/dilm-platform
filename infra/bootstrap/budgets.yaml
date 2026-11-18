@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  DILM-29 - AWS Budgets cost guardrails (Backend Spec §15). Account-level, not
+  per stage: dev, staging and production share one account, so the budgets
+  exist once. AWS Budgets is a global service; this stack lives in
+  ap-southeast-3 like everything else and creates no us-east-1 resource of
+  ours. Applied once, by hand, with human AWS credentials, through
+  scripts/bootstrap-budgets.sh. Both budgets exclude tax (VAT). The baseline
+  budget alerts when the forecast for the month reaches the monthly OPEX
+  baseline; the ceiling budget alerts when actual spend reaches the
+  pay-as-you-go ceiling.
+
+Parameters:
+  BaselineUsd:
+    Type: Number
+    MinValue: 1
+    Description: Monthly OPEX baseline in USD, excluding VAT (Backend Spec §15).
+  CeilingUsd:
+    Type: Number
+    MinValue: 1
+    Description: Monthly pay-as-you-go ceiling in USD, excluding VAT (Backend Spec §15).
+  AlertEmail:
+    Type: String
+    AllowedPattern: "[^@\\s]+@[^@\\s]+\\.[^@\\s]+"
+    Description: Recipient of both budget alerts.
+
+Resources:
+  BaselineBudget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: dilm-monthly-baseline
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref BaselineUsd
+          Unit: USD
+        CostTypes:
+          IncludeTax: false
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: FORECASTED
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail
+
+  CeilingBudget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: dilm-monthly-ceiling
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref CeilingUsd
+          Unit: USD
+        CostTypes:
+          IncludeTax: false
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail

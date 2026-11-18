@@ -8,6 +8,7 @@ import {
   JobPlatformError,
   postToJobPlatform,
   signWebhookBody,
+  webhookFailureMetricLine,
 } from "./webhook";
 
 const submission = {
@@ -68,5 +69,21 @@ describe("postToJobPlatform", () => {
         async () => new Response(null, { status: 401 }),
       ),
     ).rejects.toMatchObject({ status: 401 });
+  });
+});
+
+describe("webhookFailureMetricLine", () => {
+  it("emits one CloudWatch EMF count under the stage dimension", () => {
+    const line = JSON.parse(webhookFailureMetricLine("staging", 1000));
+    expect(line.WebhookFailure).toBe(1);
+    expect(line.Stage).toBe("staging");
+    expect(line._aws.CloudWatchMetrics[0]).toMatchObject({
+      Namespace: "DILM/CMS",
+      Dimensions: [["Stage"]],
+      Metrics: [{ Name: "WebhookFailure" }],
+    });
+    expect(JSON.parse(webhookFailureMetricLine(undefined, 1)).Stage).toBe(
+      "unknown",
+    );
   });
 });

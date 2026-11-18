@@ -47,6 +47,7 @@ jobs:
         run: pnpm deploy:staging
         env:
           ADMIN_ALLOWED_IPS: ${{ vars.ADMIN_ALLOWED_IPS }}
+          ALARM_EMAIL: ${{ vars.ALARM_EMAIL }}
 
       - name: Apply Payload migrations
         run: scripts/ci/migrate-deployed.sh --stage staging

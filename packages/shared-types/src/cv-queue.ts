@@ -169,3 +169,7 @@ export function parseQueueMessage(body: string): QueueMessage {
     fields: trimmedFields(CONTACT_FIELD_NAMES, fields),
   };
 }
+
+export const WEBHOOK_METRIC_NAMESPACE = "DILM/CMS";
+export const WEBHOOK_FAILURE_METRIC = "WebhookFailure";
+export const WEBHOOK_FAILURE_STAGE_ENV = "DILM_STAGE";
