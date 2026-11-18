@@ -92,6 +92,7 @@ export default $config({
     } else {
       // TODO(DILM-5): provision the locked-architecture Aurora cluster (VPC,
       // public subnets, force_ssl parameter group) for staging/production.
+      // Use an Aurora PostgreSQL 16.x engine version (DILM-172), minor pinned.
       // TODO(DILM-12): grant secretsmanager:GetSecretValue on the payload_app
       // secret and expose its ARN as DATABASE_SECRET_ARN (auth "secret").
     }
