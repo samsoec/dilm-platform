@@ -690,7 +690,8 @@ AWS_PROFILE=<your-profile> ./scripts/bootstrap-aws.sh samsoec dilm-platform
 It prints two role ARNs. Wire them up in GitHub:
 
 - `AWS_DEPLOY_ROLE_ARN` (repository secret) → `dilm-github-deploy`, used by CI
-  and the staging deploy.
+  and the staging deploy. A secret of the same name inside the `staging`
+  Environment, which the staging workflow runs in, takes precedence.
 - `AWS_DEPLOY_ROLE_ARN` (secret **inside** the `production` Environment) →
   `dilm-github-deploy-production`. That role only trusts the `production`
   environment, so the approval gate can't be bypassed by pushing a branch.
@@ -901,8 +902,9 @@ the owner.
 Only single IPv4 addresses are accepted, at most four, and
 an empty list fails the deploy, so the admin never opens by accident.
 
-Runbook (DILM-175): changing the allowlist means changing the variable and
-redeploying the whole stage; the edge function is republished by the deploy.
+Changing the allowlist means changing the variable and redeploying the whole
+stage; the edge function is republished by the deploy. The step-by-step is in
+"Deploying the CMS to staging".
 
 ## CV intake consumer
 
@@ -1062,7 +1064,7 @@ up.
 
 ## Observability and cost guardrails
 
-Every Lambda log group (Payload, CV consumer, rotation) keeps 30 days
+Every Lambda log group (Payload, CV consumer, rotation) keeps 1 month
 (`LOG_RETENTION` in `infra/src/observability.ts`). Eight CloudWatch alarms per
 stage, all in ap-southeast-3 with missing data treated as not breaching, post
 to one SNS topic `dilm-<stage>-alarms`: CV dead-letter depth, Payload errors
@@ -1084,6 +1086,619 @@ Budgets exist once per account, not per stage:
 service, so the CloudFormation stack lives in ap-southeast-3 and nothing of
 ours exists in us-east-1.
 
+## Deploying the CMS to staging
+
+An ordered checklist that takes an empty AWS account to a running, verified CMS
+on the `staging` stage. It links to the sections above for the details and only
+adds what they do not say. Nothing in it needs you to read the code.
+
+Two phases use the same list:
+
+- **Phase 1, personal AWS account.** Everything below, with the shared SES
+  sender (step 6) because the three tenant domains cannot be verified there.
+- **Phase 2, client AWS account (DILM-40).** The same list again; "Phase 2
+  differences" at the end says what changes. No data is copied between the two
+  accounts.
+
+Conventions: every command is copy-pasteable, the region is always
+`ap-southeast-3` (Jakarta, UU PDP data residency) and the stage is always
+explicit. `<angle brackets>` are values you fill in. "Expected" lines were
+written from the code, not from a real deploy: nothing has been deployed yet,
+so the first run is also the first proof. If an expected line differs, believe
+the screen and fix the README afterwards.
+
+### 0. What you are building, in plain words
+
+`sst deploy` creates everything for one stage in one AWS account: a Postgres
+database (Aurora), two S3 buckets for uploads, a queue for CV submissions, the
+CMS itself as a Lambda function, a CloudFront address in front of it that only
+your four IP addresses may open, and CloudWatch alarms. SST is the tool that
+reads `infra/sst.config.ts` and makes AWS match it. CloudFormation is used for
+the few things that exist once per account (login for GitHub, email
+identities, budgets). Nothing else is created by hand.
+
+### 1. Prerequisites
+
+1. **Tools.** `nvm use && corepack enable && pnpm install`, plus the AWS CLI v2,
+   `gh` (logged in), `jq`, `psql` (PostgreSQL client) and `openssl`.
+2. **AWS credentials for the target account, human, not CI.** Sign in and
+   point the shell at the profile (see "First run" for the `dilm-spike`
+   shim and why it exists):
+
+   ```bash
+   aws login
+   export AWS_PROFILE=dilm-spike
+   export AWS_REGION=ap-southeast-3
+   aws sts get-caller-identity
+   ```
+
+   Expected: JSON whose `Account` is the account you mean to deploy to. Read it
+   twice: this is the check that stops you deploying to the wrong account. If it
+   says the token expired, run `aws login` again.
+
+3. **IAM permissions.** Phase 1 uses an administrator-level login of your own
+   account. The least-privilege policy for phase 2 has been requested from the
+   client and is not in this repo yet (see "Known gaps"). The CI deploy roles
+   created in step 3 carry `PowerUserAccess`.
+4. **Lambda concurrency quota.** A new or personal account is capped at 10
+   concurrent Lambda executions. Check it:
+
+   ```bash
+   aws lambda get-account-settings --region ap-southeast-3 \
+     --query 'AccountLimit.ConcurrentExecutions'
+   ```
+
+   Expected: `10` on a new account, usually `1000` on an established one. At
+   10, the deploy still works: it skips the Payload reserved concurrency with
+   a warning and throttles the admin API instead (4 requests a second), because
+   AWS insists on keeping 10 unreserved. For the client account ask for more
+   before the real run:
+
+   ```bash
+   aws service-quotas request-service-quota-increase --service-code lambda \
+     --quota-code L-B99A9384 --desired-value 100 --region ap-southeast-3
+   ```
+
+   AWS decides in hours to days; check later with
+   `aws service-quotas list-requested-service-quota-change-history-by-quota --service-code lambda --quota-code L-B99A9384 --region ap-southeast-3`.
+   `100` is a suggestion, not a figure from the spec.
+
+### 2. Decide the deploy-time settings
+
+These are GitHub variables (repo, Settings, Secrets and variables, Variables)
+that the workflows pass to `sst deploy`. **Variables are not masked.** The
+repository is public, so every value below shows in plain text in the Actions
+logs, and in the repository settings. Do not put anything secret in them.
+
+| Variable                                          | Needed?                | Value                                                                          |
+| ------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------ |
+| `ADMIN_ALLOWED_IPS`                               | Required, every deploy | 1 to 4 single IPv4 addresses, comma-separated, e.g. `203.0.113.1,203.0.113.2`  |
+| `ALARM_EMAIL`                                     | Optional on staging    | The address that receives alarms; AWS emails a confirmation link to click once |
+| `SES_SHARED_SENDER`, `SES_SHARED_SENDER_IDENTITY` | Phase 1 only, not prod | See step 6; leave unset on the client account                                  |
+
+Set them with `gh` (or in the browser):
+
+```bash
+gh variable set ADMIN_ALLOWED_IPS --body "<ip1>,<ip2>,<ip3>,<ip4>"
+gh variable set ALARM_EMAIL --body "<address>"
+gh variable list
+```
+
+Find your own IP with `curl -s https://checkip.amazonaws.com`. If you work on a
+home connection whose address changes, the admin stops opening for you: change
+the variable and redeploy the whole stage (see "CMS admin entry and IP
+allowlist"). For a local deploy, `export` the same names in your shell instead.
+
+### 3. One-time account setup (human credentials, once per account)
+
+1. **GitHub login to AWS and deploy roles.** Follow "One-time AWS bootstrap":
+
+   ```bash
+   ./scripts/bootstrap-aws.sh samsoec dilm-platform
+   ```
+
+   Expected: it prints the subject claim, then waits for CloudFormation, then
+   the `dilm-github-deploy` role ARN (and the production one). Store it:
+
+   ```bash
+   gh secret set AWS_DEPLOY_ROLE_ARN --body "<dilm-github-deploy role ARN>"
+   ```
+
+   The `staging` GitHub Environment is created by GitHub the first time the
+   staging workflow runs, or on purpose with
+   `gh api -X PUT repos/samsoec/dilm-platform/environments/staging`. The
+   `production` role ARN goes into a secret inside the `production`
+   Environment, only when you get to production. If `AWS_DEPLOY_ROLE_ARN` is
+   also set inside the `staging` Environment, that value wins. Undo:
+   delete the `dilm-github-oidc` CloudFormation stack (only if nothing else in
+   the account uses GitHub login).
+
+2. **Budgets** (Backend Spec §15 figures, which are not in the repo):
+
+   ```bash
+   BUDGET_BASELINE_USD=<n> BUDGET_CEILING_USD=<n> BUDGET_EMAIL=<address> \
+     ./scripts/bootstrap-budgets.sh
+   ```
+
+   Expected: a CloudFormation stack `dilm-budgets` in ap-southeast-3 and two
+   budgets in the Budgets console. Whether CloudFormation in ap-southeast-3
+   accepts a Budgets resource has never been tried: if the stack fails, note
+   the error and tell the owner (see "Known gaps"); budgets are not needed for
+   the rest of this list.
+
+3. **Email identities and the `dilm-transactional` configuration set.**
+   Run this on every account, including the personal one, because the
+   configuration set (reputation metrics, suppression list) is created by this
+   stack:
+
+   ```bash
+   ./scripts/bootstrap-ses.sh
+   ```
+
+   On the personal account the three tenant identities stay "pending"
+   forever because you do not own the DNS. That is harmless: the stack is only
+   there for the configuration set, and phase 2 creates its own on the client
+   account. Do not add DNS records on the personal account. On the client
+   account follow "After running the script" under "SES sending identities":
+   add the printed DNS records, re-run `./scripts/bootstrap-ses.sh --status`
+   until all three domains read `verified=True`, `dkim=SUCCESS`,
+   `mail-from=SUCCESS`, then request production access (the sandbox only sends
+   to verified recipients) and confirm the à-la-carte pricing plan in the SES
+   console.
+
+### 4. Before the first deploy
+
+Phase 1: do step 6 (the shared sender) before 4.4, because the deploy bakes
+the sender into the email permissions.
+
+1. **Pin the Aurora minor version.** Today `infra/sst.config.ts` passes only
+   the major version `16` (marked `TODO(DILM-172)`). Aurora may reject a bare
+   major. List the allowed minors, then put one into the `engineVersion` line
+   of the cluster (replacing `database.AURORA_MAJOR_VERSION` and deleting the
+   TODO), and merge that through a pull request:
+
+   ```bash
+   aws rds describe-orderable-db-instance-options --engine aurora-postgresql \
+     --db-instance-class db.serverless --region ap-southeast-3 \
+     --query 'OrderableDBInstanceOptions[].EngineVersion' --output text \
+     | tr '\t' '\n' | grep '^16\.' | sort -uV
+   ```
+
+   Expected: a list such as `16.x`, one per line. Pick the newest one that
+   every account you will deploy to lists. If you skip this and the deploy
+   fails on the cluster with an engine version error, this is the fix.
+
+2. **Delete a leftover `payload_app` secret.** An earlier flow created
+   `dilm-<stage>-payload-app` with a script; the deploy now owns it and fails
+   with "already exists" if it is there. Check, and delete only if it exists:
+
+   ```bash
+   aws secretsmanager describe-secret --secret-id dilm-staging-payload-app \
+     --region ap-southeast-3 --query Name
+   aws secretsmanager delete-secret --secret-id dilm-staging-payload-app \
+     --force-delete-without-recovery --region ap-southeast-3
+   ```
+
+   Expected: the first prints the name, or `ResourceNotFoundException` on a
+   clean account (then skip the second command).
+
+3. **Regenerate SST types and build the CMS bundle:**
+
+   ```bash
+   pnpm --filter infra exec sst install --stage staging
+   pnpm --filter @dilm/cms build:open-next
+   ```
+
+   Expected: the second takes about a minute and ends without an error; the
+   deploy refuses to run without the bundle.
+
+4. **Preview the change** (exports the settings from step 2 first):
+
+   ```bash
+   export ADMIN_ALLOWED_IPS="<ip1>,<ip2>,<ip3>,<ip4>"
+   export ALARM_EMAIL="<address>"
+   export SES_SHARED_SENDER="<verified sender address>"   # phase 1 only, see step 6
+   pnpm diff --stage staging
+   ```
+
+   Expected: a long list of resources to create (VPC, Aurora cluster, buckets,
+   queues, the Payload Lambda, the CV consumer, CloudFront, eight alarms) and
+   nothing to delete. A concurrency warning on a 10-limit account is normal.
+
+### 5. First deploy
+
+Pick one way. The local way gives the best error messages the first time.
+
+**Local:**
+
+```bash
+pnpm deploy:staging
+```
+
+Expected: after several minutes (Aurora and CloudFront are the slow parts)
+SST prints "Complete" and the outputs: `adminUrl` (the
+`https://<id>.cloudfront.net` address), `cvQueueUrl`, `cvDeadLetterQueueUrl`,
+`publicBucket`, `cvPrivateBucket`, `databaseHost`, `databaseMasterSecretArn`,
+`alarmTopicArn`. Copy them somewhere; the checks below use them. If the output
+scrolled away, the `adminUrl` is also the domain name of the CloudFront
+distribution in the console.
+
+**From GitHub:** push to `main` or run the workflow:
+
+```bash
+gh workflow run "Deploy staging"
+gh run watch
+```
+
+The `Deploy` step prints the same outputs in the run log.
+
+**The first migrate step is expected to fail (red).** The deploy creates the
+`dilm-staging-payload-app` secret empty, and the migration step refuses to run
+until it has a value. Seed it from a machine whose IP the database accepts
+(the database security group is open on 5432), then re-run:
+
+```bash
+scripts/db/create-payload-app-role.sh --stage staging
+```
+
+Expected: about 15 seconds of waiting while the paused database wakes, then a
+line saying the role and secret are ready. Re-running it is safe and resets the
+password. If it says "deploy the stage first", the deploy did not finish.
+In GitHub, then use "Re-run failed jobs" (or `gh run rerun <run-id> --failed`).
+A local deploy has no migrate step; `bootstrap-cms.sh` in step 8 runs the
+migrations, but it also needs this role script to have run first.
+
+Undo: step 11 (teardown).
+
+### 6. Shared email sender (phase 1)
+
+Skip on the client account once its three domains verify.
+
+1. Verify an address you can read, and every recipient while the account is in
+   the SES sandbox (SES emails each of them a link to click):
+
+   ```bash
+   aws sesv2 create-email-identity --email-identity <sender address> --region ap-southeast-3
+   aws sesv2 put-email-identity-configuration-set-attributes \
+     --email-identity <sender address> --configuration-set-name dilm-transactional \
+     --region ap-southeast-3
+   aws sesv2 create-email-identity --email-identity <recipient address> --region ap-southeast-3
+   ```
+
+   Expected: `{}` or an identity JSON for each, then a verification email. The
+   configuration set exists only after step 3.3.
+
+2. Set the variable (`gh variable set SES_SHARED_SENDER --body "<sender address>"`)
+   or the `export` in step 4.4, and redeploy. When a domain identity covers the
+   address, also set `SES_SHARED_SENDER_IDENTITY` to that domain. See "Staging
+   without the tenant domains" for what the CMS does with it. `production`
+   refuses this setting.
+
+### 7. Runtime secrets (SSM)
+
+The deploy creates four encrypted parameters. You do not have to provide any of
+them to get a working admin; two are generated, two are placeholders:
+
+| Name under `/dilm/staging/`   | Type         | Who provides it                                                                      |
+| ----------------------------- | ------------ | ------------------------------------------------------------------------------------ |
+| `PAYLOAD_SECRET`              | SecureString | Generated at the first deploy. Replacing it signs every user out.                    |
+| `PREVIEW_SECRET`              | SecureString | Generated at the first deploy. Not reachable from the admin on AWS yet (Known gaps). |
+| `JOB_PLATFORM_WEBHOOK_URL`    | SecureString | Placeholder until the job-platform vendor gives the endpoint; you overwrite it.      |
+| `JOB_PLATFORM_WEBHOOK_SECRET` | SecureString | Generated; share it with the vendor, or overwrite with theirs.                       |
+
+Check they exist (names and types only, nothing is decrypted):
+
+```bash
+aws ssm get-parameters-by-path --path /dilm/staging/ --region ap-southeast-3 \
+  --query 'Parameters[].[Name,Type]' --output text
+```
+
+Expected: four lines, all `SecureString`. Overwrite one with
+`aws ssm put-parameter --name /dilm/staging/<NAME> --type SecureString --overwrite --value '<value>' --region ap-southeast-3`.
+The deploy never reverts it. A running Lambda keeps the old value until it
+starts cold, so redeploy (or wait) after changing one. Note the value then sits
+in your shell history: prefix the command with a space or clear it after.
+
+### 8. Bootstrap the CMS and open the admin
+
+```bash
+scripts/bootstrap-cms.sh --stage staging --email <your address> --generate-password
+```
+
+Add `--demo` only on a database you are happy to fill with demo content.
+Expected: the AWS account id and region on screen first, then five steps
+(migrate, tenants, Super Admin, and the demo steps if asked), and the password
+shown once. Copy it into your password manager at once; it is also in the
+terminal scrollback. Re-running changes nothing. Details, and what to do if you
+are locked out, are in "Bootstrapping an empty CMS database".
+
+Then open `<adminUrl>/admin` **from an allowlisted IP** and log in. The first
+page load after the database slept can take up to half a minute; reload once.
+
+### 9. Verification (what DILM-25 checks)
+
+Run each check, compare with "Expected", and if it fails read "If it fails".
+`<id>` is the CloudFront domain from `adminUrl`. Items 1 to 13 are the numbered
+items of the CMS Definition of Done (TRD §8); the AWS side is below, and the
+application behaviour is in the table that follows. Deployment Checklist §1.3
+and Backend Spec §17 hold the same checks in the client's wording.
+
+**9.1 Admin reachable only from the allowlist (DoD 1).**
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' https://<id>.cloudfront.net/admin
+curl -s -o /dev/null -w '%{http_code}\n' https://<id>.cloudfront.net/favicon.svg
+```
+
+- From an allowlisted IP: the first prints `200` or a `3xx` redirect to the
+  login; the second prints `200`.
+- From any other IP (a phone on mobile data, or a VPN): both print `403`.
+- If it fails: an allowlisted IP getting `403` means the address changed, or
+  IPv6 reached you; run `curl -4 -s https://checkip.amazonaws.com`, update
+  `ADMIN_ALLOWED_IPS` and redeploy. A `502` or `504` the first time means the
+  database was waking; retry.
+
+**9.2 No way around CloudFront (direct `execute-api` is refused).**
+
+```bash
+API_ID=$(aws apigateway get-rest-apis --region ap-southeast-3 \
+  --query "items[?name=='dilm-staging-admin'].id" --output text)
+curl -s -o /dev/null -w '%{http_code}\n' \
+  https://$API_ID.execute-api.ap-southeast-3.amazonaws.com/staging/admin
+curl -s -o /dev/null -w '%{http_code}\n' -H 'x-api-key: not-the-key' \
+  https://$API_ID.execute-api.ap-southeast-3.amazonaws.com/staging/admin
+```
+
+Expected: `403` twice, from every IP including the allowlisted ones. If it
+prints `200`, the API key requirement is missing: stop and treat it as a
+security fault.
+
+**9.3 Database is TLS-only, and the app connects as `payload_app` (DoD 11).**
+Reads the secret into environment variables (not onto the screen):
+
+```bash
+S=$(aws secretsmanager get-secret-value --secret-id dilm-staging-payload-app \
+  --region ap-southeast-3 --query SecretString --output text)
+export PGHOST=$(jq -r .host <<<"$S") PGPORT=$(jq -r .port <<<"$S") \
+  PGUSER=$(jq -r .username <<<"$S") PGPASSWORD=$(jq -r .password <<<"$S") \
+  PGDATABASE=$(jq -r .dbname <<<"$S")
+unset S
+PGSSLMODE=disable psql -c 'select 1'
+PGSSLMODE=require psql -c "select a.usename, s.ssl from pg_stat_activity a join pg_stat_ssl s using (pid) where a.usename like 'payload_app%'"
+unset PGHOST PGPORT PGUSER PGPASSWORD PGDATABASE
+```
+
+Expected: the first is refused (an error about no encryption or
+`no pg_hba.conf entry ... no encryption`); the second lists rows with
+`usename` `payload_app` (or `payload_app_clone` after a rotation) and `ssl`
+`t`. Open `/admin` once first so the Lambda has a connection. If the first
+command succeeds, `rds.force_ssl` is not applied: check the cluster parameter
+group `dilm-staging-*`. If `psql` cannot connect at all, your IP is blocked by
+the database security group or the cluster is waking: retry after 20 seconds.
+Count the rows (`select count(*)` over the same join) while you click around
+and compare with the connection budget in Backend Spec §17 / Deployment
+Checklist §1.3.
+
+**9.4 Auto-pause and resume (DoD 11).** Leave everything idle for about 10
+minutes, then:
+
+```bash
+aws cloudwatch get-metric-statistics --namespace AWS/RDS \
+  --metric-name ServerlessDatabaseCapacity \
+  --dimensions Name=DBClusterIdentifier,Value=dilm-staging-db \
+  --start-time "$(date -u -v-30M +%Y-%m-%dT%H:%M:%SZ)" \
+  --end-time "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  --period 300 --statistics Maximum --region ap-southeast-3 \
+  --query 'sort_by(Datapoints,&Timestamp)[].Maximum'
+```
+
+Expected: the list ends in `0.0` (paused). On Linux use
+`date -u -d '30 minutes ago' +%Y-%m-%dT%H:%M:%SZ`. Then reload `/admin`: the
+first request is slow (up to about 25 seconds) and succeeds. If the capacity
+never reaches 0, something keeps a connection open (a stray `psql` session, a
+Lambda that did not close) and the "Aurora held at 1 ACU" alarm fires after 30
+minutes.
+
+**9.5 Secrets Manager holds only two secrets (DoD 12).**
+
+```bash
+aws secretsmanager list-secrets --region ap-southeast-3 \
+  --query 'SecretList[].[Name,RotationEnabled]' --output text
+```
+
+Expected: exactly two lines: the RDS-managed master (`rds!cluster-...`) and
+`dilm-staging-payload-app`, the latter with `True`. Anything else is a leftover
+from an old flow: delete it.
+
+**9.6 Manual rotation (the same checks for the 30-day schedule).**
+
+```bash
+aws secretsmanager rotate-secret --secret-id dilm-staging-payload-app --region ap-southeast-3
+sleep 60
+aws secretsmanager get-secret-value --secret-id dilm-staging-payload-app \
+  --region ap-southeast-3 --query SecretString --output text | jq -r .username
+```
+
+Expected: the username flips from `payload_app` to `payload_app_clone` (run it
+twice to see it flip back). Then reload `/admin` and save a page: the CMS keeps
+working (one request right after the flip may fail; the next works). If the
+username does not change, read the log group of the `dilm-staging-*` rotation
+function in CloudWatch (region ap-southeast-3); each of the four steps logs,
+and none logs a password. A `timeout` there means the function cannot reach
+Aurora on 5432.
+
+**9.7 The dead-letter queue alarm fires (DoD 8).**
+
+```bash
+aws sqs send-message --queue-url "<cvDeadLetterQueueUrl>" \
+  --message-body '{"test":"dlq-alarm"}' --region ap-southeast-3
+sleep 120
+aws cloudwatch describe-alarms --alarm-name-prefix dilm-staging- \
+  --region ap-southeast-3 --query 'MetricAlarms[].[AlarmName,StateValue]' --output table
+```
+
+Expected: eight `dilm-staging-*` alarms; the dead-letter one reads `ALARM`, the
+SES ones may read `INSUFFICIENT_DATA` until the account has sent mail, and the
+Aurora one is `OK`. If `ALARM_EMAIL` is set and its link was clicked, an email
+arrives. Clean up: `aws sqs purge-queue --queue-url "<cvDeadLetterQueueUrl>" --region ap-southeast-3`
+(the alarm returns to `OK` within a few minutes). If it never fires, check the
+alarm exists in ap-southeast-3, not another region. Test the email path alone with
+`aws sns publish --topic-arn "<alarmTopicArn>" --message test --region ap-southeast-3`.
+
+**9.8 Buckets are private (DoD 6).**
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' https://<cvPrivateBucket>.s3.ap-southeast-3.amazonaws.com/
+aws s3api get-public-access-block --bucket <cvPrivateBucket> --region ap-southeast-3 \
+  --query 'PublicAccessBlockConfiguration'
+```
+
+Expected: `403`, and four `true` values (repeat for `publicBucket`).
+
+| DoD item | How to check                                                                                                                                                                                                    |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1        | 9.1, plus log in as the Super Admin from step 8: the three tenants are listed.                                                                                                                                  |
+| 2, 3, 5  | In the admin, create an Editor and a Viewer for one tenant (Users). Log in as each: only that tenant's data shows, Editor can save, Viewer cannot, neither can manage users or tenants.                         |
+| 4        | Fail five logins for a throwaway user: the account locks (clears after 10 minutes or a Super Admin unlocks it). No MFA prompt exists on purpose.                                                                |
+| 6, 7     | Send a synthetic message to `cvQueueUrl` with `aws sqs send-message` (the body shape is the CV queue contract in `packages/shared-types/src/cv-queue.ts`). A `cv-submissions` record appears; 9.8 for the file. |
+| 8        | 9.7, plus a malformed message: it lands in the dead-letter queue after 5 receives.                                                                                                                              |
+| 9        | Upload a small PDF (under about 6 MB, see Known gaps) to an investor-relations document: the save succeeds.                                                                                                     |
+| 10       | Use "Forgot password" for a verified recipient: the mail arrives from the shared sender (phase 1) or the tenant `noreply@` address (phase 2).                                                                   |
+| 11       | 9.3 and 9.4.                                                                                                                                                                                                    |
+| 12       | 9.5, plus `git log -p` shows no secrets and `aws ssm get-parameters-by-path` (step 7) shows only encrypted values.                                                                                              |
+| 13       | Switch the admin language between `en` and `id`; adding a locale is a configuration entry (look for the locale list in `apps/cms/src`).                                                                         |
+
+### 10. Cost note
+
+A staging stack that is idle costs little: Aurora pauses after 5 idle minutes
+and then bills only storage; Lambda, SQS, CloudFront and CloudWatch bill by
+use. The standing costs are Aurora storage and backups, the S3 buckets,
+Secrets Manager (two secrets), and the public IPv4 address the database uses.
+Cost alarms come from step 3.2. Check the figure in the Billing console after
+the first week; do not trust this paragraph for an amount.
+
+### 11. Undo, teardown and rollback
+
+**Remove the staging stack** (disposable stage; the other stages are not
+touched):
+
+```bash
+pnpm --filter infra exec sst remove --stage staging
+```
+
+Do not use `pnpm remove`: pnpm treats that as its own command, like `deploy`.
+Expected: SST lists the resources it deletes and finishes. The account-level
+stacks (`dilm-github-oidc`, `dilm-ses-identities`, `dilm-budgets`) stay. If a
+later redeploy complains that the `dilm-staging-payload-app` secret is
+"scheduled for deletion", run the force delete from step 4.2. `production` is
+`protect: true` with `removal: "retain"`: `sst remove --stage production` will
+not delete it and the database keeps a final snapshot; removing it is a
+manual decision, never part of a routine.
+
+**Remove the old `dev` stage** (no longer needed once staging runs):
+
+```bash
+pnpm --filter infra exec sst remove --stage dev
+```
+
+Then delete the express database cluster `dilm-dev-db`, which SST only
+reads and so never deletes: in the RDS console choose it, Delete, and tick that
+you do not need a snapshot. A CLI equivalent is `aws rds delete-db-cluster
+--db-cluster-identifier dilm-dev-db --skip-final-snapshot --region
+ap-southeast-3`; express clusters may need the console, not verified. The
+Migrate dev workflow stops working afterwards.
+
+**Roll back a bad release.** Redeploy the last good commit; the migrations
+do not undo themselves:
+
+```bash
+git switch --detach <good commit>
+pnpm --filter @dilm/cms build:open-next
+pnpm deploy:staging
+git switch main
+```
+
+Or, in GitHub, re-run the earlier successful "Deploy staging" run (a re-run
+uses that run's commit). Rolling the code back does **not** roll the database
+back: a migration that already ran stays. That is why every migration is
+written expand-then-contract (see "Database migrations"): the previous code
+still works on the new shape because the release only added things. A
+migration that failed halfway leaves the new code live on the old schema:
+fix forward, or redeploy the previous commit as above. A migration that
+dropped or renamed data (a contract step) cannot be undone from this repo:
+restore from the Aurora backups (7 days, point-in-time restore in the RDS
+console into a new cluster) and move traffic by hand.
+
+### 12. Phase 2 differences (client account, DILM-40)
+
+Repeat steps 1 to 9 on the client account with these changes:
+
+- **Credentials and role.** A new AWS profile for the client account (console
+  access only so far; CLI access and the least-privilege policy were requested
+  from the client). Run `bootstrap-aws.sh` there and replace
+  `AWS_DEPLOY_ROLE_ARN` in GitHub (and in the `production` Environment) with
+  the new role. The same GitHub repo then deploys to the new account, so move
+  the secret only when you mean it to.
+- **Quota.** Request the Lambda concurrency increase (step 1.4) before deploying.
+  Without it the deploy works but is throttled.
+- **SES.** No shared sender: leave `SES_SHARED_SENDER` unset and clear the
+  variable. Run `bootstrap-ses.sh`, give the client the DNS records it prints,
+  wait for verification, request production access, confirm the à-la-carte plan.
+- **Budgets and alarms.** Run `bootstrap-budgets.sh` again there; set
+  `ALARM_EMAIL` to the client's address.
+- **No data is copied.** The new database is empty; run step 8 for it. Staging
+  content from the personal account does not move; if needed, export and import
+  it through the admin or a database dump by hand.
+- Aurora minor and the `payload_app` secret are per account: step 4 applies in
+  full, including deleting a leftover secret.
+
+### Known gaps and decisions
+
+Open items from the DILM-171 run that the maintainer should know about. None of
+them blocks the checklist above; each needs a decision or a follow-up ticket.
+
+- [ ] **Large IR PDF uploads.** A file near the 50 MB limit cannot pass through
+      Lambda (about 6 MB request body) or API Gateway (10 MB). It needs Payload's
+      S3 `clientUploads` (browser straight to S3) plus bucket CORS. No ticket yet.
+      Images over 4 MB are refused with a message by design.
+- [ ] **Preview secret on AWS.** The preview link reads `PREVIEW_SECRET` from the
+      process environment inside a client component, which does not exist on
+      Lambda. It needs a server-side approach.
+- [ ] **API-key-only protection of the origin.** The API Gateway is protected by
+      a shared key sent by CloudFront, weaker than the old IP policy: a leaked
+      key reaches the Lambda from any IP. Stronger options were not built.
+- [ ] **CloudFront `PriceClass_100` and data residency.** It serves only North
+      America and Europe edges, so admin responses may transit foreign edge
+      locations for Indonesian viewers. Whether that is acceptable under UU PDP
+      (Backend Spec §3.7) is the owner's call; `PriceClass_All` is the alternative.
+- [ ] **Migrate after deploy.** One `sst deploy` cannot hold traffic back, so the
+      order is deploy, then migrate; a failing migration leaves new code on the
+      old schema. Accept this with expand-then-contract migrations, or split the
+      deploy (not built).
+- [ ] **Budgets in ap-southeast-3.** Not verified that CloudFormation there
+      supports the Budgets resource, and the baseline and ceiling figures
+      (Backend Spec §15) and the alarm thresholds were not available to the
+      executor: confirm them.
+- [ ] **Deploy roles carry `PowerUserAccess`.** Narrowing them (for example to the
+      `payload_app` secret, no `rds-db:connect`) is a follow-up; the client's
+      least-privilege policy is not in this repo.
+- [ ] **`seed:tenants` overwrite and abort.** Re-running the bootstrap updates a
+      tenant whose name, domain, default locale or brand colour was edited in the
+      admin, and exits with an error on an unexpected tenant before the admin is
+      created. Do not re-run the bootstrap on staging after editors have changed
+      tenants.
+- [ ] **Layout seed oddity.** On one scratch run `--demo` printed no layout lines
+      the first time and created all six headers and footers the second time. Not
+      reproduced; re-run `--demo` on a fresh database and count rows after run 1.
+- [ ] **Bootstrap local guard.** With `BOOTSTRAP_ENV_FILE` the guard reads a
+      different file than the child commands; follow-up recommended. A local
+      `payload run` seed on a password-auth database can time out on the pull of
+      the schema.
+- [ ] **Allowlisted IPs in public logs.** Repository variables are not masked, so
+      the four IPs, `ALARM_EMAIL` and the shared sender show in Actions logs.
+      Accepted so far; moving them to secrets is the owner's decision.
+- [ ] **Aurora minor pin.** Step 4.1 must be done once by hand and committed.
+
 ## CI/CD
 
 | Workflow                | Trigger         | Does                                                                           |
@@ -1093,9 +1708,10 @@ ours exists in us-east-1.
 | `deploy-production.yml` | Manual dispatch | `sst deploy --stage production`, behind the environment approval               |
 | `migrate-dev.yml`       | Manual dispatch | `payload migrate` against the dev express cluster, signed in with an IAM token |
 
-Both deploy workflows will run `pnpm --filter @dilm/cms migrate` before
-`sst deploy` once Aurora exists (DILM-38): the runner connects to Aurora's
-public endpoint over TLS as `payload_app` (Backend Spec §8.1, §13).
+Both deploy workflows run `scripts/ci/migrate-deployed.sh` right after
+`sst deploy`: the runner connects to Aurora's public endpoint over TLS as
+`payload_app` (Backend Spec §8.1, §13). See "Database migrations" for what
+that order means for a failing migration.
 
 ## Runtime config on AWS
 

@@ -54,6 +54,8 @@ jobs:
         env:
           ADMIN_ALLOWED_IPS: ${{ vars.ADMIN_ALLOWED_IPS || '192.0.2.1' }}
           ALARM_EMAIL: ${{ vars.ALARM_EMAIL }}
+          SES_SHARED_SENDER: ${{ vars.SES_SHARED_SENDER }}
+          SES_SHARED_SENDER_IDENTITY: ${{ vars.SES_SHARED_SENDER_IDENTITY }}
 
   migrations:
     name: Payload migrations
