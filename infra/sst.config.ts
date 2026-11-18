@@ -35,6 +35,7 @@ export default $config({
     const storage = await import("./src/storage");
     const gateway = await import("./src/gateway");
     const parameters = await import("./src/parameters");
+    const rotation = await import("./src/rotation");
     const { randomBytes } = await import("node:crypto");
     const production = $app.stage === "production";
     const senderSetting = sesSenderSetting($app.stage);
@@ -205,6 +206,62 @@ export default $config({
         dbSubnetGroupName: dbSubnetGroup.name,
         publiclyAccessible: true,
       });
+      const masterSecretArn = dbCluster.masterUserSecrets.apply(
+        (secrets) => secrets[0].secretArn,
+      );
+      const payloadAppSecretName = database.auroraPayloadAppSecretName(
+        $app.stage,
+      );
+      const payloadAppSecret = new aws.secretsmanager.Secret(
+        "PayloadAppSecret",
+        {
+          name: payloadAppSecretName,
+          description: `payload_app login for ${$app.stage}: username, password, host, port, dbname and masterarn. The first value is written by scripts/db/create-payload-app-role.sh; alternating-users rotation every ${rotation.PAYLOAD_APP_ROTATION_DAYS} days after that (DILM-12).`,
+          recoveryWindowInDays: production ? 30 : 0,
+        },
+      );
+      const rotationFunction = new sst.aws.Function("PayloadAppRotation", {
+        handler: "src/rotation/handler.handler",
+        runtime: "nodejs22.x",
+        architecture: "arm64",
+        timeout: "2 minutes",
+        copyFiles: [
+          {
+            from: "src/rotation/ap-southeast-3-bundle.pem",
+            to: "ca-bundle.pem",
+          },
+        ],
+        permissions: $resolve([payloadAppSecret.arn, masterSecretArn]).apply(
+          ([payloadArn, masterArn]) =>
+            rotation
+              .rotationLambdaPolicy(payloadArn, masterArn)
+              .Statement.map((statement) => ({
+                actions: statement.Action,
+                resources: statement.Resource,
+              })),
+        ),
+      });
+      const rotationInvoke = new aws.lambda.Permission(
+        "PayloadAppRotationInvoke",
+        {
+          action: "lambda:InvokeFunction",
+          function: rotationFunction.name,
+          principal: "secretsmanager.amazonaws.com",
+          sourceArn: payloadAppSecret.arn,
+        },
+      );
+      new aws.secretsmanager.SecretRotation(
+        "PayloadAppRotationSchedule",
+        {
+          secretId: payloadAppSecret.id,
+          rotationLambdaArn: rotationFunction.arn,
+          rotateImmediately: false,
+          rotationRules: {
+            automaticallyAfterDays: rotation.PAYLOAD_APP_ROTATION_DAYS,
+          },
+        },
+        { dependsOn: [rotationInvoke] },
+      );
       new sst.Linkable("Database", {
         properties: {
           auth: "secret",
@@ -212,21 +269,17 @@ export default $config({
           port: dbCluster.port,
           database: database.PAYLOAD_DATABASE_NAME,
           username: database.PAYLOAD_DATABASE_USER,
-          secretArn: $interpolate`arn:${partition.partition}:secretsmanager:${REGION}:${caller.accountId}:secret:${database.auroraPayloadAppSecretName($app.stage)}`,
+          secretArn: payloadAppSecret.arn,
         },
         include: [
           sst.aws.permission({
             actions: ["secretsmanager:GetSecretValue"],
-            resources: [
-              $interpolate`arn:${partition.partition}:secretsmanager:${REGION}:${caller.accountId}:secret:${database.auroraPayloadAppSecretName($app.stage)}-*`,
-            ],
+            resources: [payloadAppSecret.arn],
           }),
         ],
       });
       databaseHost = dbCluster.endpoint;
-      databaseMasterSecretArn = dbCluster.masterUserSecrets.apply(
-        (secrets) => secrets[0].secretArn,
-      );
+      databaseMasterSecretArn = masterSecretArn;
       // TODO(DILM-38): link the Payload function and the CV consumer to the
       // Database linkable; the runtime-config loader reads secretArn (a
       // partial ARN, valid as SecretId) from SST_RESOURCE_Database.

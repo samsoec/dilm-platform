@@ -568,7 +568,9 @@ accessible in the public subnets, with `rds.force_ssl=1` and
 `password_encryption=scram-sha-256`. The master credential is RDS-managed in
 Secrets Manager (ARN in the `databaseMasterSecretArn` output). After the first
 deploy run `scripts/db/create-payload-app-role.sh --stage <stage>` to create
-the `payload_app` role and its `dilm-<stage>-payload-app` secret. Production
+the `payload_app` role and write the first value into the
+`dilm-<stage>-payload-app` secret, which the deploy creates empty (see
+"Rotation of the `payload_app` secret" below). Production
 has deletion protection and a final snapshot and is retained on removal.
 
 ## Code quality
@@ -1008,5 +1010,44 @@ Secrets Manager or SSM call on the request path):
   those four ARNs.
 - The `payload_app` secret, read by the database pool when
   `DATABASE_AUTH=secret`, cached per ARN for the life of the container.
+
+### Rotation of the `payload_app` secret
+
+Secrets Manager holds exactly two secrets: the RDS-managed master and
+`dilm-<stage>-payload-app`. The deploy creates the second one empty, plus a
+rotation Lambda (`infra/src/rotation/handler.ts`) and a 30-day rotation
+schedule with `rotateImmediately: false`; the script above seeds the first
+value (including `masterarn`, the superuser secret the Lambda reads). The
+Lambda runs outside the VPC and reaches the public Aurora endpoint over TLS
+verified against the bundled `ap-southeast-3` RDS CA, and it needs no reserved
+concurrency. Rotation is alternating-users: it flips the login between
+`payload_app` and `payload_app_clone` (a member of `payload_app`), so the
+previous login keeps working for one more 30-day cycle.
+
+Warm functions: the database pool reads the secret once per cold start. Its
+`pg` client class (`rotationAwareClient` in `packages/runtime-config`) takes
+the user and password from the latest cached secret for each new connection,
+and on an authentication error (`28P01`/`28000`) it re-reads the secret, at
+most once per 10 seconds, so the next connection uses the rotated login. That
+one request fails and the next one works (it is not a literal retry); there is no per-request `GetSecretValue`. Alternating users
+means this only matters for a container older than one rotation cycle.
+
+Ownership: the clone is granted `payload_app` and has `ALTER ROLE ... SET ROLE
+payload_app`, so after login every session acts as `payload_app` and tables
+created through either login are owned by `payload_app`. Otherwise a migration
+run after rotation 1 would create tables owned by the clone and ALTER/DROP
+would fail after rotation 2. Checked on a scratch Postgres 16: logging in as
+the clone, `current_user` is `payload_app` and a created table is owned by it.
+
+Operating notes:
+
+- A `dilm-<stage>-payload-app` secret left over from the earlier script flow
+  makes the deploy fail with "already exists"; delete it (force, no recovery
+  window) or `pulumi import` it first, then re-run the role script.
+- `masterarn` inside the secret goes stale if the cluster is ever replaced,
+  until the role script is re-run.
+- Rotation sends `ALTER ROLE ... PASSWORD '<text>'` to the database, so keep
+  `log_statement` off (`none`) in the cluster parameter group; do not enable
+  `ddl` or `all`.
 
 `rds-db:connect` is only granted by the `Database` linkable on `dev`.

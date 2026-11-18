@@ -185,10 +185,23 @@ importers:
         version: 5.9.3
 
   infra:
+    dependencies:
+      '@aws-sdk/client-secrets-manager':
+        specifier: 3.1141.0
+        version: 3.1141.0
+      pg:
+        specifier: 8.20.0
+        version: 8.20.0
     devDependencies:
       '@dilm/shared-types':
         specifier: workspace:*
         version: link:../packages/shared-types
+      '@types/aws-lambda':
+        specifier: 8.10.163
+        version: 8.10.163
+      '@types/pg':
+        specifier: 8.20.0
+        version: 8.20.0
       sst:
         specifier: ^4.17.1
         version: 4.17.1
@@ -225,6 +238,13 @@ importers:
       '@aws-sdk/rds-signer':
         specifier: 3.1141.0
         version: 3.1141.0
+      pg:
+        specifier: 8.20.0
+        version: 8.20.0
+    devDependencies:
+      '@types/pg':
+        specifier: 8.20.0
+        version: 8.20.0
 
   packages/shared-types:
     devDependencies:
@@ -1750,6 +1770,9 @@ packages:
   '@smithy/core@3.35.0':
     resolution: {integrity: sha512-zRMhfkByhT2snNdr1si24vJitU6Cr9ix2MikUfWmkAgp4jrNP0GcKSP5YvwQ+TlI8AZXER5QOGJn3JsVtSD9/A==}
     engines: {node: '>=18.0.0'}
+    deprecated: |-
+      Deprecated due to a bug in custom logger data redaction. Upgrade to the latest version. If you used a custom logger with this
+        version, review your logs and rotate any credentials or other secrets. See https://github.com/aws/aws-sdk-js-v3/issues/8393.
 
   '@smithy/credential-provider-imds@4.5.2':
     resolution: {integrity: sha512-A9uSdn72ozbRUSit0eib0TW7nXuNPlaeM0zcGkJ+nE6tFcSDbnmtwoxbTCFBukVQcszDAyvsd7+rTduPTXpygg==}

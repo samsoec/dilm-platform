@@ -10,6 +10,12 @@
   },
   "devDependencies": {
     "@dilm/shared-types": "workspace:*",
+    "@types/aws-lambda": "8.10.163",
+    "@types/pg": "8.20.0",
     "sst": "^4.17.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "3.1141.0",
+    "pg": "8.20.0"
   }
 }

@@ -1,5 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+const fakePg = vi.hoisted(() => ({ failure: undefined as Error | undefined }));
+vi.mock("pg", () => ({
+  default: {
+    Client: class {
+      constructor(public config: Record<string, unknown>) {}
+      connect(callback: (error?: Error) => void) {
+        callback(fakePg.failure);
+      }
+    },
+  },
+}));
+
 import type { DatabaseConfig } from "./config";
 import {
   clearDatabaseSecretCache,
@@ -136,6 +148,77 @@ describe("databasePoolConfig", () => {
     await expect(
       databasePoolConfig(configs.secret, "cms", providers),
     ).resolves.toMatchObject({ password: "rotated" });
+  });
+});
+
+describe("rotation-aware client", () => {
+  const authFailure = Object.assign(
+    new Error("password authentication failed"),
+    {
+      code: "28P01",
+    },
+  );
+
+  async function clientClass(providers: DatabaseCredentialProviders) {
+    const { Client } = await databasePoolConfig(
+      configs.secret,
+      "cms",
+      providers,
+    );
+    return Client as unknown as new (config: object) => {
+      config: { user: string; password: string };
+      connect(callback: (error?: Error) => void): void;
+    };
+  }
+
+  afterEach(() => {
+    fakePg.failure = undefined;
+  });
+
+  it("re-reads the secret after an auth failure so the next connection uses the rotated login", async () => {
+    const providers = fakeProviders();
+    const Client = await clientClass(providers);
+    expect(new Client({}).config).toMatchObject({
+      user: "payload_app_clone",
+      password: "rotated",
+    });
+
+    vi.mocked(providers.secretString).mockResolvedValue(
+      JSON.stringify({
+        ...JSON.parse(rdsSecret),
+        username: "payload_app",
+        password: "rotated-again",
+      }),
+    );
+    fakePg.failure = authFailure;
+    const reported = await new Promise<Error | undefined>((resolve) =>
+      new Client({}).connect(resolve),
+    );
+
+    expect(reported).toBe(authFailure);
+    expect(providers.secretString).toHaveBeenCalledTimes(2);
+    expect(new Client({}).config).toMatchObject({
+      user: "payload_app",
+      password: "rotated-again",
+    });
+  });
+
+  it("does not touch Secrets Manager for other connection errors", async () => {
+    const providers = fakeProviders();
+    const Client = await clientClass(providers);
+    fakePg.failure = Object.assign(new Error("timeout"), { code: "ETIMEDOUT" });
+    await new Promise((resolve) => new Client({}).connect(resolve));
+    expect(providers.secretString).toHaveBeenCalledTimes(1);
+  });
+
+  it("refreshes at most once in a burst of failures", async () => {
+    const providers = fakeProviders();
+    const Client = await clientClass(providers);
+    fakePg.failure = authFailure;
+    for (let i = 0; i < 3; i++) {
+      await new Promise((resolve) => new Client({}).connect(resolve));
+    }
+    expect(providers.secretString).toHaveBeenCalledTimes(2);
   });
 });
 

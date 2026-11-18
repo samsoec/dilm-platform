@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   loadRuntimeConfig,
@@ -229,6 +229,22 @@ describe("getRuntimeConfig", () => {
       const first = await getRuntimeConfig();
       process.env.PAYLOAD_SECRET = "changed";
       expect(await getRuntimeConfig()).toBe(first);
+    } finally {
+      process.env = previous;
+    }
+  });
+
+  it("tries again after a rejected load instead of caching the failure", async () => {
+    vi.resetModules();
+    const { getRuntimeConfig } = await import("./index");
+    const previous = { ...process.env };
+    process.env = { RUNTIME_CONFIG_SOURCE: "env" };
+    try {
+      await expect(getRuntimeConfig()).rejects.toThrow(/Missing environment/);
+      Object.assign(process.env, envExample);
+      await expect(getRuntimeConfig()).resolves.toMatchObject({
+        payloadSecret: envExample.PAYLOAD_SECRET,
+      });
     } finally {
       process.env = previous;
     }
