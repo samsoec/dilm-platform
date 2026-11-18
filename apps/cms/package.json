@@ -17,6 +17,7 @@
     "migrate:status": "pnpm payload migrate:status",
     "qa:shots": "node --env-file-if-exists=../../.env scripts/qa-shots.mjs",
     "payload": "node --env-file-if-exists=../../.env node_modules/payload/bin.js",
+    "seed:admin": "pnpm payload run src/seed/seed-admin.ts",
     "seed:cv-samples": "pnpm payload run src/seed/seed-cv-samples.ts",
     "seed:layout": "pnpm payload run src/seed/seed-layout.ts",
     "seed:pages": "pnpm payload run src/seed/seed-pages.ts",

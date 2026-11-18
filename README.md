@@ -502,6 +502,23 @@ MinIO's official Docker images were discontinued in late 2025, so the stack
 uses [`pgsty/minio`](https://hub.docker.com/r/pgsty/minio), a
 community-maintained build of the same server, pinned to a fixed release.
 
+## Bootstrapping an empty CMS database
+
+`scripts/bootstrap-cms.sh --stage <staging|production|local> --email <address>`
+takes an empty database to a usable CMS: migrate, `seed:tenants`, the first
+Super Admin (`seed:admin`) and, with `--demo`, `seed:layout` + `seed:pages`.
+Re-running it changes nothing: no migration, tenant, user or page is
+duplicated, and an existing user (so an existing Super Admin's password) is
+never touched. On staging and production it signs in as `payload_app` through
+the `dilm-<stage>-payload-app` secret over verified TLS, like the deploy
+migration step, and never uses the Aurora master login.
+
+It is an operator-run script, not a workflow, so the password is typed at a
+hidden prompt or generated and shown once on the terminal
+(`--generate-password`); `BOOTSTRAP_ADMIN_PASSWORD` is the CI route, from a
+repository secret (it is masked in GitHub Actions). Production needs
+`--confirm-production` and never gets demo content. Run `--help` for details.
+
 ## Database migrations
 
 A migration is a committed file in `apps/cms/src/migrations/` that describes
