@@ -10,7 +10,7 @@ Creates the least-privilege payload_app role on the Aurora cluster of a stage
 and writes its first value into the Secrets Manager secret
 dilm-<stage>-payload-app (JSON: username, password, host, port, dbname,
 masterarn). The secret itself, its 30-day alternating-users rotation and the
-rotation Lambda are created by `pnpm deploy` (infra/sst.config.ts), so deploy
+rotation Lambda are created by `pnpm deploy:<stage>` (infra/sst.config.ts), so deploy
 the stage first. Rotation never runs before this first value exists.
 
 payload_app owns the public schema of the dilm database and has no superuser,
