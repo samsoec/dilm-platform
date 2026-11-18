@@ -784,6 +784,39 @@ To use it: verify the identity (`aws sesv2 create-email-identity
 records), set `dilm-transactional` as its default configuration set, and,
 while the account is in the SES sandbox, verify each recipient the same way.
 
+## CMS admin entry and IP allowlist
+
+The CMS admin is reached at the REST API's default URL,
+`https://<id>.execute-api.ap-southeast-3.amazonaws.com/<stage>`, printed as the
+`adminUrl` stack output. There is no custom domain and no Cloudflare in front.
+The API carries a resource policy (built in `infra/src/gateway.ts`) that
+denies every source IP outside the allowlist, evaluated by API Gateway before
+any integration runs. It is not WAF and not application code.
+
+The four static IPs (the maintainer plus 3 PICs) are stage config, never code:
+
+```bash
+ADMIN_ALLOWED_IPS=203.0.113.1,203.0.113.2,203.0.113.3,198.51.100.4 pnpm deploy:staging
+```
+
+In CI the same value is the repository variable `ADMIN_ALLOWED_IPS` (the PR
+`sst diff` falls back to a documentation address when it is unset; the deploy
+workflows do not). The repository is public and GitHub variables are not masked, so the
+allowlisted IPs show up in `sst diff` and deploy logs (the policy JSON). That
+exposure is accepted for now; moving the value to a secret is a decision for
+the owner.
+
+Only single IPv4 addresses are accepted, at most four, and
+an empty list fails the deploy, so the API never opens by accident.
+
+Runbook (DILM-175): changing the allowlist means changing the variable and
+redeploying the whole stage. The policy only takes effect when a new API
+deployment is made, which the stage deploy does whenever the list changes.
+
+Until the Payload function exists (DILM-38) the API answers 503 from a mock
+integration, so the URL and the allowlist can be checked first: an allowed IP
+gets `503 {"message": "CMS not deployed yet"}`, any other gets `403`.
+
 ## CV intake consumer
 
 A career application reaches the CMS as a message on the CV queue: the
