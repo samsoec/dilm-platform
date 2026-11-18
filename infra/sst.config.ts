@@ -48,6 +48,7 @@ export default $config({
     });
 
     let databaseHost: $util.Output<string> | undefined;
+    let databaseMasterSecretArn: $util.Output<string> | undefined;
     let databaseNetwork:
       | {
           subnetGroupName: $util.Output<string>;
@@ -147,10 +148,69 @@ export default $config({
         subnetGroupName: dbSubnetGroup.name,
         securityGroupId: dbSecurityGroup.id,
       };
-      // TODO(DILM-5): provision the locked-architecture Aurora cluster on
-      // databaseNetwork (subnet group + security group above), with a
-      // force_ssl parameter group, for staging/production.
-      // Use an Aurora PostgreSQL 16.x engine version (DILM-172), minor pinned.
+      const dbParameterGroup = new aws.rds.ClusterParameterGroup(
+        "DatabaseParameterGroup",
+        {
+          name: `dilm-${$app.stage}-db`,
+          family: database.AURORA_PARAMETER_FAMILY,
+          description: "Force TLS and scram-sha-256 for the Aurora cluster",
+          parameters: database.auroraParameters(),
+        },
+      );
+      const production = $app.stage === "production";
+      // TODO(DILM-172): pin the Aurora minor (e.g. 16.x) once it can be read
+      // from describe-orderable-db-instance-options; major 16 until then.
+      const dbCluster = new aws.rds.Cluster("DatabaseCluster", {
+        clusterIdentifier: `dilm-${$app.stage}-db`,
+        engine: database.AURORA_ENGINE,
+        engineMode: "provisioned",
+        engineVersion: database.AURORA_MAJOR_VERSION,
+        databaseName: database.PAYLOAD_DATABASE_NAME,
+        masterUsername: database.AURORA_MASTER_USERNAME,
+        manageMasterUserPassword: true,
+        storageEncrypted: true,
+        dbSubnetGroupName: dbSubnetGroup.name,
+        vpcSecurityGroupIds: [dbSecurityGroup.id],
+        dbClusterParameterGroupName: dbParameterGroup.name,
+        serverlessv2ScalingConfiguration: database.auroraScaling(),
+        backupRetentionPeriod: database.AURORA_BACKUP_RETENTION_DAYS,
+        deletionProtection: production,
+        skipFinalSnapshot: !production,
+        finalSnapshotIdentifier: production
+          ? `dilm-${$app.stage}-db-final`
+          : undefined,
+      });
+      new aws.rds.ClusterInstance("DatabaseWriter", {
+        identifier: `dilm-${$app.stage}-db-writer`,
+        clusterIdentifier: dbCluster.id,
+        instanceClass: "db.serverless",
+        engine: database.AURORA_ENGINE,
+        engineVersion: dbCluster.engineVersion,
+        dbSubnetGroupName: dbSubnetGroup.name,
+        publiclyAccessible: true,
+      });
+      new sst.Linkable("Database", {
+        properties: {
+          auth: "secret",
+          host: dbCluster.endpoint,
+          port: dbCluster.port,
+          database: database.PAYLOAD_DATABASE_NAME,
+          username: database.PAYLOAD_DATABASE_USER,
+          secretName: database.auroraPayloadAppSecretName($app.stage),
+        },
+        include: [
+          sst.aws.permission({
+            actions: ["secretsmanager:GetSecretValue"],
+            resources: [
+              $interpolate`arn:aws:secretsmanager:${REGION}:${caller.accountId}:secret:${database.auroraPayloadAppSecretName($app.stage)}-*`,
+            ],
+          }),
+        ],
+      });
+      databaseHost = dbCluster.endpoint;
+      databaseMasterSecretArn = dbCluster.masterUserSecrets.apply(
+        (secrets) => secrets[0].secretArn,
+      );
       // TODO(DILM-12): grant secretsmanager:GetSecretValue on the payload_app
       // secret and expose its ARN as DATABASE_SECRET_ARN (auth "secret").
     }
@@ -170,6 +230,7 @@ export default $config({
       stage: $app.stage,
       payloadSesSendPolicy: payloadSesSend.arn,
       databaseHost,
+      databaseMasterSecretArn,
       databaseSecurityGroupId: databaseNetwork?.securityGroupId,
     };
   },

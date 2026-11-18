@@ -5,6 +5,12 @@ export const PAYLOAD_DATABASE_NAME = "dilm";
 export const PAYLOAD_DATABASE_USER = "payload_app";
 export const CI_DEPLOY_ROLE_NAME = "dilm-github-deploy";
 
+export const AURORA_ENGINE = "aurora-postgresql";
+export const AURORA_MAJOR_VERSION = "16";
+export const AURORA_PARAMETER_FAMILY = `aurora-postgresql${AURORA_MAJOR_VERSION}`;
+export const AURORA_MASTER_USERNAME = "dilm_admin";
+export const AURORA_BACKUP_RETENTION_DAYS = 7;
+
 const PAYLOAD_RESERVED_CONCURRENCY = 10;
 
 export type DatabaseMode = "express" | "aurora";
@@ -42,4 +48,19 @@ export function rdsDbConnectPolicy(
       },
     ],
   };
+}
+
+export function auroraScaling() {
+  return { minCapacity: 0, maxCapacity: 1, secondsUntilAutoPause: 300 };
+}
+
+export function auroraParameters() {
+  return [
+    { name: "rds.force_ssl", value: "1" },
+    { name: "password_encryption", value: "scram-sha-256" },
+  ];
+}
+
+export function auroraPayloadAppSecretName(stage: string): string {
+  return `dilm-${stage}-payload-app`;
 }

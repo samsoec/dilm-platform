@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  auroraParameters,
+  auroraPayloadAppSecretName,
+  auroraScaling,
   databaseMode,
   payloadReservedConcurrency,
   rdsDbConnectPolicy,
@@ -48,6 +51,29 @@ describe("rdsDbConnectPolicy", () => {
   it("never grants the IAM-only postgres admin user", () => {
     expect(JSON.stringify(rdsDbConnectPolicy(scope))).not.toMatch(
       /\/postgres|\*/,
+    );
+  });
+});
+
+describe("Aurora settings", () => {
+  it("scales 0 to 1 ACU and pauses after 300s idle", () => {
+    expect(auroraScaling()).toEqual({
+      minCapacity: 0,
+      maxCapacity: 1,
+      secondsUntilAutoPause: 300,
+    });
+  });
+
+  it("forces TLS and scram-sha-256 passwords", () => {
+    expect(auroraParameters()).toEqual([
+      { name: "rds.force_ssl", value: "1" },
+      { name: "password_encryption", value: "scram-sha-256" },
+    ]);
+  });
+
+  it("names the payload_app secret per stage", () => {
+    expect(auroraPayloadAppSecretName("staging")).toBe(
+      "dilm-staging-payload-app",
     );
   });
 });

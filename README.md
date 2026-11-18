@@ -557,6 +557,19 @@ Aurora PostgreSQL 16 engine version. Pick the minor from
 --db-instance-class db.serverless --region ap-southeast-3` when DILM-5 pins
 it, and check it against the `dev` express cluster's `EngineVersion`
 (`aws rds describe-db-clusters --db-cluster-identifier dilm-dev-db`).
+`infra/sst.config.ts` currently sets only the major (`16`) with a
+`TODO(DILM-172)`: no minor has been pinned yet.
+
+### Staging and production Aurora
+
+`sst deploy` creates the cluster `dilm-<stage>-db`: one `db.serverless` writer,
+0 to 1 ACU, auto-pause after 300s, encrypted, 7-day backups, publicly
+accessible in the public subnets, with `rds.force_ssl=1` and
+`password_encryption=scram-sha-256`. The master credential is RDS-managed in
+Secrets Manager (ARN in the `databaseMasterSecretArn` output). After the first
+deploy run `scripts/db/create-payload-app-role.sh --stage <stage>` to create
+the `payload_app` role and its `dilm-<stage>-payload-app` secret. Production
+has deletion protection and a final snapshot and is retained on removal.
 
 ## Code quality
 
