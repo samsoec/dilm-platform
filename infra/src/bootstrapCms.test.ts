@@ -4,6 +4,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  rmSync,
   readFileSync,
   writeFileSync,
 } from "node:fs";
@@ -21,7 +22,7 @@ function run(args: string[], env: Record<string, string> = {}) {
   for (const name of ["aws", "pnpm"]) {
     writeFileSync(
       path.join(bin, name),
-      `#!/bin/sh\necho "${name} $*" >> ${calls}\ncase "$*" in *get-caller-identity*) echo 111122223333;; *describe-secret*) echo arn:x;; esac\n`,
+      `#!/bin/sh\necho "${name} $* PW=[\${BOOTSTRAP_ADMIN_PASSWORD:-}]" >> ${calls}\ncase "$*" in *get-caller-identity*) echo 111122223333;; *describe-secret*) echo arn:x;; esac\n`,
     );
     chmodSync(path.join(bin, name), 0o755);
   }
@@ -30,11 +31,9 @@ function run(args: string[], env: Record<string, string> = {}) {
     stdin: "ignore",
     env: { PATH: `${bin}:${process.env.PATH}`, ...env },
   } as never);
-  return {
-    status: result.status,
-    stderr: result.stderr,
-    calls: existsSync(calls) ? readFileSync(calls, "utf8") : "",
-  };
+  const recorded = existsSync(calls) ? readFileSync(calls, "utf8") : "";
+  rmSync(dir, { recursive: true, force: true });
+  return { status: result.status, stderr: result.stderr, calls: recorded };
 }
 
 describe("bootstrap-cms.sh guard rails", () => {
@@ -91,11 +90,70 @@ describe("bootstrap-cms.sh guard rails", () => {
     },
   );
 
-  it("does not leak the password to child processes", () => {
-    const result = run(["--stage", "local", "--email", "a@b.co"], {
+  it("hands the password only to seed:admin", () => {
+    const result = run(["--stage", "local", "--email", "a@b.co", "--demo"], {
       DATABASE_HOST: "localhost",
       BOOTSTRAP_ADMIN_PASSWORD: "super-secret-pw-1",
     });
-    expect(result.calls).not.toContain("super-secret-pw-1");
+    expect(result.status).toBe(0);
+    const pnpm = result.calls.split("\n").filter((l) => l.startsWith("pnpm"));
+    expect(pnpm.map((l) => l.split(" ").slice(0, 4).join(" "))).toHaveLength(5);
+    const leaking = pnpm.filter((l) => l.includes("super-secret-pw-1"));
+    expect(leaking).toHaveLength(1);
+    expect(leaking[0]).toContain("seed:admin");
+    for (const line of pnpm.filter((l) => !l.includes("seed:admin"))) {
+      expect(line).toContain("PW=[]");
+    }
+  });
+});
+
+describe("bootstrap-cms.sh local host guard reads the .env", () => {
+  function withEnvFile(content: string | null) {
+    const dir = mkdtempSync(path.join(tmpdir(), "bootstrap-envfile-"));
+    const file = path.join(dir, ".env");
+    if (content !== null) writeFileSync(file, content);
+    return { BOOTSTRAP_ENV_FILE: file };
+  }
+  const local = ["--stage", "local", "--email", "a@b.co"];
+
+  it.each([
+    ["export form", "export DATABASE_HOST=x.rds.amazonaws.com\n"],
+    ["spaced form", "  DATABASE_HOST = x.rds.amazonaws.com\n"],
+    ["quoted form", 'DATABASE_HOST="x.rds.amazonaws.com"\n'],
+    [
+      "last line wins",
+      "DATABASE_HOST=localhost\nDATABASE_HOST=x.rds.amazonaws.com\n",
+    ],
+    ["no host", "DATABASE_NAME=dilm\n"],
+    ["inline comment", "DATABASE_HOST=localhost # old\n"],
+    ["carriage return", "DATABASE_HOST=localhost\r\n"],
+    [
+      "non-password auth",
+      "DATABASE_HOST=localhost\nexport DATABASE_AUTH = iam\n",
+    ],
+  ])("refuses %s", (_n, content) => {
+    const result = run(local, withEnvFile(content));
+    expect(result.status).toBe(2);
+    expect(result.calls).toBe("");
+  });
+
+  it("refuses a missing .env with no host in the environment", () => {
+    const result = run(local, { BOOTSTRAP_ENV_FILE: "/nonexistent/.env" });
+    expect(result.status).toBe(2);
+    expect(result.calls).toBe("");
+  });
+
+  it("lets the environment win over the file", () => {
+    const result = run(local, {
+      ...withEnvFile("DATABASE_HOST=x.rds.amazonaws.com\n"),
+      DATABASE_HOST: "localhost",
+    });
+    expect(result.status).toBe(0);
+  });
+
+  it("passes a localhost host", () => {
+    const result = run(local, withEnvFile("DATABASE_HOST = 'localhost'\n"));
+    expect(result.status).toBe(0);
+    expect(result.calls).toContain("pnpm");
   });
 });

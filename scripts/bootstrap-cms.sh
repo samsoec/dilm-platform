@@ -41,7 +41,9 @@ are masked in the log.
 Production also asks for the AWS account id to be typed (or
 BOOTSTRAP_CONFIRM_ACCOUNT set to it); the account id and region are printed to
 stderr before the database is touched. --demo is for empty databases only.
-The local stage refuses a DATABASE_HOST that is not localhost.
+The local stage refuses a DATABASE_HOST (environment first, then the root .env,
+or the file named by BOOTSTRAP_ENV_FILE, honoured only for local) that is missing
+or not localhost.
 
 Exit codes: 0 done (or nothing to do), 1 a step failed, 2 bad usage or refused.
 USAGE
@@ -77,17 +79,33 @@ REGION=ap-southeast-3
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 if [[ "$STAGE" == "local" ]]; then
-  db_host="${DATABASE_HOST:-}"
-  if [[ -z "$db_host" && -f "$ROOT/.env" ]]; then
-    db_host=$(sed -n 's/^DATABASE_HOST=//p' "$ROOT/.env" | tail -1 | tr -d "\"'")
-  fi
-  case "${db_host:-localhost}" in
+  env_file="$ROOT/.env"
+  [[ -z "${BOOTSTRAP_ENV_FILE:-}" ]] || env_file="$BOOTSTRAP_ENV_FILE"
+
+  local_setting() {
+    local key="$1" value
+    if [[ -n "${!key:-}" ]]; then
+      printf '%s' "${!key}"
+      return
+    fi
+    [[ -f "$env_file" ]] || return 0
+    value=$(sed -nE "s/^[[:space:]]*(export[[:space:]]+)?$key[[:space:]]*=[[:space:]]*//p" "$env_file" | tail -1)
+    if [[ "$value" == *$'\r'* || "$value" == *"#"* ]]; then
+      refuse "--stage local cannot read $key from $env_file: remove the inline comment or carriage return from the line."
+    fi
+    printf '%s' "$value" | tr -d "\"'" | sed -E 's/[[:space:]]+$//'
+  }
+
+  db_host=$(local_setting DATABASE_HOST)
+  [[ -n "$db_host" ]] || refuse "--stage local found no DATABASE_HOST in the environment or $env_file; refusing to guess the target database."
+  case "$db_host" in
     localhost|127.0.0.1|::1|postgres) ;;
     *) refuse "--stage local refuses DATABASE_HOST=$db_host: it is not a local database. Use --stage staging or production for Aurora." ;;
   esac
-  case "${DATABASE_AUTH:-password}" in
+  db_auth=$(local_setting DATABASE_AUTH)
+  case "${db_auth:-password}" in
     password) ;;
-    *) refuse "--stage local needs DATABASE_AUTH=password (or unset), not ${DATABASE_AUTH}." ;;
+    *) refuse "--stage local needs DATABASE_AUTH=password (or unset), not $db_auth." ;;
   esac
 fi
 
