@@ -54,6 +54,17 @@ describe("adminViewerRequestCode", () => {
   it("stays within the 10 KB CloudFront Function limit", () => {
     expect(code.length).toBeLessThan(10_000);
   });
+
+  it("admits every viewer with *, still forwarding the viewer host", () => {
+    const open = adminViewerRequestCode(["*"]);
+    for (const ip of ["203.0.113.10", "2001:db8::1"]) {
+      const out = run(open, ip, { host: { value: "d111.cloudfront.net" } });
+      expect(out.statusCode).toBeUndefined();
+      expect(out.headers["x-forwarded-host"]).toEqual({
+        value: "d111.cloudfront.net",
+      });
+    }
+  });
 });
 
 describe("staticBucketPolicy", () => {

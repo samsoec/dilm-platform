@@ -50,7 +50,8 @@ export function staticBucketName(stage: string): string {
 }
 
 export function adminViewerRequestCode(allowedIps: string[]): string {
-  const addresses = allowedIps.map((entry) => {
+  const openToEveryone = allowedIps.length === 1 && allowedIps[0] === "*";
+  const addresses = (openToEveryone ? [] : allowedIps).map((entry) => {
     const [address, prefix, ...rest] = entry.split("/");
     const octets = (address ?? "").split(".");
     const valid =
@@ -65,21 +66,26 @@ export function adminViewerRequestCode(allowedIps: string[]): string {
     }
     return address as string;
   });
-  if (addresses.length === 0) {
+  if (addresses.length === 0 && !openToEveryone) {
     throw new Error("The edge allowlist is empty; it would admit nobody.");
   }
+  const ipCheck = openToEveryone
+    ? []
+    : [
+        `  var allowed = ${JSON.stringify(addresses)};`,
+        "  if (allowed.indexOf(event.viewer.ip) === -1) {",
+        "    return {",
+        "      statusCode: 403,",
+        "      statusDescription: 'Forbidden',",
+        "      headers: { 'content-type': { value: 'text/plain' } },",
+        "      body: 'Forbidden'",
+        "    };",
+        "  }",
+      ];
   return [
     "function handler(event) {",
     "  var request = event.request;",
-    `  var allowed = ${JSON.stringify(addresses)};`,
-    "  if (allowed.indexOf(event.viewer.ip) === -1) {",
-    "    return {",
-    "      statusCode: 403,",
-    "      statusDescription: 'Forbidden',",
-    "      headers: { 'content-type': { value: 'text/plain' } },",
-    "      body: 'Forbidden'",
-    "    };",
-    "  }",
+    ...ipCheck,
     "  var host = request.headers.host;",
     "  delete request.headers['x-forwarded-host'];",
     "  if (host) {",

@@ -24,6 +24,7 @@ describe("adminAllowedIps", () => {
       "10.0.0.0/8",
       "nope",
       "1.2.3.4/33",
+      "1.2.3.*",
       "::1",
     ]) {
       expect(() =>
@@ -38,5 +39,20 @@ describe("adminAllowedIps", () => {
         ADMIN_ALLOWED_IPS: `${four},192.0.2.9`,
       }),
     ).toThrow(/maintainer plus 3 PICs/);
+  });
+
+  it("opens a non-production admin to everyone with *", () => {
+    expect(adminAllowedIps("staging", { ADMIN_ALLOWED_IPS: " * " })).toEqual([
+      "*",
+    ]);
+  });
+
+  it("refuses * on production and * mixed with addresses", () => {
+    expect(() =>
+      adminAllowedIps("production", { ADMIN_ALLOWED_IPS: "*" }),
+    ).toThrow(/refused on production/);
+    expect(() =>
+      adminAllowedIps("staging", { ADMIN_ALLOWED_IPS: "*,203.0.113.1" }),
+    ).toThrow(/cannot be combined/);
   });
 });

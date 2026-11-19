@@ -1180,12 +1180,12 @@ that the workflows pass to `sst deploy`. **Variables are not masked.** The
 repository is public, so every value below shows in plain text in the Actions
 logs, and in the repository settings. Do not put anything secret in them.
 
-| Variable                                          | Needed?                | Value                                                                            |
-| ------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------- |
-| `ADMIN_ALLOWED_IPS`                               | Required, every deploy | 1 to 4 single IPv4 addresses, comma-separated, e.g. `203.0.113.1,203.0.113.2`    |
-| `ALARM_EMAIL`                                     | Optional on staging    | The address that receives alarms; AWS emails a confirmation link to click once   |
-| `SES_SHARED_SENDER`, `SES_SHARED_SENDER_IDENTITY` | Phase 1 only, not prod | See step 6; leave unset on the client account                                    |
-| `AURORA_BACKUP_RETENTION_DAYS`                    | Free-plan account only | `1`. The AWS Free plan refuses the 7-day default; production refuses less than 7 |
+| Variable                                          | Needed?                | Value                                                                                                                                                                                        |
+| ------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ADMIN_ALLOWED_IPS`                               | Required, every deploy | 1 to 4 single IPv4 addresses, comma-separated, e.g. `203.0.113.1,203.0.113.2`. On non-production stages `*` opens the admin to every IP (only the login protects it; production refuses `*`) |
+| `ALARM_EMAIL`                                     | Optional on staging    | The address that receives alarms; AWS emails a confirmation link to click once                                                                                                               |
+| `SES_SHARED_SENDER`, `SES_SHARED_SENDER_IDENTITY` | Phase 1 only, not prod | See step 6; leave unset on the client account                                                                                                                                                |
+| `AURORA_BACKUP_RETENTION_DAYS`                    | Free-plan account only | `1`. The AWS Free plan refuses the 7-day default; production refuses less than 7                                                                                                             |
 
 Set them with `gh` (or in the browser):
 
