@@ -192,7 +192,7 @@ export default $config({
           vpcSecurityGroupIds: [dbSecurityGroup.id],
           dbClusterParameterGroupName: dbParameterGroup.name,
           serverlessv2ScalingConfiguration: database.auroraScaling(),
-          backupRetentionPeriod: database.AURORA_BACKUP_RETENTION_DAYS,
+          backupRetentionPeriod: database.auroraBackupRetentionDays($app.stage),
           deletionProtection: production,
           skipFinalSnapshot: !production,
           finalSnapshotIdentifier: production
@@ -418,6 +418,11 @@ export default $config({
       },
     );
     const adminIps = gateway.adminAllowedIps($app.stage);
+    if (adminIps[0] === gateway.ADMIN_OPEN_TO_EVERYONE) {
+      console.warn(
+        `${gateway.ADMIN_ALLOWED_IPS_ENV}="*": the ${$app.stage} CMS admin is open to every IP; only the login protects it.`,
+      );
+    }
     const viewerRequestCode = edge.adminViewerRequestCode(adminIps);
     const adminBinaryMediaTypes = ["*/*"];
     const adminApi = new aws.apigateway.RestApi("AdminApi", {

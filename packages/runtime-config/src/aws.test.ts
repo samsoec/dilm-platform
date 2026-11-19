@@ -190,3 +190,34 @@ describe("readSstResource", () => {
     );
   });
 });
+
+describe("readSstResource from the encrypted resource file", () => {
+  it("reads links SST v4 writes to SST_KEY_FILE instead of SST_RESOURCE_*", async () => {
+    const { createCipheriv, randomBytes } = await import("node:crypto");
+    const { mkdtempSync, writeFileSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    const key = randomBytes(32);
+    const cipher = createCipheriv("aes-256-gcm", key, Buffer.alloc(12, 0));
+    const body = Buffer.concat([
+      cipher.update(
+        JSON.stringify({
+          RuntimeConfigParameters: { prefix: "/dilm/staging" },
+        }),
+      ),
+      cipher.final(),
+      cipher.getAuthTag(),
+    ]);
+    const dir = mkdtempSync(join(tmpdir(), "sst-resource-"));
+    writeFileSync(join(dir, "resource.enc"), body);
+    const env = {
+      SST_KEY: key.toString("base64"),
+      SST_KEY_FILE: "resource.enc",
+      LAMBDA_TASK_ROOT: dir,
+    };
+    expect(readSstResource(env, "RuntimeConfigParameters")).toEqual({
+      prefix: "/dilm/staging",
+    });
+    expect(readSstResource(env, "Missing")).toBeUndefined();
+  });
+});
