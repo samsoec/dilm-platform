@@ -3,6 +3,7 @@ import type { BeforeListTableServerProps } from "payload";
 
 import { isSuperAdmin, type RoleHolder } from "../../../access";
 import { selectedTenantID, TENANT_COOKIE } from "../../data/sidebar";
+import { OutsideDrawer } from "../lists/OutsideDrawer";
 import { MaterialIcon } from "../MaterialIcon";
 import {
   firstName,
@@ -23,7 +24,7 @@ function personId(value: unknown): number | undefined {
   return undefined;
 }
 
-export async function TrashTable({
+async function TrashTableContent({
   collectionSlug,
   data,
   params,
@@ -139,5 +140,13 @@ export async function TrashTable({
         <p className="dil-trash__note">{copy.note}</p>
       )}
     </div>
+  );
+}
+
+export async function TrashTable(props: BeforeListTableServerProps) {
+  return (
+    <OutsideDrawer>
+      <TrashTableContent {...props} />
+    </OutsideDrawer>
   );
 }
