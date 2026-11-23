@@ -24,9 +24,13 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    height: var(--app-header-height);
-    margin-bottom: -12px;
-    padding-inline-start: calc(var(--gutter-h) + 4px);
+    flex-shrink: 0;
+    box-sizing: border-box;
+    min-height: var(--app-header-height);
+    padding-block: 8px;
+    padding-inline: max(calc(var(--gutter-h) + 16px), 56px) 12px;
+    overflow: visible;
+    white-space: nowrap;
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.02em;
