@@ -24,6 +24,8 @@ const TYPEAHEAD_RESET_MS = 600;
 
 type TenantOption = { label: string; value: number | string };
 
+const ALL_COMPANIES: TenantOption = { label: "All companies", value: "" };
+
 function colorStyle({ light, dark }: TenantColors): CSSProperties {
   return {
     "--dil-tenant": light,
@@ -72,9 +74,11 @@ function TenantFace({
 
 export function TenantCard({
   tenant,
+  superAdmin = false,
   viewType,
 }: {
   tenant?: SidebarTenant;
+  superAdmin?: boolean;
   viewType?: ViewTypes;
 }) {
   const { entityType, options, selectedTenantID, setTenant } =
@@ -96,6 +100,8 @@ export function TenantCard({
     ({ value }) => value === selectedTenantID,
   );
   const selected = tenantOptions[selectedIndex];
+  const rows = superAdmin ? [ALL_COMPANIES, ...tenantOptions] : tenantOptions;
+  const rowSelectedIndex = superAdmin ? selectedIndex + 1 : selectedIndex;
   const shown =
     tenant && selected && tenant.id === selected.value ? tenant : undefined;
   const colors = shown?.colors ?? tenantColors(undefined);
@@ -160,7 +166,7 @@ export function TenantCard({
   }
 
   const openList = () => {
-    setActive(Math.max(0, selectedIndex));
+    setActive(Math.max(0, rowSelectedIndex));
     setOpen(true);
   };
 
@@ -170,13 +176,22 @@ export function TenantCard({
   };
 
   const switchTo = (option: TenantOption | undefined) => {
-    if (option) setTenant({ id: option.value, refresh: true });
+    if (!option) return;
+    setTenant({
+      id: option === ALL_COMPANIES ? undefined : option.value,
+      refresh: true,
+    });
   };
 
+  const isSelected = (option: TenantOption) =>
+    option === ALL_COMPANIES
+      ? selectedTenantID === undefined
+      : option.value === selectedTenantID;
+
   const choose = (index: number) => {
-    const option = tenantOptions[index];
+    const option = rows[index];
     close();
-    if (!option || option.value === selectedTenantID) return;
+    if (!option || isSelected(option)) return;
     guard("company", () => switchTo(option));
   };
 
@@ -188,7 +203,7 @@ export function TenantCard({
   };
 
   const onListKeyDown = (event: KeyboardEvent<HTMLUListElement>) => {
-    const move = listboxKey(event.key, active, tenantOptions.length);
+    const move = listboxKey(event.key, active, rows.length);
     if (move) {
       if (event.key !== "Tab") event.preventDefault();
       if ("index" in move) setActive(move.index);
@@ -205,7 +220,7 @@ export function TenantCard({
           : typeahead.current.query + event.key;
       typeahead.current = { query, at: now };
       const found = typeaheadIndex(
-        tenantOptions.map(({ label }) => label),
+        rows.map(({ label }) => label),
         query,
         query.length > 1 ? active - 1 : active,
       );
@@ -251,9 +266,9 @@ export function TenantCard({
             role="listbox"
             tabIndex={-1}
           >
-            {tenantOptions.map((option, index) => (
+            {rows.map((option, index) => (
               <li
-                aria-selected={option.value === selectedTenantID}
+                aria-selected={isSelected(option)}
                 className={[
                   "dil-tenant-switch__option",
                   index === active && "dil-tenant-switch__option--active",
@@ -267,16 +282,23 @@ export function TenantCard({
                 onMouseMove={() => setActive(index)}
                 role="option"
               >
-                <CompanyTile detail={details?.get(String(option.value))} />
+                <CompanyTile
+                  detail={
+                    option === ALL_COMPANIES
+                      ? undefined
+                      : details?.get(String(option.value))
+                  }
+                />
                 <span className="dil-tenant-switch__text">
                   <b className="dil-tenant-switch__name">{option.label}</b>
-                  {details?.get(String(option.value))?.domain && (
-                    <span className="dil-tenant-switch__domain">
-                      {details.get(String(option.value))?.domain}
-                    </span>
-                  )}
+                  {option !== ALL_COMPANIES &&
+                    details?.get(String(option.value))?.domain && (
+                      <span className="dil-tenant-switch__domain">
+                        {details.get(String(option.value))?.domain}
+                      </span>
+                    )}
                 </span>
-                {option.value === selectedTenantID ? (
+                {isSelected(option) ? (
                   <MaterialIcon
                     className="dil-tenant-switch__check"
                     name="check"
