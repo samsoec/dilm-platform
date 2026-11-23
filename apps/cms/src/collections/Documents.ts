@@ -51,7 +51,7 @@ export const Documents = withTenantAccess(
       },
       defaultSort: "title",
       custom: { nav: { icon: "picture_as_pdf", order: 9 } },
-      upload: { mimeTypes: [DOCUMENT_MIME_TYPE] },
+      upload: { mimeTypes: [DOCUMENT_MIME_TYPE], bulkUpload: false },
       fields: [
         {
           name: "usedIn",

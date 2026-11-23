@@ -4,6 +4,11 @@
     margin-left: auto;
   }
 
+  .collection-list--documents:not(:has(.dil-trash))
+    .list-header__title-actions {
+    display: none;
+  }
+
   .dil-upload-docs {
     position: relative;
     font-family: var(--dil-font-sans);

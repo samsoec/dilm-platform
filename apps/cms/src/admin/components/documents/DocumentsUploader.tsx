@@ -22,6 +22,8 @@ import {
   uploadingText,
 } from "./documents";
 
+export const PICK_COMPANY_REASON = "Pick a company in the sidebar first.";
+
 type Entry = {
   key: number;
   file: File;
@@ -190,9 +192,7 @@ function DocumentsUploaderPanel() {
           icon="upload_file"
           onClick={() => input.current?.click()}
           type="button"
-          unavailableReason={
-            needsCompany ? "Pick a company in the sidebar first." : undefined
-          }
+          unavailableReason={needsCompany ? PICK_COMPANY_REASON : undefined}
         >
           Upload
         </ActionButton>
@@ -305,9 +305,13 @@ export function DocumentsUploader() {
 
 export function EmptyUploadDocuments() {
   const { permissions } = useAuth();
+  const { selectedTenantID } = useTenantSelection();
   if (!permissions?.collections?.documents?.create) return null;
   return (
     <ActionButton
+      unavailableReason={
+        selectedTenantID === undefined ? PICK_COMPANY_REASON : undefined
+      }
       icon="upload_file"
       onClick={() =>
         document
