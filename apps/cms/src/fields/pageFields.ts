@@ -21,6 +21,9 @@ import {
 
 export { SLUG_MESSAGE, SLUG_PATTERN, SLUG_REQUIRED_MESSAGE };
 
+export const GENERATE_SLUG_BUTTON =
+  "/admin/components/editor/GenerateSlugButton#GenerateSlugButton";
+
 export function slugValidator(required: boolean): TextFieldSingleValidation {
   return (value) => {
     if (!value) return required ? SLUG_REQUIRED_MESSAGE : true;
@@ -37,8 +40,9 @@ export function slugField(required: boolean): TextField {
     required,
     validate: slugValidator(required),
     admin: {
-      className: "dil-mono-input",
+      className: "dil-mono-input dil-slug-field",
       position: "sidebar",
+      components: { afterInput: [GENERATE_SLUG_BUTTON] },
       description: required
         ? "The last part of the address. It can't be empty."
         : "The last part of the address. Leave it empty only for Home.",

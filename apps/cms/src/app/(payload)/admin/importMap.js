@@ -254,6 +254,7 @@ import { SenderCell as SenderCell_e2b9f71bb4e0d9279198df477267e1b8 } from '../..
 import { SubmittedCell as SubmittedCell_e2b9f71bb4e0d9279198df477267e1b8 } from '../../../admin/components/contact/ContactCells'
 import { DeliveryCell as DeliveryCell_e2b9f71bb4e0d9279198df477267e1b8 } from '../../../admin/components/contact/ContactCells'
 import { ContactMessageView as ContactMessageView_c7b4b481ab6984e3ec6cc0bbd35a3833 } from '../../../admin/components/contact/ContactMessageView'
+import { GenerateSlugButton as GenerateSlugButton_f9f972d46f8f2209fb8936b58dba9b1a } from '../../../admin/components/editor/GenerateSlugButton'
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/admin/components/users/UserCells#UserCell": UserCell_5cd97e58844d5c99becf880375f054b9,
@@ -511,4 +512,5 @@ export const importMap = {
   "/admin/components/contact/ContactCells#SubmittedCell": SubmittedCell_e2b9f71bb4e0d9279198df477267e1b8,
   "/admin/components/contact/ContactCells#DeliveryCell": DeliveryCell_e2b9f71bb4e0d9279198df477267e1b8,
   "/admin/components/contact/ContactMessageView#ContactMessageView": ContactMessageView_c7b4b481ab6984e3ec6cc0bbd35a3833,
+  "/admin/components/editor/GenerateSlugButton#GenerateSlugButton": GenerateSlugButton_f9f972d46f8f2209fb8936b58dba9b1a,
 }
