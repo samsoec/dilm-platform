@@ -173,7 +173,12 @@ describe("postListing fields (§4.5.19)", () => {
       "highlights",
     ]);
     const empty = named(postListing.fields, "emptyState") as GroupField;
-    expect(names(empty.fields)).toEqual(["title", "description", "button"]);
+    expect(names(empty.fields)).toEqual([
+      "title",
+      "description",
+      "button",
+      "buttonStyle",
+    ]);
     const highlights = named(postListing.fields, "highlights") as GroupField;
     expect(names(highlights.fields)).toEqual(["title", "items"]);
   });

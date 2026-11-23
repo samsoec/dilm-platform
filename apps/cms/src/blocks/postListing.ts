@@ -22,6 +22,7 @@ import {
   FEATURED_FALLBACK_NOTE,
 } from "../admin/components/publication/publication";
 import { withSameAsEnTag } from "../fields/layoutEditor";
+import { buttonStyleField } from "../fields/buttonStyle";
 import { link } from "../fields/link";
 import { pickerScope, validateOnePick } from "../fields/recordPicks";
 import { unscopedRelationship } from "../tenancy";
@@ -182,6 +183,7 @@ export const postListing = sectionBlock({
           localized: true,
         }),
         link({ name: "button" }),
+        buttonStyleField({ name: "buttonStyle" }),
       ],
     },
     highlightsField(

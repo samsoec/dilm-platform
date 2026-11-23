@@ -1,6 +1,7 @@
 import type { ArrayField, RichTextField } from "payload";
 import { describe, expect, it } from "vitest";
 
+import { buttonStyleField } from "../fields/buttonStyle";
 import { link } from "../fields/link";
 import {
   accessAs,
@@ -64,7 +65,9 @@ describe("site-messages", () => {
       });
       expect(MAX_NOT_FOUND_BUTTONS).toBe(2);
       expect(buttons.minRows).toBeUndefined();
-      expect(fieldNames(buttons.fields)).toEqual(fieldNames([link()]));
+      expect(fieldNames(buttons.fields)).toEqual(
+        fieldNames([link(), buttonStyleField()]),
+      );
     });
   });
 

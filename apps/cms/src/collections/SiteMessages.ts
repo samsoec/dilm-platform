@@ -19,6 +19,7 @@ import {
   withSameAsEnTag,
 } from "../fields/layoutEditor";
 import { POLICY_VERSION_HINT } from "../admin/siteMessages";
+import { buttonStyleField } from "../fields/buttonStyle";
 import { link } from "../fields/link";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { revalidateTenantLayout, stubRevalidator } from "../revalidation";
@@ -100,7 +101,7 @@ export const SiteMessages = withTenantAccess(
             type: "array",
             maxRows: MAX_NOT_FOUND_BUTTONS,
             admin: { components: { RowLabel: ROW_LABELS.link } },
-            fields: [link({ required: true })],
+            fields: [link({ required: true }), buttonStyleField()],
           }),
         ],
       },

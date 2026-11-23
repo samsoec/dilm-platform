@@ -4190,6 +4190,7 @@ export interface PostListingBlock {
           } | null);
       label?: string | null;
     };
+    buttonStyle: 'primary' | 'light' | 'text';
   };
   /**
    * An optional title and up to 5 hand-picked posts, shown as a numbered side list. It stays while a visitor searches.
@@ -4492,6 +4493,7 @@ export interface Header {
           } | null);
       label?: string | null;
     };
+    style?: ('primary' | 'light' | 'text') | null;
   };
   updatedBy?: (number | null) | User;
   updatedAt: string;
@@ -4856,6 +4858,7 @@ export interface SiteMessage {
                 } | null);
             label?: string | null;
           };
+          style: 'primary' | 'light' | 'text';
           id?: string | null;
         }[]
       | null;
@@ -5708,6 +5711,7 @@ export interface HeaderSelect<T extends boolean = true> {
               reference?: T;
               label?: T;
             };
+        style?: T;
       };
   updatedBy?: T;
   updatedAt?: T;
@@ -5839,6 +5843,7 @@ export interface SiteMessagesSelect<T extends boolean = true> {
                     reference?: T;
                     label?: T;
                   };
+              style?: T;
               id?: T;
             };
       };
@@ -7361,6 +7366,7 @@ export interface PostListingBlockSelect<T extends boolean = true> {
               reference?: T;
               label?: T;
             };
+        buttonStyle?: T;
       };
   highlights?:
     | T
