@@ -3320,28 +3320,17 @@ export interface EntityMapBlock {
     description?: string | null;
     align: 'center' | 'left' | 'split';
   };
-  items: {
-    /**
-     * Leave empty for a free card. With a company, anything you leave empty below is filled from that company's Profile.
-     */
-    entity?: (number | null) | Tenant;
-    image?: (number | null) | Media;
-    label?: string | null;
+  cards: {
+    eyebrow?: string | null;
     title?: string | null;
     description?: string | null;
-    regions?:
+    badges?:
       | {
-          name: string;
+          text: string;
           id?: string | null;
         }[]
       | null;
-    /**
-     * Position on the dot map as a percentage from the top-left corner.
-     */
-    pin?: {
-      x?: number | null;
-      y?: number | null;
-    };
+    image?: (number | null) | Media;
     buttons?:
       | {
           link: {
@@ -3393,8 +3382,125 @@ export interface EntityMapBlock {
           id?: string | null;
         }[]
       | null;
+    position: 'left' | 'right' | 'bottom';
+    /**
+     * Provinces highlighted on the map. Leave empty for the Other areas case: nothing highlighted and the map stays zoomed out.
+     */
+    areas?:
+      | (
+          | 'ID-AC'
+          | 'ID-SU'
+          | 'ID-SB'
+          | 'ID-RI'
+          | 'ID-KR'
+          | 'ID-JA'
+          | 'ID-SS'
+          | 'ID-BB'
+          | 'ID-BE'
+          | 'ID-LA'
+          | 'ID-JK'
+          | 'ID-JB'
+          | 'ID-BT'
+          | 'ID-JT'
+          | 'ID-YO'
+          | 'ID-JI'
+          | 'ID-BA'
+          | 'ID-NB'
+          | 'ID-NT'
+          | 'ID-KB'
+          | 'ID-KT'
+          | 'ID-KS'
+          | 'ID-KI'
+          | 'ID-KU'
+          | 'ID-SA'
+          | 'ID-GO'
+          | 'ID-ST'
+          | 'ID-SR'
+          | 'ID-SN'
+          | 'ID-SG'
+          | 'ID-MA'
+          | 'ID-MU'
+          | 'ID-PB'
+          | 'ID-PD'
+          | 'ID-PA'
+          | 'ID-PT'
+          | 'ID-PE'
+          | 'ID-PS'
+        )[]
+      | null;
     id?: string | null;
   }[];
+  items?:
+    | {
+        entity?: (number | null) | Tenant;
+        image?: (number | null) | Media;
+        label?: string | null;
+        title?: string | null;
+        description?: string | null;
+        regions?:
+          | {
+              name: string;
+              id?: string | null;
+            }[]
+          | null;
+        pin?: {
+          x?: number | null;
+          y?: number | null;
+        };
+        buttons?:
+          | {
+              link: {
+                type: 'reference' | 'internal' | 'external';
+                newTab?: boolean | null;
+                /**
+                 * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
+                 */
+                internalPath?: string | null;
+                /**
+                 * A full address starting with https://
+                 */
+                externalUrl?: string | null;
+                /**
+                 * Follows the page or record if it is renamed or moved. Only published ones are offered.
+                 */
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'shared-pages';
+                      value: number | SharedPage;
+                    } | null)
+                  | ({
+                      relationTo: 'products';
+                      value: number | Product;
+                    } | null)
+                  | ({
+                      relationTo: 'solutions';
+                      value: number | Solution;
+                    } | null)
+                  | ({
+                      relationTo: 'jobs';
+                      value: number | Job;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'categories';
+                      value: number | Category;
+                    } | null);
+                label?: string | null;
+              };
+              style: 'primary' | 'light' | 'text';
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'entityMap';
@@ -6909,6 +7015,39 @@ export interface EntityMapBlockSelect<T extends boolean = true> {
         title?: T;
         description?: T;
         align?: T;
+      };
+  cards?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        badges?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        image?: T;
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    internalPath?: T;
+                    externalUrl?: T;
+                    reference?: T;
+                    label?: T;
+                  };
+              style?: T;
+              id?: T;
+            };
+        position?: T;
+        areas?: T;
+        id?: T;
       };
   items?:
     | T

@@ -5,7 +5,6 @@ import type {
   CollectionConfig,
   Field,
   GroupField,
-  NumberField,
   PayloadRequest,
   RelationshipField,
   RichTextField,
@@ -13,10 +12,11 @@ import type {
   TextField,
   Where,
 } from "payload";
-import { array, number, select } from "payload/shared";
+import { select } from "payload/shared";
 import {
   CONTACT_FORM_FIELDS,
   MAX_ENTITY_ITEMS,
+  PROVINCE_CODES,
   tokenProblem,
 } from "@dilm/shared-types";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -154,75 +154,68 @@ const relationshipCheck = (field: RelationshipField, count: number) =>
 
 describe("entityMap (§4.5.22)", () => {
   const fields = entityMap.fields;
-  const items = named(fields, "items") as ArrayField;
+  const cards = named(fields, "cards") as ArrayField;
 
-  it("lists the heading and one to six cards", async () => {
-    expect(names(fields)).toEqual(["heading", "items"]);
-    expect([items.required, items.minRows, items.maxRows]).toEqual([
+  it("lists the heading, the free cards and the hidden legacy items", () => {
+    expect(names(fields)).toEqual(["heading", "cards", "items"]);
+    expect((named(fields, "items") as ArrayField).admin?.hidden).toBe(true);
+    expect([cards.required, cards.minRows, cards.maxRows]).toEqual([
       true,
       1,
       MAX_ENTITY_ITEMS,
     ]);
-    const check = (count: number) =>
-      array(
-        Array.from({ length: count }, () => ({})),
-        {
-          minRows: items.minRows,
-          maxRows: items.maxRows,
-          required: true,
-          req: t,
-        } as never,
-      );
-    expect(await check(1)).toBe(true);
-    expect(await check(6)).toBe(true);
-    expect(await check(0)).toBeTypeOf("string");
-    expect(await check(7)).toBeTypeOf("string");
   });
 
-  it("lists the company, photo, hub label, title, description, regions, pin and buttons of a card", () => {
-    expect(names(items.fields)).toEqual([
-      "entity",
-      "image",
-      "label",
+  it("gives a card free text, badges, a photo, buttons, a position and areas", () => {
+    expect(names(cards.fields)).toEqual([
+      "eyebrow",
       "title",
       "description",
-      "regions",
-      "pin",
+      "badges",
+      "image",
       "buttons",
+      "position",
+      "areas",
     ]);
-  });
-
-  it("leaves the company optional, so a card without one is free", () => {
-    const entity = named(items.fields, "entity") as RelationshipField;
-    expect(entity.relationTo).toBe("tenants");
-    expect(entity.required).toBeFalsy();
-    expect(entity.hasMany).toBeFalsy();
-  });
-
-  it("leaves every content field optional so it can fall back to the Profile", () => {
-    for (const name of ["image", "label", "title", "description", "regions"]) {
-      expect(
-        (named(items.fields, name) as { required?: boolean }).required,
-        name,
-      ).toBeFalsy();
+    for (const name of ["eyebrow", "title", "description"]) {
+      expect((named(cards.fields, name) as TextField).localized, name).toBe(
+        true,
+      );
     }
+    const badges = named(cards.fields, "badges") as ArrayField;
+    expect(findField(badges.fields, "text")).toMatchObject({
+      localized: true,
+      required: true,
+    });
+    expect((named(cards.fields, "buttons") as ArrayField).maxRows).toBe(2);
   });
 
-  it("keeps the pin within 0 to 100 percent", async () => {
-    for (const axis of ["x", "y"]) {
-      const field = named(items.fields, "pin", axis) as NumberField;
-      expect([field.min, field.max]).toEqual([0, 100]);
-      const check = (value: number) =>
-        number(value, { min: field.min, max: field.max, req: t } as never);
-      expect(await check(0)).toBe(true);
-      expect(await check(100)).toBe(true);
-      expect(await check(101)).toBeTypeOf("string");
-      expect(await check(-1)).toBeTypeOf("string");
+  it("offers Left, Right and Bottom, starting on Left", () => {
+    const position = named(cards.fields, "position") as SelectField;
+    expect(position.options).toEqual([
+      { value: "left", label: "Left" },
+      { value: "right", label: "Right" },
+      { value: "bottom", label: "Bottom" },
+    ]);
+    expect(position.defaultValue).toBe("left");
+  });
+
+  it("offers the 38 provinces by name, stored as stable codes, and allows none", () => {
+    const areas = named(cards.fields, "areas") as SelectField;
+    expect(areas.hasMany).toBe(true);
+    expect(areas.required).toBeFalsy();
+    expect(areas.options).toHaveLength(38);
+    expect(areas.options).toContainEqual({
+      value: "ID-JK",
+      label: "DKI Jakarta",
+    });
+    expect(new Set(PROVINCE_CODES).size).toBe(38);
+  });
+
+  it("no longer has a company picker, Profile fallback or map pin on a card", () => {
+    for (const name of ["entity", "regions", "pin", "pinNote", "label"]) {
+      expect(names(cards.fields)).not.toContain(name);
     }
-  });
-
-  it("allows at most ten regions, like the company Profile", () => {
-    expect((named(items.fields, "regions") as ArrayField).maxRows).toBe(10);
   });
 });
 

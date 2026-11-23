@@ -1,4 +1,8 @@
-import { TENANT_NAMES, type TenantSlug } from "@dilm/shared-types";
+import {
+  TENANT_NAMES,
+  type ProvinceCode,
+  type TenantSlug,
+} from "@dilm/shared-types";
 
 import { MAX_CAROUSEL_ITEMS } from "../blocks/imageCarousel";
 import type {
@@ -351,31 +355,16 @@ export function homeLayout(ctx: SeedContext): PageBlock[] {
     },
     {
       blockType: "entityMap",
-      heading: head(
-        "OUR BUSINESS NETWORK",
-        "Find the Right Business for Your Region",
-        undefined,
-      ),
-      items: [
-        {
-          entity: ctx.tenants.duniakimia,
-          label: "Chemical Hub in Sumatra",
-          title: TENANT_NAMES.duniakimia,
-          description:
-            "Supporting water treatment, mining, and manufacturing with essential chemicals produced from its Sumatra operations.",
-          regions: [{ name: "All Sumatra" }],
-          buttons: [
-            button("Contact Us", "/contact-us"),
-            button(
-              "Explore Products",
-              "/products-and-solutions/products",
-              "text",
-            ),
-          ],
-        },
-        { entity: ctx.tenants.indoacid },
-        { entity: ctx.tenants.likutelaga },
-      ],
+      heading: {
+        ...head("OUR BUSINESS NETWORK", undefined, undefined),
+        title: lexical([
+          paragraph([
+            text("Find the Right Business for "),
+            { ...text("Your Region"), format: 2 },
+          ]),
+        ]),
+      },
+      cards: mapCards(ctx),
     },
     {
       blockType: "productsSolutionsTabs",
@@ -1731,6 +1720,76 @@ export function solutionTemplate(ctx: SeedContext): TemplateBlock[] {
   ] as TemplateBlock[];
 }
 
+function mapCards(ctx: SeedContext) {
+  return [
+    {
+      eyebrow: "Chemical Hub in Sumatra",
+      title: TENANT_NAMES.duniakimia,
+      description:
+        "Supporting water treatment, mining, and manufacturing with essential chemicals produced from its Sumatra operations.",
+      badges: [{ text: "All Sumatra" }],
+      image: ctx.image,
+      buttons: [
+        button("Contact Us", "/contact-us"),
+        button("Explore Products", "/products-and-solutions/products", "text"),
+      ],
+      position: "left" as const,
+      areas: SUMATRA_AREAS,
+    },
+    {
+      eyebrow: "Leading Chemical Producer",
+      title: TENANT_NAMES.indoacid,
+      description:
+        "Producing sulfuric acid and related chemicals for industrial customers across Java.",
+      badges: [
+        { text: "Banten" },
+        { text: "DKI Jakarta" },
+        { text: "Jawa Barat" },
+        { text: "Jawa Tengah" },
+      ],
+      image: ctx.image,
+      buttons: [button("Visit Indonesian Acid Industry", "/")],
+      position: "bottom" as const,
+      areas: ["ID-BT", "ID-JK", "ID-JB", "ID-JT"] as ProvinceCode[],
+    },
+    {
+      eyebrow: "Chemical Logistics Specialist",
+      title: TENANT_NAMES.likutelaga,
+      description:
+        "Handling and distributing chemicals safely from its East Java base.",
+      badges: [{ text: "Jawa Timur" }],
+      image: ctx.image,
+      buttons: [button("Visit Liku Telaga", "/")],
+      position: "right" as const,
+      areas: ["ID-JI"] as ProvinceCode[],
+    },
+    {
+      eyebrow: "Other Areas",
+      title: "Looking for the Right Supplier?",
+      description:
+        "Tell us where you operate and we will connect you with the right business in the group.",
+      badges: [{ text: "Other Regions" }],
+      image: ctx.image,
+      buttons: [button("Contact Us", "/contact-us")],
+      position: "bottom" as const,
+      areas: [] as ProvinceCode[],
+    },
+  ];
+}
+
+const SUMATRA_AREAS: ProvinceCode[] = [
+  "ID-AC",
+  "ID-SU",
+  "ID-SB",
+  "ID-RI",
+  "ID-KR",
+  "ID-JA",
+  "ID-SS",
+  "ID-BB",
+  "ID-BE",
+  "ID-LA",
+];
+
 function entityMapSection(
   ctx: SeedContext,
   eyebrow: string,
@@ -1739,21 +1798,7 @@ function entityMapSection(
   return {
     blockType: "entityMap",
     heading: head(eyebrow, title, undefined),
-    items: [
-      {
-        entity: ctx.tenants.duniakimia,
-        label: "Chemical Hub in Sumatra",
-        title: TENANT_NAMES.duniakimia,
-        description:
-          "Supporting water treatment, mining, and manufacturing with essential chemicals produced from its Sumatra operations.",
-        regions: [{ name: "All Sumatra" }],
-        buttons: [
-          button("Explore Products", "/products-and-solutions/products"),
-        ],
-      },
-      { entity: ctx.tenants.indoacid },
-      { entity: ctx.tenants.likutelaga },
-    ],
+    cards: mapCards(ctx),
   };
 }
 

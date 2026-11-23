@@ -47,6 +47,7 @@ import * as migration_20261117_062715_consent_logs_unique from './20261117_06271
 import * as migration_20261117_064501_privacy_policy_version from './20261117_064501_privacy_policy_version';
 import * as migration_20261123_081451_footer_brand_contact_buttons from './20261123_081451_footer_brand_contact_buttons';
 import * as migration_20261123_085151_button_style_picker from './20261123_085151_button_style_picker';
+import * as migration_20261123_091911_company_map_cards from './20261123_091911_company_map_cards';
 
 export const migrations = [
   {
@@ -293,5 +294,10 @@ export const migrations = [
     up: migration_20261123_085151_button_style_picker.up,
     down: migration_20261123_085151_button_style_picker.down,
     name: '20261123_085151_button_style_picker'
+  },
+  {
+    up: migration_20261123_091911_company_map_cards.up,
+    down: migration_20261123_091911_company_map_cards.down,
+    name: '20261123_091911_company_map_cards'
   },
 ];

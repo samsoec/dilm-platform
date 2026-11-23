@@ -1,4 +1,9 @@
-import { MAX_ENTITY_ITEMS } from "@dilm/shared-types";
+import {
+  MAP_CARD_POSITIONS,
+  MAX_ENTITY_ITEMS,
+  MAX_MAP_CARD_BADGES,
+  PROVINCES,
+} from "@dilm/shared-types";
 
 import { PROFILE_MAX_REGIONS } from "../collections/TenantSettings";
 import { withSameAsEnTag } from "../fields/layoutEditor";
@@ -11,13 +16,9 @@ import {
 } from "./factories";
 import { sectionBlock } from "./sectionBlock";
 
-const STATES = "/admin/components/fields/SectionStates";
+const POSITION_LABELS = { left: "Left", right: "Right", bottom: "Bottom" };
 
-const profileFallback = (name: string) => ({
-  components: {
-    afterInput: [{ path: `${STATES}#ProfileFallback`, clientProps: { name } }],
-  },
-});
+const legacy = { hidden: true, readOnly: true };
 
 export const entityMap = sectionBlock({
   slug: "entityMap",
@@ -27,105 +28,110 @@ export const entityMap = sectionBlock({
   catalog: {
     name: "Company map",
     purpose:
-      "A carousel of company cards, one pin each on the dot map. A card with a company picked fills what you leave empty from that company's Profile; a card without one is free.",
+      "Free region cards on the dot map. Each card highlights a set of provinces and places its info card next to that area; a card with no areas leaves the map zoomed out.",
     figma: ["section/entities"],
     summary: "The heading's title, with the card count",
   },
   fields: [
     headingField({ align: "center" }),
     {
-      name: "items",
+      name: "cards",
       type: "array",
-      dbName: tableNamed("it"),
+      dbName: tableNamed("cd"),
       required: true,
       minRows: 1,
       maxRows: MAX_ENTITY_ITEMS,
       labels: { singular: "Card", plural: "Cards" },
       fields: [
-        {
-          name: "entity",
-          label: "Company",
-          type: "relationship",
-          relationTo: "tenants",
-          maxDepth: 0,
-          filterOptions: entityScope,
-          validate: validateOneEntity,
-          admin: {
-            description:
-              "Leave empty for a free card. With a company, anything you leave empty below is filled from that company's Profile.",
-          },
-        },
-        imageField({ name: "image", label: "Photo" }),
         withSameAsEnTag({
-          name: "label",
+          name: "eyebrow",
           type: "text",
           localized: true,
-          admin: profileFallback("label"),
         }),
         withSameAsEnTag({
           name: "title",
           type: "text",
           localized: true,
-          admin: profileFallback("title"),
         }),
         withSameAsEnTag({
           name: "description",
           type: "textarea",
           localized: true,
-          admin: profileFallback("description"),
         }),
         {
-          name: "regions",
+          name: "badges",
           type: "array",
-          dbName: tableNamed("rg"),
-          maxRows: PROFILE_MAX_REGIONS,
-          labels: { singular: "Region", plural: "Regions" },
+          dbName: tableNamed("bg"),
+          maxRows: MAX_MAP_CARD_BADGES,
+          labels: { singular: "Badge", plural: "Badges" },
           fields: [
             withSameAsEnTag({
-              name: "name",
+              name: "text",
               type: "text",
               required: true,
               localized: true,
             }),
           ],
-          admin: profileFallback("regions"),
+        },
+        imageField({ name: "image", label: "Photo" }),
+        buttonsField({ tableName: "cbt" }),
+        {
+          name: "position",
+          type: "select",
+          required: true,
+          defaultValue: "left",
+          options: MAP_CARD_POSITIONS.map((value) => ({
+            value,
+            label: POSITION_LABELS[value],
+          })),
         },
         {
-          name: "pin",
-          label: "Map pin",
-          type: "group",
+          name: "areas",
+          type: "select",
+          hasMany: true,
+          options: PROVINCES.map((p) => ({ value: p.code, label: p.name })),
           admin: {
             description:
-              "Position on the dot map as a percentage from the top-left corner.",
+              "Provinces highlighted on the map. Leave empty for the Other areas case: nothing highlighted and the map stays zoomed out.",
           },
+        },
+      ],
+    },
+    {
+      name: "items",
+      type: "array",
+      dbName: tableNamed("it"),
+      admin: { ...legacy },
+      labels: { singular: "Card", plural: "Cards" },
+      fields: [
+        {
+          name: "entity",
+          type: "relationship",
+          relationTo: "tenants",
+          maxDepth: 0,
+          filterOptions: entityScope,
+          validate: validateOneEntity,
+        },
+        imageField({ name: "image" }),
+        { name: "label", type: "text", localized: true },
+        { name: "title", type: "text", localized: true },
+        { name: "description", type: "textarea", localized: true },
+        {
+          name: "regions",
+          type: "array",
+          dbName: tableNamed("rg"),
+          maxRows: PROFILE_MAX_REGIONS,
           fields: [
-            {
-              type: "row",
-              fields: [
-                {
-                  name: "x",
-                  type: "number",
-                  min: 0,
-                  max: 100,
-                  admin: { width: "50%" },
-                },
-                {
-                  name: "y",
-                  type: "number",
-                  min: 0,
-                  max: 100,
-                  admin: { width: "50%" },
-                },
-              ],
-            },
+            { name: "name", type: "text", required: true, localized: true },
           ],
         },
         {
-          name: "pinNote",
-          type: "ui",
-          admin: {
-            components: { Field: `${STATES}#PinNote` },
-          },
+          name: "pin",
+          type: "group",
+          fields: [
+            { name: "x", type: "number" },
+            { name: "y", type: "number" },
+          ],
         },
         buttonsField({ tableName: "btn" }),
       ],

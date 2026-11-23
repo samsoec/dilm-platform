@@ -45,67 +45,6 @@ export interface Tenant {
 export interface Page {
   id: number;
   tenant?: (number | null) | Tenant;
-  title: string;
-  /**
-   * The last part of the address. It can't be empty.
-   */
-  slug: string;
-  /**
-   * Leave empty for a top-level page. Only pages of this company are offered.
-   */
-  parent?: (number | null) | Page;
-  /**
-   * Worked out from the parent pages and the slug.
-   */
-  path?: string | null;
-  /**
-   * On when a language has no slug of its own and its address uses the English slug.
-   */
-  slugFallback?: boolean | null;
-  redirectTo: {
-    type: "internal" | "external" | "reference";
-    newTab?: boolean | null;
-    /**
-     * Start with /. The site adds the language.
-     */
-    internalPath?: string | null;
-    /**
-     * A full address starting with https://
-     */
-    externalUrl?: string | null;
-    /**
-     * Follows the page or record if it is renamed or moved. Only published ones are offered.
-     */
-    reference?:
-      | ({
-          relationTo: "pages";
-          value: number | Page;
-        } | null)
-      | ({
-          relationTo: "shared-pages";
-          value: number | SharedPage;
-        } | null)
-      | ({
-          relationTo: "products";
-          value: number | Product;
-        } | null)
-      | ({
-          relationTo: "solutions";
-          value: number | Solution;
-        } | null)
-      | ({
-          relationTo: "jobs";
-          value: number | Job;
-        } | null)
-      | ({
-          relationTo: "posts";
-          value: number | Post;
-        } | null)
-      | ({
-          relationTo: "categories";
-          value: number | Category;
-        } | null);
-  };
   /**
    * A page holds at most 30 sections.
    */
@@ -150,8 +89,65 @@ export interface Page {
         | PostListingBlock
       )[]
     | null;
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
+  title: string;
+  /**
+   * Leave empty for a top-level page. Only pages of this company are offered.
+   */
+  parent?: (number | null) | Page;
+  /**
+   * The last part of the address. It can't be empty.
+   */
+  slug: string;
+  forwards?: boolean | null;
+  redirectTo?: {
+    type: "reference" | "internal" | "external";
+    newTab?: boolean | null;
+    /**
+     * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
+     */
+    internalPath?: string | null;
+    /**
+     * A full address starting with https://
+     */
+    externalUrl?: string | null;
+    /**
+     * Follows the page or record if it is renamed or moved. Only published ones are offered.
+     */
+    reference?:
+      | ({
+          relationTo: "pages";
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: "shared-pages";
+          value: number | SharedPage;
+        } | null)
+      | ({
+          relationTo: "products";
+          value: number | Product;
+        } | null)
+      | ({
+          relationTo: "solutions";
+          value: number | Solution;
+        } | null)
+      | ({
+          relationTo: "jobs";
+          value: number | Job;
+        } | null)
+      | ({
+          relationTo: "posts";
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: "categories";
+          value: number | Category;
+        } | null);
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
+  };
   breadcrumbs?:
     | {
         doc?: (number | null) | Page;
@@ -160,31 +156,6 @@ export interface Page {
         id?: string | null;
       }[]
     | null;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-  };
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ("draft" | "published") | null;
-}
-
-export interface SharedPage {
-  id: number;
-  title: string;
-  /**
-   * The last part of the address. Leave it empty only for Home.
-   */
-  slug?: string | null;
-  /**
-   * Leave empty for a top-level page.
-   */
-  parent?: (number | null) | SharedPage;
   /**
    * Worked out from the parent pages and the slug.
    */
@@ -193,656 +164,12 @@ export interface SharedPage {
    * On when a language has no slug of its own and its address uses the English slug.
    */
   slugFallback?: boolean | null;
-  redirectTo: {
-    type: "internal" | "external" | "reference";
-    newTab?: boolean | null;
-    /**
-     * Start with /. The site adds the language.
-     */
-    internalPath?: string | null;
-    /**
-     * A full address starting with https://
-     */
-    externalUrl?: string | null;
-    /**
-     * Follows the page or record if it is renamed or moved. Only published ones are offered.
-     */
-    reference?:
-      | ({
-          relationTo: "pages";
-          value: number | Page;
-        } | null)
-      | ({
-          relationTo: "shared-pages";
-          value: number | SharedPage;
-        } | null)
-      | ({
-          relationTo: "products";
-          value: number | Product;
-        } | null)
-      | ({
-          relationTo: "solutions";
-          value: number | Solution;
-        } | null)
-      | ({
-          relationTo: "jobs";
-          value: number | Job;
-        } | null)
-      | ({
-          relationTo: "posts";
-          value: number | Post;
-        } | null)
-      | ({
-          relationTo: "categories";
-          value: number | Category;
-        } | null);
-  };
-  /**
-   * A page holds at most 30 sections.
-   */
-  layout?:
-    | (
-        | HeroCarouselBlock
-        | PageHeroBlock
-        | MediaTextBlock
-        | FeatureGridBlock
-        | VisionMissionBlock
-        | TimelineBlock
-        | CertificationsBlock
-        | CertificateGalleryBlock
-        | AwardsBlock
-        | ImageCarouselBlock
-        | TestimonialsBlock
-        | HotspotIllustrationBlock
-        | CtaBannerBlock
-        | RichTextBlock
-        | ArticleHeaderBlock
-        | ProductsSolutionsTabsBlock
-        | ProductShowcaseBlock
-        | SolutionShowcaseBlock
-        | PostShowcaseBlock
-        | JobListingBlock
-        | JobShowcaseBlock
-        | IrDocumentsBlock
-        | EntityMapBlock
-        | GroupShowcaseBlock
-        | EntityContactsBlock
-        | ContactInquiryBlock
-        | LocationMapBlock
-        | RecordHeroBlock
-        | ProductOverviewBlock
-        | ProductSpecificationsBlock
-        | ProductApplicationsBlock
-        | SolutionImpactBlock
-        | SolutionApplicationsBlock
-        | JobDetailBlock
-        | PostArticleBlock
-        | PublicationHeroBlock
-        | PostListingBlock
-      )[]
-    | null;
   updatedBy?: (number | null) | User;
   trashedBy?: (number | null) | User;
-  breadcrumbs?:
-    | {
-        doc?: (number | null) | SharedPage;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-  };
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
   _status?: ("draft" | "published") | null;
-}
-
-export interface Product {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  /**
-   * The last part of the address. Unique across every company's catalog.
-   */
-  slug: string;
-  /**
-   * Worked out from the listing page in Site routing and the slug. The same on every company's website.
-   */
-  path?: string | null;
-  /**
-   * On when a language has no slug of its own and its address uses the English slug.
-   */
-  slugFallback?: boolean | null;
-  /**
-   * Lower numbers come first in lists you sort by hand.
-   */
-  order?: number | null;
-  name: string;
-  productGroup?: string | null;
-  shortDescription?: string | null;
-  image?: (number | null) | Media;
-  /**
-   * Subscript and superscript only, like H₂SO₄. Pasted bold, italic or links are turned into plain text.
-   */
-  formula?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ("ltr" | "rtl") | null;
-      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  casNumber?: string | null;
-  classification?: string | null;
-  pdsFile?: (number | null) | Document;
-  overview?: {
-    /**
-     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
-     */
-    title?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ("ltr" | "rtl") | null;
-        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    body?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ("ltr" | "rtl") | null;
-        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    image?: (number | null) | Media;
-  };
-  variants?:
-    | {
-        name: string;
-        /**
-         * Leave empty to use the product's formula. Subscript and superscript only.
-         */
-        formula?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ("ltr" | "rtl") | null;
-            format:
-              "left" | "start" | "center" | "right" | "end" | "justify" | "";
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        /**
-         * Leave empty to use the product's CAS number.
-         */
-        casNumber?: string | null;
-        /**
-         * Leave empty to use the product's classification.
-         */
-        classification?: string | null;
-        packaging?: string | null;
-        specs?:
-          | {
-              parameter: string;
-              method?: string | null;
-              value: string;
-              emphasized?: boolean | null;
-              id?: string | null;
-            }[]
-          | null;
-        pdsFile?: (number | null) | Document;
-        sdsFile?: (number | null) | Document;
-        id?: string | null;
-      }[]
-    | null;
-  applications?:
-    | {
-        /**
-         * SVG or PNG.
-         */
-        icon?: (number | null) | Media;
-        title: string;
-        description?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  process?: {
-    /**
-     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
-     */
-    title?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ("ltr" | "rtl") | null;
-        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    description?: string | null;
-    stat?: {
-      value?: string | null;
-      label?: string | null;
-      description?: string | null;
-      note?: string | null;
-    };
-    steps?:
-      | {
-          title: string;
-          description?: string | null;
-          isThisProduct?: boolean | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-  };
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ("draft" | "published") | null;
-}
-
-export interface Media {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  alt: string;
-  uploadedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
-  prefix?: string | null;
-  _objectKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-  sizes?: {
-    thumbnail?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    card?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-    "social-share"?: {
-      url?: string | null;
-      width?: number | null;
-      height?: number | null;
-      mimeType?: string | null;
-      filesize?: number | null;
-      filename?: string | null;
-    };
-  };
-}
-
-export interface Document {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  /**
-   * Visitors download the file under this name, with .pdf added.
-   */
-  title: string;
-  downloadName?: string | null;
-  uploadedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
-  prefix?: string | null;
-  _objectKey?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-
-export interface Solution {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  /**
-   * The last part of the address. Unique across every company's catalog.
-   */
-  slug: string;
-  /**
-   * Worked out from the listing page in Site routing and the slug. The same on every company's website.
-   */
-  path?: string | null;
-  /**
-   * On when a language has no slug of its own and its address uses the English slug.
-   */
-  slugFallback?: boolean | null;
-  /**
-   * Lower numbers come first in lists you sort by hand.
-   */
-  order?: number | null;
-  name: string;
-  /**
-   * Plain or italic only. Leave empty to use the name.
-   */
-  heroTitle?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ("ltr" | "rtl") | null;
-      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  industryLabel?: string | null;
-  shortDescription?: string | null;
-  image?: (number | null) | Media;
-  keyApplications?:
-    | {
-        text: string;
-        id?: string | null;
-      }[]
-    | null;
-  industriesServed?:
-    | {
-        text: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Pick from every company's published products. The order here is the order shown.
-   */
-  supportingProducts?: (number | Product)[] | null;
-  /**
-   * Optional. It has to be one of the supporting products. Empty uses the first one.
-   */
-  featuredProduct?: (number | null) | Product;
-  impact?: {
-    /**
-     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
-     */
-    title?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ("ltr" | "rtl") | null;
-        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    body?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ("ltr" | "rtl") | null;
-        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-    points?:
-      | {
-          /**
-           * SVG or PNG.
-           */
-          icon?: (number | null) | Media;
-          title: string;
-          description?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    image?: (number | null) | Media;
-  };
-  applications?:
-    | {
-        title: string;
-        description?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-  };
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ("draft" | "published") | null;
-}
-
-export interface Job {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  /**
-   * The last part of the address, under the career page. Unique within this company.
-   */
-  slug: string;
-  /**
-   * Worked out from the career page in Site routing and the slug.
-   */
-  path?: string | null;
-  /**
-   * On when a language has no slug of its own and its address uses the English slug.
-   */
-  slugFallback?: boolean | null;
-  /**
-   * Lower numbers come first in lists you sort by hand.
-   */
-  order?: number | null;
-  title: string;
-  summary?: string | null;
-  department?: string | null;
-  experienceLevel?: ("entry" | "mid" | "senior" | "lead") | null;
-  jobType?: ("full-time" | "part-time" | "contract" | "internship") | null;
-  /**
-   * For example Jakarta, Indonesia.
-   */
-  location?: string | null;
-  postedDate?: string | null;
-  /**
-   * Optional. The job leaves the listings at exactly this date and time, in the time zone chosen beside it (WIB by default). Its page stays reachable without the application form.
-   */
-  closingDate?: string | null;
-  closingDate_tz: "Asia/Jakarta" | "Asia/Makassar" | "Asia/Jayapura";
-  /**
-   * Closed jobs leave the Career listing and job sections. Their page stays reachable, without the application form, so shared links still work.
-   */
-  status: "open" | "closed";
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ("ltr" | "rtl") | null;
-      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-  };
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ("draft" | "published") | null;
-}
-
-export interface Post {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  /**
-   * The last part of the address, after the category. Unique within this company.
-   */
-  slug: string;
-  /**
-   * Worked out from the primary category and the slug. It changes when either changes.
-   */
-  path?: string | null;
-  /**
-   * On when a language has no slug of its own and its address uses the English slug.
-   */
-  slugFallback?: boolean | null;
-  /**
-   * Lower numbers come first in lists you sort by hand.
-   */
-  order?: number | null;
-  title: string;
-  /**
-   * The post's address follows its category. Changing it moves the post and leaves a redirect from the old address.
-   */
-  primaryCategory: number | Category;
-  publishedAt?: string | null;
-  coverImage?: (number | null) | Media;
-  excerpt?: string | null;
-  body?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ("ltr" | "rtl") | null;
-      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
-  };
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ("draft" | "published") | null;
-}
-
-export interface Category {
-  id: number;
-  /**
-   * The last part of the address, after the category prefix. Unique across categories.
-   */
-  slug?: string | null;
-  /**
-   * The category prefix and the slug. The same on every company's website.
-   */
-  path?: string | null;
-  /**
-   * On when a language has no slug of its own and its address uses the English slug.
-   */
-  slugFallback?: boolean | null;
-  name?: string | null;
-  description?: string | null;
-  coverImage?: (number | null) | Media;
-  updatedAt: string;
-  createdAt: string;
 }
 
 export interface HeroCarouselBlock {
@@ -871,10 +198,10 @@ export interface HeroCarouselBlock {
     buttons?:
       | {
           link: {
-            type: "internal" | "external" | "reference";
+            type: "reference" | "internal" | "external";
             newTab?: boolean | null;
             /**
-             * Start with /. The site adds the language.
+             * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
              */
             internalPath?: string | null;
             /**
@@ -935,6 +262,183 @@ export interface HeroCarouselBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: "heroCarousel";
+}
+
+export interface Media {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  alt: string;
+  uploadedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  prefix?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    "social-share"?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+
+export interface SharedPage {
+  id: number;
+  /**
+   * A page holds at most 30 sections.
+   */
+  layout?:
+    | (
+        | HeroCarouselBlock
+        | PageHeroBlock
+        | MediaTextBlock
+        | FeatureGridBlock
+        | VisionMissionBlock
+        | TimelineBlock
+        | CertificationsBlock
+        | CertificateGalleryBlock
+        | AwardsBlock
+        | ImageCarouselBlock
+        | TestimonialsBlock
+        | HotspotIllustrationBlock
+        | CtaBannerBlock
+        | RichTextBlock
+        | ArticleHeaderBlock
+        | ProductsSolutionsTabsBlock
+        | ProductShowcaseBlock
+        | SolutionShowcaseBlock
+        | PostShowcaseBlock
+        | JobListingBlock
+        | JobShowcaseBlock
+        | IrDocumentsBlock
+        | EntityMapBlock
+        | GroupShowcaseBlock
+        | EntityContactsBlock
+        | ContactInquiryBlock
+        | LocationMapBlock
+        | RecordHeroBlock
+        | ProductOverviewBlock
+        | ProductSpecificationsBlock
+        | ProductApplicationsBlock
+        | SolutionImpactBlock
+        | SolutionApplicationsBlock
+        | JobDetailBlock
+        | PostArticleBlock
+        | PublicationHeroBlock
+        | PostListingBlock
+      )[]
+    | null;
+  title: string;
+  /**
+   * Leave empty for a top-level page.
+   */
+  parent?: (number | null) | SharedPage;
+  /**
+   * The last part of the address. Leave it empty only for Home.
+   */
+  slug?: string | null;
+  forwards?: boolean | null;
+  redirectTo?: {
+    type: "reference" | "internal" | "external";
+    newTab?: boolean | null;
+    /**
+     * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
+     */
+    internalPath?: string | null;
+    /**
+     * A full address starting with https://
+     */
+    externalUrl?: string | null;
+    /**
+     * Follows the page or record if it is renamed or moved. Only published ones are offered.
+     */
+    reference?:
+      | ({
+          relationTo: "pages";
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: "shared-pages";
+          value: number | SharedPage;
+        } | null)
+      | ({
+          relationTo: "products";
+          value: number | Product;
+        } | null)
+      | ({
+          relationTo: "solutions";
+          value: number | Solution;
+        } | null)
+      | ({
+          relationTo: "jobs";
+          value: number | Job;
+        } | null)
+      | ({
+          relationTo: "posts";
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: "categories";
+          value: number | Category;
+        } | null);
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
+  };
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | SharedPage;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Worked out from the parent pages and the slug.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ("draft" | "published") | null;
 }
 
 export interface PageHeroBlock {
@@ -1034,10 +538,10 @@ export interface MediaTextBlock {
   buttons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1095,6 +599,477 @@ export interface MediaTextBlock {
   blockType: "mediaText";
 }
 
+export interface Product {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  formulaText?: string | null;
+  /**
+   * The last part of the address. Unique across every company's catalog.
+   */
+  slug: string;
+  /**
+   * Worked out from the listing page in Site routing and the slug. The same on every company's website.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  /**
+   * Lower numbers come first in lists you sort by hand.
+   */
+  order?: number | null;
+  name: string;
+  productGroup?: string | null;
+  shortDescription?: string | null;
+  image?: (number | null) | Media;
+  /**
+   * Select a number and press ⌘, for subscript, ⌘. for superscript.
+   */
+  formula?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ("ltr" | "rtl") | null;
+      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  casNumber?: string | null;
+  classification?: string | null;
+  pdsFile?: (number | null) | Document;
+  overview?: {
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    image?: (number | null) | Media;
+  };
+  variants?:
+    | {
+        name: string;
+        formula?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ("ltr" | "rtl") | null;
+            format:
+              "left" | "start" | "center" | "right" | "end" | "justify" | "";
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        casNumber?: string | null;
+        classification?: string | null;
+        packaging?: string | null;
+        specs?:
+          | {
+              parameter: string;
+              method?: string | null;
+              value: string;
+              emphasized?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        pdsFile?: (number | null) | Document;
+        sdsFile?: (number | null) | Document;
+        id?: string | null;
+      }[]
+    | null;
+  applications?:
+    | {
+        /**
+         * SVG or PNG.
+         */
+        icon?: (number | null) | Media;
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  process?: {
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    description?: string | null;
+    stat?: {
+      value?: string | null;
+      label?: string | null;
+      description?: string | null;
+      note?: string | null;
+    };
+    steps?:
+      | {
+          title: string;
+          description?: string | null;
+          isThisProduct?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
+  };
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ("draft" | "published") | null;
+}
+
+export interface Document {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * Visitors download the file under this name, with .pdf added.
+   */
+  title: string;
+  createdAt: string;
+  usedInCount?: number | null;
+  linkStatus?: string | null;
+  downloadName?: string | null;
+  uploadedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  prefix?: string | null;
+  _objectKey?: string | null;
+  updatedAt: string;
+  deletedAt?: string | null;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+
+export interface Solution {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * The last part of the address. Unique across every company's catalog.
+   */
+  slug: string;
+  /**
+   * Worked out from the listing page in Site routing and the slug. The same on every company's website.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  /**
+   * Lower numbers come first in lists you sort by hand.
+   */
+  order?: number | null;
+  name: string;
+  /**
+   * Plain or italic only. Leave empty to use the name.
+   */
+  heroTitle?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ("ltr" | "rtl") | null;
+      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  industryLabel?: string | null;
+  shortDescription?: string | null;
+  image?: (number | null) | Media;
+  keyApplications?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  industriesServed?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  supportingProducts?: (number | Product)[] | null;
+  featuredProduct?: (number | null) | Product;
+  impact?: {
+    /**
+     * Plain or italic only, to emphasise a word. Pasted bold, links or lists are turned into plain text.
+     */
+    title?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ("ltr" | "rtl") | null;
+        format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    points?:
+      | {
+          /**
+           * SVG or PNG.
+           */
+          icon?: (number | null) | Media;
+          title: string;
+          description?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    image?: (number | null) | Media;
+  };
+  applications?:
+    | {
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ("draft" | "published") | null;
+}
+
+export interface Job {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * The last part of the address, under the career page. Unique within this company.
+   */
+  slug: string;
+  /**
+   * Worked out from the career page in Site routing and the slug.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  /**
+   * Lower numbers come first in lists you sort by hand.
+   */
+  order?: number | null;
+  title: string;
+  summary?: string | null;
+  department?: string | null;
+  experienceLevel?: ("entry" | "mid" | "senior" | "lead") | null;
+  jobType?: ("full-time" | "part-time" | "contract" | "internship") | null;
+  location?: string | null;
+  /**
+   * Defaults to today.
+   */
+  postedDate?: string | null;
+  /**
+   * After this date it leaves the listing automatically. The time is in the time zone chosen beside it (WIB by default).
+   */
+  closingDate?: string | null;
+  closingDate_tz: "Asia/Jakarta" | "Asia/Makassar" | "Asia/Jayapura";
+  status: "open" | "closed";
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ("ltr" | "rtl") | null;
+      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ("draft" | "published") | null;
+}
+
+export interface Post {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * The last part of the address, after the category. Unique within this company.
+   */
+  slug: string;
+  /**
+   * Worked out from the primary category and the slug. It changes when either changes.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  /**
+   * Lower numbers come first in lists you sort by hand.
+   */
+  order?: number | null;
+  title: string;
+  primaryCategory: number | Category;
+  publishedAt?: string | null;
+  coverImage?: (number | null) | Media;
+  excerpt?: string | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ("ltr" | "rtl") | null;
+      format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ("draft" | "published") | null;
+}
+
+export interface Category {
+  id: number;
+  /**
+   * The last part of the address, after the category prefix. Unique across categories.
+   */
+  slug?: string | null;
+  /**
+   * The category prefix and the slug. The same on every company's website.
+   */
+  path?: string | null;
+  /**
+   * On when a language has no slug of its own and its address uses the English slug.
+   */
+  slugFallback?: boolean | null;
+  name?: string | null;
+  description?: string | null;
+  coverImage?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+
 export interface FeatureGridBlock {
   heading: {
     eyebrow?: string | null;
@@ -1122,10 +1097,10 @@ export interface FeatureGridBlock {
   headingButtons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1210,10 +1185,10 @@ export interface FeatureGridBlock {
   footerButtons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1375,10 +1350,10 @@ export interface TimelineBlock {
   buttons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1455,10 +1430,10 @@ export interface CertificationsBlock {
   buttons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1635,10 +1610,10 @@ export interface ImageCarouselBlock {
     image: number | Media;
     label: string;
     link: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -1784,10 +1759,10 @@ export interface CtaBannerBlock {
   buttons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -1877,10 +1852,11 @@ export interface RichTextBlock {
     [k: string]: unknown;
   };
   /**
-   * Built from the main (H2) headings of the text.
+   * Built from the H2 headings below
    */
   showTableOfContents?: boolean | null;
   tocTitle?: string | null;
+  tocAnchors?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: "richText";
@@ -1912,7 +1888,8 @@ export interface ArticleHeaderBlock {
   };
   metaLabel?: string | null;
   lastUpdatedLabel?: string | null;
-  lastUpdated?: string | null;
+  lastUpdated: string;
+  textStamp?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: "articleHeader";
@@ -1963,10 +1940,10 @@ export interface ProductsSolutionsTabsBlock {
   ctaCard: {
     text?: string | null;
     link: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2012,10 +1989,10 @@ export interface ProductsSolutionsTabsBlock {
     title?: string | null;
     description?: string | null;
     first: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2058,10 +2035,10 @@ export interface ProductsSolutionsTabsBlock {
     };
     firstStyle: "primary" | "light" | "text";
     second: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2144,10 +2121,10 @@ export interface ProductShowcaseBlock {
   buttons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -2198,10 +2175,10 @@ export interface ProductShowcaseBlock {
   ctaCard: {
     text?: string | null;
     link: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2247,10 +2224,10 @@ export interface ProductShowcaseBlock {
     title?: string | null;
     description?: string | null;
     first: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2293,10 +2270,10 @@ export interface ProductShowcaseBlock {
     };
     firstStyle: "primary" | "light" | "text";
     second: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2379,10 +2356,10 @@ export interface SolutionShowcaseBlock {
   buttons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -2433,10 +2410,10 @@ export interface SolutionShowcaseBlock {
   ctaCard: {
     text?: string | null;
     link: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2482,10 +2459,10 @@ export interface SolutionShowcaseBlock {
     title?: string | null;
     description?: string | null;
     first: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2528,10 +2505,10 @@ export interface SolutionShowcaseBlock {
     };
     firstStyle: "primary" | "light" | "text";
     second: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -2614,10 +2591,10 @@ export interface PostShowcaseBlock {
   buttons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -2776,10 +2753,10 @@ export interface JobShowcaseBlock {
   buttons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -2841,10 +2818,10 @@ export interface IrDocumentsBlock {
   sideNav?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -2957,35 +2934,24 @@ export interface EntityMapBlock {
     description?: string | null;
     align: "center" | "left" | "split";
   };
-  items: {
-    /**
-     * Leave empty for a free card. With a company, anything you leave empty below is filled from that company's Profile.
-     */
-    entity?: (number | null) | Tenant;
-    image?: (number | null) | Media;
-    label?: string | null;
+  cards: {
+    eyebrow?: string | null;
     title?: string | null;
     description?: string | null;
-    regions?:
+    badges?:
       | {
-          name: string;
+          text: string;
           id?: string | null;
         }[]
       | null;
-    /**
-     * Position on the dot map as a percentage from the top-left corner.
-     */
-    pin?: {
-      x?: number | null;
-      y?: number | null;
-    };
+    image?: (number | null) | Media;
     buttons?:
       | {
           link: {
-            type: "internal" | "external" | "reference";
+            type: "reference" | "internal" | "external";
             newTab?: boolean | null;
             /**
-             * Start with /. The site adds the language.
+             * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
              */
             internalPath?: string | null;
             /**
@@ -3030,8 +2996,125 @@ export interface EntityMapBlock {
           id?: string | null;
         }[]
       | null;
+    position: "left" | "right" | "bottom";
+    /**
+     * Provinces highlighted on the map. Leave empty for the Other areas case: nothing highlighted and the map stays zoomed out.
+     */
+    areas?:
+      | (
+          | "ID-AC"
+          | "ID-SU"
+          | "ID-SB"
+          | "ID-RI"
+          | "ID-KR"
+          | "ID-JA"
+          | "ID-SS"
+          | "ID-BB"
+          | "ID-BE"
+          | "ID-LA"
+          | "ID-JK"
+          | "ID-JB"
+          | "ID-BT"
+          | "ID-JT"
+          | "ID-YO"
+          | "ID-JI"
+          | "ID-BA"
+          | "ID-NB"
+          | "ID-NT"
+          | "ID-KB"
+          | "ID-KT"
+          | "ID-KS"
+          | "ID-KI"
+          | "ID-KU"
+          | "ID-SA"
+          | "ID-GO"
+          | "ID-ST"
+          | "ID-SR"
+          | "ID-SN"
+          | "ID-SG"
+          | "ID-MA"
+          | "ID-MU"
+          | "ID-PB"
+          | "ID-PD"
+          | "ID-PA"
+          | "ID-PT"
+          | "ID-PE"
+          | "ID-PS"
+        )[]
+      | null;
     id?: string | null;
   }[];
+  items?:
+    | {
+        entity?: (number | null) | Tenant;
+        image?: (number | null) | Media;
+        label?: string | null;
+        title?: string | null;
+        description?: string | null;
+        regions?:
+          | {
+              name: string;
+              id?: string | null;
+            }[]
+          | null;
+        pin?: {
+          x?: number | null;
+          y?: number | null;
+        };
+        buttons?:
+          | {
+              link: {
+                type: "reference" | "internal" | "external";
+                newTab?: boolean | null;
+                /**
+                 * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
+                 */
+                internalPath?: string | null;
+                /**
+                 * A full address starting with https://
+                 */
+                externalUrl?: string | null;
+                /**
+                 * Follows the page or record if it is renamed or moved. Only published ones are offered.
+                 */
+                reference?:
+                  | ({
+                      relationTo: "pages";
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: "shared-pages";
+                      value: number | SharedPage;
+                    } | null)
+                  | ({
+                      relationTo: "products";
+                      value: number | Product;
+                    } | null)
+                  | ({
+                      relationTo: "solutions";
+                      value: number | Solution;
+                    } | null)
+                  | ({
+                      relationTo: "jobs";
+                      value: number | Job;
+                    } | null)
+                  | ({
+                      relationTo: "posts";
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: "categories";
+                      value: number | Category;
+                    } | null);
+                label?: string | null;
+              };
+              style: "primary" | "light" | "text";
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: "entityMap";
@@ -3064,10 +3147,10 @@ export interface GroupShowcaseBlock {
   mainImage?: (number | null) | Media;
   mainLogo?: (number | null) | Media;
   mainLink: {
-    type: "internal" | "external" | "reference";
+    type: "reference" | "internal" | "external";
     newTab?: boolean | null;
     /**
-     * Start with /. The site adds the language.
+     * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
      */
     internalPath?: string | null;
     /**
@@ -3289,10 +3372,10 @@ export interface ProductOverviewBlock {
   buttons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -3386,10 +3469,10 @@ export interface ProductSpecificationsBlock {
    */
   contact: {
     link: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -3473,10 +3556,10 @@ export interface SolutionImpactBlock {
   buttons?:
     | {
         link: {
-          type: "internal" | "external" | "reference";
+          type: "reference" | "internal" | "external";
           newTab?: boolean | null;
           /**
-           * Start with /. The site adds the language.
+           * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
            */
           internalPath?: string | null;
           /**
@@ -3723,7 +3806,7 @@ export interface PostListingBlock {
   source: "all" | "currentCategory" | "categories";
   categories?: (number | Category)[] | null;
   /**
-   * A published post of this company. Leave empty to feature the newest post. Hidden while a visitor is searching.
+   * Empty uses the newest post. Hidden while searching.
    */
   featured?: (number | null) | Post;
   /**
@@ -3741,10 +3824,10 @@ export interface PostListingBlock {
     title?: string | null;
     description?: string | null;
     button: {
-      type: "internal" | "external" | "reference";
+      type: "reference" | "internal" | "external";
       newTab?: boolean | null;
       /**
-       * Start with /. The site adds the language.
+       * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
        */
       internalPath?: string | null;
       /**
@@ -3785,6 +3868,7 @@ export interface PostListingBlock {
           } | null);
       label?: string | null;
     };
+    buttonStyle: "primary" | "light" | "text";
   };
   /**
    * An optional title and up to 5 hand-picked posts, shown as a numbered side list. It stays while a visitor searches.
