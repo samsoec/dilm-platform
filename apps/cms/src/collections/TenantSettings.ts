@@ -343,17 +343,14 @@ export const TenantSettings = withTenantAccess(
                     label: "Hub label",
                     type: "text",
                     localized: true,
-                    admin: {
-                      description:
-                        "Small heading above the company on the map, like Chemical hub in Sumatra.",
-                    },
+                    admin: { hidden: true, readOnly: true },
                   },
                   {
                     name: "shortDescription",
                     label: "Short description",
                     type: "textarea",
                     localized: true,
-                    admin: { rows: 3 },
+                    admin: { hidden: true, readOnly: true },
                   },
                   withMediaPicker({
                     name: "coverImage",
@@ -367,6 +364,7 @@ export const TenantSettings = withTenantAccess(
                     type: "array",
                     maxRows: PROFILE_MAX_REGIONS,
                     labels: { singular: "Region", plural: "Regions" },
+                    admin: { hidden: true, readOnly: true },
                     fields: [
                       {
                         name: "name",
@@ -378,23 +376,10 @@ export const TenantSettings = withTenantAccess(
                     ],
                   },
                   {
-                    name: "mapPinPicker",
-                    type: "ui",
-                    admin: {
-                      components: {
-                        Field:
-                          "/admin/components/profile/MapPinPicker#MapPinPicker",
-                      },
-                    },
-                  },
-                  {
                     name: "mapPin",
                     label: "Map pin",
                     type: "group",
-                    admin: {
-                      description:
-                        "Position of the company dot on the site's dot map, as a percentage from the top-left corner.",
-                    },
+                    admin: { hidden: true, readOnly: true },
                     fields: [
                       {
                         type: "row",

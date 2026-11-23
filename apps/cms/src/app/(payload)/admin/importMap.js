@@ -233,7 +233,6 @@ import { RoutingSaveButton as RoutingSaveButton_57e2beb302d71fdb56104b50c79850c0
 import { SiteRoutingHeader as SiteRoutingHeader_b5a58f2d2c5f19c6e5561da0ea3d2b86 } from '../../../admin/components/routing/SiteRoutingHeader'
 import { RedirectsView as RedirectsView_f330f08567f40773692e2b02822dcb62 } from '../../../admin/components/redirects/RedirectsView'
 import { RedirectFromHost as RedirectFromHost_ebbd57adba0cc715e1061e2013750200 } from '../../../admin/components/redirects/RedirectFromHost'
-import { MapPinPicker as MapPinPicker_ac6cde073d733dfaedab882715e29f15 } from '../../../admin/components/profile/MapPinPicker'
 import { ProfileUsedBy as ProfileUsedBy_02893fdbdd16a24c67301821731b191e } from '../../../admin/components/profile/ProfileUsedBy'
 import { DisplayHeading as DisplayHeading_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
 import { CoverFallback as CoverFallback_e05db7d652f5a712500fa0647c5af374 } from '../../../admin/components/ir/IrEditorParts'
@@ -493,7 +492,6 @@ export const importMap = {
   "/admin/components/routing/SiteRoutingHeader#SiteRoutingHeader": SiteRoutingHeader_b5a58f2d2c5f19c6e5561da0ea3d2b86,
   "/admin/components/redirects/RedirectsView#RedirectsView": RedirectsView_f330f08567f40773692e2b02822dcb62,
   "/admin/components/redirects/RedirectFromHost#RedirectFromHost": RedirectFromHost_ebbd57adba0cc715e1061e2013750200,
-  "/admin/components/profile/MapPinPicker#MapPinPicker": MapPinPicker_ac6cde073d733dfaedab882715e29f15,
   "/admin/components/profile/ProfileUsedBy#ProfileUsedBy": ProfileUsedBy_02893fdbdd16a24c67301821731b191e,
   "/admin/components/ir/IrEditorParts#DisplayHeading": DisplayHeading_e05db7d652f5a712500fa0647c5af374,
   "/admin/components/ir/IrEditorParts#CoverFallback": CoverFallback_e05db7d652f5a712500fa0647c5af374,

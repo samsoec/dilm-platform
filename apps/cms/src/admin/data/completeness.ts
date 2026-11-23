@@ -35,11 +35,7 @@ export type CompletenessInput = {
     Pick<NonNullable<TenantSetting["defaultSeo"]>, "title">
   > | null;
   profile?: {
-    hubLabel?: string | null;
-    shortDescription?: string | null;
     coverImage?: unknown;
-    regions?: readonly unknown[] | null;
-    mapPin?: { x?: number | null; y?: number | null } | null;
     mapLocation?: {
       latitude?: number | null;
       longitude?: number | null;
@@ -117,28 +113,12 @@ export const COMPLETENESS_RULES: readonly Rule[] = [
   {
     section: "profile",
     severity: "optional",
-    total: 7,
+    total: 3,
     missing: ({ profile }) =>
       gaps(
         [
-          filled(profile?.hubLabel),
-          { label: "hub label", path: "profile.hubLabel" },
-        ],
-        [
-          filled(profile?.shortDescription),
-          { label: "short description", path: "profile.shortDescription" },
-        ],
-        [
           filled(profile?.coverImage),
           { label: "cover image", path: "profile.coverImage" },
-        ],
-        [
-          (profile?.regions?.length ?? 0) > 0,
-          { label: "regions", path: "profile.regions" },
-        ],
-        [
-          filled(profile?.mapPin?.x) && filled(profile?.mapPin?.y),
-          { label: "map pin", path: "profile.mapPin.x" },
         ],
         [
           filled(profile?.mapLocation?.latitude) &&
@@ -171,11 +151,7 @@ export const COMPLETENESS_SELECT = {
   brand: { logoOnDark: true, logoOnLight: true, legalName: true },
   defaultSeo: { title: true },
   profile: {
-    hubLabel: true,
-    shortDescription: true,
     coverImage: true,
-    regions: true,
-    mapPin: true,
     mapLocation: true,
     googleMapsUrl: true,
   },
@@ -257,12 +233,7 @@ export const COMPLETENESS_PATHS = [
   "brand.logoOnLight",
   "brand.legalName",
   "defaultSeo.title",
-  "profile.hubLabel",
-  "profile.shortDescription",
   "profile.coverImage",
-  "profile.regions",
-  "profile.mapPin.x",
-  "profile.mapPin.y",
   "profile.mapLocation.latitude",
   "profile.mapLocation.longitude",
   "profile.googleMapsUrl",
@@ -273,8 +244,6 @@ export type CompletenessPath = (typeof COMPLETENESS_PATHS)[number];
 export const LOCALIZED_COMPLETENESS_PATHS = [
   "siteName",
   "defaultSeo.title",
-  "profile.hubLabel",
-  "profile.shortDescription",
 ] as const satisfies readonly CompletenessPath[];
 
 export type LocalizedCompletenessValues = Partial<
@@ -309,14 +278,7 @@ export function completenessFromValues(
     },
     defaultSeo: { title: read("defaultSeo.title") as string | null },
     profile: {
-      hubLabel: read("profile.hubLabel") as string | null,
-      shortDescription: read("profile.shortDescription") as string | null,
       coverImage: read("profile.coverImage"),
-      regions: Array.from({ length: Number(read("profile.regions")) || 0 }),
-      mapPin: {
-        x: read("profile.mapPin.x") as number | null,
-        y: read("profile.mapPin.y") as number | null,
-      },
       mapLocation: {
         latitude: read("profile.mapLocation.latitude") as number | null,
         longitude: read("profile.mapLocation.longitude") as number | null,
