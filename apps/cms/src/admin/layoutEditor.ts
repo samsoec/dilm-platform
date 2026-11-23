@@ -38,6 +38,31 @@ export function rowNumberText(rowNumber: number | undefined): string {
   return String((rowNumber ?? 0) + 1).padStart(2, "0");
 }
 
+export type MapCardValue = {
+  eyebrow?: string | null;
+  title?: string | null;
+  position?: string | null;
+  areas?: readonly string[] | null;
+  badges?: readonly unknown[] | null;
+};
+
+export function mapCardTitle(card: MapCardValue): string {
+  return (card.title ?? "").trim() || (card.eyebrow ?? "").trim();
+}
+
+export function mapCardMeta(card: MapCardValue): string[] {
+  const areas = card.areas?.length ?? 0;
+  const position = card.position
+    ? card.position.charAt(0).toUpperCase() + card.position.slice(1)
+    : "";
+  return [
+    position,
+    areas === 0
+      ? "No areas"
+      : `${areas} ${areas === 1 ? "province" : "provinces"}`,
+  ].filter(Boolean);
+}
+
 export function linkTarget(link: LinkValue | null | undefined): string {
   if (!link) return "";
   if (link.type === "reference") {

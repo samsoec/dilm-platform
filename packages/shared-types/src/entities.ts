@@ -26,46 +26,6 @@ export type EntityRecord = {
   } | null;
 };
 
-export type EntityMapItem = {
-  entity?: EntityRef;
-  image?: unknown;
-  label?: string | null;
-  title?: string | null;
-  description?: string | null;
-  regions?: readonly { name?: string | null }[] | null;
-  pin?: { x?: number | null; y?: number | null } | null;
-};
-
-export const FALLBACK_FIELDS = [
-  "image",
-  "label",
-  "title",
-  "description",
-  "regions",
-  "pinX",
-  "pinY",
-] as const;
-
-export type FallbackField = (typeof FALLBACK_FIELDS)[number];
-
-export type FallbackSource = "item" | "company" | "none";
-
-export type EntityCardValues = {
-  image: unknown;
-  label: string | null;
-  title: string | null;
-  description: string | null;
-  regions: string[];
-  pinX: number | null;
-  pinY: number | null;
-};
-
-export type ResolvedEntityItem = {
-  values: EntityCardValues;
-  placeholders: EntityCardValues;
-  source: Record<FallbackField, FallbackSource>;
-};
-
 export function entityIdOf(ref: EntityRef): string | null {
   if (ref === null || ref === undefined || ref === "") return null;
   const id = typeof ref === "object" ? ref.id : ref;
@@ -76,68 +36,8 @@ function text(value: string | null | undefined): string | null {
   return typeof value === "string" && value.trim() !== "" ? value : null;
 }
 
-function names(
-  regions: readonly { name?: string | null }[] | null | undefined,
-): string[] {
-  return (regions ?? []).flatMap((region) => text(region?.name) ?? []);
-}
-
 function present(value: unknown): boolean {
   return value !== null && value !== undefined && value !== "";
-}
-
-function axis(value: number | null | undefined): number | null {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
-}
-
-export function entityPlaceholders(
-  entity: EntityRecord | null | undefined,
-): EntityCardValues {
-  const profile = entity?.profile;
-  return {
-    image: present(profile?.coverImage) ? profile?.coverImage : null,
-    label: text(profile?.hubLabel),
-    title: text(entity?.name) ?? text(entity?.brand?.legalName),
-    description: text(profile?.shortDescription),
-    regions: names(profile?.regions),
-    pinX: axis(profile?.mapPin?.x),
-    pinY: axis(profile?.mapPin?.y),
-  };
-}
-
-export function resolveEntityFallbacks(
-  item: EntityMapItem | null | undefined,
-  entity: EntityRecord | null | undefined,
-): ResolvedEntityItem {
-  const own: EntityCardValues = {
-    image: present(item?.image) ? item?.image : null,
-    label: text(item?.label),
-    title: text(item?.title),
-    description: text(item?.description),
-    regions: names(item?.regions),
-    pinX: axis(item?.pin?.x),
-    pinY: axis(item?.pin?.y),
-  };
-  const placeholders = entityPlaceholders(entity);
-  const empty = (field: FallbackField) =>
-    field === "regions" ? own.regions.length === 0 : own[field] === null;
-  const values = { ...own };
-  const source = {} as Record<FallbackField, FallbackSource>;
-  for (const field of FALLBACK_FIELDS) {
-    if (!empty(field)) {
-      source[field] = "item";
-    } else if (
-      field === "regions"
-        ? placeholders.regions.length > 0
-        : placeholders[field] !== null
-    ) {
-      (values as Record<FallbackField, unknown>)[field] = placeholders[field];
-      source[field] = "company";
-    } else {
-      source[field] = "none";
-    }
-  }
-  return { values, placeholders, source };
 }
 
 export type GroupTile = {

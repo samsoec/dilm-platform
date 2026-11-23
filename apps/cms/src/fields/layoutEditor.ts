@@ -10,6 +10,7 @@ export const ROW_LABELS = {
   navItem: `${FIELDS}/RowLabels#NavItemRowLabel`,
   link: `${FIELDS}/RowLabels#LinkRowLabel`,
   column: `${FIELDS}/RowLabels#ColumnRowLabel`,
+  mapCard: `${FIELDS}/RowLabels#MapCardRowLabel`,
 };
 
 function uiField(

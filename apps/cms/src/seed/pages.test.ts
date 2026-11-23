@@ -1,5 +1,7 @@
 import {
+  MAP_CARD_POSITIONS,
   MAX_LAYOUT_BLOCKS,
+  PROVINCE_CODES,
   TENANT_NAMES,
   TENANT_SLUGS,
   tokenProblem,
@@ -318,5 +320,44 @@ describe("seeded text rules", () => {
       "Sustainability",
     ]);
     expect(TENANT_SLUGS).toHaveLength(3);
+  });
+});
+
+describe("seeded Company map cards", () => {
+  const maps = [
+    ...homeLayout(ctx()),
+    ...productTemplate(ctx()),
+    ...solutionTemplate(ctx()),
+  ].filter((block) => block.blockType === "entityMap");
+
+  it("seeds at least one Company map with the four design cards", () => {
+    expect(maps.length).toBeGreaterThan(0);
+    for (const map of maps) {
+      expect(map.cards?.map((card) => card.position)).toEqual([
+        "left",
+        "bottom",
+        "right",
+        "bottom",
+      ]);
+    }
+  });
+
+  it("keeps every card inside the schema", () => {
+    for (const map of maps) {
+      for (const card of map.cards ?? []) {
+        expect(card.buttons?.length ?? 0).toBeLessThanOrEqual(2);
+        expect(MAP_CARD_POSITIONS).toContain(card.position);
+        for (const code of card.areas ?? []) {
+          expect(PROVINCE_CODES).toContain(code);
+        }
+        expect(new Set(card.areas).size).toBe(card.areas?.length ?? 0);
+      }
+    }
+  });
+
+  it("leaves the Other card with no areas", () => {
+    for (const map of maps) {
+      expect(map.cards?.at(-1)?.areas).toEqual([]);
+    }
   });
 });

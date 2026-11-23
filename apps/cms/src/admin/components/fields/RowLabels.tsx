@@ -8,6 +8,9 @@ import {
   columnMeta,
   type LinkValue,
   linkTarget,
+  type MapCardValue,
+  mapCardMeta,
+  mapCardTitle,
   type NavItemValue,
   navItemLabelPath,
   navItemMeta,
@@ -176,6 +179,25 @@ export function SocialRowLabel() {
       meta={data?.url ? [data.url] : []}
       number={rowNumberText(rowNumber)}
       same={false}
+      title={title}
+    />
+  );
+}
+
+export function MapCardRowLabel() {
+  const { data, path, rowNumber } = useRowLabel<MapCardValue>();
+  const card = data ?? {};
+  const title = mapCardTitle(card);
+  useMoveAnnouncement(path, title, rowNumber);
+  const same = useSameAsDefault(
+    `${path}.${card.title?.trim() ? "title" : "eyebrow"}`,
+    title,
+  );
+  return (
+    <RowLabel
+      meta={mapCardMeta(card)}
+      number={rowNumberText(rowNumber)}
+      same={same}
       title={title}
     />
   );

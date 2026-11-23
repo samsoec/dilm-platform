@@ -1,28 +1,13 @@
 "use client";
 
-import {
-  entityIdOf,
-  type EntityRecord,
-  type EntityRef,
-} from "@dilm/shared-types";
-import {
-  useDocumentInfo,
-  useForm,
-  useFormFields,
-  useLocale,
-} from "@payloadcms/ui";
-import { useEffect, useState } from "react";
+import { useDocumentInfo, useForm, useFormFields } from "@payloadcms/ui";
 
 import {
   CONSENT_LINKS_HINT,
   FORM_FIELDS_NOTE,
   formFieldRows,
-  overrideState,
   pickedCount,
-  pinNote,
-  pinPaths,
   sectionNotes,
-  type Overridable,
 } from "../../sectionStates";
 import { Banner } from "../kit/Banner";
 
@@ -93,133 +78,6 @@ export function SectionStateNote({
         </Banner>
       ))}
     </div>
-  );
-}
-
-type Loaded = { key: string; entity: EntityRecord | null };
-
-export function useCompany(ref: EntityRef): EntityRecord | null {
-  const { code } = useLocale();
-  const id = entityIdOf(ref);
-  const key = id ? `${id}:${code}` : "";
-  const [loaded, setLoaded] = useState<Loaded>();
-
-  useEffect(() => {
-    if (!key) return;
-    const controller = new AbortController();
-    const get = (url: string) =>
-      fetch(url, { credentials: "include", signal: controller.signal })
-        .then((response) => (response.ok ? response.json() : null))
-        .catch(() => null);
-    Promise.all([
-      get(`/api/tenants/${id}?depth=0&locale=${code}`),
-      get(
-        `/api/tenant-settings?where[tenant][equals]=${id}&limit=1&depth=0&locale=${code}`,
-      ),
-    ]).then(([tenant, settings]) => {
-      if (controller.signal.aborted) return;
-      const row = settings?.docs?.[0];
-      setLoaded({
-        key,
-        entity: tenant
-          ? { ...tenant, brand: row?.brand, profile: row?.profile }
-          : null,
-      });
-    });
-    return () => controller.abort();
-  }, [key, id, code]);
-
-  return loaded?.key === key ? loaded.entity : null;
-}
-
-function useSiblingCompany(path: string) {
-  const parent = parentOf(path);
-  const ref = useFormFields(
-    ([fields]) => fields[`${parent}.entity`]?.value,
-  ) as EntityRef;
-  return {
-    parent,
-    hasCompany: Boolean(entityIdOf(ref)),
-    entity: useCompany(ref),
-  };
-}
-
-export function ProfileFallback({
-  path,
-  name,
-}: {
-  path: string;
-  name: Overridable | "regions";
-}) {
-  const { dispatchFields, setModified } = useForm();
-  const own = useFormFields(([fields]) =>
-    name === "regions" ? fields[path]?.rows?.length : fields[path]?.value,
-  );
-  const { hasCompany, entity } = useSiblingCompany(path);
-  if (!hasCompany) return null;
-  const state = overrideState(
-    name,
-    name === "regions" ? (own ? [own] : []) : own,
-    entity,
-  );
-  if (state.kind === "none") return null;
-  if (state.kind === "profile") {
-    return <span className="dil-override-fallback">{state.placeholder}</span>;
-  }
-  if (name === "regions") return null;
-  return (
-    <span className="dil-override-state">
-      Overridden ·{" "}
-      <button
-        className="dil-override-state__reset"
-        onClick={() => {
-          dispatchFields({ type: "UPDATE", path, value: "" });
-          setModified(true);
-        }}
-        type="button"
-      >
-        Use profile value
-      </button>
-    </span>
-  );
-}
-
-export function PinNote({ path }: { path: string }) {
-  const { dispatchFields, setModified } = useForm();
-  const pin = pinPaths(path);
-  const x = useFormFields(([fields]) => fields[pin.x]?.value);
-  const y = useFormFields(([fields]) => fields[pin.y]?.value);
-  const { hasCompany, entity } = useSiblingCompany(path);
-  if (!hasCompany) return null;
-  const note = pinNote({ x, y }, entity);
-  return (
-    <p className="dil-override-fallback dil-pin-note">
-      {note.text}
-      {note.canReset && (
-        <>
-          {" · "}
-          <button
-            className="dil-override-state__reset"
-            onClick={() => {
-              dispatchFields({
-                type: "UPDATE",
-                path: pin.x,
-                value: null,
-              });
-              dispatchFields({
-                type: "UPDATE",
-                path: pin.y,
-                value: null,
-              });
-              setModified(true);
-            }}
-            type="button"
-          >
-            Use profile pin
-          </button>
-        </>
-      )}
-    </p>
   );
 }
 

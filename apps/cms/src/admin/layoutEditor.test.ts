@@ -7,6 +7,8 @@ import {
   isSameAsDefault,
   jakartaYear,
   linkTarget,
+  mapCardMeta,
+  mapCardTitle,
   navItemMeta,
   navItemTitle,
   renderCopyright,
@@ -86,5 +88,24 @@ describe("header and footer editor labels (TRD-UI §6.4, §6.5)", () => {
       "06",
     ]);
     expect(savedAtText("2026-10-07T07:22:00.000Z")).toBe("7 Oct, 14:22");
+  });
+});
+
+describe("map card row label", () => {
+  it("prefers the title, then the eyebrow", () => {
+    expect(mapCardTitle({ title: " Liku ", eyebrow: "Hub" })).toBe("Liku");
+    expect(mapCardTitle({ title: "", eyebrow: "Hub" })).toBe("Hub");
+    expect(mapCardTitle({})).toBe("");
+  });
+
+  it("summarises position and province count", () => {
+    expect(
+      mapCardMeta({ position: "left", areas: ["ID-AC", "ID-SU"] }),
+    ).toEqual(["Left", "2 provinces"]);
+    expect(mapCardMeta({ position: "bottom", areas: [] })).toEqual([
+      "Bottom",
+      "No areas",
+    ]);
+    expect(mapCardMeta({ areas: ["ID-AC"] })).toEqual(["1 province"]);
   });
 });

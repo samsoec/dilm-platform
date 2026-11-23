@@ -6,7 +6,7 @@ import {
 } from "@dilm/shared-types";
 
 import { PROFILE_MAX_REGIONS } from "../collections/TenantSettings";
-import { withSameAsEnTag } from "../fields/layoutEditor";
+import { ROW_LABELS, withSameAsEnTag } from "../fields/layoutEditor";
 import { entityScope, validateOneEntity } from "../fields/recordPicks";
 import {
   buttonsField,
@@ -42,6 +42,7 @@ export const entityMap = sectionBlock({
       minRows: 1,
       maxRows: MAX_ENTITY_ITEMS,
       labels: { singular: "Card", plural: "Cards" },
+      admin: { components: { RowLabel: ROW_LABELS.mapCard } },
       fields: [
         withSameAsEnTag({
           name: "eyebrow",
@@ -80,6 +81,10 @@ export const entityMap = sectionBlock({
           type: "select",
           required: true,
           defaultValue: "left",
+          admin: {
+            description:
+              "Where the info card sits relative to the highlighted area.",
+          },
           options: MAP_CARD_POSITIONS.map((value) => ({
             value,
             label: POSITION_LABELS[value],

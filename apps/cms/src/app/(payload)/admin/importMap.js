@@ -97,6 +97,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { ParagraphFeatureClient as ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { TitleNotice as TitleNotice_b91a8bbaaf6aa498d25cba694787cbe9 } from '../../../admin/components/fields/SectionKit'
 import { ColumnRowLabel as ColumnRowLabel_d7a74f343adbd5aa0b681db641f8edd6 } from '../../../admin/components/fields/RowLabels'
+import { MapCardRowLabel as MapCardRowLabel_d7a74f343adbd5aa0b681db641f8edd6 } from '../../../admin/components/fields/RowLabels'
 import { CopyrightPreview as CopyrightPreview_3a45fcb568830af1d46c04277b75bda3 } from '../../../admin/components/fields/CopyrightPreview'
 import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HeaderField as HeaderField_baabe6231b786d2a57d52d56a1611534 } from '../../../admin/components/editor/server'
@@ -120,8 +121,6 @@ import { RecordPicksField as RecordPicksField_b1773b18d0045ad82cc0a87921be383f }
 import { PostCardField as PostCardField_182937fa4e496a2d07b528fcf84723e8 } from '../../../admin/components/records/PostCardField'
 import { OverrideFallback as OverrideFallback_86c938bd78e79200bf6b002678b8ded6 } from '../../../admin/components/records/OverrideFallback'
 import { CategoryChipsField as CategoryChipsField_d1f0d31ef78dec4b384e054e64654b7c } from '../../../admin/components/records/CategoryChipsField'
-import { ProfileFallback as ProfileFallback_551bc1cd103f773e8fe0e9eb80a4d7f4 } from '../../../admin/components/fields/SectionStates'
-import { PinNote as PinNote_551bc1cd103f773e8fe0e9eb80a4d7f4 } from '../../../admin/components/fields/SectionStates'
 import { SectionStateNote as SectionStateNote_551bc1cd103f773e8fe0e9eb80a4d7f4 } from '../../../admin/components/fields/SectionStates'
 import { PickCount as PickCount_551bc1cd103f773e8fe0e9eb80a4d7f4 } from '../../../admin/components/fields/SectionStates'
 import { FormFieldTable as FormFieldTable_551bc1cd103f773e8fe0e9eb80a4d7f4 } from '../../../admin/components/fields/SectionStates'
@@ -356,6 +355,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#ParagraphFeatureClient": ParagraphFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/admin/components/fields/SectionKit#TitleNotice": TitleNotice_b91a8bbaaf6aa498d25cba694787cbe9,
   "/admin/components/fields/RowLabels#ColumnRowLabel": ColumnRowLabel_d7a74f343adbd5aa0b681db641f8edd6,
+  "/admin/components/fields/RowLabels#MapCardRowLabel": MapCardRowLabel_d7a74f343adbd5aa0b681db641f8edd6,
   "/admin/components/fields/CopyrightPreview#CopyrightPreview": CopyrightPreview_3a45fcb568830af1d46c04277b75bda3,
   "@payloadcms/richtext-lexical/client#LinkFeatureClient": LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/admin/components/editor/server#HeaderField": HeaderField_baabe6231b786d2a57d52d56a1611534,
@@ -382,8 +382,6 @@ export const importMap = {
   "/admin/components/publication/CategoryTabsField#CategoryTabsField": CategoryTabsField_9291b222fe6bef4ad0747dfdc063915d,
   "/admin/components/publication/FeaturedNewest#FeaturedNewest": FeaturedNewest_8163c6dee7ae2a46071ad6d780e2cc5b,
   "/admin/components/publication/TokenChips#TokenChips": TokenChips_6fb29fa8c15549956cf1a097fb717545,
-  "/admin/components/fields/SectionStates#ProfileFallback": ProfileFallback_551bc1cd103f773e8fe0e9eb80a4d7f4,
-  "/admin/components/fields/SectionStates#PinNote": PinNote_551bc1cd103f773e8fe0e9eb80a4d7f4,
   "/admin/components/fields/SectionStates#SectionStateNote": SectionStateNote_551bc1cd103f773e8fe0e9eb80a4d7f4,
   "/admin/components/fields/SectionStates#PickCount": PickCount_551bc1cd103f773e8fe0e9eb80a4d7f4,
   "/admin/components/fields/SectionStates#FormFieldTable": FormFieldTable_551bc1cd103f773e8fe0e9eb80a4d7f4,
