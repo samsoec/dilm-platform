@@ -61,7 +61,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   SELECT 1, "id", 'primary-' || "id", "cta_band_primary_button_type"::text::"enum_footer_cta_band_buttons_link_type", "cta_band_primary_button_new_tab", "cta_band_primary_button_internal_path", "cta_band_primary_button_external_url", 'primary'
   FROM "footer" WHERE "cta_band_primary_button_internal_path" IS NOT NULL OR "cta_band_primary_button_external_url" IS NOT NULL OR EXISTS (SELECT 1 FROM "footer_rels" r WHERE r."parent_id" = "footer"."id" AND r."path" = 'ctaBand.primaryButton.reference');
   INSERT INTO "footer_cta_band_buttons" ("_order", "_parent_id", "id", "link_type", "link_new_tab", "link_internal_path", "link_external_url", "style")
-  SELECT 2, f."id", 'secondary-' || f."id", f."cta_band_secondary_button_type"::text::"enum_footer_cta_band_buttons_link_type", f."cta_band_secondary_button_new_tab", f."cta_band_secondary_button_internal_path", f."cta_band_secondary_button_external_url", 'light'
+  SELECT 1 + (SELECT count(*) FROM "footer_cta_band_buttons" p WHERE p."_parent_id" = f."id"), f."id", 'secondary-' || f."id", f."cta_band_secondary_button_type"::text::"enum_footer_cta_band_buttons_link_type", f."cta_band_secondary_button_new_tab", f."cta_band_secondary_button_internal_path", f."cta_band_secondary_button_external_url", 'light'
   FROM "footer" f
   LEFT JOIN "footer_locales" l ON l."_parent_id" = f."id" AND l."cta_band_secondary_button_label" IS NOT NULL
   WHERE l."id" IS NOT NULL
@@ -73,13 +73,16 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   SELECT l."cta_band_secondary_button_label", l."_locale", 'secondary-' || l."_parent_id"
   FROM "footer_locales" l WHERE EXISTS (SELECT 1 FROM "footer_cta_band_buttons" b WHERE b."id" = 'secondary-' || l."_parent_id");
   INSERT INTO "footer_rels" ("order", "parent_id", "path", "pages_id", "shared_pages_id", "products_id", "solutions_id", "jobs_id", "posts_id", "categories_id")
-  SELECT CASE WHEN "path" = 'ctaBand.primaryButton.reference' THEN 1 ELSE 2 END, "parent_id", 'ctaBand.buttons.link.reference', "pages_id", "shared_pages_id", "products_id", "solutions_id", "jobs_id", "posts_id", "categories_id"
-  FROM "footer_rels" WHERE "path" IN ('ctaBand.primaryButton.reference', 'ctaBand.secondaryButton.reference');`)
+  SELECT b."_order", b."_parent_id", 'ctaBand.buttons.' || (b."_order" - 1) || '.link.reference', r."pages_id", r."shared_pages_id", r."products_id", r."solutions_id", r."jobs_id", r."posts_id", r."categories_id"
+  FROM "footer_cta_band_buttons" b
+  JOIN "footer_rels" r ON r."parent_id" = b."_parent_id"
+    AND r."path" = CASE WHEN b."id" LIKE 'primary-%' THEN 'ctaBand.primaryButton.reference' ELSE 'ctaBand.secondaryButton.reference' END
+  WHERE b."link_type"::text = 'reference';`)
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
-   DELETE FROM "footer_rels" WHERE "path" = 'ctaBand.buttons.link.reference';
+   DELETE FROM "footer_rels" WHERE "path" LIKE 'ctaBand.buttons.%';
   DROP TABLE "footer_cta_band_buttons" CASCADE;
   DROP TABLE "footer_cta_band_buttons_locales" CASCADE;
   DROP TABLE "_footer_v_version_cta_band_buttons" CASCADE;
