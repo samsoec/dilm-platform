@@ -32,8 +32,7 @@ function headerLinks({ header }: LayoutSeed): Link[] {
 
 function footerLinks({ footer }: LayoutSeed): Link[] {
   return [
-    footer.ctaBand.primaryButton,
-    footer.ctaBand.secondaryButton,
+    ...(footer.ctaBand.buttons ?? []).map(({ link }) => link),
     ...(footer.linkColumns ?? []).flatMap((column) =>
       (column.links ?? []).map(({ link }) => link),
     ),
@@ -93,8 +92,8 @@ describe("layoutSeed", () => {
     const { footer } = layoutSeed("indoacid");
 
     expect(footer.ctaBand.eyebrow).toBe("Contact Us");
-    expect(footer.ctaBand.primaryButton.label).toBe("Contact Us");
-    expect(footer.ctaBand.secondaryButton.label).toBe("Explore Our Products");
+    expect(footer.ctaBand.buttons![0]!.link.label).toBe("Contact Us");
+    expect(footer.ctaBand.buttons![1]!.link.label).toBe("Explore Our Products");
     expect(
       footer.linkColumns!.map(({ title, links }) => [
         title,

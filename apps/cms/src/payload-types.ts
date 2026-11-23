@@ -1069,16 +1069,13 @@ export interface Product {
         }[]
       | null;
   };
-  updatedBy?: (number | null) | User;
-  trashedBy?: (number | null) | User;
   meta?: {
     title?: string | null;
     description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
     image?: (number | null) | Media;
   };
+  updatedBy?: (number | null) | User;
+  trashedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -1097,15 +1094,15 @@ export interface Document {
    * Visitors download the file under this name, with .pdf added.
    */
   title: string;
-  downloadName?: string | null;
+  createdAt: string;
   usedInCount?: number | null;
   linkStatus?: string | null;
+  downloadName?: string | null;
   uploadedBy?: (number | null) | User;
   trashedBy?: (number | null) | User;
   prefix?: string | null;
   _objectKey?: string | null;
   updatedAt: string;
-  createdAt: string;
   deletedAt?: string | null;
   url?: string | null;
   thumbnailURL?: string | null;
@@ -1174,13 +1171,7 @@ export interface Solution {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Pick from every company's published products. The order here is the order shown.
-   */
   supportingProducts?: (number | Product)[] | null;
-  /**
-   * Optional. It has to be one of the supporting products. Empty uses the first one.
-   */
   featuredProduct?: (number | null) | Product;
   impact?: {
     /**
@@ -1344,9 +1335,6 @@ export interface Post {
    */
   order?: number | null;
   title: string;
-  /**
-   * The post's address follows its category. Changing it moves the post and leaves a redirect from the old address.
-   */
   primaryCategory: number | Category;
   publishedAt?: string | null;
   coverImage?: (number | null) | Media;
@@ -4140,7 +4128,7 @@ export interface PostListingBlock {
   source: 'all' | 'currentCategory' | 'categories';
   categories?: (number | Category)[] | null;
   /**
-   * A published post of this company. Leave empty to feature the newest post. Hidden while a visitor is searching.
+   * Empty uses the newest post. Hidden while searching.
    */
   featured?: (number | null) | Post;
   /**
@@ -4536,6 +4524,57 @@ export interface Footer {
       };
       [k: string]: unknown;
     } | null;
+    buttons?:
+      | {
+          link: {
+            type: 'reference' | 'internal' | 'external';
+            newTab?: boolean | null;
+            /**
+             * Start with /. The site adds the language. Typed paths don't follow renames. Pick the page instead if you can.
+             */
+            internalPath?: string | null;
+            /**
+             * A full address starting with https://
+             */
+            externalUrl?: string | null;
+            /**
+             * Follows the page or record if it is renamed or moved. Only published ones are offered.
+             */
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'shared-pages';
+                  value: number | SharedPage;
+                } | null)
+              | ({
+                  relationTo: 'products';
+                  value: number | Product;
+                } | null)
+              | ({
+                  relationTo: 'solutions';
+                  value: number | Solution;
+                } | null)
+              | ({
+                  relationTo: 'jobs';
+                  value: number | Job;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'categories';
+                  value: number | Category;
+                } | null);
+            label?: string | null;
+          };
+          style: 'primary' | 'light' | 'text';
+          id?: string | null;
+        }[]
+      | null;
     primaryButton: {
       type: 'reference' | 'internal' | 'external';
       newTab?: boolean | null;
@@ -4686,6 +4725,18 @@ export interface Footer {
         id?: string | null;
       }[]
     | null;
+  /**
+   * The company logo comes from Company settings. The holding logo below is shown with the “Part of” label.
+   */
+  brand?: {
+    description?: string | null;
+  };
+  contact?: {
+    /**
+     * Phone, email and address come from Company settings.
+     */
+    show?: boolean | null;
+  };
   partOf?: {
     /**
      * Hidden on the site. Turn on to show a parent-company logo.
@@ -4812,7 +4863,7 @@ export interface SiteMessage {
   cookieBanner: {
     title: string;
     /**
-     * Link this text to your Cookie Policy page. It can't be saved without that link.
+     * Link this text to your Cookie Policy page so visitors can read it before choosing.
      */
     body?: {
       root: {
@@ -4831,6 +4882,9 @@ export interface SiteMessage {
     } | null;
     acceptLabel: string;
     rejectLabel: string;
+    /**
+     * Change the version only when the Cookie Policy changes: every visitor sees the banner again.
+     */
     policyVersion?: string | null;
   };
   updatedBy?: (number | null) | User;
@@ -5086,10 +5140,10 @@ export interface Redirect {
           value: number | Category;
         } | null);
   };
+  createdBy?: (number | null) | User;
   /**
    * Leave empty to apply to all three sites.
    */
-  createdBy?: (number | null) | User;
   tenant?: (number | null) | Tenant;
   locale: 'en' | 'id';
   origin: 'auto' | 'manual';
@@ -5537,15 +5591,15 @@ export interface IrDocumentsSelect<T extends boolean = true> {
 export interface DocumentsSelect<T extends boolean = true> {
   tenant?: T;
   title?: T;
-  downloadName?: T;
+  createdAt?: T;
   usedInCount?: T;
   linkStatus?: T;
+  downloadName?: T;
   uploadedBy?: T;
   trashedBy?: T;
   prefix?: T;
   _objectKey?: T;
   updatedAt?: T;
-  createdAt?: T;
   deletedAt?: T;
   url?: T;
   thumbnailURL?: T;
@@ -5670,6 +5724,22 @@ export interface FooterSelect<T extends boolean = true> {
     | {
         eyebrow?: T;
         heading?: T;
+        buttons?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    internalPath?: T;
+                    externalUrl?: T;
+                    reference?: T;
+                    label?: T;
+                  };
+              style?: T;
+              id?: T;
+            };
         primaryButton?:
           | T
           | {
@@ -5711,6 +5781,16 @@ export interface FooterSelect<T extends boolean = true> {
               id?: T;
             };
         id?: T;
+      };
+  brand?:
+    | T
+    | {
+        description?: T;
+      };
+  contact?:
+    | T
+    | {
+        show?: T;
       };
   partOf?:
     | T
@@ -7451,8 +7531,6 @@ export interface ProductsSelect<T extends boolean = true> {
               id?: T;
             };
       };
-  updatedBy?: T;
-  trashedBy?: T;
   meta?:
     | T
     | {
@@ -7460,6 +7538,8 @@ export interface ProductsSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
+  updatedBy?: T;
+  trashedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

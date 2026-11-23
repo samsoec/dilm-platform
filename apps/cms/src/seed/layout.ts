@@ -13,7 +13,12 @@ type Link = NonNullable<NonNullable<Header["cta"]>["link"]>;
 
 type HeaderSeed = Omit<Header, "id" | "tenant" | "createdAt" | "updatedAt">;
 
-type FooterSeed = Omit<Footer, "id" | "tenant" | "createdAt" | "updatedAt">;
+type FooterSeed = Omit<
+  Footer,
+  "id" | "tenant" | "createdAt" | "updatedAt" | "ctaBand"
+> & {
+  ctaBand: Omit<Footer["ctaBand"], "primaryButton" | "secondaryButton">;
+};
 
 export type LayoutSeed = { header: HeaderSeed; footer: FooterSeed };
 
@@ -136,11 +141,16 @@ export function layoutSeed(tenant: TenantSlug): LayoutSeed {
       ctaBand: {
         eyebrow: "Contact Us",
         heading: CTA_HEADING,
-        primaryButton: contactUs,
-        secondaryButton: internal(
-          "Explore Our Products",
-          "/products-and-solutions/products",
-        ),
+        buttons: [
+          { link: contactUs, style: "primary" },
+          {
+            link: internal(
+              "Explore Our Products",
+              "/products-and-solutions/products",
+            ),
+            style: "light",
+          },
+        ],
       },
       linkColumns: [
         {
