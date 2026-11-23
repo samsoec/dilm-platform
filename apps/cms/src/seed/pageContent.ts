@@ -1726,7 +1726,7 @@ function mapCards(ctx: SeedContext) {
       eyebrow: "Chemical Hub in Sumatra",
       title: TENANT_NAMES.duniakimia,
       description:
-        "Supporting water treatment, mining, and manufacturing with essential chemicals produced from its Sumatra operations.",
+        "Chemical solutions for customers in this region. Replace with the approved company description.",
       badges: [{ text: "All Sumatra" }],
       image: ctx.image,
       buttons: [
