@@ -12,6 +12,7 @@ import {
   versionInfo,
   withSameAsEnTag,
 } from "../fields/layoutEditor";
+import { buttonStyleField } from "../fields/buttonStyle";
 import { link } from "../fields/link";
 import { keepRowStructure, lockStructure } from "../fields/structure";
 import { withUpdatedBy } from "../fields/updatedBy";
@@ -173,6 +174,7 @@ export const Header = withTenantAccess(
               ...link({ required: true }),
               admin: { condition: ctaEnabled },
             },
+            buttonStyleField({ condition: ctaEnabled }),
           ],
         },
       ]),
