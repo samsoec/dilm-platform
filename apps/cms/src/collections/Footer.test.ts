@@ -22,6 +22,7 @@ import {
   isCopyrightTemplate,
   isItalicOnlyHeading,
   MAX_COLUMN_LINKS,
+  MAX_CTA_BUTTONS,
   MAX_LINK_COLUMNS,
 } from "./Footer";
 import { Tenants } from "./Tenants";
@@ -90,7 +91,14 @@ describe("footer", () => {
     const names = fieldNames(Footer.fields);
 
     expect(names).toEqual(
-      expect.arrayContaining(["ctaBand", "linkColumns", "partOf", "copyright"]),
+      expect.arrayContaining([
+        "ctaBand",
+        "linkColumns",
+        "brand",
+        "contact",
+        "partOf",
+        "copyright",
+      ]),
     );
     for (const name of [
       "tagline",
@@ -113,23 +121,41 @@ describe("footer", () => {
         type: "text",
         localized: true,
       });
+      const buttons = findField(ctaBand, "buttons") as ArrayField;
+      expect(buttons.maxRows).toBe(MAX_CTA_BUTTONS);
+      const row = subfields(buttons);
+      expect(fieldNames(row)).toEqual(
+        expect.arrayContaining(["style", "label"]),
+      );
+      expect(findField(row, "style")).toMatchObject({
+        type: "select",
+        required: true,
+        defaultValue: "primary",
+        options: [
+          { value: "primary", label: "Primary" },
+          { value: "light", label: "Light" },
+          { value: "text", label: "Text link" },
+        ],
+      });
       for (const name of ["primaryButton", "secondaryButton"]) {
-        const button = findField(ctaBand, name);
-        expect(button).toMatchObject({ name, type: "group" });
-        expect(fieldNames(subfields(button))).toEqual(
-          fieldNames(link().fields),
-        );
+        expect(findField(ctaBand, name)).toMatchObject({
+          name,
+          admin: { hidden: true },
+        });
       }
-      const missing = { type: "external", externalUrl: "" };
-      const target = (name: string) =>
-        findField(subfields(findField(ctaBand, name)), "externalUrl") as {
-          validate: TextFieldSingleValidation;
-        };
-      const args = {
-        siblingData: missing,
-      } as unknown as Parameters<TextFieldSingleValidation>[1];
-      expect(target("primaryButton").validate("", args)).toBeTypeOf("string");
-      expect(target("secondaryButton").validate("", args)).toBe(true);
+    });
+
+    it("has a brand description owned by the footer and a contact switch", () => {
+      const brand = subfields(findField(Footer.fields, "brand"));
+      expect(findField(brand, "description")).toMatchObject({
+        type: "textarea",
+        localized: true,
+      });
+      const contact = subfields(findField(Footer.fields, "contact"));
+      expect(findField(contact, "show")).toMatchObject({
+        type: "checkbox",
+        defaultValue: true,
+      });
     });
 
     it("has a localized rich-text heading limited to italic", () => {

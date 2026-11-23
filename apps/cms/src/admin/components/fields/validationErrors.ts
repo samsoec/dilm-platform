@@ -17,6 +17,7 @@ const GROUP_NAMES: Record<string, string> = {
   cta: "Call-to-action",
   ctaBand: "Contact band",
   partOf: "Part of",
+  buttons: "Buttons",
   primaryButton: "Primary button",
   secondaryButton: "Secondary button",
 };

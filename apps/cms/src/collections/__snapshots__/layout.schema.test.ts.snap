@@ -2,7 +2,20 @@
 
 exports[`header and footer data shape (DILM-61) > keeps every footer data path, so the editor restyle needs no migration 1`] = `
 [
+  "brand.description: textarea localized=true",
+  "brand: group",
+  "contact.show: checkbox",
+  "contact: group",
   "copyright: text localized=true",
+  "ctaBand.buttons.link.externalUrl: text",
+  "ctaBand.buttons.link.internalPath: text",
+  "ctaBand.buttons.link.label: text localized=true",
+  "ctaBand.buttons.link.newTab: checkbox",
+  "ctaBand.buttons.link.reference: relationship relationTo=pages,shared-pages,products,solutions,jobs,posts,categories",
+  "ctaBand.buttons.link.type: radio required=true options=reference|internal|external",
+  "ctaBand.buttons.link: group",
+  "ctaBand.buttons.style: select required=true options=primary|light|text",
+  "ctaBand.buttons: array maxRows=2",
   "ctaBand.eyebrow: text localized=true",
   "ctaBand.heading: richText localized=true",
   "ctaBand.primaryButton.externalUrl: text",

@@ -30,6 +30,14 @@ export const MAX_LINK_COLUMNS = 4;
 
 export const MAX_COLUMN_LINKS = 8;
 
+export const MAX_CTA_BUTTONS = 2;
+
+export const BUTTON_STYLES = [
+  ["primary", "Primary"],
+  ["light", "Light"],
+  ["text", "Text link"],
+] as const;
+
 export const COPYRIGHT_TOKENS = ["year", "legalName"] as const;
 
 export { isItalicOnlyHeading };
@@ -91,12 +99,34 @@ export const Footer = withTenantAccess(
                 localized: true,
               }),
               italicHeadingField({ name: "heading" }),
-              link({
-                name: "primaryButton",
-                label: "Primary button",
-                required: true,
+              countedArray({
+                name: "buttons",
+                labels: { singular: "Button", plural: "Buttons" },
+                type: "array",
+                maxRows: MAX_CTA_BUTTONS,
+                admin: { components: { RowLabel: ROW_LABELS.link } },
+                fields: [
+                  link({ required: true }),
+                  {
+                    name: "style",
+                    type: "select",
+                    required: true,
+                    defaultValue: "primary",
+                    options: BUTTON_STYLES.map(([value, label]) => ({
+                      value,
+                      label,
+                    })),
+                  },
+                ],
               }),
-              link({ name: "secondaryButton", label: "Secondary button" }),
+              {
+                ...link({ name: "primaryButton", label: "Primary button" }),
+                admin: { hidden: true },
+              },
+              {
+                ...link({ name: "secondaryButton", label: "Secondary button" }),
+                admin: { hidden: true },
+              },
             ],
           },
         ]),
@@ -138,6 +168,40 @@ export const Footer = withTenantAccess(
           }),
         ]),
         ...section("part-of", [
+          {
+            name: "brand",
+            label: "Brand column",
+            type: "group",
+            admin: {
+              description:
+                "The company logo comes from Company settings. The holding logo below is shown with the “Part of” label.",
+            },
+            fields: [
+              withSameAsEnTag({
+                name: "description",
+                type: "textarea",
+                localized: true,
+              }),
+            ],
+          },
+          {
+            name: "contact",
+            label: "Contact & Location",
+            type: "group",
+            fields: [
+              {
+                name: "show",
+                label: "Show Contact & Location",
+                type: "checkbox",
+                defaultValue: true,
+                admin: {
+                  className: "dil-switch",
+                  description:
+                    "Phone, email and address come from Company settings.",
+                },
+              },
+            ],
+          },
           {
             name: "partOf",
             label: false,
