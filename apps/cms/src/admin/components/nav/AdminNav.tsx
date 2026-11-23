@@ -72,7 +72,11 @@ export async function AdminNav({
           <Mark size={10} />
           {PRODUCT_NAME}
         </div>
-        <TenantCard tenant={sidebar.tenant} viewType={viewType} />
+        <TenantCard
+          superAdmin={superAdmin}
+          tenant={sidebar.tenant}
+          viewType={viewType}
+        />
         <NavLinks
           adminRoute={adminRoute}
           attentionSlug={ATTENTION_SLUG}
