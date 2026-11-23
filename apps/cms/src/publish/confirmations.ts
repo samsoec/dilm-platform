@@ -25,8 +25,7 @@ export type Placement = {
 export type TrashRefusal =
   | { kind: "children"; children: { id: string; title: string }[] }
   | { kind: "recordBase"; message: string; label: string }
-  | { kind: "publication"; message: string }
-  | { kind: "cookiePolicy"; message: string };
+  | { kind: "publication"; message: string };
 
 export type PublishBlock =
   | { kind: "routing"; message: string }

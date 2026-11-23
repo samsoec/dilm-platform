@@ -10,6 +10,7 @@ import {
 import {
   bannerText,
   CONSENT_NOTES,
+  COOKIE_LINK_MISSING,
   cookiePolicyCheck,
   firstLinkedPageId,
   NOT_FOUND_RESPONSE,
@@ -43,7 +44,15 @@ export function CookiePolicyCheck() {
   const { doc, loading } = useLinkTarget(
     id ? { relationTo: "pages", value: id } : undefined,
   );
-  if (!id || loading) return null;
+  if (loading) return null;
+  if (!id) {
+    return (
+      <p className="dil-cookie-check dil-cookie-check--warn">
+        <MaterialIcon name="warning" />
+        {COOKIE_LINK_MISSING}
+      </p>
+    );
+  }
   const check = cookiePolicyCheck(doc, {
     siteDomain: company?.domain ?? "",
     locale: code,

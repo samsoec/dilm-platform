@@ -2,7 +2,6 @@ import type { ArrayField, RichTextField } from "payload";
 import { describe, expect, it } from "vitest";
 
 import { link } from "../fields/link";
-import { requireCookiePolicyLink } from "../siteMessages";
 import {
   accessAs,
   applyMultiTenant,
@@ -85,11 +84,11 @@ describe("site-messages", () => {
       );
     });
 
-    it("has a localized rich body that must link to the Cookie Policy", () => {
+    it("has a localized rich body with no save-blocking validation", () => {
       const field = findField(banner, "body") as RichTextField;
 
       expect(field).toMatchObject({ type: "richText", localized: true });
-      expect(field.validate).toBe(requireCookiePolicyLink);
+      expect(field.validate).toBeUndefined();
       expect(field.editor).toBeTypeOf("function");
     });
   });

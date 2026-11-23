@@ -23,7 +23,6 @@ import { json } from "../pageDialog";
 import { refId, scopedReq } from "../pageRules";
 import { findReferrers, refKey, type Referrer } from "../routeIndex";
 import { sectionsReferencing } from "./usedInSections";
-import { COOKIE_POLICY_LOCKED, findCookiePolicyLinks } from "../siteMessages";
 import {
   baseState,
   baseUnpublishedMessage,
@@ -298,10 +297,6 @@ async function trashRefusal(
       message: dependency.message,
       label: "Open Company settings",
     };
-  }
-  const cookie = await findCookiePolicyLinks(id, { payload, req });
-  if (cookie.length > 0) {
-    return { kind: "cookiePolicy", message: COOKIE_POLICY_LOCKED };
   }
   return null;
 }

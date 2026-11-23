@@ -254,17 +254,11 @@ export function TrashConfirm({
   name,
   onConfirm,
   settingsHref,
-  messagesHref,
-}: ConfirmProps & { settingsHref?: string; messagesHref?: string }) {
+}: ConfirmProps & { settingsHref?: string }) {
   const open = useOpen(slug);
   const { impact } = useImpact(collection, id, open);
   const refusal = impact?.refusal ?? null;
-  const href =
-    refusal?.kind === "recordBase"
-      ? settingsHref
-      : refusal?.kind === "cookiePolicy"
-        ? messagesHref
-        : undefined;
+  const href = refusal?.kind === "recordBase" ? settingsHref : undefined;
   return (
     <ConfirmDialog
       body={

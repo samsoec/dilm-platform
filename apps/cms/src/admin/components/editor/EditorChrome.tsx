@@ -328,10 +328,6 @@ export function EditorActions({
       <TrashConfirm
         collection={collectionSlug}
         id={id}
-        messagesHref={formatAdminURL({
-          adminRoute: routes.admin,
-          path: "/globals/site-messages",
-        })}
         name={name}
         onConfirm={trash}
         settingsHref={formatAdminURL({
