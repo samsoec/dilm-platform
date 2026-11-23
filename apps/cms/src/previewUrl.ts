@@ -1,4 +1,4 @@
-import { PREVIEW_PATH, signPreviewToken } from "@dilm/runtime-config";
+import { PREVIEW_PATH, signPreviewToken } from "@dilm/runtime-config/preview";
 import { DETAIL_TYPE_LABELS, type DetailRecordType } from "@dilm/shared-types";
 
 export const PREVIEW_COLLECTIONS = [
