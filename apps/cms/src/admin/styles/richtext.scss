@@ -3,10 +3,9 @@
     --font-serif: var(--dil-font-sans);
   }
 
-  // Payload classes: .rich-text-lexical, .rich-text-lexical__wrap, .fixed-toolbar, .editor-container, .ContentEditable__root, .LexicalEditorTheme__placeholder (@payloadcms/richtext-lexical field)
   .rich-text-lexical {
     .rich-text-lexical__wrap {
-      overflow: hidden;
+      overflow: clip;
       border: 1px solid var(--dil-line);
       border-radius: var(--dil-radius-m);
       background: var(--dil-surface);
@@ -62,6 +61,10 @@
       .LexicalEditorTheme__placeholder {
         left: 3rem;
       }
+    }
+
+    &.error .rich-text-lexical__wrap {
+      border-color: var(--dil-danger);
     }
 
     &:focus-within .rich-text-lexical__wrap {
