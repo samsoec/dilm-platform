@@ -1,4 +1,5 @@
 import { Gutter } from "@payloadcms/ui";
+import { ListStepNav } from "../topbar/ListStepNav";
 import { cookies } from "next/headers";
 import type { ListViewServerProps } from "payload";
 
@@ -22,6 +23,7 @@ export async function TemplatesView({ payload, user }: ListViewServerProps) {
     });
     return (
       <Gutter>
+        <ListStepNav label="Detail templates" />
         <div className="dil-pages__heading">
           <div>
             <h1 className="dil-pages__title">Detail templates</h1>
@@ -38,6 +40,7 @@ export async function TemplatesView({ payload, user }: ListViewServerProps) {
     payload.logger.error({ err: error, msg: "Couldn't load the templates" });
     return (
       <Gutter>
+        <ListStepNav label="Detail templates" />
         <Banner icon="cloud_off" tone="error">
           Couldn&apos;t load the templates. Reload the page to try again.
         </Banner>

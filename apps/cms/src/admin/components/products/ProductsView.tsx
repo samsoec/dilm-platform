@@ -1,4 +1,5 @@
 import { Gutter } from "@payloadcms/ui";
+import { ListStepNav } from "../topbar/ListStepNav";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import type { ListViewServerProps } from "payload";
@@ -417,6 +418,7 @@ export function ProductsView(props: ListViewServerProps) {
   return (
     <div className="collection-list dil-pages-view">
       <Gutter>
+        <ListStepNav label="Products" />
         <Suspense
           fallback={
             <div aria-busy="true" className="dil-pages__loading" role="status">

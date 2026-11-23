@@ -1,4 +1,5 @@
 import { Gutter } from "@payloadcms/ui";
+import { ListStepNav } from "../topbar/ListStepNav";
 import { cookies } from "next/headers";
 import type { ListViewServerProps } from "payload";
 import { formatAdminURL } from "payload/shared";
@@ -344,6 +345,7 @@ export function RedirectsView(props: ListViewServerProps) {
   return (
     <div className="collection-list dil-pages-view">
       <Gutter>
+        <ListStepNav label="Redirects" />
         <Suspense
           fallback={
             <div aria-busy="true" className="dil-pages__loading" role="status">

@@ -1,4 +1,5 @@
 import { Gutter } from "@payloadcms/ui";
+import { ListStepNav } from "../topbar/ListStepNav";
 import Link from "next/link";
 import type { ListViewServerProps } from "payload";
 import { formatAdminURL } from "payload/shared";
@@ -177,6 +178,7 @@ export function CategoriesView(props: ListViewServerProps) {
   return (
     <div className="collection-list dil-pages-view">
       <Gutter>
+        <ListStepNav label="Categories" />
         <Suspense
           fallback={
             <div aria-busy="true" className="dil-pages__loading" role="status">
