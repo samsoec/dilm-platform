@@ -1,5 +1,6 @@
 import type {
   EmailFieldValidation,
+  FieldHook,
   SelectFieldSingleValidation,
 } from "payload";
 import { email, select } from "payload/shared";
@@ -51,41 +52,16 @@ export const isUniquePlatform: SelectFieldSingleValidation = async (
   return count > 1 ? "Each platform can only be listed once." : true;
 };
 
-async function tenantDomain(
-  args: Parameters<EmailFieldValidation>[1],
-): Promise<string | undefined> {
-  const tenant = (args.data as { tenant?: unknown } | undefined)?.tenant;
-  const id =
-    tenant && typeof tenant === "object" && "id" in tenant
-      ? (tenant as { id: number | string }).id
-      : tenant;
-  const payload = args.req?.payload;
-  if (
-    (typeof id !== "number" && typeof id !== "string") ||
-    typeof payload?.findByID !== "function"
-  ) {
-    return undefined;
-  }
-  try {
-    const doc = await payload.findByID({
-      collection: "tenants",
-      id,
-      depth: 0,
-      select: { domain: true },
-    });
-    return doc.domain ?? undefined;
-  } catch {
-    return undefined;
-  }
-}
+export const EMAIL_ERROR = "Enter a valid email address, like name@company.com";
 
-export function isFullEmail(mailbox: string): EmailFieldValidation {
-  return async (value, args) => {
-    if (!value || email(value, args) === true) return true;
-    const domain = (await tenantDomain(args)) ?? "example.com";
-    return `Enter a full email, like ${mailbox}@${domain}`;
-  };
-}
+export const trimEmail: FieldHook = ({ value }) =>
+  typeof value === "string" ? value.trim() : value;
+
+export const isValidEmail: EmailFieldValidation = (value, args) => {
+  const trimmed = typeof value === "string" ? value.trim() : value;
+  if (!trimmed || email(trimmed, args) === true) return true;
+  return EMAIL_ERROR;
+};
 
 import {
   CAREER_PAGE_NOTE,
@@ -304,7 +280,8 @@ export const TenantSettings = withTenantAccess(
                 name: "contactEmail",
                 label: "Contact email",
                 type: "email",
-                validate: isFullEmail("info"),
+                validate: isValidEmail,
+                hooks: { beforeValidate: [trimEmail] },
               },
               {
                 name: "contactPhone",
@@ -338,7 +315,8 @@ export const TenantSettings = withTenantAccess(
                 name: "recruiterEmail",
                 label: "Recruiter notification email",
                 type: "email",
-                validate: isFullEmail("hr"),
+                validate: isValidEmail,
+                hooks: { beforeValidate: [trimEmail] },
                 admin: {
                   className: "dil-launch-required",
                   description:
