@@ -1,11 +1,9 @@
 import {
   DETAIL_TYPE_LABELS,
-  entityPlaceholders,
   isBlockInContext,
   TEMPLATE_BLOCK_RECORD_TYPES,
   wrongContextMessage,
   type DetailRecordType,
-  type EntityRecord,
 } from "@dilm/shared-types";
 
 import {
@@ -33,8 +31,6 @@ export const SHARED_CURRENT_COMPANY_NOTE =
 
 export const GROUP_PICK_NOTE =
   "Logos, names and cover images come from each company's settings.";
-
-export const PIN_HINT_EMPTY = "No pin on the profile · set x and y below.";
 
 export const CONSENT_LINKS_HINT =
   "Links only. The text must link to the company's Privacy Policy (UU PDP).";
@@ -129,49 +125,6 @@ export function pickedCount(value: unknown, max: number): string {
   return `${count} of ${max}`;
 }
 
-export const OVERRIDABLE = ["label", "title", "description"] as const;
-export type Overridable = (typeof OVERRIDABLE)[number];
-
-export type FieldState =
-  | { kind: "none" }
-  | { kind: "profile"; placeholder: string }
-  | { kind: "overridden" };
-
-export function overrideState(
-  field: Overridable | "regions",
-  own: unknown,
-  entity: EntityRecord | null | undefined,
-): FieldState {
-  const filled = Array.isArray(own)
-    ? own.length > 0
-    : typeof own === "string" && own.trim() !== "";
-  if (filled) return entity ? { kind: "overridden" } : { kind: "none" };
-  const placeholders = entityPlaceholders(entity);
-  const value =
-    field === "regions" ? placeholders.regions.join(", ") : placeholders[field];
-  return value ? { kind: "profile", placeholder: value } : { kind: "none" };
-}
-
-export function pinNote(
-  own: { x?: unknown; y?: unknown } | null | undefined,
-  entity: EntityRecord | null | undefined,
-): { text: string; canReset: boolean } {
-  if (typeof own?.x === "number" && typeof own?.y === "number") {
-    return {
-      text: `Overridden · x ${own.x}% y ${own.y}%`,
-      canReset: Boolean(entity),
-    };
-  }
-  const { pinX, pinY } = entityPlaceholders(entity);
-  if (pinX !== null && pinY !== null) {
-    return {
-      text: `From profile · x ${pinX}% y ${pinY}% · Place differently below`,
-      canReset: false,
-    };
-  }
-  return { text: PIN_HINT_EMPTY, canReset: false };
-}
-
 export function formFieldRows(
   names: readonly string[],
   labels: Record<string, string>,
@@ -186,9 +139,4 @@ export function formFieldRows(
         ? values[name].placeholder
         : "",
   }));
-}
-
-export function pinPaths(notePath: string): { x: string; y: string } {
-  const parent = notePath.slice(0, notePath.lastIndexOf("."));
-  return { x: `${parent}.pin.x`, y: `${parent}.pin.y` };
 }

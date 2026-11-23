@@ -3,19 +3,10 @@ import { withSameAsEnTag } from "../fields/layoutEditor";
 
 import {
   formFieldRows,
-  overrideState,
   pickedCount,
-  pinNote,
-  pinPaths,
   sectionNotes,
   templateOnlyWarning,
 } from "./sectionStates";
-
-const company = {
-  id: 1,
-  name: "Indonesian Acids",
-  profile: { hubLabel: "Chemical hub", mapPin: { x: 22, y: 34 } },
-};
 
 describe("sectionNotes", () => {
   it("warns when a template-only section is on the wrong page", () => {
@@ -56,25 +47,7 @@ describe("sectionNotes", () => {
   });
 });
 
-describe("company overrides", () => {
-  it("shows the profile value while empty and offers reset when overridden", () => {
-    expect(overrideState("label", "", company)).toEqual({
-      kind: "profile",
-      placeholder: "Chemical hub",
-    });
-    expect(overrideState("label", "Mine", company)).toEqual({
-      kind: "overridden",
-    });
-    expect(overrideState("label", "", null)).toEqual({ kind: "none" });
-  });
-
-  it("describes the pin", () => {
-    expect(pinNote({}, company).text).toBe(
-      "From profile · x 22% y 34% · Place differently below",
-    );
-    expect(pinNote({ x: 1, y: 2 }, company).canReset).toBe(true);
-  });
-
+describe("picks", () => {
   it("counts picks", () => {
     expect(pickedCount([1, 2, 3], 6)).toBe("3 of 6");
     expect(pickedCount(null, 6)).toBe("0 of 6");
@@ -88,15 +61,6 @@ describe("formFieldRows", () => {
       { name: "a", field: "A", label: "L", placeholder: "" },
       { name: "b", field: "b", label: "", placeholder: "" },
     ]);
-  });
-});
-
-describe("pinPaths", () => {
-  it("reads the pin group next to the note, not under it", () => {
-    expect(pinPaths("layout.2.items.1.pinNote")).toEqual({
-      x: "layout.2.items.1.pin.x",
-      y: "layout.2.items.1.pin.y",
-    });
   });
 });
 

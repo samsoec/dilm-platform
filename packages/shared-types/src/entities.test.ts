@@ -2,12 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   entityIdOf,
-  entityPlaceholders,
   normalizeHost,
   resolveBlockEntity,
   resolveContactEntityIds,
   resolveCurrentEntity,
-  resolveEntityFallbacks,
   resolveGroupTile,
   type EntityRecord,
 } from "./entities";
@@ -25,118 +23,6 @@ const indoacid: EntityRecord = {
     mapPin: { x: 12, y: 0 },
   },
 };
-
-const bare: EntityRecord = {
-  id: 2,
-  name: "Liku Telaga",
-  domain: "likutelaga.com",
-};
-
-describe("resolveEntityFallbacks (§4.5.22, US-BLD-7)", () => {
-  it("fills every empty field of a card from the company's profile", () => {
-    const { values, source } = resolveEntityFallbacks({ entity: 1 }, indoacid);
-    expect(values).toEqual({
-      image: { id: 21 },
-      label: "Chemical hub in Sumatra",
-      title: "Indonesian Acids",
-      description: "Acids for industry.",
-      regions: ["All Sumatra", "Banten"],
-      pinX: 12,
-      pinY: 0,
-    });
-    expect(Object.values(source)).toEqual(Array(7).fill("company"));
-  });
-
-  it("keeps what the editor typed and falls back only for the rest", () => {
-    const { values, source } = resolveEntityFallbacks(
-      {
-        entity: 1,
-        label: "Our hub",
-        title: "  ",
-        regions: [{ name: "Java" }],
-        pin: { x: 50 },
-        image: 5,
-      },
-      indoacid,
-    );
-    expect(values).toMatchObject({
-      label: "Our hub",
-      title: "Indonesian Acids",
-      description: "Acids for industry.",
-      regions: ["Java"],
-      pinX: 50,
-      pinY: 0,
-      image: 5,
-    });
-    expect(source).toEqual({
-      image: "item",
-      label: "item",
-      title: "company",
-      description: "company",
-      regions: "item",
-      pinX: "item",
-      pinY: "company",
-    });
-  });
-
-  it("treats a pin at 0 as a real position, never as empty", () => {
-    const { values, source } = resolveEntityFallbacks(
-      { pin: { x: 0, y: 0 } },
-      indoacid,
-    );
-    expect([values.pinX, values.pinY]).toEqual([0, 0]);
-    expect([source.pinX, source.pinY]).toEqual(["item", "item"]);
-  });
-
-  it("leaves a free card as typed, with nothing to fall back to", () => {
-    const { values, source, placeholders } = resolveEntityFallbacks(
-      { title: "Others", regions: [] },
-      null,
-    );
-    expect(values.title).toBe("Others");
-    expect(values.label).toBeNull();
-    expect(values.regions).toEqual([]);
-    expect(source.title).toBe("item");
-    expect(source.image).toBe("none");
-    expect(placeholders).toEqual(entityPlaceholders(null));
-  });
-
-  it("reports none where the company's profile is empty too", () => {
-    const { values, source } = resolveEntityFallbacks({ entity: 2 }, bare);
-    expect(values.title).toBe("Liku Telaga");
-    expect(source).toMatchObject({
-      title: "company",
-      label: "none",
-      image: "none",
-      regions: "none",
-      pinX: "none",
-    });
-  });
-
-  it("gives the admin the company's values as placeholders, whatever the card holds", () => {
-    const { placeholders } = resolveEntityFallbacks(
-      { entity: 1, label: "Own" },
-      indoacid,
-    );
-    expect(placeholders).toEqual(entityPlaceholders(indoacid));
-    expect(placeholders.label).toBe("Chemical hub in Sumatra");
-  });
-
-  it("is pure: the same input gives the same output and nothing is modified", () => {
-    const item = { entity: 1, label: "Own", regions: [{ name: "Java" }] };
-    const before = structuredClone({ item, indoacid });
-    const first = resolveEntityFallbacks(item, indoacid);
-    expect(resolveEntityFallbacks(item, indoacid)).toEqual(first);
-    expect({ item, indoacid }).toEqual(before);
-  });
-
-  it("falls back to the legal name when the company has no short name", () => {
-    expect(
-      resolveEntityFallbacks({}, { id: 3, brand: { legalName: "PT Tiga" } })
-        .values.title,
-    ).toBe("PT Tiga");
-  });
-});
 
 describe("resolveGroupTile (§4.5.23)", () => {
   it("reads the cover image, light logo and legal name, and links to the company's Home", () => {

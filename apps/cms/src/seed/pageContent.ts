@@ -1726,7 +1726,7 @@ function mapCards(ctx: SeedContext) {
       eyebrow: "Chemical Hub in Sumatra",
       title: TENANT_NAMES.duniakimia,
       description:
-        "Supporting water treatment, mining, and manufacturing with essential chemicals produced from its Sumatra operations.",
+        "Chemical solutions for customers in this region. Replace with the approved company description.",
       badges: [{ text: "All Sumatra" }],
       image: ctx.image,
       buttons: [
@@ -1740,7 +1740,7 @@ function mapCards(ctx: SeedContext) {
       eyebrow: "Leading Chemical Producer",
       title: TENANT_NAMES.indoacid,
       description:
-        "Producing sulfuric acid and related chemicals for industrial customers across Java.",
+        "Industrial chemicals for customers in this region. Replace with the approved company description.",
       badges: [
         { text: "Banten" },
         { text: "DKI Jakarta" },
@@ -1753,10 +1753,9 @@ function mapCards(ctx: SeedContext) {
       areas: ["ID-BT", "ID-JK", "ID-JB", "ID-JT"] as ProvinceCode[],
     },
     {
-      eyebrow: "Chemical Logistics Specialist",
       title: TENANT_NAMES.likutelaga,
       description:
-        "Handling and distributing chemicals safely from its East Java base.",
+        "Chemical solutions for customers in this region. Replace with the approved company description.",
       badges: [{ text: "Jawa Timur" }],
       image: ctx.image,
       buttons: [button("Visit Liku Telaga", "/")],
@@ -1767,7 +1766,7 @@ function mapCards(ctx: SeedContext) {
       eyebrow: "Other Areas",
       title: "Looking for the Right Supplier?",
       description:
-        "Tell us where you operate and we will connect you with the right business in the group.",
+        "Tell us where you operate and our team will point you to the right business.",
       badges: [{ text: "Other Regions" }],
       image: ctx.image,
       buttons: [button("Contact Us", "/contact-us")],
