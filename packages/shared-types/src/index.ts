@@ -7,3 +7,4 @@ export * from "./detail-templates";
 export * from "./entities";
 export * from "./publication";
 export * from "./dot-map";
+export * from "./provinces";
