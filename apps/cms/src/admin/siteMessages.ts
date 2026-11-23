@@ -12,7 +12,7 @@ export const CONSENT_NOTES = [
   "Visitors choose Accept or Reject. Analytics stay off until they accept.",
   "The choice is remembered per browser and saved to the consent log.",
   "Changing the policy version asks every visitor to choose again.",
-  "The banner text must link to your Cookie Policy page.",
+  "The banner text should link to your Cookie Policy page.",
 ];
 
 export function siteMessagesSubtitle(domain: string | undefined): string {
@@ -72,10 +72,13 @@ export function notFoundUrl(domain: string, locale: string): string {
 }
 
 export const COOKIE_LINK_NOT_LIVE =
-  "The linked page isn't published, so Save will be refused.";
+  "The linked page isn't published, so visitors will hit an error.";
 
 export const COOKIE_LINK_OTHER_COMPANY =
-  "The linked page belongs to another company, so Save will be refused.";
+  "The linked page belongs to another company, so visitors will hit an error.";
+
+export const COOKIE_LINK_MISSING =
+  "The banner text doesn't link to your Cookie Policy page. You can still save.";
 
 export type CookieCheck = { ok: boolean; text: string };
 

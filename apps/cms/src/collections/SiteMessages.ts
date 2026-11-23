@@ -22,7 +22,6 @@ import { POLICY_VERSION_HINT } from "../admin/siteMessages";
 import { link } from "../fields/link";
 import { withUpdatedBy } from "../fields/updatedBy";
 import { revalidateTenantLayout, stubRevalidator } from "../revalidation";
-import { requireCookiePolicyLink } from "../siteMessages";
 import { withTenantAccess } from "../tenancy";
 
 export const MAX_NOT_FOUND_BUTTONS = 2;
@@ -120,11 +119,10 @@ export const SiteMessages = withTenantAccess(
             name: "body",
             type: "richText",
             localized: true,
-            validate: requireCookiePolicyLink,
             editor: cookieBodyEditor(),
             admin: {
               description:
-                "Link this text to your Cookie Policy page. It can't be saved without that link.",
+                "Link this text to your Cookie Policy page so visitors can read it before choosing.",
             },
           },
           part("cookiePolicyCheck", "CookiePolicyCheck"),
