@@ -12,6 +12,7 @@ import type {
 import { localizedSeoFields } from "../pageModel";
 import { hasRedirect } from "../pageRules";
 import {
+  GENERATE_SLUG_BUTTON,
   pageLayout,
   pathField,
   slugField,
@@ -164,7 +165,12 @@ export function editorFields(
                   ...slugField(!shared).admin,
                   position: undefined,
                   width: "50%",
-                  components: { afterInput: [EDITOR_COMPONENTS.slugNote] },
+                  components: {
+                    afterInput: [
+                      GENERATE_SLUG_BUTTON,
+                      EDITOR_COMPONENTS.slugNote,
+                    ],
+                  },
                 },
               },
               {
