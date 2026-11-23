@@ -6,6 +6,8 @@ import { Suspense } from "react";
 
 import { isSuperAdmin, type RoleHolder } from "../../../access";
 import { loadCategories, type CategoryRow } from "../../data/categoriesList";
+import { MaterialIcon } from "../MaterialIcon";
+import { ActionButton } from "../kit/ActionButton";
 import { Banner } from "../kit/Banner";
 import { Skeleton } from "../kit/Loading";
 import { PagesRetry } from "../pages/PagesRetry";
@@ -98,6 +100,10 @@ async function CategoriesBody(props: ListViewServerProps) {
   const { payload, user, locale } = props;
   if (!user) return null;
   const canChange = isSuperAdmin(user as RoleHolder);
+  const createUrl = formatAdminURL({
+    adminRoute: payload.config.routes.admin,
+    path: "/collections/categories/create",
+  });
   const heading = (
     <div className="dil-pages__heading">
       <div>
@@ -106,6 +112,11 @@ async function CategoriesBody(props: ListViewServerProps) {
           The groups posts are filed under, shared by all 3 sites.
         </p>
       </div>
+      {canChange && (
+        <ActionButton el="link" icon="add" url={createUrl}>
+          New category
+        </ActionButton>
+      )}
     </div>
   );
   try {
@@ -118,11 +129,30 @@ async function CategoriesBody(props: ListViewServerProps) {
             {READ_ONLY_BANNER}
           </Banner>
         )}
-        <Table
-          adminRoute={payload.config.routes.admin}
-          canChange={canChange}
-          rows={rows}
-        />
+        {rows.length === 0 ? (
+          <section className="dil-empty">
+            <span aria-hidden className="dil-empty__icon">
+              <MaterialIcon name="folder_open" />
+            </span>
+            <h3 className="dil-empty__title">No categories yet</h3>
+            <p className="dil-empty__text">
+              {canChange
+                ? "Posts are filed under categories, shared by all 3 sites. Add the first one."
+                : "A Super Admin adds the categories posts are filed under."}
+            </p>
+            {canChange && (
+              <ActionButton el="link" icon="add" url={createUrl}>
+                New category
+              </ActionButton>
+            )}
+          </section>
+        ) : (
+          <Table
+            adminRoute={payload.config.routes.admin}
+            canChange={canChange}
+            rows={rows}
+          />
+        )}
       </>
     );
   } catch (error) {
