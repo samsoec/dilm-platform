@@ -5,6 +5,7 @@ import { formatAdminURL } from "payload/shared";
 
 import type { RoleHolder } from "../../../access";
 import { selectedTenantID, TENANT_COOKIE } from "../../data/sidebar";
+import { OutsideDrawer } from "../lists/OutsideDrawer";
 import { MaterialIcon } from "../MaterialIcon";
 import { isTrashView, TRASH_COPY, type TrashSlug } from "./trash";
 
@@ -43,27 +44,29 @@ export async function TrashToggle({
   });
   const inTrash = isTrashView(params);
   return (
-    <nav
-      aria-label="List or trash"
-      className="dil-status-tabs dil-trash-toggle"
-    >
-      <Link
-        aria-current={inTrash ? undefined : "page"}
-        className={`dil-status-tab${inTrash ? "" : " dil-status-tab--active"}`}
-        href={base}
-        prefetch={false}
+    <OutsideDrawer>
+      <nav
+        aria-label="List or trash"
+        className="dil-status-tabs dil-trash-toggle"
       >
-        {TRASH_COPY[slug].allLabel} · {all.totalDocs}
-      </Link>
-      <Link
-        aria-current={inTrash ? "page" : undefined}
-        className={`dil-status-tab${inTrash ? " dil-status-tab--active" : ""}`}
-        href={`${base}/trash`}
-        prefetch={false}
-      >
-        <MaterialIcon name="delete" />
-        Trash · {trashed.totalDocs}
-      </Link>
-    </nav>
+        <Link
+          aria-current={inTrash ? undefined : "page"}
+          className={`dil-status-tab${inTrash ? "" : " dil-status-tab--active"}`}
+          href={base}
+          prefetch={false}
+        >
+          {TRASH_COPY[slug].allLabel} · {all.totalDocs}
+        </Link>
+        <Link
+          aria-current={inTrash ? "page" : undefined}
+          className={`dil-status-tab${inTrash ? " dil-status-tab--active" : ""}`}
+          href={`${base}/trash`}
+          prefetch={false}
+        >
+          <MaterialIcon name="delete" />
+          Trash · {trashed.totalDocs}
+        </Link>
+      </nav>
+    </OutsideDrawer>
   );
 }

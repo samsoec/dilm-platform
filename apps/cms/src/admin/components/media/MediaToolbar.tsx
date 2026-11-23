@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
 import type { BeforeListTableServerProps } from "payload";
 import { formatAdminURL } from "payload/shared";
 
+import { OutsideDrawer } from "../lists/OutsideDrawer";
 import { isTrashView } from "../trash/trash";
 import {
   GRID_PATH,
@@ -10,6 +10,7 @@ import {
   mediaView,
 } from "./media";
 import { MediaToolbarClient } from "./MediaToolbarClient";
+import { MediaViewRedirect } from "./MediaViewRedirect";
 
 function queryString(searchParams: BeforeListTableServerProps["searchParams"]) {
   const query = new URLSearchParams();
@@ -52,14 +53,20 @@ export async function MediaToolbar({
       user,
     });
     if (mediaView(docs[0]?.value) === "grid")
-      redirect(`${base}${GRID_PATH}${query}`);
+      return (
+        <OutsideDrawer>
+          <MediaViewRedirect href={`${base}${GRID_PATH}${query}`} />
+        </OutsideDrawer>
+      );
   }
 
   return (
-    <MediaToolbarClient
-      gridHref={`${base}${GRID_PATH}${query}`}
-      listHref={`${base}${query}`}
-      view={view}
-    />
+    <OutsideDrawer>
+      <MediaToolbarClient
+        gridHref={`${base}${GRID_PATH}${query}`}
+        listHref={`${base}${query}`}
+        view={view}
+      />
+    </OutsideDrawer>
   );
 }

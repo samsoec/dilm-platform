@@ -21,6 +21,7 @@ import {
   noMatchesTitle,
   RECRUITER_BANNER,
 } from "./emptyCopy";
+import { OutsideDrawer } from "./OutsideDrawer";
 import { EmptyUploadImages } from "./EmptyUploadImages";
 import type { SearchParams } from "./statusQuery";
 
@@ -71,7 +72,7 @@ async function tenantContext({
   };
 }
 
-export async function EmptyState(props: BeforeListTableServerProps) {
+async function EmptyStateContent(props: BeforeListTableServerProps) {
   const { collectionSlug, data, params, payload, searchParams, user } = props;
   if (!user || !isEmptyStateSlug(collectionSlug) || isTrashView(params)) {
     return null;
@@ -150,5 +151,13 @@ export async function EmptyState(props: BeforeListTableServerProps) {
         )}
       </section>
     </>
+  );
+}
+
+export async function EmptyState(props: BeforeListTableServerProps) {
+  return (
+    <OutsideDrawer>
+      <EmptyStateContent {...props} />
+    </OutsideDrawer>
   );
 }

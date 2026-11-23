@@ -1,7 +1,7 @@
 "use client";
 
 import { useTenantSelection } from "@payloadcms/plugin-multi-tenant/client";
-import { useAuth, useConfig } from "@payloadcms/ui";
+import { useAuth, useConfig, useListDrawerContext } from "@payloadcms/ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatAdminURL } from "payload/shared";
@@ -36,7 +36,7 @@ function carriesFiles(event: DragEvent): boolean {
   return Array.from(event.dataTransfer?.types ?? []).includes("Files");
 }
 
-export function DocumentsUploader() {
+function DocumentsUploaderPanel() {
   const { permissions } = useAuth();
   const { selectedTenantID } = useTenantSelection();
   const router = useRouter();
@@ -296,6 +296,11 @@ export function DocumentsUploader() {
       )}
     </div>
   );
+}
+
+export function DocumentsUploader() {
+  const { isInDrawer } = useListDrawerContext();
+  return isInDrawer ? null : <DocumentsUploaderPanel />;
 }
 
 export function EmptyUploadDocuments() {
