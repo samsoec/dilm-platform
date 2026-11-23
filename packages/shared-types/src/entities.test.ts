@@ -16,11 +16,7 @@ const indoacid: EntityRecord = {
   domain: "indonesianacids.com",
   brand: { legalName: "PT Indonesian Acids Industry", logoOnDark: { id: 11 } },
   profile: {
-    hubLabel: "Chemical hub in Sumatra",
-    shortDescription: "Acids for industry.",
     coverImage: { id: 21 },
-    regions: [{ name: "All Sumatra" }, { name: "Banten" }],
-    mapPin: { x: 12, y: 0 },
   },
 };
 

@@ -71,6 +71,24 @@ describe("tenant-settings data shape (FR-UI-44)", () => {
     ]);
   });
 
+  it("keeps the old company-map fields hidden and read-only until their columns are dropped", () => {
+    const profile = TenantSettings.fields
+      .flatMap((f) =>
+        f.type === "tabs" ? f.tabs.flatMap((t) => t.fields) : [f],
+      )
+      .find((f) => "name" in f && f.name === "profile") as {
+      fields: {
+        name?: string;
+        admin?: { hidden?: boolean; readOnly?: boolean };
+      }[];
+    };
+    const byName = new Map(profile.fields.map((f) => [f.name, f.admin]));
+    for (const name of ["hubLabel", "shortDescription", "regions", "mapPin"]) {
+      expect(byName.get(name)).toMatchObject({ hidden: true, readOnly: true });
+    }
+    expect(byName.has("mapPinPicker")).toBe(false);
+  });
+
   it("adds an optional cover and summary to IR documents (FR-PM-44)", async () => {
     const ir = (await applyMultiTenant([Users, Tenants, IrDocuments]))(
       "ir-documents",

@@ -154,11 +154,7 @@ describe("settings tab states (FR-UI-46)", () => {
 
 describe("company profile completeness (US-ENT-1)", () => {
   const PROFILE = {
-    hubLabel: "Chemical hub in Sumatra",
-    shortDescription: "Makes industrial acids.",
     coverImage: 4,
-    regions: [{ name: "All Sumatra" }],
-    mapPin: { x: 0, y: 42 },
     mapLocation: { latitude: -6.2, longitude: 106.8 },
     googleMapsUrl: "https://maps.google.com/?q=dil",
   };
@@ -169,30 +165,22 @@ describe("company profile completeness (US-ENT-1)", () => {
     ).find(({ section }) => section === "profile")!;
   }
 
-  it("counts seven pieces and names what is missing", () => {
-    expect(profile(PROFILE)).toMatchObject({ done: 7, total: 7, missing: [] });
+  it("counts three pieces and names what is missing", () => {
+    expect(profile(PROFILE)).toMatchObject({ done: 3, total: 3, missing: [] });
     expect(
       profile({
-        hubLabel: "Chemical hub in Sumatra",
-        shortDescription: "Makes industrial acids.",
         mapLocation: { latitude: -6.2, longitude: 106.8 },
-        regions: [],
-        mapPin: { x: null, y: null },
       }),
     ).toEqual({
       section: "profile",
       label: "Profile",
-      done: 3,
-      total: 7,
-      missing: ["cover image", "regions", "map pin", "Google Maps link"],
+      done: 1,
+      total: 3,
+      missing: ["cover image", "Google Maps link"],
     });
   });
 
-  it("treats a pin at 0 as set but half a pin or location as missing", () => {
-    expect(profile({ ...PROFILE, mapPin: { x: 0, y: 0 } }).missing).toEqual([]);
-    expect(profile({ ...PROFILE, mapPin: { x: 10, y: null } }).missing).toEqual(
-      ["map pin"],
-    );
+  it("treats half a location as missing", () => {
     expect(
       profile({ ...PROFILE, mapLocation: { latitude: 1, longitude: null } })
         .missing,
@@ -214,18 +202,12 @@ describe("company profile completeness (US-ENT-1)", () => {
 
   it("reads the profile from form values, counting region rows", () => {
     const form: Record<string, unknown> = {
-      "profile.hubLabel": "Hub",
       "profile.coverImage": { id: 9 },
-      "profile.regions": 2,
-      "profile.mapPin.x": 0,
-      "profile.mapPin.y": 5,
     };
     const input = completenessFromValues(
       (path: CompletenessPath) => form[path],
     );
-    expect(input.profile?.regions).toHaveLength(2);
     expect(optionalSummaries(settingsCompleteness(input))[0]?.missing).toEqual([
-      "short description",
       "map location",
       "Google Maps link",
     ]);

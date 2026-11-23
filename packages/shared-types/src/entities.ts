@@ -13,11 +13,7 @@ export type EntityRecord = {
     logoOnDark?: unknown;
   } | null;
   profile?: {
-    hubLabel?: string | null;
-    shortDescription?: string | null;
     coverImage?: unknown;
-    regions?: readonly { name?: string | null }[] | null;
-    mapPin?: { x?: number | null; y?: number | null } | null;
     mapLocation?: {
       latitude?: number | null;
       longitude?: number | null;
