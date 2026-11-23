@@ -10,6 +10,7 @@ import {
   localeHref,
   siteURL,
   withShellCrumbs,
+  withViewCrumb,
 } from "./topbar";
 
 const bySlug = (slug: string) =>
@@ -154,6 +155,26 @@ describe("withShellCrumbs", () => {
     expect(
       withShellCrumbs([], ["Dunia Kimia Utama"]).map(({ label }) => label),
     ).toEqual(["Dunia Kimia Utama"]);
+  });
+});
+
+describe("withViewCrumb", () => {
+  it("replaces a stale view crumb and keeps the shell crumbs", () => {
+    const shell = withShellCrumbs(
+      [{ label: "Documents" }],
+      ["Dunia Kimia Utama", "Content"],
+    );
+    const crumbs = withViewCrumb(shell, "Categories");
+    expect(crumbs.map(({ label }) => label)).toEqual([
+      "Dunia Kimia Utama",
+      "Content",
+      "Categories",
+    ]);
+    expect(withViewCrumb(crumbs, "Categories")).toBe(crumbs);
+  });
+
+  it("adds the crumb when only the view is present", () => {
+    expect(withViewCrumb([], "Jobs")).toEqual([{ label: "Jobs" }]);
   });
 });
 

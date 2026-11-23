@@ -71,6 +71,17 @@ export function withShellCrumbs(
   return [...prefix, ...view.filter((item) => !shellCrumbs.has(item))];
 }
 
+export function withViewCrumb(
+  stepNav: StepNavItem[],
+  label: string,
+): StepNavItem[] {
+  const shell = stepNav.filter((item) => shellCrumbs.has(item));
+  const view = stepNav.filter((item) => !shellCrumbs.has(item));
+  if (view.length === 1 && view[0].label === label && view[0].url === undefined)
+    return stepNav;
+  return [...shell, { label }];
+}
+
 export function localeHref(
   pathname: string,
   search: string,
