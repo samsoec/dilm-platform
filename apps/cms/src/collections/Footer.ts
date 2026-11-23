@@ -1,4 +1,4 @@
-import type { Condition, TextFieldSingleValidation } from "payload";
+import type { Condition, TextFieldSingleValidation, UIField } from "payload";
 
 import { superAdmins } from "../access";
 import { navGroup } from "../admin/navGroups";
@@ -56,6 +56,19 @@ export const isCopyrightTemplate: TextFieldSingleValidation = (value) => {
     ? "Close every placeholder: {year} or {legalName}."
     : true;
 };
+
+const sourceCard = (kind: "brand" | "contact"): UIField => ({
+  name: `${kind}Source`,
+  type: "ui",
+  admin: {
+    components: {
+      Field: {
+        path: "/admin/components/fields/FooterSourceCard#FooterSourceCard",
+        clientProps: { kind },
+      },
+    },
+  },
+});
 
 const ARRAY_NOTE = "/admin/components/fields/ArrayLimitNote#ArrayLimitNote";
 
@@ -167,7 +180,7 @@ export const Footer = withTenantAccess(
             ],
           }),
         ]),
-        ...section("part-of", [
+        ...section("brand", [
           {
             name: "brand",
             label: "Brand column",
@@ -177,6 +190,7 @@ export const Footer = withTenantAccess(
                 "The company logo comes from Company settings. The holding logo below is shown with the “Part of” label.",
             },
             fields: [
+              sourceCard("brand"),
               withSameAsEnTag({
                 name: "description",
                 type: "textarea",
@@ -184,6 +198,8 @@ export const Footer = withTenantAccess(
               }),
             ],
           },
+        ]),
+        ...section("contact", [
           {
             name: "contact",
             label: "Contact & Location",
@@ -200,8 +216,11 @@ export const Footer = withTenantAccess(
                     "Phone, email and address come from Company settings.",
                 },
               },
+              sourceCard("contact"),
             ],
           },
+        ]),
+        ...section("part-of", [
           {
             name: "partOf",
             label: false,

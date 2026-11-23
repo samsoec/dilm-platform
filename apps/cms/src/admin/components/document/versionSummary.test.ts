@@ -44,12 +44,18 @@ describe("version compare (H-09, FR-UI-77)", () => {
     expect(
       summarize("footer", {
         linkColumns: [{ title: "Company", links: [{}, {}] }],
+        ctaBand: { buttons: [{}, {}] },
+        brand: { description: "Hello" },
+        contact: { show: false },
         partOf: { enabled: false },
         copyright: "© {year} {legalName}",
       }).map(({ text }) => text),
     ).toEqual([
       "Heading · —",
+      "Buttons · 2 buttons",
       "01 Company · 2 links",
+      'Brand description · "Hello"',
+      "Contact & Location · Off",
       "Part of · Off",
       'Copyright · "© {year} {legalName}"',
     ]);

@@ -453,6 +453,47 @@
     font-weight: 600;
   }
 
+  .dil-source-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: var(--dil-radius-s);
+    background: var(--dil-surface-2);
+    font-family: var(--dil-font-sans);
+    font-size: 13px;
+  }
+
+  .dil-source-card__label {
+    color: var(--dil-muted);
+  }
+
+  .dil-source-card__logo {
+    max-width: 160px;
+    max-height: 48px;
+    object-fit: contain;
+  }
+
+  .dil-source-card__missing {
+    color: var(--dil-muted);
+  }
+
+  .dil-source-card__rows {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+
+    dt {
+      color: var(--dil-muted);
+    }
+
+    dd {
+      margin: 0;
+      white-space: pre-line;
+    }
+  }
+
   .dil-copyright {
     display: flex;
     flex-direction: column;

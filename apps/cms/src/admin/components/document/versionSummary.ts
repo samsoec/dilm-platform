@@ -68,9 +68,25 @@ function footerLines(data: Data): SummaryLine[] {
     },
   );
   const partOf = (data.partOf ?? {}) as Data;
+  const brand = (data.brand ?? {}) as Data;
+  const contact = (data.contact ?? {}) as Data;
+  const buttons = asArray<Data>(band.buttons).length;
   return [
     single("heading", "Heading", quoted(band.heading)),
+    single(
+      "buttons",
+      "Buttons",
+      buttons === 0
+        ? "None"
+        : `${buttons} ${buttons === 1 ? "button" : "buttons"}`,
+    ),
     ...columns,
+    single("brand", "Brand description", quoted(brand.description)),
+    single(
+      "contact",
+      "Contact & Location",
+      contact.show === false ? "Off" : "On",
+    ),
     single("part-of", "Part of", partOf.enabled ? quoted(partOf.label) : "Off"),
     single("copyright", "Copyright", quoted(data.copyright)),
   ];

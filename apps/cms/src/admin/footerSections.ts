@@ -8,11 +8,13 @@ import {
 const SECTION_ROOTS: Record<string, FooterSection["anchor"]> = {
   ctaBand: "contact-band",
   linkColumns: "link-columns",
+  brand: "brand",
+  contact: "contact",
   partOf: "part-of",
   copyright: "copyright",
 };
 
-const TRANSLATABLE = /(^|\.)(label|title|eyebrow|copyright)$/;
+const TRANSLATABLE = /(^|\.)(label|title|eyebrow|copyright|description)$/;
 
 export function sectionOfPath(
   path: string,
