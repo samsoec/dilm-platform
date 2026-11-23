@@ -22,8 +22,10 @@ export type ColumnValue = {
 export const FOOTER_SECTIONS = [
   { anchor: "contact-band", number: "01", title: "Contact band" },
   { anchor: "link-columns", number: "02", title: "Link columns" },
-  { anchor: "part-of", number: "03", title: "Part of" },
-  { anchor: "copyright", number: "04", title: "Copyright" },
+  { anchor: "brand", number: "03", title: "Brand" },
+  { anchor: "contact", number: "04", title: "Contact & Location" },
+  { anchor: "part-of", number: "05", title: "Part of" },
+  { anchor: "copyright", number: "06", title: "Copyright" },
 ] as const;
 
 export type FooterSection = (typeof FOOTER_SECTIONS)[number];

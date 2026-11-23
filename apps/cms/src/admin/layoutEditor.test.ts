@@ -82,6 +82,8 @@ describe("header and footer editor labels (TRD-UI §6.4, §6.5)", () => {
       "02",
       "03",
       "04",
+      "05",
+      "06",
     ]);
     expect(savedAtText("2026-10-07T07:22:00.000Z")).toBe("7 Oct, 14:22");
   });
