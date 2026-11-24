@@ -91,9 +91,6 @@ export function UserAccessDialog({
   const nameId = useId();
   const emailId = useId();
   const superAdmin = role === "super-admin";
-  const senderTenant = superAdmin
-    ? tenants.find(({ id }) => String(id) === String(selectedTenant))
-    : tenants.find(({ id }) => id === picked[0]);
 
   const close = () => closeModal(slug);
 
@@ -332,9 +329,7 @@ export function UserAccessDialog({
           <p className="dil-account__note">
             {editing
               ? "Role and company changes take effect on the user's next click."
-              : senderTenant?.domain
-                ? `They get an email from noreply@${senderTenant.domain} with a link to set their own password, valid 72 hours.`
-                : "They get an email with a link to set their own password, valid 72 hours."}
+              : "They get an email with a link to set their own password, valid 72 hours."}
           </p>
         </div>
         <footer className="dil-invite__foot">

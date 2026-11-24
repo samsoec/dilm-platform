@@ -7,15 +7,8 @@ import { type FormEvent, useId, useState } from "react";
 import { ActionButton } from "../kit/ActionButton";
 import { Banner } from "../kit/Banner";
 import { MaterialIcon } from "../MaterialIcon";
-import { senderFor } from "./reset";
 
-export function ForgotForm({
-  signInHref,
-  domains,
-}: {
-  signInHref: string;
-  domains: string[];
-}) {
+export function ForgotForm({ signInHref }: { signInHref: string }) {
   const {
     config: { admin, routes, serverURL },
   } = useConfig();
@@ -30,7 +23,7 @@ export function ForgotForm({
     if (busy) return;
     const address = email.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
-      setProblem("Enter your work email, like dimas.pratama@duniakimia.com.");
+      setProblem("Enter your work email, like name@company.com.");
       return;
     }
     setBusy(true);
@@ -59,7 +52,6 @@ export function ForgotForm({
   };
 
   if (sent) {
-    const sender = senderFor(sent, domains);
     return (
       <div className="dil-signin">
         <span className="dil-login__tile">
@@ -69,14 +61,7 @@ export function ForgotForm({
           <h1 className="dil-login__title">Check your email</h1>
           <p className="dil-login__hint">
             If an account exists for <b>{sent}</b>, we&apos;ve sent a reset
-            link.{" "}
-            {sender ? (
-              <>
-                It comes from <code>{sender}</code>.
-              </>
-            ) : (
-              "It comes from your company's own noreply@ address."
-            )}
+            link.
           </p>
         </div>
         <a className="dil-signin__link" href={signInHref}>

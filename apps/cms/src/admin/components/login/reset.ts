@@ -1,13 +1,5 @@
 import { JAKARTA_TIME_ZONE } from "../application/application";
 
-export function senderFor(
-  email: string,
-  domains: string[],
-): string | undefined {
-  const domain = email.trim().toLowerCase().split("@")[1];
-  return domain && domains.includes(domain) ? `noreply@${domain}` : undefined;
-}
-
 const UNTIL = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "short",

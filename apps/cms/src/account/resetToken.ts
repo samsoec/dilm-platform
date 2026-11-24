@@ -157,13 +157,3 @@ export function resetEmailHTML({
   const link = `${base}${req?.payload.config.routes.admin ?? "/admin"}/reset/${token}`;
   return `<p>Someone asked to reset the password for your DIL Group CMS account.</p><p><a href="${escape(link)}">Set a new password</a>. The link works once and expires in an hour.</p><p>If it wasn't you, you can ignore this email. Your password stays the same.</p>`;
 }
-
-export async function tenantDomains(payload: Payload): Promise<string[]> {
-  const { docs } = await payload.find({
-    collection: "tenants",
-    select: { domain: true },
-    pagination: false,
-    depth: 0,
-  });
-  return docs.map(({ domain }) => domain);
-}
