@@ -3,7 +3,7 @@
 import { Modal, useConfig, useModal } from "@payloadcms/ui";
 import { useRouter } from "next/navigation";
 import { formatAdminURL } from "payload/shared";
-import { type FormEvent, useId, useState } from "react";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 
 import type { InviteField } from "../../../account/invite";
 import { ROLE_LABELS, type Role } from "../../../access";
@@ -87,10 +87,27 @@ export function UserAccessDialog({
   const lockedRole = Boolean(editing?.self && editing.role === "super-admin");
   const [error, setError] = useState<{ field: InviteField; message: string }>();
   const [busy, setBusy] = useState(false);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
   const titleId = useId();
   const nameId = useId();
   const emailId = useId();
   const superAdmin = role === "super-admin";
+
+  const [focusTrapOptions] = useState(() => ({
+    initialFocus: () => nameRef.current ?? closeRef.current ?? false,
+    returnFocusOnDeactivate: false,
+  }));
+
+  useEffect(() => {
+    const trigger = document.activeElement;
+    (nameRef.current ?? closeRef.current)?.focus();
+    return () => {
+      if (trigger instanceof HTMLElement && trigger.isConnected) {
+        trigger.focus();
+      }
+    };
+  }, []);
 
   const close = () => closeModal(slug);
 
@@ -167,13 +184,27 @@ export function UserAccessDialog({
     error?.field === field ? `${titleId}-${field}` : undefined;
 
   return (
-    <Modal className="dil-confirm" closeOnBlur={false} slug={slug}>
+    <Modal
+      className="dil-invite-sheet"
+      closeOnBlur={false}
+      focusTrapOptions={focusTrapOptions}
+      slug={slug}
+    >
+      <button
+        aria-hidden="true"
+        className="dil-invite-sheet__scrim"
+        onClick={close}
+        tabIndex={-1}
+        type="button"
+      />
       <form
         aria-labelledby={titleId}
         aria-modal="true"
         className="dil-invite"
         onKeyDown={(event) => {
-          if (event.key === "Escape") close();
+          if (event.key !== "Escape") return;
+          event.stopPropagation();
+          close();
         }}
         onSubmit={(event) => void submit(event)}
         role="dialog"
@@ -195,6 +226,7 @@ export function UserAccessDialog({
             aria-label="Close"
             className="dil-drawer__close"
             onClick={close}
+            ref={closeRef}
             type="button"
           >
             <MaterialIcon name="close" />
@@ -210,7 +242,7 @@ export function UserAccessDialog({
                 <input
                   aria-describedby={describedBy("name")}
                   aria-invalid={error?.field === "name" || undefined}
-                  autoFocus
+                  ref={nameRef}
                   id={nameId}
                   onChange={(event) => {
                     setName(event.target.value);
