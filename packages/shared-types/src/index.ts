@@ -9,3 +9,4 @@ export * from "./publication";
 export * from "./dot-map";
 export * from "./provinces";
 export * from "./site-api";
+export * from "./locales";
