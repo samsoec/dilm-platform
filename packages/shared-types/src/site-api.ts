@@ -1,8 +1,9 @@
+import { LOCALES, type Locale } from "./locales";
 import type { TenantSlug } from "./tenant";
 
-export const SITE_LOCALES = ["en", "id"] as const;
+export const SITE_LOCALES = LOCALES;
 
-export type SiteLocale = (typeof SITE_LOCALES)[number];
+export type SiteLocale = Locale;
 
 export const SITE_API_BASE = "/api/site";
 

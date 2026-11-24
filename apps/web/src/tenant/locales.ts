@@ -1,7 +1,2 @@
-export const LOCALES = ["en", "id"] as const;
-
-export type Locale = (typeof LOCALES)[number];
-
-export function isLocale(value: string): value is Locale {
-  return (LOCALES as readonly string[]).includes(value);
-}
+export { DEFAULT_LOCALE, isLocale, LOCALES } from "@dilm/shared-types";
+export type { Locale } from "@dilm/shared-types";

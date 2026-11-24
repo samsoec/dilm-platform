@@ -54,4 +54,23 @@ describe("proxy", () => {
     error.mockRestore();
     vi.unstubAllEnvs();
   });
+
+  it("redirects bare / to the default locale", () => {
+    const response = call("indoacid.localhost:3001", "/");
+    expect(response.status).toBe(307);
+    expect(new URL(response.headers.get("location")!).pathname).toBe("/en");
+  });
+
+  it("serves a bare locale root", () => {
+    const response = call("indoacid.localhost:3001", "/id");
+    expect(response.headers.get("x-middleware-rewrite")).toContain(
+      "/indoacid/id",
+    );
+  });
+
+  it("returns 404 for a path without a supported locale", () => {
+    expect(call("indoacid.localhost:3001", "/about").status).toBe(404);
+    expect(call("indoacid.localhost:3001", "/english/about").status).toBe(404);
+    expect(call("indoacid.localhost:3001", "/zh/about").status).toBe(404);
+  });
 });
