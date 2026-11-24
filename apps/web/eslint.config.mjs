@@ -23,4 +23,8 @@ export default [
       ],
     },
   },
+  {
+    files: ["src/components/Analytics.tsx"],
+    rules: { "prefer-rest-params": "off" },
+  },
 ];
