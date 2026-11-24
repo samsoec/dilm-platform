@@ -1,3 +1,5 @@
+@use "sheet";
+
 @layer dil {
   .dil-user {
     display: inline-flex;
@@ -207,36 +209,48 @@
     }
   }
 
-  .dil-invite {
+  .dil-invite-sheet {
     display: flex;
-    flex-direction: column;
-    width: min(520px, calc(100vw - 32px));
-    border-radius: var(--dil-radius-l);
-    background: var(--dil-surface);
-    box-shadow: 0 24px 60px rgb(17 28 42 / 28%);
-    color: var(--dil-ink);
-    font-family: var(--dil-font-sans);
+    justify-content: flex-end;
+    z-index: 200;
+  }
+
+  .dil-invite-sheet__scrim {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: var(--dil-sheet-scrim);
+    cursor: default;
+  }
+
+  body:has(.dil-invite__foot) {
+    @include sheet.sheet-toasts-above-footer;
+  }
+
+  .dil-invite {
+    @include sheet.sheet-panel;
+
+    position: relative;
   }
 
   .dil-invite__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 20px;
-    border-bottom: 1px solid var(--dil-line);
+    @include sheet.sheet-head;
 
     h2 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 700;
+      @include sheet.sheet-title;
+    }
+
+    .dil-drawer__close {
+      @include sheet.sheet-close;
     }
   }
 
   .dil-invite__body {
+    @include sheet.sheet-body;
+
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 18px 20px;
   }
 
   .dil-invite__roles {
@@ -313,11 +327,9 @@
   }
 
   .dil-invite__foot {
-    display: flex;
+    @include sheet.sheet-foot;
+
     justify-content: flex-end;
-    gap: 8px;
-    padding: 14px 20px;
-    border-top: 1px solid var(--dil-line);
   }
 }
 
