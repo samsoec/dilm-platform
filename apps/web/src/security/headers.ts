@@ -1,3 +1,5 @@
+import { mediaOrigin } from "../images/mediaImage";
+
 export type CspMode = "report-only" | "enforce";
 
 export type SecurityHeader = { key: string; value: string };
@@ -18,14 +20,18 @@ export function cspMode(raw: string | undefined): CspMode {
   return raw === "enforce" ? "enforce" : "report-only";
 }
 
-export function buildCsp(options: { dev?: boolean } = {}): string {
+export function buildCsp(
+  options: { dev?: boolean; mediaOrigin?: string | null } = {},
+): string {
   const scriptSrc = ["'self'", "'unsafe-inline'", ...GA_SCRIPT_HOSTS];
   if (options.dev) scriptSrc.push("'unsafe-eval'");
+  const imgSrc = ["'self'", "data:", "blob:", ...GA_IMG_HOSTS];
+  if (options.mediaOrigin) imgSrc.push(options.mediaOrigin);
   return [
     "default-src 'self'",
     `script-src ${scriptSrc.join(" ")}`,
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data: blob: ${GA_IMG_HOSTS.join(" ")}`,
+    `img-src ${imgSrc.join(" ")}`,
     "font-src 'self' data:",
     `connect-src 'self' ${GA_CONNECT_HOSTS.join(" ")}`,
     "object-src 'none'",
@@ -35,10 +41,10 @@ export function buildCsp(options: { dev?: boolean } = {}): string {
 }
 
 export function securityHeaders(
-  options: { mode?: CspMode; dev?: boolean } = {},
+  options: { mode?: CspMode; dev?: boolean; mediaOrigin?: string | null } = {},
 ): SecurityHeader[] {
   const mode = options.mode ?? "report-only";
-  const csp = buildCsp({ dev: options.dev });
+  const csp = buildCsp({ dev: options.dev, mediaOrigin: options.mediaOrigin });
   return [
     {
       key: "Strict-Transport-Security",
@@ -65,6 +71,7 @@ export function withSecurityHeaders<T extends Response>(response: T): T {
   const headers = securityHeaders({
     mode: cspMode(process.env.CSP_MODE),
     dev: process.env.NODE_ENV !== "production",
+    mediaOrigin: mediaOrigin(),
   });
   for (const { key, value } of headers) {
     response.headers.append(key, value);

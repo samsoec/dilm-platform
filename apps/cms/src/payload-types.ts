@@ -277,9 +277,6 @@ export interface TenantSetting {
    */
   recruiterEmail?: string | null;
   profile?: {
-    /**
-     * Small heading above the company on the map, like Chemical hub in Sumatra.
-     */
     hubLabel?: string | null;
     shortDescription?: string | null;
     coverImage?: (number | null) | Media;
@@ -289,9 +286,6 @@ export interface TenantSetting {
           id?: string | null;
         }[]
       | null;
-    /**
-     * Position of the company dot on the site's dot map, as a percentage from the top-left corner.
-     */
     mapPin?: {
       x?: number | null;
       y?: number | null;
@@ -598,6 +592,46 @@ export interface Media {
       filename?: string | null;
     };
     'social-share'?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    w640?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    w960?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    w1280?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    w1920?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    w2560?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -3382,6 +3416,9 @@ export interface EntityMapBlock {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Where the info card sits relative to the highlighted area.
+     */
     position: 'left' | 'right' | 'bottom';
     /**
      * Provinces highlighted on the map. Leave empty for the Other areas case: nothing highlighted and the map stays zoomed out.
@@ -5635,6 +5672,56 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
         'social-share'?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        w640?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        w960?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        w1280?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        w1920?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        w2560?:
           | T
           | {
               url?: T;

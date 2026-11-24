@@ -1,4 +1,4 @@
-import { IMAGE_SIZES } from "../../../storage";
+import { PRESET_IMAGE_SIZES } from "../../../storage";
 
 export type MediaView = "list" | "grid";
 
@@ -79,7 +79,7 @@ export function sizeLabel(name: string): string {
 }
 
 export function sizesText(sizes: MediaDoc["sizes"]): string {
-  const made = IMAGE_SIZES.flatMap(({ name, width, height }) => {
+  const made = PRESET_IMAGE_SIZES.flatMap(({ name, width, height }) => {
     const size = sizes?.[name];
     if (sizes && !size?.url) return [];
     const w = size?.width ?? width;
@@ -199,6 +199,6 @@ export function usageQuery(
 const COUNT_WORDS = ["no", "one", "two", "three", "four", "five", "six"];
 
 export function mediaIntro(domain: string): string {
-  const count = IMAGE_SIZES.length;
+  const count = PRESET_IMAGE_SIZES.length;
   return `Images for ${domain}. Every upload is public and gets ${COUNT_WORDS[count] ?? count} resized ${count === 1 ? "copy" : "copies"}.`;
 }

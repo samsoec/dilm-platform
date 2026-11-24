@@ -48,6 +48,7 @@ import * as migration_20261117_064501_privacy_policy_version from './20261117_06
 import * as migration_20261123_081451_footer_brand_contact_buttons from './20261123_081451_footer_brand_contact_buttons';
 import * as migration_20261123_085151_button_style_picker from './20261123_085151_button_style_picker';
 import * as migration_20261123_091911_company_map_cards from './20261123_091911_company_map_cards';
+import * as migration_20261124_213356_media_width_ladder from './20261124_213356_media_width_ladder';
 
 export const migrations = [
   {
@@ -293,11 +294,16 @@ export const migrations = [
   {
     up: migration_20261123_085151_button_style_picker.up,
     down: migration_20261123_085151_button_style_picker.down,
-    name: '20261123_085151_button_style_picker'
+    name: '20261123_085151_button_style_picker',
   },
   {
     up: migration_20261123_091911_company_map_cards.up,
     down: migration_20261123_091911_company_map_cards.down,
-    name: '20261123_091911_company_map_cards'
+    name: '20261123_091911_company_map_cards',
+  },
+  {
+    up: migration_20261124_213356_media_width_ladder.up,
+    down: migration_20261124_213356_media_width_ladder.down,
+    name: '20261124_213356_media_width_ladder'
   },
 ];

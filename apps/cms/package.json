@@ -12,6 +12,7 @@
     "generate:types": "pnpm payload generate:types && pnpm payload run src/blocks/export-block-types.ts && prettier --write ../../packages/shared-types/src/blocks.generated.ts",
     "grant:super-admin": "pnpm payload run src/seed/grant-super-admin.ts",
     "lint": "eslint .",
+    "media:regenerate-sizes": "pnpm payload run src/seed/regenerate-media-sizes.ts",
     "migrate": "pnpm payload migrate",
     "migrate:create": "pnpm payload migrate:create",
     "migrate:status": "pnpm payload migrate:status",

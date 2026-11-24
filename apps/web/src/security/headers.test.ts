@@ -11,6 +11,24 @@ function find(list: { key: string; value: string }[], key: string) {
   return list.filter((h) => h.key === key).map((h) => h.value);
 }
 
+describe("buildCsp media origin", () => {
+  it("adds the media origin to img-src only, and only when set", () => {
+    const csp = buildCsp({ mediaOrigin: "https://media.example.test" });
+    const img = csp.split("; ").find((d) => d.startsWith("img-src"))!;
+    expect(img).toContain("https://media.example.test");
+    expect(csp.match(/media\.example\.test/g)).toHaveLength(1);
+    expect(buildCsp()).not.toContain("media.example.test");
+  });
+
+  it("flows through securityHeaders", () => {
+    const value = securityHeaders({
+      mediaOrigin: "https://media.example.test",
+    }).find((h) => h.key === "Content-Security-Policy-Report-Only")!.value;
+    expect(value).toContain("img-src 'self' data: blob:");
+    expect(value).toContain("https://media.example.test");
+  });
+});
+
 describe("buildCsp", () => {
   const csp = buildCsp();
 
