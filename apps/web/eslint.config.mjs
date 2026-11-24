@@ -1,1 +1,1 @@
-export { default } from "@dilm/config/eslint/base";
+export { default } from "@dilm/config/eslint/next";
