@@ -1,53 +1,39 @@
+@use "sheet";
+
 @layer dil {
   .dil-drawer {
     display: flex;
     justify-content: flex-end;
     z-index: 250;
-    background: rgb(17 28 42 / 40%);
+    background: var(--dil-sheet-scrim);
   }
 
   .dil-drawer__panel {
-    display: flex;
-    flex-direction: column;
+    @include sheet.sheet-panel;
+
     gap: 12px;
-    width: min(440px, 100vw);
-    height: 100%;
     overflow-y: auto;
     padding: 0 0 20px;
-    background: var(--dil-surface);
-    box-shadow: -16px 0 40px rgb(17 28 42 / 18%);
-    color: var(--dil-ink);
-    font-family: var(--dil-font-sans);
+  }
+
+  .dil-drawer__panel--wide {
+    @include sheet.sheet-panel(var(--dil-sheet-width-wide));
+
+    gap: 12px;
+    overflow-y: auto;
+    padding: 0 0 20px;
   }
 
   .dil-drawer__head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 18px 22px 14px;
-    border-bottom: 1px solid var(--dil-line);
+    @include sheet.sheet-head;
   }
 
   .dil-drawer__title {
-    flex: 1;
-    margin: 0;
-    font-size: 17px;
-    font-weight: 700;
+    @include sheet.sheet-title;
   }
 
   .dil-drawer__close {
-    display: flex;
-    padding: 2px;
-    border: 0;
-    border-radius: var(--dil-radius-s);
-    background: none;
-    color: var(--dil-muted);
-    cursor: pointer;
-
-    &:hover {
-      background: var(--dil-surface-2);
-      color: var(--dil-ink);
-    }
+    @include sheet.sheet-close;
   }
 
   .dil-drawer__empty {

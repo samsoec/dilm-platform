@@ -1,4 +1,14 @@
+@use "sheet";
+
 @layer dil {
+  .doc-drawer:has(.collection-edit--redirects) {
+    @include sheet.doc-drawer-sheet;
+  }
+
+  body:has(.doc-drawer .collection-edit--redirects) {
+    @include sheet.sheet-toasts-above-footer;
+  }
+
   .dil-redirects__filters {
     margin-bottom: 16px;
   }
