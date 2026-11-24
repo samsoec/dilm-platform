@@ -806,7 +806,7 @@ export default $config({
           })
           .map((grant) => sst.aws.permission(grant)),
         sst.aws.permission({
-          actions: ["lambda:InvokeFunctionUrl"],
+          actions: web.WEB_PAYLOAD_INVOKE_ACTIONS,
           resources: [payloadFunction.nodes.function.arn],
         }),
         sst.aws.permission({

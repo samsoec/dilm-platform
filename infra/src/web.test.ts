@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { parameterArns } from "./parameters";
 import {
+  WEB_PAYLOAD_INVOKE_ACTIONS,
   assertWebAssetsBuilt,
   assertWebBundleBuilt,
   webCacheLifecycleRule,
@@ -69,6 +70,20 @@ describe("web role grants", () => {
       false,
     );
     expect(actions).not.toContain("s3:*");
+  });
+
+  it("scopes ListBucket to the web-cache/ prefix", () => {
+    const list = permissions.find((p) => p.actions.includes("s3:ListBucket"));
+    expect(list?.conditions).toEqual([
+      { test: "StringLike", variable: "s3:prefix", values: ["web-cache/*"] },
+    ]);
+  });
+
+  it("invokes the Payload function URL with both required actions", () => {
+    expect(WEB_PAYLOAD_INVOKE_ACTIONS).toEqual([
+      "lambda:InvokeFunctionUrl",
+      "lambda:InvokeFunction",
+    ]);
   });
 
   it("reads only the web's SSM parameters", () => {

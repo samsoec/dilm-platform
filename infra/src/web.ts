@@ -111,10 +111,22 @@ export function webStaticKey(assetKey: string): string {
   return `${WEB_STATIC_PREFIX}${assetKey}`;
 }
 
+export interface WebCondition {
+  test: string;
+  variable: string;
+  values: string[];
+}
+
 export interface WebPermission<T> {
   actions: string[];
   resources: T[];
+  conditions?: WebCondition[];
 }
+
+export const WEB_PAYLOAD_INVOKE_ACTIONS = [
+  "lambda:InvokeFunctionUrl",
+  "lambda:InvokeFunction",
+];
 
 export function webCachePermissions<T>(args: {
   bucketArn: T;
@@ -130,6 +142,13 @@ export function webCachePermissions<T>(args: {
     {
       actions: ["s3:ListBucket"],
       resources: [bucketArn],
+      conditions: [
+        {
+          test: "StringLike",
+          variable: "s3:prefix",
+          values: [`${WEB_CACHE_PREFIX}*`],
+        },
+      ],
     },
     {
       actions: [
