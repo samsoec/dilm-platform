@@ -53,12 +53,7 @@ export function NavGroup({
         onClick={toggle}
         type="button"
       >
-        <span className="dil-nav__group-label">
-          {section.label}
-          {section.superAdminOnly && (
-            <span className="dil-nav__tag">Super Admin</span>
-          )}
-        </span>
+        <span className="dil-nav__group-label">{section.label}</span>
         <MaterialIcon name={open ? "expand_more" : "chevron_right"} />
       </button>
       <div className="dil-nav__group-items" hidden={!open} id={contentId}>
