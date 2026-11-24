@@ -1,9 +1,5 @@
 import { render } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-
-vi.mock("next/headers", () => ({
-  headers: async () => new Headers({ "x-dilm-locale": "id" }),
-}));
+import { describe, expect, it } from "vitest";
 
 import NotFound, { metadata } from "@/app/[tenant]/[locale]/not-found";
 
@@ -27,9 +23,9 @@ describe("SiteShell", () => {
 });
 
 describe("not found page", () => {
-  it("uses the forwarded locale, has no contact band and is noindex", async () => {
-    const { container, getByText } = render(await NotFound());
-    expect(getByText("Halaman tidak ditemukan", { exact: false })).toBeTruthy();
+  it("renders statically in the default locale, has no contact band and is noindex", () => {
+    const { container, getByText } = render(<NotFound />);
+    expect(getByText("Page not found", { exact: false })).toBeTruthy();
     expect(container.querySelector("[data-slot=contact-band]")).toBeNull();
     expect(metadata.robots).toEqual({ index: false, follow: false });
   });

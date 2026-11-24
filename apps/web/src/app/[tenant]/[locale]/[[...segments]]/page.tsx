@@ -37,6 +37,6 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   const { tenant, locale } = await params;
   const slug = TENANT_SLUGS.find((candidate) => candidate === tenant);
   if (slug === undefined || !isLocale(locale)) notFound();
-  const name = await fetchTenantName(slug);
+  const name = await fetchTenantName(slug, fetch, locale);
   return <SiteShell>{name}</SiteShell>;
 }

@@ -62,6 +62,64 @@ jobs:
           SES_SHARED_SENDER: ${{ vars.SES_SHARED_SENDER }}
           SES_SHARED_SENDER_IDENTITY: ${{ vars.SES_SHARED_SENDER_IDENTITY }}
 
+  web-e2e:
+    name: Web build + E2E smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect web changes
+        id: scope
+        run: |
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -qE '^(apps/web/|packages/|pnpm-lock\.yaml$|\.github/workflows/ci\.yml$)'; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "No apps/web or packages changes; skipping the web E2E smoke."
+          fi
+
+      - if: steps.scope.outputs.run == 'true'
+        uses: pnpm/action-setup@v4
+
+      - if: steps.scope.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - if: steps.scope.outputs.run == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Playwright Chromium
+        if: steps.scope.outputs.run == 'true'
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Chromium
+        if: steps.scope.outputs.run == 'true' && steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm --filter @dilm/web exec playwright install --with-deps chromium
+
+      - name: Install Chromium system libraries
+        if: steps.scope.outputs.run == 'true' && steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm --filter @dilm/web exec playwright install-deps chromium
+
+      - name: Build the web app and run the E2E smoke (fixture content, no AWS)
+        if: steps.scope.outputs.run == 'true'
+        run: pnpm --filter @dilm/web test:e2e
+
+      - name: Upload Playwright traces on failure
+        if: failure() && steps.scope.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: apps/web/test-results
+          if-no-files-found: ignore
+
   migrations:
     name: Payload migrations
     runs-on: ubuntu-latest
