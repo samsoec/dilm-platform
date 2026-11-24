@@ -18,9 +18,7 @@ function aliasesFromEnv() {
 
 export function proxy(request: NextRequest) {
   const aliases = aliasesFromEnv();
-  const host =
-    request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  const tenant = resolveTenant(host, aliases);
+  const tenant = resolveTenant(request.headers.get("host"), aliases);
   if (tenant === null) {
     return new NextResponse("Not Found", {
       status: 404,
