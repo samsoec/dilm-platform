@@ -18,7 +18,6 @@ export function loadGa4(
   if (doc.querySelector("script[data-ga4]") !== null) return;
   win.dataLayer = win.dataLayer ?? [];
   win.gtag = function gtag() {
-    // eslint-disable-next-line prefer-rest-params
     win.dataLayer?.push(arguments);
   };
   win.gtag("js", new Date());
