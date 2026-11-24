@@ -4,16 +4,30 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "next build",
+    "build:open-next": "scripts/build-open-next.sh",
+    "dev": "next dev --port 3001",
     "lint": "eslint .",
+    "start": "next start --port 3001",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@dilm/runtime-config": "workspace:*",
-    "@dilm/shared-types": "workspace:*"
+    "@dilm/shared-types": "workspace:*",
+    "next": "16.3.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
   },
   "devDependencies": {
     "@dilm/config": "workspace:*",
+    "@opennextjs/aws": "3.9.14",
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/react": "16.3.0",
+    "@types/node": "^22.20.4",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "eslint": "^10.11.0",
+    "jsdom": "26.1.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"
   }

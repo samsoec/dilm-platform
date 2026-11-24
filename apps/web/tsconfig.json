@@ -1,4 +1,15 @@
 {
-  "extends": "@dilm/config/tsconfig/base.json",
-  "include": ["src"]
+  "extends": "@dilm/config/tsconfig/next.json",
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": [
+    "next-env.d.ts",
+    "next.config.ts",
+    "vitest.node.config.ts",
+    "vitest.jsdom.config.ts",
+    "src",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ]
 }
