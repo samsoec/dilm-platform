@@ -11,7 +11,7 @@ import { Banner } from "../kit/Banner";
 import { Skeleton } from "../kit/Loading";
 import { isTrashView } from "../trash/trash";
 import { PagesRetry } from "./PagesRetry";
-import { PagesStepNav } from "./PagesStepNav";
+import { ListStepNav } from "../topbar/ListStepNav";
 import { PagesTree } from "./PagesTree";
 import { buildTree, toRows, toTrashRows, type Viewer } from "./pagesModel";
 
@@ -108,7 +108,7 @@ export function SharedPagesView(props: ListViewServerProps) {
   };
   return (
     <div className="collection-list dil-pages-view">
-      <PagesStepNav label="Shared pages" />
+      <ListStepNav label="Shared pages" />
       <Gutter>
         <Suspense
           fallback={

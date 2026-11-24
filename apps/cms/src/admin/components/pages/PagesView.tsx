@@ -18,7 +18,7 @@ import { companyInitials } from "../ir/irEditor";
 import { isTrashView } from "../trash/trash";
 import { NewPageButton, NewPageHost } from "./NewPageHost";
 import { PagesRetry } from "./PagesRetry";
-import { PagesStepNav } from "./PagesStepNav";
+import { ListStepNav } from "../topbar/ListStepNav";
 import { PagesTree } from "./PagesTree";
 import {
   buildTree,
@@ -139,7 +139,7 @@ export function PagesView(props: ListViewServerProps) {
   };
   return (
     <div className="collection-list dil-pages-view">
-      <PagesStepNav />
+      <ListStepNav label="Pages" />
       <Gutter>
         <Suspense
           fallback={
