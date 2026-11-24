@@ -77,9 +77,6 @@ export const COOKIE_LINK_NOT_LIVE =
 export const COOKIE_LINK_OTHER_COMPANY =
   "The linked page belongs to another company, so visitors will hit an error.";
 
-export const COOKIE_LINK_MISSING =
-  "The banner text doesn't link to your Cookie Policy page. You can still save.";
-
 export type CookieCheck = { ok: boolean; text: string };
 
 export function cookiePolicyCheck(
