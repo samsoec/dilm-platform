@@ -174,7 +174,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared-types
       aws4fetch:
-        specifier: ^1.0.20
+        specifier: 1.0.20
         version: 1.0.20
       next:
         specifier: 16.3.6
