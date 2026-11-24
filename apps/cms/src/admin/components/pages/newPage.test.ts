@@ -188,16 +188,16 @@ describe("slugs and URLs", () => {
   });
 
   it("splits the last segment off a displayed URL", () => {
-    expect(splitDisplay("duniakimia.com/en/about-us/history")).toEqual({
-      head: "duniakimia.com/en/about-us/",
+    expect(splitDisplay("duniakimiautama.com/en/about-us/history")).toEqual({
+      head: "duniakimiautama.com/en/about-us/",
       tail: "history",
     });
-    expect(splitDisplay("duniakimia.com/en/about-us/")).toEqual({
-      head: "duniakimia.com/en/about-us/",
+    expect(splitDisplay("duniakimiautama.com/en/about-us/")).toEqual({
+      head: "duniakimiautama.com/en/about-us/",
       tail: "",
     });
-    expect(splitDisplay("duniakimia.com/en")).toEqual({
-      head: "duniakimia.com/",
+    expect(splitDisplay("duniakimiautama.com/en")).toEqual({
+      head: "duniakimiautama.com/",
       tail: "en",
     });
   });

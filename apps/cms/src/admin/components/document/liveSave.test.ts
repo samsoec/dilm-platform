@@ -18,16 +18,16 @@ describe("save-goes-live controls (H-11, FR-UI-75)", () => {
   );
 
   it("says when a layout save shows on the site", () => {
-    expect(savedToast("header", 13, "duniakimia.com")).toEqual({
+    expect(savedToast("header", 13, "duniakimiautama.com")).toEqual({
       title: "Header saved · version 13.",
-      body: "duniakimia.com will show it within minutes.",
+      body: "duniakimiautama.com will show it within minutes.",
     });
   });
 
   it("says the header and footer refresh after a settings save (T-07)", () => {
-    expect(savedToast("tenant-settings", 9, "duniakimia.com")).toEqual({
+    expect(savedToast("tenant-settings", 9, "duniakimiautama.com")).toEqual({
       title: "Company settings saved · v9.",
-      body: "The header and footer on duniakimia.com refresh too.",
+      body: "The header and footer on duniakimiautama.com refresh too.",
     });
   });
 

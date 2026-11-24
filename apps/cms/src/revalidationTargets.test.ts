@@ -15,11 +15,23 @@ import {
 } from "./revalidationTargets";
 import type { RouteSnapshot } from "./routeIndex";
 
-const DUNIA: Tenant = { id: "2", slug: "duniakimia", host: "duniakimia.com" };
-const INDO: Tenant = { id: "1", slug: "indoacid", host: "indonesianacids.com" };
+const DUNIA: Tenant = {
+  id: "2",
+  slug: "duniakimia",
+  host: "duniakimiautama.com",
+};
+const INDO: Tenant = {
+  id: "1",
+  slug: "indoacid",
+  host: "indonesianacidsindustry.com",
+};
 const LIKU: Tenant = { id: "3", slug: "likutelaga", host: "likutelaga.com" };
 const TENANTS = [INDO, DUNIA, LIKU];
-const ALL_HOSTS = ["duniakimia.com", "indonesianacids.com", "likutelaga.com"];
+const ALL_HOSTS = [
+  "duniakimiautama.com",
+  "indonesianacidsindustry.com",
+  "likutelaga.com",
+];
 
 const row = (
   tenant: string | null,
@@ -67,8 +79,8 @@ describe("a page change", () => {
       reason: "publish",
       tags: ["route:duniakimia:en:/about", "route:duniakimia:id:/tentang"],
       purge: [
-        { host: "duniakimia.com", pathPrefix: "/en/about", exact: true },
-        { host: "duniakimia.com", pathPrefix: "/id/tentang", exact: true },
+        { host: "duniakimiautama.com", pathPrefix: "/en/about", exact: true },
+        { host: "duniakimiautama.com", pathPrefix: "/id/tentang", exact: true },
       ],
     });
   });
@@ -110,7 +122,7 @@ describe("a page change", () => {
       TENANTS,
     );
     expect(change.purge).toEqual([
-      { host: "duniakimia.com", pathPrefix: "/en/", exact: true },
+      { host: "duniakimiautama.com", pathPrefix: "/en/", exact: true },
     ]);
     expect(change.tags).toEqual(["route:duniakimia:en:/"]);
   });
@@ -229,7 +241,7 @@ describe("a record change", () => {
       "list:duniakimia:jobs",
       "route:duniakimia:en:/career/chemist",
     ]);
-    expect(hosts(change.purge)).toEqual(["duniakimia.com"]);
+    expect(hosts(change.purge)).toEqual(["duniakimiautama.com"]);
   });
 
   it("tags a post's company list and the shared all-list", () => {
@@ -290,7 +302,7 @@ describe("a record change", () => {
     expect(
       change.purge.filter((entry) => entry.pathPrefix === "/en/showcase"),
     ).toEqual([
-      { host: "duniakimia.com", pathPrefix: "/en/showcase", exact: true },
+      { host: "duniakimiautama.com", pathPrefix: "/en/showcase", exact: true },
     ]);
     expect(
       change.purge.filter((entry) => entry.pathPrefix === "/en/home"),
@@ -363,10 +375,10 @@ describe("a template change", () => {
     expect(change.purge).toHaveLength(6);
     expect(hosts(change.purge)).toEqual(ALL_HOSTS);
     expect(
-      change.purge.filter((entry) => entry.host === "duniakimia.com"),
+      change.purge.filter((entry) => entry.host === "duniakimiautama.com"),
     ).toEqual([
-      { host: "duniakimia.com", pathPrefix: "/en/products/" },
-      { host: "duniakimia.com", pathPrefix: "/id/produk/" },
+      { host: "duniakimiautama.com", pathPrefix: "/en/products/" },
+      { host: "duniakimiautama.com", pathPrefix: "/id/produk/" },
     ]);
   });
 
@@ -383,8 +395,8 @@ describe("a template change", () => {
     );
     expect(change.tags).toEqual(["route:duniakimia:en:/career/chemist"]);
     expect(change.purge).toEqual([
-      { host: "duniakimia.com", pathPrefix: "/en/career/" },
-      { host: "duniakimia.com", pathPrefix: "/id/karier/" },
+      { host: "duniakimiautama.com", pathPrefix: "/en/career/" },
+      { host: "duniakimiautama.com", pathPrefix: "/id/karier/" },
     ]);
   });
 

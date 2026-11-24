@@ -104,21 +104,21 @@ describe("searchSnippet", () => {
   it("breaks the computed address into a trail", () => {
     expect(
       searchSnippet({
-        domain: "duniakimia.com",
+        domain: "duniakimiautama.com",
         path: "/about-us/overview",
         locale: "en",
         title: "T",
         description: "D",
       }).trail,
-    ).toEqual(["duniakimia.com", "en", "about-us", "overview"]);
+    ).toEqual(["duniakimiautama.com", "en", "about-us", "overview"]);
     expect(
       searchSnippet({
-        domain: "duniakimia.com",
+        domain: "duniakimiautama.com",
         path: "/",
         locale: "id",
         title: "T",
         description: "D",
       }).trail,
-    ).toEqual(["duniakimia.com", "id"]);
+    ).toEqual(["duniakimiautama.com", "id"]);
   });
 });

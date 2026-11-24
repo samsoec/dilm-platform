@@ -80,16 +80,18 @@ describe("request helpers", () => {
 
 describe("texts", () => {
   it("uses the PG-04 sentence with the real domain", () => {
-    expect(liveOnNote("https://duniakimia.com/")).toBe(
-      "It's live on duniakimia.com. Nothing breaks: old URLs forward to the new ones.",
+    expect(liveOnNote("https://duniakimiautama.com/")).toBe(
+      "It's live on duniakimiautama.com. Nothing breaks: old URLs forward to the new ones.",
     );
   });
 
   it("shows addresses with the language", () => {
-    expect(displayUrl("duniakimia.com", "en", "/about")).toBe(
-      "duniakimia.com/en/about",
+    expect(displayUrl("duniakimiautama.com", "en", "/about")).toBe(
+      "duniakimiautama.com/en/about",
     );
-    expect(displayUrl("duniakimia.com", "id", "/")).toBe("duniakimia.com/id");
+    expect(displayUrl("duniakimiautama.com", "id", "/")).toBe(
+      "duniakimiautama.com/id",
+    );
   });
 
   it("summarises the links", () => {
@@ -102,7 +104,7 @@ describe("texts", () => {
 
 describe("categoryMoves (PS-02)", () => {
   const base = {
-    domain: "duniakimia.com",
+    domain: "duniakimiautama.com",
     locales: ["en", "id"],
     fallbackLocale: "en",
     live: true,
@@ -119,13 +121,13 @@ describe("categoryMoves (PS-02)", () => {
     expect(moves).toEqual([
       {
         locale: "en",
-        from: "duniakimia.com/en/category/news/new-plant",
-        to: "duniakimia.com/en/category/csr/new-plant",
+        from: "duniakimiautama.com/en/category/news/new-plant",
+        to: "duniakimiautama.com/en/category/csr/new-plant",
       },
       {
         locale: "id",
-        from: "duniakimia.com/id/kategori/berita/pabrik-baru",
-        to: "duniakimia.com/id/kategori/csr/pabrik-baru",
+        from: "duniakimiautama.com/id/kategori/berita/pabrik-baru",
+        to: "duniakimiautama.com/id/kategori/csr/pabrik-baru",
       },
     ]);
     expect(categoryChangeSummary(moves)).toBe(
@@ -139,7 +141,7 @@ describe("categoryMoves (PS-02)", () => {
       slugs: { en: "new-plant" },
       category: { en: "/category/csr" },
     });
-    expect(moves[1].to).toBe("duniakimia.com/id/category/csr/new-plant");
+    expect(moves[1].to).toBe("duniakimiautama.com/id/category/csr/new-plant");
   });
 
   it("says nothing for a post that isn't live", () => {

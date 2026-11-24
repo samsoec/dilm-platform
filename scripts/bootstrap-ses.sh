@@ -15,7 +15,7 @@ Run once per AWS account, with human credentials. Safe to re-run.
   AWS_PROFILE=<profile> ./scripts/bootstrap-ses.sh            deploy, then print records + status
   AWS_PROFILE=<profile> ./scripts/bootstrap-ses.sh --status   print records + status only
 
-Domains default to indonesianacids.com, duniakimia.com and likutelaga.com.
+Domains default to indonesianacidsindustry.com, duniakimiautama.com and likutelaga.com.
 Override with INDOACID_DOMAIN, DUNIAKIMIA_DOMAIN or LIKUTELAGA_DOMAIN.
 
 Add every printed record at the domain's DNS host. Records on Cloudflare must
@@ -38,8 +38,8 @@ case "${1:-}" in
     ;;
 esac
 
-INDOACID_DOMAIN="${INDOACID_DOMAIN:-indonesianacids.com}"
-DUNIAKIMIA_DOMAIN="${DUNIAKIMIA_DOMAIN:-duniakimia.com}"
+INDOACID_DOMAIN="${INDOACID_DOMAIN:-indonesianacidsindustry.com}"
+DUNIAKIMIA_DOMAIN="${DUNIAKIMIA_DOMAIN:-duniakimiautama.com}"
 LIKUTELAGA_DOMAIN="${LIKUTELAGA_DOMAIN:-likutelaga.com}"
 
 if [[ "$MODE" == "deploy" ]]; then

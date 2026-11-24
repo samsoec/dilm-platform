@@ -40,18 +40,18 @@ describe("refresh messages", () => {
   it("says the SP-05 wording with the hosts of the tenants", () => {
     expect(
       refreshMessage("ok", [
-        "duniakimia.com",
+        "duniakimiautama.com",
         "indoacid.com",
         "likutelaga.com",
       ]),
     ).toBe(
-      "duniakimia.com, indoacid.com and likutelaga.com are refreshing; the change shows within minutes.",
+      "duniakimiautama.com, indoacid.com and likutelaga.com are refreshing; the change shows within minutes.",
     );
   });
 
   it("uses is for one host and has a generic line without hosts", () => {
-    expect(refreshingMessage(["duniakimia.com"])).toBe(
-      "duniakimia.com is refreshing; the change shows within minutes.",
+    expect(refreshingMessage(["duniakimiautama.com"])).toBe(
+      "duniakimiautama.com is refreshing; the change shows within minutes.",
     );
     expect(refreshingMessage([])).toBe(
       "The site is refreshing; the change shows within minutes.",

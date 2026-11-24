@@ -18,8 +18,8 @@ describe("sesSendPolicy", () => {
 
   it("names the three verified identities and the configuration set, with no wildcard", () => {
     expect(statement!.Resource).toEqual([
-      "arn:aws:ses:ap-southeast-3:123456789012:identity/indonesianacids.com",
-      "arn:aws:ses:ap-southeast-3:123456789012:identity/duniakimia.com",
+      "arn:aws:ses:ap-southeast-3:123456789012:identity/indonesianacidsindustry.com",
+      "arn:aws:ses:ap-southeast-3:123456789012:identity/duniakimiautama.com",
       "arn:aws:ses:ap-southeast-3:123456789012:identity/likutelaga.com",
       "arn:aws:ses:ap-southeast-3:123456789012:configuration-set/dilm-transactional",
     ]);
@@ -28,8 +28,8 @@ describe("sesSendPolicy", () => {
 
   it("only lets mail leave from noreply at a tenant root domain", () => {
     expect(statement!.Condition.StringEquals["ses:FromAddress"]).toEqual([
-      "noreply@indonesianacids.com",
-      "noreply@duniakimia.com",
+      "noreply@indonesianacidsindustry.com",
+      "noreply@duniakimiautama.com",
       "noreply@likutelaga.com",
     ]);
   });

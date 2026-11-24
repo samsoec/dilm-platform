@@ -14,16 +14,16 @@ const other = {
   id: 2,
   _status: "published",
   path: "/about",
-  tenant: { id: 9, name: "Duniakimia", domain: "duniakimia.com" },
+  tenant: { id: 9, name: "Duniakimia", domain: "duniakimiautama.com" },
 };
 
 describe("link picker model", () => {
   it("shows a path for this site and an absolute URL for another", () => {
     const where = { siteDomain: "likutelaga.com", locale: "en" };
     expect(shownUrl(own, where)).toBe("/about");
-    expect(shownUrl(other, where)).toBe("https://duniakimia.com/about");
+    expect(shownUrl(other, where)).toBe("https://duniakimiautama.com/about");
     expect(isOtherCompany(other, "likutelaga.com")).toBe(true);
-    expect(isOtherCompany(other, "https://duniakimia.com")).toBe(false);
+    expect(isOtherCompany(other, "https://duniakimiautama.com")).toBe(false);
   });
 
   it("makes drafts visible but not selectable", () => {

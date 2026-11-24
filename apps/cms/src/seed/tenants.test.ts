@@ -54,7 +54,7 @@ describe("TENANT_SEED", () => {
       {
         name: "Dunia Kimia Utama",
         slug: "duniakimia",
-        domain: "duniakimia.com",
+        domain: "duniakimiautama.com",
         defaultLocale: "en",
         brandColor: "#1e3a8a",
       },

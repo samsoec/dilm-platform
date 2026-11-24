@@ -16,8 +16,8 @@ import { consentBlock, errorStatus, urlsFor, visibleReferrers } from "./impact";
 const impact = (over: Partial<Impact> = {}): Impact => ({
   title: "X",
   collection: "pages",
-  reach: { scope: "tenant", sites: 1, label: "duniakimia.com" },
-  sites: [{ domain: "duniakimia.com", urls: [] }],
+  reach: { scope: "tenant", sites: 1, label: "duniakimiautama.com" },
+  sites: [{ domain: "duniakimiautama.com", urls: [] }],
   links: [],
   linkCount: 0,
   placements: [],
@@ -64,7 +64,7 @@ describe("publish confirmation copy", () => {
 
   it("words the unpublish lead and the post title", () => {
     expect(unpublishLead(impact({ linkCount: 2 }))).toBe(
-      "It goes back to draft and leaves duniakimia.com. 2 links will show as plain text:",
+      "It goes back to draft and leaves duniakimiautama.com. 2 links will show as plain text:",
     );
     expect(
       unpublishTitle(
@@ -72,7 +72,7 @@ describe("publish confirmation copy", () => {
         impact({ collection: "posts" }),
       ),
     ).toBe(
-      'Unpublish "Renovating Al-Falah Kindergarten"? It leaves duniakimia.com and disappears from:',
+      'Unpublish "Renovating Al-Falah Kindergarten"? It leaves duniakimiautama.com and disappears from:',
     );
   });
 

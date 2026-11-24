@@ -14,9 +14,9 @@ import { settingsTabStates } from "./settingsTabs";
 
 const COMPLETE: CompletenessInput = {
   siteName: "Dunia Kimia Utama",
-  contactEmail: "info@duniakimia.com",
+  contactEmail: "info@duniakimiautama.com",
   contactPhone: null,
-  recruiterEmail: "hr@duniakimia.com",
+  recruiterEmail: "hr@duniakimiautama.com",
   brand: { logoOnDark: 1, logoOnLight: 2, legalName: "PT Dunia Kimia Utama" },
   defaultSeo: { title: "Dunia Kimia Utama" },
 };

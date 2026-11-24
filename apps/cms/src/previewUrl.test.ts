@@ -13,8 +13,8 @@ import {
 const secret = "test-secret";
 const now = 5_000_000;
 const tenants = [
-  { domain: "indonesianacids.com" },
-  { domain: "https://duniakimia.com/" },
+  { domain: "indonesianacidsindustry.com" },
+  { domain: "https://duniakimiautama.com/" },
   { domain: "likutelaga.com" },
 ];
 
@@ -51,7 +51,7 @@ describe("buildPreviewUrl", () => {
           now,
         }),
       );
-      expect(url.host).toBe("indonesianacids.com");
+      expect(url.host).toBe("indonesianacidsindustry.com");
       expect(url.pathname).toBe("/api/preview");
       expect(url.path).toBe(expected);
       expect(verifyPreviewToken(url.token, url.path, secret, now).ok).toBe(
@@ -86,7 +86,7 @@ describe("buildPreviewUrl", () => {
         now,
       }),
     );
-    expect(url.host).toBe("duniakimia.com");
+    expect(url.host).toBe("duniakimiautama.com");
     expect(url.path).toBe("/en/products/hcl");
   });
 
@@ -117,8 +117,8 @@ describe("buildPreviewUrl", () => {
       now,
     });
     expect(urls.map((url) => parse(url).host)).toEqual([
-      "indonesianacids.com",
-      "duniakimia.com",
+      "indonesianacidsindustry.com",
+      "duniakimiautama.com",
       "likutelaga.com",
     ]);
   });

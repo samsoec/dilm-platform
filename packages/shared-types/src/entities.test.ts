@@ -13,7 +13,7 @@ import {
 const indoacid: EntityRecord = {
   id: 1,
   name: "Indonesian Acids",
-  domain: "indonesianacids.com",
+  domain: "indonesianacidsindustry.com",
   brand: { legalName: "PT Indonesian Acids Industry", logoOnDark: { id: 11 } },
   profile: {
     coverImage: { id: 21 },
@@ -27,7 +27,7 @@ describe("resolveGroupTile (§4.5.23)", () => {
       name: "PT Indonesian Acids Industry",
       coverImage: { id: 21 },
       logo: { id: 11 },
-      href: "https://indonesianacids.com/",
+      href: "https://indonesianacidsindustry.com/",
     });
   });
 
@@ -44,14 +44,16 @@ describe("resolveGroupTile (§4.5.23)", () => {
 
 describe("current company on a shared page (FR-PM-04, FR-PM-36)", () => {
   const domains = {
-    "1": "indonesianacids.com",
-    "2": "duniakimia.com",
+    "1": "indonesianacidsindustry.com",
+    "2": "duniakimiautama.com",
     "3": "likutelaga.com",
   };
 
   it("resolves the company of whichever domain is being viewed", () => {
-    expect(resolveCurrentEntity("indonesianacids.com", domains)).toBe("1");
-    expect(resolveCurrentEntity("duniakimia.com", domains)).toBe("2");
+    expect(resolveCurrentEntity("indonesianacidsindustry.com", domains)).toBe(
+      "1",
+    );
+    expect(resolveCurrentEntity("duniakimiautama.com", domains)).toBe("2");
     expect(resolveCurrentEntity("likutelaga.com", domains)).toBe("3");
   });
 
@@ -65,11 +67,11 @@ describe("current company on a shared page (FR-PM-04, FR-PM-36)", () => {
 
   it("ignores case, port, protocol, path, a trailing dot and www", () => {
     for (const host of [
-      "DuniaKimia.com",
-      "duniakimia.com:3000",
-      "https://duniakimia.com/en/contact",
-      "duniakimia.com.",
-      "www.duniakimia.com",
+      "DuniaKimiaUtama.com",
+      "duniakimiautama.com:3000",
+      "https://duniakimiautama.com/en/contact",
+      "duniakimiautama.com.",
+      "www.duniakimiautama.com",
     ]) {
       expect(resolveCurrentEntity(host, domains), host).toBe("2");
     }
@@ -84,7 +86,7 @@ describe("current company on a shared page (FR-PM-04, FR-PM-36)", () => {
     expect(resolveCurrentEntity("example.org", domains)).toBeNull();
     expect(resolveCurrentEntity("", domains)).toBeNull();
     expect(resolveCurrentEntity(null, domains)).toBeNull();
-    expect(resolveCurrentEntity("duniakimia.com", {})).toBeNull();
+    expect(resolveCurrentEntity("duniakimiautama.com", {})).toBeNull();
   });
 
   it("lets a picked company override the current one in the location map", () => {
@@ -102,8 +104,8 @@ describe("current company on a shared page (FR-PM-04, FR-PM-36)", () => {
         allIds,
         currentEntityId: resolveCurrentEntity(host, domains),
       });
-    expect(others("indonesianacids.com")).toEqual(["2", "3"]);
-    expect(others("duniakimia.com")).toEqual(["1", "3"]);
+    expect(others("indonesianacidsindustry.com")).toEqual(["2", "3"]);
+    expect(others("duniakimiautama.com")).toEqual(["1", "3"]);
     expect(others("likutelaga.com")).toEqual(["1", "2"]);
     expect(others("unknown.test")).toEqual(["1", "2", "3"]);
   });

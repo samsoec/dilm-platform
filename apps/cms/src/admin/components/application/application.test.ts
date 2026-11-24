@@ -34,7 +34,7 @@ describe("dates in WIB (3a)", () => {
 
 describe("deliveryCells (R-01, FR-UI-93)", () => {
   const titles = (record: Parameters<typeof deliveryCells>[0]) =>
-    deliveryCells(record, "hr@duniakimia.com").map(
+    deliveryCells(record, "hr@duniakimiautama.com").map(
       ({ title, detail, tone }) => [title, detail, tone],
     );
 
@@ -49,7 +49,7 @@ describe("deliveryCells (R-01, FR-UI-93)", () => {
       }),
     ).toEqual([
       ["Sent", "Applicant was emailed a confirmation on 9 Oct, 08:14.", "ok"],
-      ["Sent", "hr@duniakimia.com was notified on 9 Oct, 08:14.", "ok"],
+      ["Sent", "hr@duniakimiautama.com was notified on 9 Oct, 08:14.", "ok"],
       ["Synced", "Reached the job platform on 9 Oct, 08:15.", "ok"],
     ]);
   });

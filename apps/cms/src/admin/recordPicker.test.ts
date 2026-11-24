@@ -61,7 +61,7 @@ describe("record picker", () => {
   it("disables drafts and flags other companies", () => {
     const draft = toPickRow("posts", { ...post, _status: "draft" });
     expect(draft.selectable).toBe(false);
-    const row = toPickRow("posts", post, "indonesianacids.com");
+    const row = toPickRow("posts", post, "indonesianacidsindustry.com");
     expect(row.otherSite).toBe(true);
     expect(row.meta).toBe("News · 4 Mar 2026");
     expect(row.reach.scope).toBe("tenant");

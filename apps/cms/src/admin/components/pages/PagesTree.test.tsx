@@ -140,7 +140,7 @@ const context = {
   locale: "en",
   defaultLocale: "en",
   header: { keys: new Set<string>(), paths: new Set<string>() },
-  tenants: [{ id: 2, domain: "duniakimia.com" }],
+  tenants: [{ id: 2, domain: "duniakimiautama.com" }],
   now: new Date("2026-11-05T05:00:00.000Z"),
 };
 

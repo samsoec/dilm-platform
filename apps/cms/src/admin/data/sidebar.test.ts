@@ -14,7 +14,7 @@ const BADGES = collections.flatMap(({ custom }) => {
 const DKU = {
   id: 2,
   name: "Dunia Kimia Utama",
-  domain: "duniakimia.com",
+  domain: "duniakimiautama.com",
   brandColor: "#1e3a8a",
 };
 
@@ -68,7 +68,11 @@ describe("loadSidebar (FR-UI-18, NFR-UI-03)", () => {
       "count cv-submissions overrideAccess=false",
     ]);
     expect(data).toMatchObject({
-      tenant: { id: 2, name: "Dunia Kimia Utama", domain: "duniakimia.com" },
+      tenant: {
+        id: 2,
+        name: "Dunia Kimia Utama",
+        domain: "duniakimiautama.com",
+      },
       attention: true,
       badges: { "cv-received": 6 },
     });

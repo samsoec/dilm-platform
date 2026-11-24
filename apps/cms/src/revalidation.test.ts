@@ -16,8 +16,12 @@ import {
 } from "./revalidation";
 
 const TENANTS: Record<string, { id: number; slug: string; domain: string }> = {
-  "1": { id: 1, slug: "indonesianacids", domain: "indonesianacids.com" },
-  "2": { id: 2, slug: "duniakimia", domain: "https://DuniaKimia.com/" },
+  "1": {
+    id: 1,
+    slug: "indonesianacids",
+    domain: "indonesianacidsindustry.com",
+  },
+  "2": { id: 2, slug: "duniakimia", domain: "https://DuniaKimiaUtama.com/" },
 };
 
 function harness(findByID?: (args: { id: number | string }) => unknown) {
@@ -109,8 +113,8 @@ describe("revalidateTenantLayout", () => {
         reason: "layout",
         tags: ["layout:duniakimia"],
         purge: [
-          { host: "duniakimia.com", pathPrefix: "/en/" },
-          { host: "duniakimia.com", pathPrefix: "/id/" },
+          { host: "duniakimiautama.com", pathPrefix: "/en/" },
+          { host: "duniakimiautama.com", pathPrefix: "/id/" },
         ],
       },
       logger,
@@ -123,7 +127,11 @@ describe("revalidateTenantLayout", () => {
     const { run, lookup } = harness();
     await run(revalidateTenantLayout({ revalidate }), {
       id: 9,
-      tenant: { id: 1, slug: "indonesianacids", domain: "indonesianacids.com" },
+      tenant: {
+        id: 1,
+        slug: "indonesianacids",
+        domain: "indonesianacidsindustry.com",
+      },
     });
     expect(lookup).not.toHaveBeenCalled();
     expect(revalidate.mock.calls[0]).toBeDefined();
@@ -151,9 +159,9 @@ describe("revalidateTenantLayout", () => {
     await run(hook, { id: 1, tenant: 1 });
     expect(calls).toHaveLength(1);
     expect(calls[0].tags).toEqual(["layout:indonesianacids"]);
-    expect(calls[0].purge.every((p) => p.host === "indonesianacids.com")).toBe(
-      true,
-    );
+    expect(
+      calls[0].purge.every((p) => p.host === "indonesianacidsindustry.com"),
+    ).toBe(true);
     expect(JSON.stringify(calls)).not.toContain("duniakimia");
   });
 
@@ -249,8 +257,8 @@ describe("stub revalidator", () => {
         reason: "layout",
         tags: ["layout:indonesianacids"],
         purge: [
-          { host: "indonesianacids.com", pathPrefix: "/en/" },
-          { host: "indonesianacids.com", pathPrefix: "/id/" },
+          { host: "indonesianacidsindustry.com", pathPrefix: "/en/" },
+          { host: "indonesianacidsindustry.com", pathPrefix: "/id/" },
         ],
       },
       "Revalidation (stubbed until DILM-32)",
@@ -280,8 +288,8 @@ describe("collection wiring", () => {
       expect(stubbed).toHaveLength(1);
       expect(stubbed[0][0].tags).toEqual(["layout:duniakimia"]);
       expect(stubbed[0][0].purge).toEqual([
-        { host: "duniakimia.com", pathPrefix: "/en/" },
-        { host: "duniakimia.com", pathPrefix: "/id/" },
+        { host: "duniakimiautama.com", pathPrefix: "/en/" },
+        { host: "duniakimiautama.com", pathPrefix: "/id/" },
       ]);
     },
   );

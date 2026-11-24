@@ -94,7 +94,7 @@ describe("withTenantSender", () => {
 
   it("keeps an explicit tenant sender without looking the recipient up", async () => {
     const { from, lookups } = await send([editor("indoacid")], {
-      from: "noreply@duniakimia.com",
+      from: "noreply@duniakimiautama.com",
       to: "editor@indoacid.test",
     });
     expect(from).toEqual(tenantSender("duniakimia"));
@@ -103,8 +103,8 @@ describe("withTenantSender", () => {
 
   it("replaces any other sender, including tenant subdomains", async () => {
     for (const from of [
-      "noreply@mail.duniakimia.com",
-      "info@duniakimia.com",
+      "noreply@mail.duniakimiautama.com",
+      "info@duniakimiautama.com",
       { name: "Shared", address: "noreply@dilgroup.com" },
     ]) {
       const result = await send([editor("indoacid")], {
@@ -120,7 +120,7 @@ describe("tenantSender", () => {
   it("is noreply at the tenant's root domain under the tenant's name", () => {
     expect(tenantSender("indoacid")).toEqual({
       name: "Indonesian Acids Industry",
-      address: "noreply@indonesianacids.com",
+      address: "noreply@indonesianacidsindustry.com",
     });
     expect(tenantOfSender(tenantSender("likutelaga"))).toBe("likutelaga");
   });
@@ -163,7 +163,7 @@ describe("emailTransport", () => {
     expect(await ses.sesClient.config.region()).toBe("ap-southeast-3");
     expect(commands[0]).toBeInstanceOf(SendEmailCommand);
     expect((commands[0] as SendEmailCommand).input.FromEmailAddress).toContain(
-      "<noreply@duniakimia.com>",
+      "<noreply@duniakimiautama.com>",
     );
   });
 

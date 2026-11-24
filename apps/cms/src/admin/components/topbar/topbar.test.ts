@@ -200,7 +200,9 @@ describe("localeHref", () => {
 
 describe("siteURL", () => {
   it("opens the tenant's domain in the content locale", () => {
-    expect(siteURL("duniakimia.com", "id")).toBe("https://duniakimia.com/id/");
+    expect(siteURL("duniakimiautama.com", "id")).toBe(
+      "https://duniakimiautama.com/id/",
+    );
   });
 
   it("tolerates a scheme or trailing slash in the stored domain", () => {

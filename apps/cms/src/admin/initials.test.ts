@@ -4,12 +4,12 @@ import { initials } from "./initials";
 
 describe("initials", () => {
   it.each([
-    [{ name: "Rani Saputra", email: "rani@duniakimia.com" }, "RS"],
+    [{ name: "Rani Saputra", email: "rani@duniakimiautama.com" }, "RS"],
     [{ name: "  Hendra  Gunawan Putra ", email: null }, "HP"],
     [{ name: "Madonna" }, "MA"],
-    [{ email: "dimas.p@duniakimia.com" }, "DP"],
+    [{ email: "dimas.p@duniakimiautama.com" }, "DP"],
     [{ email: "admin@likutelaga.com" }, "AD"],
-    [{ name: "", email: "m_k@indonesianacids.com" }, "MK"],
+    [{ name: "", email: "m_k@indonesianacidsindustry.com" }, "MK"],
     [{ name: "QA Super (Claude)" }, "QC"],
     [{ name: "(Sari)" }, "SA"],
     [{ name: "Siti 'Ani' Rahma" }, "SR"],

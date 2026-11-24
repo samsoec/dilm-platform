@@ -66,7 +66,11 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(search.current),
 }));
 
-const TENANT = { id: 2, name: "Dunia Kimia Utama", domain: "duniakimia.com" };
+const TENANT = {
+  id: 2,
+  name: "Dunia Kimia Utama",
+  domain: "duniakimiautama.com",
+};
 
 function AddChild() {
   const open = useNewPage();

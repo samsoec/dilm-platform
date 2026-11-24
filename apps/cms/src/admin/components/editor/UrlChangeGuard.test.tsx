@@ -122,7 +122,7 @@ function Host() {
       <div id="field-parent">
         <input aria-label="Parent" />
       </div>
-      <UrlChangeGuard domain="duniakimia.com" />
+      <UrlChangeGuard domain="duniakimiautama.com" />
       <ModalContainer />
     </ModalProvider>
   );
@@ -171,12 +171,12 @@ describe("Change URL confirmation (PG-04)", () => {
       "Change this page's URL?",
     );
     expect(dialog.textContent).toContain(
-      "It's live on duniakimia.com. Nothing breaks: old URLs forward to the new ones.",
+      "It's live on duniakimiautama.com. Nothing breaks: old URLs forward to the new ones.",
     );
     const struck = dialog.querySelector("s");
-    expect(struck?.textContent).toContain("duniakimia.com/en/about-us");
+    expect(struck?.textContent).toContain("duniakimiautama.com/en/about-us");
     expect(dialog.querySelector("strong")?.textContent).toContain(
-      "duniakimia.com/en/about",
+      "duniakimiautama.com/en/about",
     );
     expect(dialog.textContent).not.toContain("tentang-kami");
     const counts = dialog.querySelector("dl")?.textContent;

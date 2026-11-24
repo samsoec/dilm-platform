@@ -1,8 +1,8 @@
 # dilm-platform
 
 Infrastructure and application monorepo for **DIL-WEB-2026** — the corporate web
-platform for the three DIL Group tenants: `indonesianacids.com` (PT Indonesian Acids
-Industry), `duniakimia.com` (PT Dunia Kimia Utama) and `likutelaga.com`
+platform for the three DIL Group tenants: `indonesianacidsindustry.com` (PT Indonesian Acids
+Industry), `duniakimiautama.com` (PT Dunia Kimia Utama) and `likutelaga.com`
 (PT Liku Telaga).
 
 The source-of-truth specs (Backend Base Setup Spec, CMS Development Phase TRD,
@@ -747,11 +747,11 @@ cluster can still pause.
 
 Each tenant sends email from its own domain through SES (Backend Spec §3.5):
 
-| Tenant       | Sender                        |
-| ------------ | ----------------------------- |
-| `indoacid`   | `noreply@indonesianacids.com` |
-| `duniakimia` | `noreply@duniakimia.com`      |
-| `likutelaga` | `noreply@likutelaga.com`      |
+| Tenant       | Sender                                |
+| ------------ | ------------------------------------- |
+| `indoacid`   | `noreply@indonesianacidsindustry.com` |
+| `duniakimia` | `noreply@duniakimiautama.com`         |
+| `likutelaga` | `noreply@likutelaga.com`              |
 
 An SES domain identity exists once per AWS account and region, and all three
 stages share one account, so the identities are created once by a bootstrap
@@ -796,7 +796,7 @@ recreating them issues new DKIM keys and breaks the DNS records.
    ```bash
    aws sesv2 put-account-details --region ap-southeast-3 \
      --production-access-enabled --mail-type TRANSACTIONAL \
-     --website-url https://indonesianacids.com \
+     --website-url https://indonesianacidsindustry.com \
      --use-case-description "Password resets and job-application notifications for three corporate sites. Bounces and complaints are suppressed automatically." \
      --contact-language EN
    ```

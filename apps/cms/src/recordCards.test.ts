@@ -18,7 +18,7 @@ const NOW = new Date("2026-11-03T08:00:00.000Z");
 const FUTURE = "2026-11-20T12:00:00.000Z";
 const PAST = "2026-11-01T12:00:00.000Z";
 
-const DOMAINS = { "2": "duniakimia.com", "3": "likutelaga.com" };
+const DOMAINS = { "2": "duniakimiautama.com", "3": "likutelaga.com" };
 
 const context = (viewerTenant: number | undefined = 2) => ({
   viewerTenant,

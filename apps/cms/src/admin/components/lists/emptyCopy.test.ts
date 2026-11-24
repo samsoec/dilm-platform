@@ -23,9 +23,9 @@ describe("hasActiveQuery", () => {
 describe("emptyCopy", () => {
   it("names the company domain on career applications", () => {
     expect(
-      emptyCopy("cv-submissions", { domain: "duniakimia.com" }).lines,
+      emptyCopy("cv-submissions", { domain: "duniakimiautama.com" }).lines,
     ).toEqual([
-      "They arrive here automatically when someone applies on the careers page of duniakimia.com.",
+      "They arrive here automatically when someone applies on the careers page of duniakimiautama.com.",
     ]);
   });
 

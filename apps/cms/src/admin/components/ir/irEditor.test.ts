@@ -117,8 +117,8 @@ describe("publish copy (I-04 to I-06)", () => {
   });
 
   it("names the live Investor page", () => {
-    expect(investorURL("duniakimia.com", "id")).toBe(
-      "duniakimia.com/id/investor",
+    expect(investorURL("duniakimiautama.com", "id")).toBe(
+      "duniakimiautama.com/id/investor",
     );
   });
 

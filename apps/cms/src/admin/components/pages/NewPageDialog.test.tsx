@@ -71,7 +71,7 @@ vi.mock("../kit/Toast", () => ({ notify }));
 const TENANT: NewPageTenant = {
   id: 2,
   name: "Dunia Kimia Utama",
-  domain: "duniakimia.com",
+  domain: "duniakimiautama.com",
 };
 
 const OPTIONS: ParentOption[] = [
@@ -199,7 +199,9 @@ describe("New page dialog (PG-01)", () => {
     expect(field("Slug EN")).toBeTruthy();
     expect(field("Slug ID")).toBeTruthy();
     expect(screen.getByRole("button", { name: /Parent page/ })).toBeTruthy();
-    expect(dialog.textContent).toContain("This site only (duniakimia.com)");
+    expect(dialog.textContent).toContain(
+      "This site only (duniakimiautama.com)",
+    );
     expect(dialog.textContent).toContain(
       "Created as a draft. Nothing is public until you publish.",
     );
@@ -244,13 +246,13 @@ describe("New page dialog (PG-01)", () => {
     const { user, dialog } = await open();
     await user.type(field("Title EN"), "History");
     expect(urls(dialog)).toEqual([
-      "ENduniakimia.com/en/history",
-      "IDduniakimia.com/id/history",
+      "ENduniakimiautama.com/en/history",
+      "IDduniakimiautama.com/id/history",
     ]);
     await user.type(field("Slug ID"), "sejarah");
     expect(urls(dialog)).toEqual([
-      "ENduniakimia.com/en/history",
-      "IDduniakimia.com/id/sejarah",
+      "ENduniakimiautama.com/en/history",
+      "IDduniakimiautama.com/id/sejarah",
     ]);
   });
 
@@ -275,8 +277,8 @@ describe("New page dialog (PG-01)", () => {
     await user.type(field("Title EN"), "History");
     await user.type(field("Slug ID"), "sejarah");
     expect(urls(dialog)).toEqual([
-      "ENduniakimia.com/en/about-us/history",
-      "IDduniakimia.com/id/tentang-kami/sejarah",
+      "ENduniakimiautama.com/en/about-us/history",
+      "IDduniakimiautama.com/id/tentang-kami/sejarah",
     ]);
   });
 
@@ -285,7 +287,7 @@ describe("New page dialog (PG-01)", () => {
     const { user, dialog } = await open("1");
     await user.type(field("Title EN"), "History");
     await waitFor(() =>
-      expect(urls(dialog)[0]).toBe("ENduniakimia.com/en/about-us/history"),
+      expect(urls(dialog)[0]).toBe("ENduniakimiautama.com/en/about-us/history"),
     );
     expect(
       screen.getByRole("button", { name: /Parent page/ }).textContent,
@@ -302,7 +304,7 @@ describe("New page dialog (PG-01)", () => {
           screen.getByRole("button", { name: /Parent page/ }),
         ).toHaveProperty("disabled", false),
       );
-      expect(urls(dialog)[0]).toBe("ENduniakimia.com/en/history");
+      expect(urls(dialog)[0]).toBe("ENduniakimiautama.com/en/history");
       cleanup();
     }
   });

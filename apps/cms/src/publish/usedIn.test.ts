@@ -132,14 +132,18 @@ describe("hand-picked scoping", () => {
 
   it("counts hidden places and words a single-company record", () => {
     const one = impact({
-      reach: { scope: "tenant", sites: 1, label: "indonesianacids.com" },
+      reach: {
+        scope: "tenant",
+        sites: 1,
+        label: "indonesianacidsindustry.com",
+      },
       linkCount: 1,
       hiddenCount: 2,
     });
     expect(pickedCount(one)).toBe(3);
     expect(handPickedLead(one)).toBe("It's hand-picked in 3 places.");
     expect(unpublishTitle("X", one)).toBe(
-      'Unpublish "X" from indonesianacids.com?',
+      'Unpublish "X" from indonesianacidsindustry.com?',
     );
   });
 
