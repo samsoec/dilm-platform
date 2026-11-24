@@ -5,7 +5,7 @@
     @include sheet.native-drawer-shell;
   }
 
-  .drawer:not(.doc-drawer):has(.drawer__header) .drawer__content-children {
+  .drawer:not(.doc-drawer):has(> .drawer__content > .drawer__content-children > .drawer__header) .drawer__content-children {
     padding-left: 0;
     padding-right: 0;
     overflow: hidden;
@@ -13,14 +13,14 @@
     flex-direction: column;
   }
 
-  .drawer:not(.doc-drawer) .drawer__header ~ * {
+  .drawer:not(.doc-drawer) .drawer__header ~ :not(.drawer) {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
     padding: var(--dil-sheet-pad-y) var(--dil-sheet-pad-x);
   }
 
-  .drawer:has([class*="bulk-upload--"]) {
+  .drawer:has(> .drawer__content > .drawer__content-children > [class*="bulk-upload--"]) {
     @include sheet.native-drawer-shell(var(--dil-sheet-width-wide));
   }
 
