@@ -1,8 +1,7 @@
 import type { Payload, TypedUser } from "payload";
 
-import { baseState, baseUnpublishedMessage } from "../../siteRouting";
+import { baseNote, baseState, type BaseNote } from "../../siteRouting";
 import { relationId } from "../components/editor/urls";
-import { noCareerPageReason } from "../components/jobs/jobs";
 import {
   getPublishStatus,
   type PublishStatus,
@@ -13,14 +12,14 @@ export type JobEditorData = {
   status: PublishStatus;
   domain: string;
   careerPaths: Record<string, string | null | undefined> | undefined;
-  publishBlock: string | undefined;
+  baseNote: BaseNote | null;
 };
 
 export const blankJobEditor: JobEditorData = {
   status: "draft",
   domain: "",
   careerPaths: undefined,
-  publishBlock: undefined,
+  baseNote: null,
 };
 
 export async function loadJobEditor(
@@ -68,16 +67,12 @@ export async function loadJobEditor(
     "careerPage",
     String(tenant),
   );
+  const note = await baseNote(payload, { user }, "careerPage", String(tenant));
   return {
     status,
     domain: company.domain,
     careerPaths:
       state.state === "unset" ? undefined : (state.page.paths as never),
-    publishBlock:
-      state.state === "unset"
-        ? noCareerPageReason(company.name || "this company")
-        : state.state === "unpublished"
-          ? baseUnpublishedMessage("careerPage", state.page.title)
-          : undefined,
+    baseNote: note,
   };
 }

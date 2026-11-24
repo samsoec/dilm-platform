@@ -23,12 +23,7 @@ import { json } from "../pageDialog";
 import { refId, scopedReq } from "../pageRules";
 import { findReferrers, refKey, type Referrer } from "../routeIndex";
 import { sectionsReferencing } from "./usedInSections";
-import {
-  baseState,
-  baseUnpublishedMessage,
-  baseUnsetMessage,
-  firstDependency,
-} from "../siteRouting";
+import { baseNote, firstDependency, type BaseNote } from "../siteRouting";
 import {
   placementsIn,
   type Impact,
@@ -305,41 +300,27 @@ function isPageCollection(collection: string): boolean {
   return (PAGE_COLLECTIONS as readonly string[]).includes(collection);
 }
 
-async function publishBlock(
+function publishBlock(collection: string, doc: Doc): PublishBlock | null {
+  if (isPageCollection(collection)) {
+    return consentBlock((doc as { layout?: unknown }).layout);
+  }
+  return null;
+}
+
+export async function publishNote(
   payload: Payload,
   req: PayloadRequest,
   collection: string,
   doc: Doc,
-): Promise<PublishBlock | null> {
-  const tenant = refId(doc.tenant as never);
-  if (isPageCollection(collection)) {
-    return consentBlock((doc as { layout?: unknown }).layout);
+): Promise<BaseNote | null> {
+  if (collection === "products") {
+    return baseNote(payload, req, "productsPage");
   }
-  if (collection === "products" || collection === "solutions") {
-    const setting =
-      collection === "products" ? "productsPage" : "solutionsPage";
-    const state = await baseState(payload, req, setting);
-    if (state.state === "unset") {
-      return { kind: "routing", message: baseUnsetMessage(setting) };
-    }
-    if (state.state === "unpublished") {
-      return {
-        kind: "routing",
-        message: baseUnpublishedMessage(setting, state.page.title),
-      };
-    }
+  if (collection === "solutions") {
+    return baseNote(payload, req, "solutionsPage");
   }
   if (collection === "jobs") {
-    const state = await baseState(payload, req, "careerPage", tenant);
-    if (state.state === "unset") {
-      return { kind: "career", message: baseUnsetMessage("careerPage") };
-    }
-    if (state.state === "unpublished") {
-      return {
-        kind: "career",
-        message: baseUnpublishedMessage("careerPage", state.page.title),
-      };
-    }
+    return baseNote(payload, req, "careerPage", refId(doc.tenant as never));
   }
   return null;
 }
@@ -450,7 +431,8 @@ export async function publishImpact(
           id,
         )
       : null,
-    block: await publishBlock(payload, req, collection, doc),
+    block: publishBlock(collection, doc),
+    note: await publishNote(payload, req, collection, doc),
     template,
     live: doc._status === "published" && !doc.deletedAt,
   };

@@ -1,12 +1,9 @@
 import type { Payload } from "payload";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { Jobs } from "./collections/Jobs";
 import { Pages } from "./collections/Pages";
-import { Products } from "./collections/Products";
 import { SharedPages } from "./collections/SharedPages";
 import { SiteRouting } from "./collections/SiteRouting";
-import { Solutions } from "./collections/Solutions";
 import { TenantSettings } from "./collections/TenantSettings";
 import { globals } from "./collections";
 import { recordMoveSources } from "./pathCascade";
@@ -18,8 +15,8 @@ import {
 } from "./recordBases";
 import {
   assertNotBasePage,
+  baseNote,
   baseUnpublishedMessage,
-  baseUnsetMessage,
   cascadeCompanyRouting,
   cascadeSiteRouting,
   checkCompanyRouting,
@@ -34,8 +31,11 @@ import {
   previewBaseChange,
   protectionMessage,
   registerSiteRouting,
-  requireBase,
 } from "./siteRouting";
+import { Jobs } from "./collections/Jobs";
+import { Products } from "./collections/Products";
+import { Solutions } from "./collections/Solutions";
+import { publishNote } from "./publish/impact";
 import { accessAs, findField, testUser } from "./testing";
 
 type Row = Record<string, unknown> & { id: number };
@@ -360,36 +360,84 @@ describe("record paths with no base (FR-PM-17)", () => {
   });
 });
 
-describe("publish gate (FR-PM-17)", () => {
-  const publishing = (data: object, originalDoc?: object) => ({
-    data,
-    originalDoc,
-    req: {},
-  });
+describe("publishing without a base page (FR-PM-17)", () => {
+  const req = () => ({ user: testUser(["super-admin"]) });
 
-  async function gate(
+  async function noteFor(
     fake: Fake,
-    collection: "products" | "solutions" | "jobs",
-    data: object,
-    originalDoc?: object,
+    setting: "productsPage" | "solutionsPage" | "careerPage",
+    tenant?: string,
   ) {
-    return run(requireBase(collection), {
-      ...publishing(data, originalDoc),
-      req: { payload: fake.payload },
-    });
+    return baseNote(fake.payload, req() as never, setting, tenant);
   }
 
-  it("refuses to publish a product while the base is unset, with PR-04", async () => {
-    const fake = fakeDb();
-    await expect(
-      gate(fake, "products", { _status: "published" }),
-    ).rejects.toThrow(
-      'No "Our Products" page is set in Site routing, so products have no URL. Ask a Super Admin to set it.',
-    );
-    expect(baseUnsetMessage("solutionsPage")).toContain('"Our Solutions"');
+  it("lets products, solutions and jobs publish with no base or an unpublished one", async () => {
+    for (const unpublished of [false, true]) {
+      for (const collection of [Products, Solutions, Jobs]) {
+        for (const hook of collection.hooks!.beforeChange!) {
+          const fake = fakeDb();
+          if (unpublished) {
+            addPage(fake, "shared-pages", {
+              id: 1,
+              slug: "base",
+              status: "draft",
+            });
+            addPage(fake, "pages", {
+              id: 2,
+              slug: "career",
+              status: "draft",
+              tenant: 1,
+            });
+            fake.globalDocs["site-routing"] = {
+              productsPage: 1,
+              solutionsPage: 1,
+            };
+            settings(fake, 1, { careerPage: 2 });
+          }
+          await expect(
+            Promise.resolve(
+              hook({
+                data: { _status: "published", tenant: 1 },
+                originalDoc: undefined,
+                collection: { slug: collection.slug },
+                operation: "create",
+                req: { payload: fake.payload, context: {} },
+              } as never),
+            ),
+          ).resolves.not.toThrow();
+        }
+      }
+    }
   });
 
-  it("refuses while the base page is unpublished and names it", async () => {
+  it("puts the note on the publish impact for a missing base", async () => {
+    const fake = fakeDb();
+    const req = { user: testUser(["super-admin"]) } as never;
+    const doc = { id: 1, tenant: 1 };
+    expect(
+      (await publishNote(fake.payload, req, "products", doc))?.action,
+    ).toBe("Go to Site routing");
+    expect((await publishNote(fake.payload, req, "jobs", doc))?.message).toBe(
+      "Not on the website yet: set your Career page.",
+    );
+    expect(await publishNote(fake.payload, req, "pages", doc)).toBeNull();
+  });
+
+  it("notes that the record is not on the website while the base is unset", async () => {
+    const fake = fakeDb();
+    expect(await noteFor(fake, "productsPage")).toEqual({
+      message: 'Not on the website yet: set the "Our Products" page.',
+      path: "/globals/site-routing",
+      action: "Go to Site routing",
+    });
+    expect(await noteFor(fake, "careerPage", "1")).toEqual({
+      message: "Not on the website yet: set your Career page.",
+      path: "/collections/tenant-settings",
+      action: "Set your Career page",
+    });
+  });
+
+  it("names the base page while it is unpublished", async () => {
     const fake = fakeDb();
     addPage(fake, "shared-pages", {
       id: 1,
@@ -398,61 +446,27 @@ describe("publish gate (FR-PM-17)", () => {
       title: "Our Products",
     });
     fake.globalDocs["site-routing"] = { productsPage: 1 };
-    await expect(
-      gate(fake, "products", { _status: "published" }),
-    ).rejects.toThrow(baseUnpublishedMessage("productsPage", "Our Products"));
-  });
-
-  it("lets a draft save through without any base", async () => {
-    const fake = fakeDb();
-    const data = { _status: "draft", name: "x" };
-    expect(await gate(fake, "products", data)).toBe(data);
-    expect(await gate(fake, "jobs", data)).toBe(data);
-  });
-
-  it("treats an update without a status as the document's own status", async () => {
-    const fake = fakeDb();
-    await expect(
-      gate(fake, "solutions", {}, { _status: "published" }),
-    ).rejects.toThrow("Our Solutions");
-    const data = {};
-    expect(await gate(fake, "solutions", data, { _status: "draft" })).toBe(
-      data,
+    const note = await noteFor(fake, "productsPage");
+    expect(note?.message).toBe(
+      baseUnpublishedMessage("productsPage", "Our Products"),
     );
+    expect(note?.action).toBe('Publish "Our Products" (Our Products)');
+    expect(note?.path).toBe("/collections/shared-pages/1");
   });
 
-  it("does not stand in the way of trashing", async () => {
-    const fake = fakeDb();
-    const data = { deletedAt: "2026-11-03", _status: "published" };
-    expect(await gate(fake, "products", data)).toBe(data);
-  });
-
-  it("publishes once the base page is live", async () => {
+  it("has no note once the base page is live", async () => {
     const fake = fakeDb();
     addPage(fake, "shared-pages", { id: 1, slug: "our-products" });
     fake.globalDocs["site-routing"] = { productsPage: 1 };
-    const data = { _status: "published" };
-    expect(await gate(fake, "products", data)).toBe(data);
+    expect(await noteFor(fake, "productsPage")).toBeNull();
   });
 
   it("checks a job against its own company's career page", async () => {
     const fake = fakeDb();
     addPage(fake, "pages", { id: 1, slug: "career", tenant: 1 });
     settings(fake, 1, { careerPage: 1 });
-    const data = { _status: "published", tenant: 1 };
-    expect(await gate(fake, "jobs", data)).toBe(data);
-    await expect(
-      gate(fake, "jobs", { _status: "published", tenant: 2 }),
-    ).rejects.toThrow(baseUnsetMessage("careerPage"));
-    await expect(
-      gate(fake, "jobs", { _status: "published" }, { tenant: 2 }),
-    ).rejects.toThrow('No "Career" page is set in Company settings');
-  });
-
-  it("is wired into products, solutions and jobs", () => {
-    for (const collection of [Products, Solutions, Jobs]) {
-      expect(collection.hooks!.beforeChange!.length).toBeGreaterThan(0);
-    }
+    expect(await noteFor(fake, "careerPage", "1")).toBeNull();
+    expect(await noteFor(fake, "careerPage", "2")).not.toBeNull();
   });
 });
 

@@ -53,7 +53,7 @@ export async function JobActionsField(props: UIFieldServerProps) {
     <EditorActions
       ancestors={[]}
       initials=""
-      publishBlock={data.publishBlock}
+      baseNote={data.baseNote ?? undefined}
       seed={{ collection: "jobs", parentPaths: {}, slugs: {} }}
     />
   );

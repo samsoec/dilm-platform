@@ -13,6 +13,8 @@ import { selectedTenantID, TENANT_COOKIE } from "../../data/sidebar";
 import { MaterialIcon } from "../MaterialIcon";
 import { ActionButton } from "../kit/ActionButton";
 import { Banner } from "../kit/Banner";
+import { BaseNoteBanner } from "../kit/BaseNoteBanner";
+import { baseNote } from "../../../siteRouting";
 import { Skeleton } from "../kit/Loading";
 import { PublishBadge } from "../kit/PublishBadge";
 import { PagesRetry } from "../pages/PagesRetry";
@@ -91,9 +93,11 @@ async function SolutionsBody(props: ListViewServerProps & { viewer: Viewer }) {
     );
     const names = new Map(companies.map(({ id, name }) => [id, name]));
     const filtered = query.search !== "" || query.status !== undefined;
+    const note = await baseNote(payload, { user }, "solutionsPage");
     return (
       <>
         <Heading createHref={createHref} viewer={viewer} />
+        {note && <BaseNoteBanner className="dil-pages__banner" note={note} />}
         <Toolbar
           companies={companies}
           pathname={pathname}

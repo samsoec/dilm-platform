@@ -1,3 +1,4 @@
+import type { BaseNote } from "../siteRouting";
 import { joinNames } from "../paths";
 
 export type PublishAction = "publish" | "unpublish" | "trash";
@@ -27,10 +28,7 @@ export type TrashRefusal =
   | { kind: "recordBase"; message: string; label: string }
   | { kind: "publication"; message: string };
 
-export type PublishBlock =
-  | { kind: "routing"; message: string }
-  | { kind: "career"; message: string }
-  | { kind: "consent"; message: string };
+export type PublishBlock = { kind: "consent"; message: string };
 
 export type TemplateChange = { type: string; count: number; sites: string[] };
 
@@ -45,6 +43,7 @@ export type Impact = {
   placements: Placement[];
   refusal: TrashRefusal | null;
   block: PublishBlock | null;
+  note?: BaseNote | null;
   template: TemplateChange | null;
   live: boolean;
 };

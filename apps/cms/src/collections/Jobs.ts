@@ -19,7 +19,6 @@ import {
 } from "../publishRevalidation";
 import { stubRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
-import { requireBase } from "../siteRouting";
 import { withTenantAccess } from "../tenancy";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 import { CLOSING_HINT, POSTED_HINT } from "../admin/components/jobs/jobs";
@@ -57,7 +56,7 @@ export const Jobs = withTenantAccess(
         versions: { drafts: true, maxPerDoc: PAGE_VERSIONS_PER_DOCUMENT },
         trash: true,
         hooks: {
-          beforeChange: [requireBase("jobs"), beginLiveChange],
+          beforeChange: [beginLiveChange],
           afterChange: [syncRoutes, revalidateOnLiveChange(stubRevalidator)],
           afterDelete: [revalidateOnDelete(stubRevalidator)],
           beforeDelete: [removeRoutes],

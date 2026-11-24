@@ -35,7 +35,7 @@ export type JobRow = {
 
 export type CareerState =
   | { state: "unset" }
-  | { state: "unpublished"; message: string }
+  | { state: "unpublished"; message: string; pageID: string }
   | { state: "live"; path: string };
 
 export type JobsData = {
@@ -98,6 +98,7 @@ export async function loadCareer(
       career: {
         state: "unpublished",
         message: baseUnpublishedMessage("careerPage", state.page.title),
+        pageID: state.page.id,
       },
       settingsID,
     };

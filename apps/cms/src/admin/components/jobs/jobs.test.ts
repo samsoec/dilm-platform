@@ -9,7 +9,6 @@ import {
   jobsHref,
   listingOf,
   jobsWhere,
-  noCareerPageReason,
   parseJobsQuery,
   tabCounts,
   tabOf,
@@ -162,12 +161,6 @@ describe("combobox options", () => {
 describe("texts", () => {
   it("quotes the job in the close question", () => {
     expect(closeTitle("Process Engineer")).toBe('Close "Process Engineer"?');
-  });
-
-  it("names the company in the blocked publish reason", () => {
-    expect(noCareerPageReason("Liku Telaga")).toBe(
-      "No Career page is set for Liku Telaga. Company settings › Careers.",
-    );
   });
 
   it("formats days in Jakarta time and dashes the empty ones", () => {

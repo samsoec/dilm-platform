@@ -28,6 +28,7 @@ import {
   validationSummary,
 } from "../../../publish/confirmations";
 import { Banner } from "../kit/Banner";
+import { BaseNoteBanner } from "../kit/BaseNoteBanner";
 import { ConfirmDialog } from "../kit/ConfirmDialog";
 import { ReachBadge } from "../kit/ReachBadge";
 import { prePublishQuestions } from "./prePublish";
@@ -164,6 +165,7 @@ export function PublishConfirm({
             )}
           {impact?.template && <p>{templateChangeText(impact.template)}</p>}
           {questions}
+          {impact?.note && <BaseNoteBanner note={impact.note} />}
           {block && <Banner tone="error">{block}</Banner>}
         </>
       }
