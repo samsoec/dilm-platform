@@ -14,6 +14,7 @@
   "dependencies": {
     "@dilm/runtime-config": "workspace:*",
     "@dilm/shared-types": "workspace:*",
+    "aws4fetch": "1.0.20",
     "next": "16.3.6",
     "react": "19.2.6",
     "react-dom": "19.2.6"

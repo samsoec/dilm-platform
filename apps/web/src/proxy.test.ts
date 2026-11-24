@@ -19,6 +19,16 @@ describe("proxy", () => {
     expect(target(a)).not.toBe(target(b));
   });
 
+  it("ignores a client-supplied x-forwarded-host and uses only host", () => {
+    const request = new NextRequest("http://internal.invalid/en/about", {
+      headers: {
+        host: "unknown.example",
+        "x-forwarded-host": "indoacid.localhost:3001",
+      },
+    });
+    expect(proxy(request).status).toBe(404);
+  });
+
   it("answers an unknown host with a plain 404", async () => {
     const response = call("unknown.example");
     expect(response.status).toBe(404);

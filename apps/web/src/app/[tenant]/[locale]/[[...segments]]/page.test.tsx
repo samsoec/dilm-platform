@@ -1,10 +1,23 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import Page from "./page";
 
+beforeEach(() => {
+  vi.stubEnv("CMS_URL", "https://cms.example");
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => new Response(JSON.stringify({ name: "Liku Telaga" }))),
+  );
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
+});
+
 describe("tenant page", () => {
-  it("renders the tenant name", async () => {
+  it("renders the tenant name read from the CMS", async () => {
     const ui = await Page({
       params: Promise.resolve({ tenant: "likutelaga", locale: "en" }),
     });

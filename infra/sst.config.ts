@@ -37,6 +37,7 @@ export default $config({
     const edge = await import("./src/edge");
     const parameters = await import("./src/parameters");
     const payload = await import("./src/payload");
+    const web = await import("./src/web");
     const rotation = await import("./src/rotation");
     const queue = await import("./src/queue");
     const observability = await import("./src/observability");
@@ -460,6 +461,7 @@ export default $config({
         runtimeConfigParametersLinkable,
       ],
       policies: payloadSesSend.arn.apply((arn) => [arn]),
+      url: { authorization: "iam" },
       concurrency: concurrencyPlan.reserved
         ? { reserved: concurrencyPlan.reserved }
         : undefined,
@@ -747,6 +749,97 @@ export default $config({
         },
       },
     );
+    new aws.s3.BucketLifecycleConfiguration("PublicWebCacheLifecycle", {
+      bucket: publicBucket.id,
+      rules: [web.webCacheLifecycleRule()],
+    });
+    const webTagCacheSpec = web.webTagCacheTable($app.stage);
+    const webTagCache = new aws.dynamodb.Table("WebTagCache", {
+      name: webTagCacheSpec.name,
+      billingMode: webTagCacheSpec.billingMode,
+      hashKey: webTagCacheSpec.hashKey,
+      rangeKey: webTagCacheSpec.rangeKey,
+      attributes: webTagCacheSpec.attributes,
+      globalSecondaryIndexes: webTagCacheSpec.globalSecondaryIndexes,
+    });
+    const webStaticAssets = edge.listStaticAssets(
+      $dev
+        ? web.webAssetsDir($cli.paths.root)
+        : web.assertWebAssetsBuilt($cli.paths.root),
+    );
+    webStaticAssets.map(
+      (asset) =>
+        new aws.s3.BucketObjectv2(`WebStatic/${asset.key}`, {
+          bucket: publicBucket.id,
+          key: web.webStaticKey(asset.key),
+          source: $asset(asset.file),
+          contentType: asset.contentType,
+          cacheControl: asset.cacheControl,
+        }),
+    );
+    const webFunction = new sst.aws.Function("WebApp", {
+      bundle: $dev
+        ? web.webBundleDir($cli.paths.root)
+        : web.assertWebBundleBuilt($cli.paths.root),
+      handler: web.WEB_HANDLER,
+      runtime: "nodejs22.x",
+      architecture: "arm64",
+      memory: web.WEB_MEMORY,
+      timeout: web.WEB_TIMEOUT,
+      logging: { retention: observability.LOG_RETENTION },
+      url: { authorization: "none" },
+      environment: {
+        CMS_URL: payloadFunction.url,
+        CMS_AUTH: "iam",
+        TENANT_HOST_ALIASES: web.webHostAliases(),
+        CACHE_BUCKET_NAME: publicBucket.bucket,
+        CACHE_BUCKET_REGION: REGION,
+        CACHE_BUCKET_KEY_PREFIX: web.WEB_CACHE_PREFIX.replace(/\/$/, ""),
+        CACHE_DYNAMO_TABLE: webTagCache.name,
+      },
+      permissions: [
+        ...web
+          .webCachePermissions({
+            bucketArn: publicBucket.arn,
+            tableArn: webTagCache.arn,
+            join: (arn, suffix) => $interpolate`${arn}${suffix}`,
+          })
+          .map((grant) => sst.aws.permission(grant)),
+        sst.aws.permission({
+          actions: web.WEB_PAYLOAD_INVOKE_ACTIONS,
+          resources: [payloadFunction.nodes.function.arn],
+        }),
+        sst.aws.permission({
+          actions: ["ssm:GetParameter", "ssm:GetParameters"],
+          resources: $resolve([partition.partition, caller.accountId]).apply(
+            ([partitionName, accountId]) =>
+              web.webParameterArns(
+                parameters.parameterArns({
+                  partition: partitionName,
+                  region: REGION,
+                  accountId,
+                  stage: $app.stage,
+                }),
+              ),
+          ),
+        }),
+      ],
+    });
+    const webWarmRule = new aws.cloudwatch.EventRule("WebWarmRule", {
+      scheduleExpression: web.WEB_WARM_RATE,
+      description: "Keeps one web Lambda instance warm (DILM-24).",
+    });
+    new aws.cloudwatch.EventTarget("WebWarmTarget", {
+      rule: webWarmRule.name,
+      arn: webFunction.nodes.function.arn,
+      input: JSON.stringify(web.WEB_WARM_EVENT),
+    });
+    new aws.lambda.Permission("WebWarmInvoke", {
+      action: "lambda:InvokeFunction",
+      function: webFunction.name,
+      principal: "events.amazonaws.com",
+      sourceArn: webWarmRule.arn,
+    });
     const alarmPlan = observability.alarmEmailPlan(
       $app.stage,
       process.env.ALARM_EMAIL,
@@ -790,6 +883,8 @@ export default $config({
       region: REGION,
       stage: $app.stage,
       adminUrl,
+      webUrl: webFunction.url,
+      payloadFunctionUrl: payloadFunction.url,
       payloadSesSendPolicy: payloadSesSend.arn,
       publicBucket: publicBucket.bucket,
       cvPrivateBucket: cvBucket.bucket,
