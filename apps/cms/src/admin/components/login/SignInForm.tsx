@@ -190,10 +190,6 @@ export function SignInForm({
           <span>{SIGN_IN_WAKE_UP}</span>
         </div>
       )}
-      <p className="dil-login__footnote">
-        <MaterialIcon name="mail" />
-        Reset emails come from your company&apos;s own noreply@ address.
-      </p>
     </form>
   );
 }

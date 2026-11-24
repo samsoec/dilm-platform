@@ -1,7 +1,7 @@
 import type { PayloadRequest } from "payload";
 import { describe, expect, it } from "vitest";
 
-import { senderFor, validUntil } from "../admin/components/login/reset";
+import { validUntil } from "../admin/components/login/reset";
 import { inviteInfo } from "./resetToken";
 
 const TOKEN = "a".repeat(40);
@@ -98,13 +98,6 @@ describe("GET /api/users/invite-info (FR-UI-84)", () => {
 });
 
 describe("reset screen copy", () => {
-  it("names the noreply sender only when the email's domain is a company domain", () => {
-    expect(senderFor("Dimas@DuniaKimia.com", ["duniakimia.com"])).toBe(
-      "noreply@duniakimia.com",
-    );
-    expect(senderFor("dimas@gmail.com", ["duniakimia.com"])).toBeUndefined();
-  });
-
   it("shows the invite expiry in WIB", () => {
     expect(validUntil("2026-10-20T02:30:00.000Z")).toBe("20 Oct, 09:30 WIB");
   });
