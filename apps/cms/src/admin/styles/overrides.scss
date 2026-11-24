@@ -1,4 +1,42 @@
+@use "sheet";
+
 @layer dil {
+  .drawer {
+    @include sheet.native-drawer-shell;
+  }
+
+  .drawer:not(.doc-drawer):has(
+      > .drawer__content > .drawer__content-children > .drawer__header
+    )
+    .drawer__content-children {
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer:not(.doc-drawer) .drawer__header ~ :not(.drawer) {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: var(--dil-sheet-pad-y) var(--dil-sheet-pad-x);
+  }
+
+  .drawer:has(
+    > .drawer__content > .drawer__content-children > [class*="bulk-upload--"]
+  ) {
+    @include sheet.native-drawer-shell(var(--dil-sheet-width-wide));
+  }
+
+  .doc-drawer {
+    @include sheet.doc-drawer-sheet;
+  }
+
+  body:has(.doc-drawer) {
+    @include sheet.sheet-toasts-above-footer;
+  }
+
   ::selection {
     background: var(--dil-sel-bg);
     color: var(--dil-sel-ink);
