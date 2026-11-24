@@ -133,6 +133,16 @@ describe("UnsavedChangesProvider (G-03, FR-UI-74)", () => {
       expect(action).toHaveBeenCalledOnce();
     });
 
+    it("says this post when the document has no title yet", async () => {
+      await start(trigger, {
+        ...dirtyForm(async () => true),
+        title: "post",
+        titled: false,
+      });
+      const dialog = await screen.findByRole("alertdialog");
+      expect(dialog.textContent).toContain("Save changes to this post first?");
+    });
+
     it("asks first when the form is dirty, naming document, count and domain", async () => {
       const { action } = await start(
         trigger,

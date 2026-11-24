@@ -21,6 +21,7 @@ export type FormReport = {
   modified: boolean;
   count: number;
   title: string;
+  titled?: boolean;
   save: () => Promise<boolean>;
 };
 
@@ -123,7 +124,7 @@ export function UnsavedChangesProvider({ children }: { children: ReactNode }) {
           onConfirm={saveAndContinue}
           secondary={{ label: "Discard", onClick: () => pending.action() }}
           slug={UNSAVED_CHANGES_SLUG}
-          title={`Save changes to the ${pending.form.title} first?`}
+          title={`Save changes to ${pending.form.titled === false ? "this" : "the"} ${pending.form.title} first?`}
           tone="discard"
         />
       )}
