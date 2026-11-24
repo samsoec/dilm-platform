@@ -54,6 +54,37 @@ describe("mediaLoader", () => {
   });
 });
 
+describe("mediaLoader with cropped presets", () => {
+  const withPresets = {
+    ...media,
+    sizes: {
+      thumbnail: { filename: "hero-400x300.jpg", width: 400, height: 300 },
+      card: { filename: "hero-768x384.jpg", width: 768, height: 384 },
+      "social-share": {
+        filename: "hero-1200x630.jpg",
+        width: 1200,
+        height: 630,
+      },
+      w640: { filename: "hero-640x320.webp", width: 640, height: 320 },
+      w1280: { filename: "hero-1280x640.webp", width: 1280, height: 640 },
+    },
+  };
+  const src = mediaSrc(withPresets)!;
+
+  it("never picks a preset, whatever the requested width", () => {
+    for (const width of [300, 400, 700, 768, 1000, 1200]) {
+      expect(mediaLoader({ src, width }, base)).toMatch(/\.webp$/);
+    }
+    expect(src).not.toMatch(/400x300|768x384|1200x630/);
+  });
+
+  it("falls back to the original beyond the ladder", () => {
+    expect(mediaLoader({ src, width: 2000 }, base)).toBe(
+      `${base}/media/hero.jpg`,
+    );
+  });
+});
+
 describe("mediaImageProps", () => {
   it("carries width, height and aspect ratio from the metadata", () => {
     const props = mediaImageProps(media)!;

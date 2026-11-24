@@ -1,5 +1,7 @@
 export const MEDIA_PREFIX = "media";
 
+const LADDER_NAME = /^w\d+$/;
+
 export type MediaSize = {
   filename?: string | null;
   width?: number | null;
@@ -14,6 +16,7 @@ export type MediaDoc = {
   sizes?: Record<string, MediaSize | undefined> | null;
 };
 
+// TODO(DILM-208): choose the production media origin and set the MEDIA_BASE_URL repository variable per stage; unset, images 404 and the CSP img-src gets no media origin.
 export function mediaBaseUrl(
   raw: string | undefined = process.env.NEXT_PUBLIC_MEDIA_BASE_URL,
 ): string {
@@ -40,8 +43,8 @@ export function mediaSrc(media: MediaDoc): string | null {
   const params = new URLSearchParams();
   params.set("o", media.filename);
   if (media.width) params.set("ow", String(media.width));
-  for (const size of Object.values(media.sizes ?? {})) {
-    if (size?.filename && size.width) {
+  for (const [name, size] of Object.entries(media.sizes ?? {})) {
+    if (LADDER_NAME.test(name) && size?.filename && size.width) {
       params.set(`s${size.width}`, size.filename);
     }
   }

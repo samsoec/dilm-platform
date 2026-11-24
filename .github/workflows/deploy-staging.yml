@@ -45,6 +45,8 @@ jobs:
 
       - name: Build the web Lambda bundle
         run: pnpm --filter @dilm/web build:open-next
+        env:
+          NEXT_PUBLIC_MEDIA_BASE_URL: ${{ vars.MEDIA_BASE_URL }}
 
       - name: Deploy
         run: pnpm deploy:staging
