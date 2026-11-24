@@ -9,6 +9,8 @@ import {
 
 import { cmsFetch } from "../cms/signedFetch";
 
+import { fixtureModeEnabled } from "./fixtureMode";
+
 export type Transport = (
   path: string,
   init: { signal: AbortSignal },
@@ -57,7 +59,7 @@ export function selectTransport(
   env: Record<string, string | undefined> = process.env,
   fetcher: typeof fetch = fetch,
 ): Transport {
-  if (env.CONTENT_TRANSPORT === "fixture") {
+  if (fixtureModeEnabled(env)) {
     return fixtureTransport(defaultFixtures());
   }
   return (path, init) => cmsFetch(path, env, fetcher, init);

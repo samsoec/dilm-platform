@@ -108,3 +108,27 @@ test("a path under /api/revalidate returns 404", async ({ request }) => {
   });
   expect(response.status()).toBe(404);
 });
+
+const NOT_FOUND_TITLES = {
+  en: "Page not found",
+  id: "Halaman tidak ditemukan",
+} as const;
+
+for (const locale of LOCALES) {
+  test(`unmatched ${locale} path renders a localized noindex 404`, async ({
+    page,
+  }) => {
+    const response = await page.goto(
+      `${origin(TENANTS[0].slug)}/${locale}/does-not-exist`,
+    );
+    expect(response?.status()).toBe(404);
+    await expect(page.locator("h1")).toHaveText(NOT_FOUND_TITLES[locale]);
+    const robots = await page
+      .locator('meta[name="robots"]')
+      .evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute("content")),
+      );
+    expect(robots.length).toBeGreaterThan(0);
+    for (const content of robots) expect(content).toMatch(/noindex/);
+  });
+}

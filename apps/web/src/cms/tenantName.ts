@@ -1,6 +1,7 @@
 import type { TenantSlug } from "@dilm/shared-types";
 
 import { readTenant } from "@/content/client";
+import { fixtureModeEnabled } from "@/content/fixtureMode";
 import type { Locale } from "@/tenant/locales";
 
 import { cmsFetch } from "./signedFetch";
@@ -18,7 +19,7 @@ export async function fetchTenantName(
   fetcher: typeof fetch = fetch,
   locale: Locale = "en",
 ): Promise<string> {
-  if (process.env.CONTENT_TRANSPORT === "fixture") {
+  if (fixtureModeEnabled()) {
     return fixtureTenantName(slug, locale);
   }
   const response = await cmsFetch(
