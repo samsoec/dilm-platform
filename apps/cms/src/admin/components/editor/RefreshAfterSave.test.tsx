@@ -6,7 +6,12 @@ import { RefreshAfterSave } from "./EditorHeader";
 
 const world = vi.hoisted(() => ({
   refresh: vi.fn(),
-  info: { lastUpdateTime: 1 as number | undefined },
+  info: {
+    lastUpdateTime: 1 as number | undefined,
+    id: 5 as number | string,
+    collectionSlug: "posts" as string | undefined,
+    globalSlug: undefined as string | undefined,
+  },
   events: { mostRecentUpdate: null as unknown },
 }));
 
@@ -39,12 +44,31 @@ describe("RefreshAfterSave", () => {
 
   it("refreshes once per reported save", () => {
     const view = render(<RefreshAfterSave />);
-    world.events.mostRecentUpdate = { id: 1, operation: "update" };
+    world.events.mostRecentUpdate = {
+      id: 5,
+      entitySlug: "posts",
+      operation: "update",
+    };
     view.rerender(<RefreshAfterSave />);
     view.rerender(<RefreshAfterSave />);
     expect(world.refresh).toHaveBeenCalledTimes(1);
-    world.events.mostRecentUpdate = { id: 1, operation: "update" };
+    world.events.mostRecentUpdate = {
+      id: 5,
+      entitySlug: "posts",
+      operation: "update",
+    };
     view.rerender(<RefreshAfterSave />);
     expect(world.refresh).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    ["another entity", { id: 5, entitySlug: "media" }],
+    ["another id", { id: 6, entitySlug: "posts" }],
+    ["a drawer", { id: 5, entitySlug: "posts", drawerSlug: "drawer-1" }],
+  ])("ignores a save from %s", (_name, update) => {
+    const view = render(<RefreshAfterSave />);
+    world.events.mostRecentUpdate = update;
+    view.rerender(<RefreshAfterSave />);
+    expect(world.refresh).not.toHaveBeenCalled();
   });
 });

@@ -32,12 +32,21 @@ export function useLiveStatus(initial: PublishStatus): PublishStatus {
 export function RefreshAfterSave() {
   const router = useRouter();
   const { mostRecentUpdate } = useDocumentEvents();
+  const { id, collectionSlug, globalSlug } = useDocumentInfo();
   const seen = useRef(mostRecentUpdate);
   useEffect(() => {
     if (seen.current === mostRecentUpdate) return;
     seen.current = mostRecentUpdate;
-    if (mostRecentUpdate) router.refresh();
-  }, [mostRecentUpdate, router]);
+    const update = mostRecentUpdate as {
+      id?: number | string;
+      entitySlug?: string;
+      drawerSlug?: string;
+    } | null;
+    if (!update || update.drawerSlug) return;
+    if (update.entitySlug !== (collectionSlug ?? globalSlug)) return;
+    if (String(update.id ?? "") !== String(id ?? "")) return;
+    router.refresh();
+  }, [mostRecentUpdate, router, id, collectionSlug, globalSlug]);
   return null;
 }
 
