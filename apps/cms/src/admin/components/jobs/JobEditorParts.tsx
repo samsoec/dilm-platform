@@ -12,6 +12,7 @@ import { useEffect, useId, useMemo, useState } from "react";
 
 import { RefreshAfterSave, useLiveStatus } from "../editor/EditorHeader";
 import { computeUrls, type ParentPaths } from "../editor/urls";
+import { SegmentedControl } from "../kit/SegmentedControl";
 import { ConfirmDialog } from "../kit/ConfirmDialog";
 import { PublishBadge } from "../kit/PublishBadge";
 import { ReachBadge } from "../kit/ReachBadge";
@@ -88,6 +89,11 @@ type FieldProps = { path?: string; field?: { label?: unknown } };
 
 const CLOSE_SLUG = "dil-job-close";
 
+const LISTING_OPTIONS = [
+  { value: "open", label: "Open" },
+  { value: "closed", label: "Closed" },
+] as const;
+
 export function JobStatusField({ path = "status", field }: FieldProps) {
   const { value, setValue } = useField<string>({ path });
   const { hasSavePermission } = useDocumentInfo();
@@ -96,35 +102,21 @@ export function JobStatusField({ path = "status", field }: FieldProps) {
     string | undefined;
   const editable = hasSavePermission !== false;
   const label = typeof field?.label === "string" ? field.label : "Listing";
-  const labelId = useId();
   const choose = (next: "open" | "closed") => {
     if (next === value) return;
     if (next === "closed") openModal(CLOSE_SLUG);
     else setValue(next);
   };
   return (
-    <div className="dil-segmented field-type">
-      <span className="field-label" id={labelId}>
-        {label}
-      </span>
-      <div
-        aria-labelledby={labelId}
-        className="dil-segmented__group"
-        role="group"
-      >
-        {(["open", "closed"] as const).map((option) => (
-          <button
-            aria-pressed={value === option}
-            className="dil-segmented__option"
-            disabled={!editable}
-            key={option}
-            onClick={() => choose(option)}
-            type="button"
-          >
-            {option === "open" ? "Open" : "Closed"}
-          </button>
-        ))}
-      </div>
+    <div className="dil-jobs__listing field-type">
+      <span className="field-label">{label}</span>
+      <SegmentedControl
+        disabled={!editable}
+        label={label}
+        onChange={choose}
+        options={LISTING_OPTIONS}
+        value={value === "closed" ? "closed" : "open"}
+      />
       <ConfirmDialog
         body={
           <ul className="dil-editor-publish__urls">
@@ -184,7 +176,9 @@ function SuggestField({
   name,
   hint,
 }: FieldProps & { name: "department" | "location"; hint?: string }) {
-  const { value, setValue } = useField<string>({ path: path ?? name });
+  const { value, setValue, showError } = useField<string>({
+    path: path ?? name,
+  });
   const { hasSavePermission } = useDocumentInfo();
   const suggestions = useSuggestions(name);
   const [open, setOpen] = useState(false);
@@ -199,46 +193,56 @@ function SuggestField({
     setOpen(false);
   };
   return (
-    <div className="dil-combo field-type">
+    <div
+      className={[
+        "dil-combo field-type text",
+        showError && "error",
+        hasSavePermission === false && "read-only",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <label className="field-label" htmlFor={inputId}>
         {label}
       </label>
-      <input
-        aria-activedescendant={
-          open && options[active] ? `${listId}-${active}` : undefined
-        }
-        aria-autocomplete="list"
-        aria-controls={listId}
-        aria-expanded={open}
-        autoComplete="off"
-        disabled={hasSavePermission === false}
-        id={inputId}
-        onBlur={() => setOpen(false)}
-        onChange={(event) => {
-          setValue(event.target.value);
-          setActive(0);
-          setOpen(true);
-        }}
-        onFocus={() => setOpen(true)}
-        onKeyDown={(event) => {
-          if (event.key === "ArrowDown") {
-            event.preventDefault();
-            setOpen(true);
-            setActive((index) => Math.min(index + 1, options.length - 1));
-          } else if (event.key === "ArrowUp") {
-            event.preventDefault();
-            setActive((index) => Math.max(index - 1, 0));
-          } else if (event.key === "Enter" && open && options[active]) {
-            event.preventDefault();
-            pick(options[active]);
-          } else if (event.key === "Escape") {
-            setOpen(false);
+      <div className="field-type__wrap">
+        <input
+          aria-activedescendant={
+            open && options[active] ? `${listId}-${active}` : undefined
           }
-        }}
-        role="combobox"
-        type="text"
-        value={typed}
-      />
+          aria-autocomplete="list"
+          aria-controls={listId}
+          aria-expanded={open}
+          autoComplete="off"
+          disabled={hasSavePermission === false}
+          id={inputId}
+          onBlur={() => setOpen(false)}
+          onChange={(event) => {
+            setValue(event.target.value);
+            setActive(0);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowDown") {
+              event.preventDefault();
+              setOpen(true);
+              setActive((index) => Math.min(index + 1, options.length - 1));
+            } else if (event.key === "ArrowUp") {
+              event.preventDefault();
+              setActive((index) => Math.max(index - 1, 0));
+            } else if (event.key === "Enter" && open && options[active]) {
+              event.preventDefault();
+              pick(options[active]);
+            } else if (event.key === "Escape") {
+              setOpen(false);
+            }
+          }}
+          role="combobox"
+          type="text"
+          value={typed}
+        />
+      </div>
       {hint && <span className="dil-field-hint">{hint}</span>}
       {open && options.length > 0 && (
         <ul className="dil-combo__list" id={listId} role="listbox">
