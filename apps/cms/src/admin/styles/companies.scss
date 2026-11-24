@@ -77,7 +77,6 @@
     box-shadow: inset 3px 0 0 var(--dil-brand);
   }
 
-  // Payload classes: .doc-drawer, .collection-edit--tenants, .doc-drawer__header-text (@payloadcms/ui elements/DocumentDrawer); the sheet shape comes from sheet.scss, this adds the "Edit <name>" title (3d)
   .doc-drawer:has(.collection-edit--tenants) {
     @include sheet.doc-drawer-sheet;
 

@@ -14,10 +14,14 @@
     gap: 12px;
     overflow-y: auto;
     padding: 0 0 20px;
+  }
 
-    &.dil-drawer__panel--wide {
-      width: min(var(--dil-sheet-width-wide), 100vw);
-    }
+  .dil-drawer__panel--wide {
+    @include sheet.sheet-panel(var(--dil-sheet-width-wide));
+
+    gap: 12px;
+    overflow-y: auto;
+    padding: 0 0 20px;
   }
 
   .dil-drawer__head {

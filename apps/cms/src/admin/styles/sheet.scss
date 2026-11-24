@@ -127,9 +127,7 @@
   }
 
   .doc-drawer__header-text {
-    margin: 0;
-    font-size: 17px;
-    font-weight: 700;
+    @include sheet-title;
   }
 
   .doc-drawer__header .id-label,
