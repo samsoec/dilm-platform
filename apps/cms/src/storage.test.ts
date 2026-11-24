@@ -21,12 +21,27 @@ const minio: StorageConfig = {
 };
 
 describe("IMAGE_SIZES", () => {
-  it("defines the thumbnail, card and social-share presets", () => {
+  it("defines the thumbnail, card and social-share presets and the WebP width ladder", () => {
     expect(IMAGE_SIZES.map((size) => size.name)).toEqual([
       "thumbnail",
       "card",
       "social-share",
+      "w640",
+      "w960",
+      "w1280",
+      "w1920",
+      "w2560",
     ]);
+  });
+
+  it("makes every ladder step a width-only WebP so the aspect ratio is kept", () => {
+    const ladder = IMAGE_SIZES.filter((size) => /^w\d+$/.test(size.name));
+    expect(ladder).toHaveLength(5);
+    for (const size of ladder) {
+      expect(size.height).toBeUndefined();
+      expect(size.formatOptions?.format).toBe("webp");
+      expect(size.name).toBe(`w${size.width}`);
+    }
   });
 
   it("is the array media uploads are resized with", () => {
