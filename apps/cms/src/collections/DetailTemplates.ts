@@ -21,7 +21,7 @@ import {
   revalidateTemplate,
   revalidateTemplateOnDelete,
 } from "../publishRevalidation";
-import { stubRevalidator } from "../revalidation";
+import { siteRevalidator } from "../revalidation";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 
 export const DetailTemplates = withTenantAccess(
@@ -38,8 +38,8 @@ export const DetailTemplates = withTenantAccess(
       hooks: {
         beforeValidate: [keepOneTemplatePerType, allowTemplateTokens],
         beforeChange: [keepSectionStructure, captureTemplateRow],
-        afterChange: [revalidateTemplate("tenant", stubRevalidator)],
-        afterDelete: [revalidateTemplateOnDelete("tenant", stubRevalidator)],
+        afterChange: [revalidateTemplate("tenant", siteRevalidator)],
+        afterDelete: [revalidateTemplateOnDelete("tenant", siteRevalidator)],
       },
       indexes: [{ fields: ["tenant", "recordType"], unique: true }],
       admin: {

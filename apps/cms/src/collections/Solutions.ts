@@ -21,7 +21,7 @@ import {
   revalidateOnDelete,
   revalidateOnLiveChange,
 } from "../publishRevalidation";
-import { stubRevalidator } from "../revalidation";
+import { siteRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import {
   CATALOG_SCOPE,
@@ -125,8 +125,8 @@ export const Solutions = withTenantAccess(
         trash: true,
         hooks: {
           beforeChange: [keepRowStructure, beginLiveChange],
-          afterChange: [syncRoutes, revalidateOnLiveChange(stubRevalidator)],
-          afterDelete: [revalidateOnDelete(stubRevalidator)],
+          afterChange: [syncRoutes, revalidateOnLiveChange(siteRevalidator)],
+          afterDelete: [revalidateOnDelete(siteRevalidator)],
           beforeDelete: [removeRoutes],
         },
         admin: {

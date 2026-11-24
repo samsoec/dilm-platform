@@ -18,7 +18,7 @@ import {
   revalidateOnDelete,
   revalidateOnLiveChange,
 } from "../publishRevalidation";
-import { stubRevalidator } from "../revalidation";
+import { siteRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import { withTenantAccess } from "../tenancy";
 import { EXCERPT_LIMIT } from "../admin/components/posts/posts";
@@ -48,9 +48,9 @@ export const Posts = withTenantAccess(
           afterChange: [
             redirectMovedPath,
             syncRoutes,
-            revalidateOnLiveChange(stubRevalidator),
+            revalidateOnLiveChange(siteRevalidator),
           ],
-          afterDelete: [revalidateOnDelete(stubRevalidator)],
+          afterDelete: [revalidateOnDelete(siteRevalidator)],
           beforeDelete: [removeRoutes],
         },
         admin: {

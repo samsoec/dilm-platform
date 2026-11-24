@@ -20,7 +20,7 @@ describe("runtime parameters", () => {
       stage: "staging",
     });
     expect(parameterPrefix("staging")).toBe("/dilm/staging");
-    expect(arns).toHaveLength(4);
+    expect(arns).toHaveLength(5);
     expect(arns[0]).toBe(
       "arn:aws:ssm:ap-southeast-3:123456789012:parameter/dilm/staging/PAYLOAD_SECRET",
     );

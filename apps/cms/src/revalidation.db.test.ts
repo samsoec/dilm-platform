@@ -16,7 +16,7 @@ import {
 import { seedPages } from "./seed/pages";
 import { seedTenants } from "./seed/tenants";
 import { readRefreshStatus, REFRESH_FAILED_MESSAGE } from "./refreshStatus";
-import { stubRevalidator, type RevalidationChange } from "./revalidation";
+import { siteRevalidator, type RevalidationChange } from "./revalidation";
 
 const database = process.env.SEED_TEST_DATABASE;
 
@@ -63,7 +63,7 @@ describe.skipIf(!database)(
     const changes = (): RevalidationChange[] =>
       info.mock.calls
         .filter(([, message]) =>
-          String(message).startsWith("Revalidation (stubbed"),
+          String(message).startsWith("Revalidation requested"),
         )
         .map(([fields]) => fields as RevalidationChange);
 
@@ -538,7 +538,7 @@ describe.skipIf(!database)(
         tenant: { equals: dunia() },
         path: { equals: "/contact-us" },
       });
-      vi.spyOn(stubRevalidator, "revalidate").mockRejectedValue(
+      vi.spyOn(siteRevalidator, "revalidate").mockRejectedValue(
         new Error("purge 429"),
       );
       const error = vi.spyOn(payload.logger, "error");

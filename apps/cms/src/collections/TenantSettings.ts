@@ -23,7 +23,7 @@ import {
   publishedPagesOfCompany,
 } from "../siteRouting";
 import { revalidateEntityReferrers } from "../publishRevalidation";
-import { revalidateTenantLayout, stubRevalidator } from "../revalidation";
+import { revalidateTenantLayout, siteRevalidator } from "../revalidation";
 import { PRIVACY_POLICY_VERSION_HINT } from "../consent/privacyPolicyVersion";
 import { withTenantAccess } from "../tenancy";
 import {
@@ -96,8 +96,8 @@ export const TenantSettings = withTenantAccess(
       beforeChange: [checkCompanyRouting],
       afterChange: [
         cascadeCompanyRouting,
-        revalidateTenantLayout(stubRevalidator),
-        revalidateEntityReferrers(stubRevalidator),
+        revalidateTenantLayout(siteRevalidator),
+        revalidateEntityReferrers(siteRevalidator),
       ],
     },
     custom: {

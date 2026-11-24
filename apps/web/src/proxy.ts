@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+import { REVALIDATE_PATH } from "@dilm/runtime-config";
+
 import { withSecurityHeaders } from "./security/headers";
 import { legacyRedirect } from "./tenant/legacy";
 import { DEFAULT_LOCALE, isLocale } from "./tenant/locales";
@@ -37,6 +39,11 @@ export function proxy(request: NextRequest) {
   }
   const pathname = request.nextUrl.pathname;
   const url = request.nextUrl.clone();
+  if (pathname === REVALIDATE_PATH) {
+    const apiHeaders = new Headers(request.headers);
+    apiHeaders.set(TENANT_HEADER, tenant);
+    return NextResponse.next({ request: { headers: apiHeaders } });
+  }
   if (pathname === "/") {
     url.pathname = `/${DEFAULT_LOCALE}`;
     return withSecurityHeaders(NextResponse.redirect(url, 307));

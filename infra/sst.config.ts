@@ -398,6 +398,20 @@ export default $config({
         { ignoreChanges: ["value"] },
       );
     });
+    parameters.EDGE_PARAMETER_NAMES.map(
+      (name) =>
+        new aws.ssm.Parameter(
+          `RuntimeParameter${name}`,
+          {
+            name: `${parameters.parameterPrefix($app.stage)}/${name}`,
+            type: "SecureString",
+            tier: "Standard",
+            description: `Edge config ${name} for the ${$app.stage} stage. Created as the placeholder "${parameters.EDGE_PARAMETER_PLACEHOLDER}", which keeps the Cloudflare purge off; replace it with aws ssm put-parameter --overwrite once the zone exists (DILM-210), Pulumi never reverts it.`,
+            value: parameters.EDGE_PARAMETER_PLACEHOLDER,
+          },
+          { ignoreChanges: ["value"] },
+        ),
+    );
     const runtimeConfigParametersLinkable = new sst.Linkable(
       "RuntimeConfigParameters",
       {
@@ -793,6 +807,7 @@ export default $config({
         CMS_AUTH: "iam",
         TENANT_HOST_ALIASES: web.webHostAliases(),
         SITE_STAGE: $app.stage,
+        RUNTIME_CONFIG_SSM_PREFIX: parameters.parameterPrefix($app.stage),
         CACHE_BUCKET_NAME: publicBucket.bucket,
         CACHE_BUCKET_REGION: REGION,
         CACHE_BUCKET_KEY_PREFIX: web.WEB_CACHE_PREFIX.replace(/\/$/, ""),
@@ -814,14 +829,20 @@ export default $config({
           actions: ["ssm:GetParameter", "ssm:GetParameters"],
           resources: $resolve([partition.partition, caller.accountId]).apply(
             ([partitionName, accountId]) =>
-              web.webParameterArns(
-                parameters.parameterArns({
+              web.webParameterArns([
+                ...parameters.parameterArns({
                   partition: partitionName,
                   region: REGION,
                   accountId,
                   stage: $app.stage,
                 }),
-              ),
+                ...parameters.edgeParameterArns({
+                  partition: partitionName,
+                  region: REGION,
+                  accountId,
+                  stage: $app.stage,
+                }),
+              ]),
           ),
         }),
       ],

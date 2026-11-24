@@ -1,4 +1,5 @@
 import type { CollectionAfterChangeHook, PayloadRequest } from "payload";
+import { verifyRevalidation } from "@dilm/runtime-config";
 import { describe, expect, it, vi } from "vitest";
 
 import { Footer } from "./collections/Footer";
@@ -11,7 +12,10 @@ import {
   layoutTag,
   localePrefixes,
   revalidateTenantLayout,
-  stubRevalidator,
+  createSiteRevalidator,
+  revalidateUrl,
+  type SiteRevalidatorOptions,
+  siteRevalidator,
   type Revalidator,
 } from "./revalidation";
 
@@ -247,12 +251,115 @@ describe("revalidateTenantLayout", () => {
   });
 });
 
-describe("stub revalidator", () => {
-  it("logs the tags and purge prefixes it was given", async () => {
-    const { run, logger } = harness();
-    await run(revalidateTenantLayout(stubRevalidator), { id: 1, tenant: 1 });
-    expect(logger.info).toHaveBeenCalledTimes(1);
-    expect(logger.info).toHaveBeenCalledWith(
+describe("site revalidator", () => {
+  const logger = () => ({ info: vi.fn(), error: vi.fn() });
+  const change = {
+    reason: "publish" as const,
+    collection: "pages",
+    tags: ["a"],
+    purge: [
+      { host: "a.test", pathPrefix: "/en/x", exact: true },
+      { host: "b.test", pathPrefix: "/en/" },
+    ],
+  };
+
+  it("posts a signed body to each host with only that host's purge", async () => {
+    const send = vi.fn<NonNullable<SiteRevalidatorOptions["send"]>>(
+      async () => ({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true }),
+      }),
+    );
+    const revalidator = createSiteRevalidator({
+      secret: async () => "s3cret",
+      send,
+      now: () => 1_700_000_000_000,
+    });
+    await revalidator.revalidate(change, logger() as never);
+    expect(send.mock.calls.map(([url]) => url)).toEqual([
+      "https://a.test/api/revalidate",
+      "https://b.test/api/revalidate",
+    ]);
+    for (const [, init] of send.mock.calls as unknown as [
+      string,
+      { body: string; headers: Record<string, string> },
+    ][]) {
+      expect(
+        verifyRevalidation(
+          {
+            body: init.body,
+            timestamp: init.headers["x-dilm-timestamp"],
+            signature: init.headers["x-dilm-signature"],
+          },
+          "s3cret",
+          1_700_000_000_000,
+        ),
+      ).toEqual({ ok: true });
+    }
+    const first = JSON.parse(
+      (send.mock.calls[0] as unknown as [string, { body: string }])[1].body,
+    );
+    expect(first).toEqual({
+      tags: ["a"],
+      purge: [{ host: "a.test", pathPrefix: "/en/x", exact: true }],
+    });
+  });
+
+  it("tries every host, then reports the failure", async () => {
+    const send = vi.fn(async (url: string) => {
+      if (url.includes("a.test")) throw new Error("down");
+      return { ok: true, status: 200, json: async () => ({ ok: true }) };
+    });
+    const log = logger();
+    await expect(
+      createSiteRevalidator({ secret: async () => "s", send }).revalidate(
+        change,
+        log as never,
+      ),
+    ).rejects.toThrow(/a\.test/);
+    expect(send).toHaveBeenCalledTimes(2);
+    expect(log.error).toHaveBeenCalled();
+  });
+
+  it("treats a partial answer from the site as a failure", async () => {
+    const send = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ ok: false }),
+    }));
+    await expect(
+      createSiteRevalidator({ secret: async () => "s", send }).revalidate(
+        change,
+        logger() as never,
+      ),
+    ).rejects.toThrow();
+  });
+
+  it("logs and sends nothing when no secret is configured", async () => {
+    const send = vi.fn();
+    const log = logger();
+    await createSiteRevalidator({
+      secret: async () => undefined,
+      send,
+    }).revalidate(change, log as never);
+    expect(send).not.toHaveBeenCalled();
+    expect(log.info).toHaveBeenCalledWith(
+      expect.anything(),
+      "Revalidation skipped: REVALIDATE_SECRET is not set",
+    );
+  });
+
+  it("uses http for local hosts", () => {
+    expect(revalidateUrl("indoacid.localhost:3001")).toBe(
+      "http://indoacid.localhost:3001/api/revalidate",
+    );
+  });
+
+  it("logs what was requested when run from a hook", async () => {
+    const { run, logger: log } = harness();
+    await run(revalidateTenantLayout(siteRevalidator), { id: 1, tenant: 1 });
+    expect(log.info).toHaveBeenCalledWith(
       {
         reason: "layout",
         tags: ["layout:indonesianacids"],
@@ -261,9 +368,9 @@ describe("stub revalidator", () => {
           { host: "indonesianacidsindustry.com", pathPrefix: "/id/" },
         ],
       },
-      "Revalidation (stubbed until DILM-32)",
+      "Revalidation requested",
     );
-    expect(logger.error).not.toHaveBeenCalled();
+    expect(log.error).not.toHaveBeenCalled();
   });
 });
 
@@ -283,7 +390,7 @@ describe("collection wiring", () => {
         await run(hook, { id: 1, tenant: 2 }, slug);
       }
       const stubbed = logger.info.mock.calls.filter(([, message]) =>
-        String(message).startsWith("Revalidation (stubbed"),
+        String(message).startsWith("Revalidation requested"),
       );
       expect(stubbed).toHaveLength(1);
       expect(stubbed[0][0].tags).toEqual(["layout:duniakimia"]);

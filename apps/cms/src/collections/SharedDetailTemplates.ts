@@ -21,7 +21,7 @@ import {
   revalidateTemplate,
   revalidateTemplateOnDelete,
 } from "../publishRevalidation";
-import { stubRevalidator } from "../revalidation";
+import { siteRevalidator } from "../revalidation";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 
 export const SharedDetailTemplates = withEditorShell(
@@ -40,8 +40,8 @@ export const SharedDetailTemplates = withEditorShell(
     hooks: {
       beforeValidate: [keepOneTemplatePerType, allowTemplateTokens],
       beforeChange: [keepSectionStructure, captureTemplateRow],
-      afterChange: [revalidateTemplate("shared", stubRevalidator)],
-      afterDelete: [revalidateTemplateOnDelete("shared", stubRevalidator)],
+      afterChange: [revalidateTemplate("shared", siteRevalidator)],
+      afterDelete: [revalidateTemplateOnDelete("shared", siteRevalidator)],
     },
     admin: {
       group: navGroup("content"),

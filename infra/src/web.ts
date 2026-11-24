@@ -16,7 +16,12 @@ export const WEB_CACHE_PREFIX = "web-cache/";
 export const WEB_STATIC_PREFIX = "web-static/";
 export const WEB_CACHE_RETENTION_DAYS = 30;
 export const WEB_TAG_CACHE_GSI = "revalidate";
-export const WEB_RUNTIME_PARAMETERS = ["PREVIEW_SECRET"] as const;
+export const WEB_RUNTIME_PARAMETERS = [
+  "PREVIEW_SECRET",
+  "REVALIDATE_SECRET",
+  "CLOUDFLARE_API_TOKEN",
+  "CLOUDFLARE_ZONE_IDS",
+] as const;
 
 export function webTagCacheTableName(stage: string): string {
   return `dilm-${stage}-web-tag-cache`;

@@ -17,7 +17,7 @@ import {
   revalidateOnDelete,
   revalidateOnLiveChange,
 } from "../publishRevalidation";
-import { stubRevalidator } from "../revalidation";
+import { siteRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import { withTenantAccess } from "../tenancy";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
@@ -57,8 +57,8 @@ export const Jobs = withTenantAccess(
         trash: true,
         hooks: {
           beforeChange: [beginLiveChange],
-          afterChange: [syncRoutes, revalidateOnLiveChange(stubRevalidator)],
-          afterDelete: [revalidateOnDelete(stubRevalidator)],
+          afterChange: [syncRoutes, revalidateOnLiveChange(siteRevalidator)],
+          afterDelete: [revalidateOnDelete(siteRevalidator)],
           beforeDelete: [removeRoutes],
         },
         endpoints: [

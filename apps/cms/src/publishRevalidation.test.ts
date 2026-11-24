@@ -30,7 +30,7 @@ import {
   takeRouteChanges,
 } from "./publishRevalidation";
 import type { Revalidator, RevalidationChange } from "./revalidation";
-import { stubRevalidator } from "./revalidation";
+import { siteRevalidator } from "./revalidation";
 import { recordBaseSources } from "./recordBases";
 import {
   removeRouteRows,
@@ -992,9 +992,9 @@ describe("collection wiring", () => {
     expect(hooksOf(TenantSettings, "afterChange")).toHaveLength(3);
   });
 
-  it("goes through the logging stub until DILM-32", async () => {
+  it("logs what it was asked to send and skips without a secret", async () => {
     const logger = { info: vi.fn(), error: vi.fn() };
-    await stubRevalidator.revalidate(
+    await siteRevalidator.revalidate(
       { tags: ["a"], purge: [], collection: "pages", reason: "publish" },
       logger as never,
     );
@@ -1005,7 +1005,7 @@ describe("collection wiring", () => {
         collection: "pages",
         reason: "publish",
       },
-      "Revalidation (stubbed until DILM-32)",
+      "Revalidation requested",
     );
   });
 });

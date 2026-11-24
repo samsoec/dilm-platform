@@ -62,6 +62,18 @@ describe("proxy", () => {
     vi.unstubAllEnvs();
   });
 
+  it("lets only the exact revalidate path through, on a known host", () => {
+    const through = call("indoacid.localhost:3001", "/api/revalidate");
+    expect(through.status).toBe(200);
+    expect(through.headers.get("x-middleware-next")).toBe("1");
+    expect(through.headers.get("x-middleware-rewrite")).toBeNull();
+    expect(call("unknown.example", "/api/revalidate").status).toBe(404);
+    expect(call("indoacid.localhost:3001", "/api/revalidate/x").status).toBe(
+      404,
+    );
+    expect(call("indoacid.localhost:3001", "/api/other").status).toBe(404);
+  });
+
   it("redirects bare / to the default locale", () => {
     const response = call("indoacid.localhost:3001", "/");
     expect(response.status).toBe(307);
