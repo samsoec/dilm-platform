@@ -1,5 +1,6 @@
 "use client";
 
+import type { BaseNote } from "../../../siteRouting";
 import { useConfig } from "@payloadcms/ui";
 import Link from "next/link";
 import { formatAdminURL } from "payload/shared";
@@ -10,7 +11,7 @@ export function BaseNoteBanner({
   note,
   className,
 }: {
-  note: { message: string; path: `/${string}` };
+  note: BaseNote;
   className?: string;
 }) {
   const {
@@ -22,7 +23,7 @@ export function BaseNoteBanner({
     <Banner
       action={
         <Link href={formatAdminURL({ adminRoute: admin, path: note.path })}>
-          Go to the setting
+          {note.action}{" "}
         </Link>
       }
       className={className}

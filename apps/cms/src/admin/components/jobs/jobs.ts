@@ -31,7 +31,8 @@ export const TAB_LABELS: Record<JobTab | "all", string> = {
 
 export const CAREER_PROMPT =
   "Not on the website yet: set your Career page. Published jobs appear there once it's set and published.";
-export const CAREER_PROMPT_ACTION = "Set Career page";
+export const CAREER_PROMPT_ACTION = "Set your Career page";
+export const CAREER_PUBLISH_ACTION = "Publish your Career page";
 export const AUTO_CLOSED_NOTE =
   '"Closed automatically" = published and open, but its closing date has passed. Its page stays reachable without the apply form.';
 export const CLOSING_HINT =

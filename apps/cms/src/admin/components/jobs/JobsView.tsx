@@ -20,6 +20,7 @@ import {
   AUTO_CLOSED_NOTE,
   CAREER_PROMPT,
   CAREER_PROMPT_ACTION,
+  CAREER_PUBLISH_ACTION,
   dayText,
   jobsHref,
   jobsText,
@@ -263,7 +264,16 @@ async function JobsBody(props: ListViewServerProps & { viewer: Viewer }) {
         )}
         {data.career.state === "unpublished" && (
           <Banner
-            action={<Link href={settingsHref}>{CAREER_PROMPT_ACTION}</Link>}
+            action={
+              <Link
+                href={formatAdminURL({
+                  adminRoute,
+                  path: `/collections/pages/${data.career.pageID}`,
+                })}
+              >
+                {CAREER_PUBLISH_ACTION}
+              </Link>
+            }
             className="dil-pages__banner"
             icon="route"
             tone="warning"

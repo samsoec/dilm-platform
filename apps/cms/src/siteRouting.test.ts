@@ -32,6 +32,10 @@ import {
   protectionMessage,
   registerSiteRouting,
 } from "./siteRouting";
+import { Jobs } from "./collections/Jobs";
+import { Products } from "./collections/Products";
+import { Solutions } from "./collections/Solutions";
+import { publishNote } from "./publish/impact";
 import { accessAs, findField, testUser } from "./testing";
 
 type Row = Record<string, unknown> & { id: number };
@@ -367,15 +371,69 @@ describe("publishing without a base page (FR-PM-17)", () => {
     return baseNote(fake.payload, req() as never, setting, tenant);
   }
 
+  it("lets products, solutions and jobs publish with no base or an unpublished one", async () => {
+    for (const unpublished of [false, true]) {
+      for (const collection of [Products, Solutions, Jobs]) {
+        for (const hook of collection.hooks!.beforeChange!) {
+          const fake = fakeDb();
+          if (unpublished) {
+            addPage(fake, "shared-pages", {
+              id: 1,
+              slug: "base",
+              status: "draft",
+            });
+            addPage(fake, "pages", {
+              id: 2,
+              slug: "career",
+              status: "draft",
+              tenant: 1,
+            });
+            fake.globalDocs["site-routing"] = {
+              productsPage: 1,
+              solutionsPage: 1,
+            };
+            settings(fake, 1, { careerPage: 2 });
+          }
+          await expect(
+            Promise.resolve(
+              hook({
+                data: { _status: "published", tenant: 1 },
+                originalDoc: undefined,
+                collection: { slug: collection.slug },
+                operation: "create",
+                req: { payload: fake.payload, context: {} },
+              } as never),
+            ),
+          ).resolves.not.toThrow();
+        }
+      }
+    }
+  });
+
+  it("puts the note on the publish impact for a missing base", async () => {
+    const fake = fakeDb();
+    const req = { user: testUser(["super-admin"]) } as never;
+    const doc = { id: 1, tenant: 1 };
+    expect(
+      (await publishNote(fake.payload, req, "products", doc))?.action,
+    ).toBe("Go to Site routing");
+    expect((await publishNote(fake.payload, req, "jobs", doc))?.message).toBe(
+      "Not on the website yet: set your Career page.",
+    );
+    expect(await publishNote(fake.payload, req, "pages", doc)).toBeNull();
+  });
+
   it("notes that the record is not on the website while the base is unset", async () => {
     const fake = fakeDb();
     expect(await noteFor(fake, "productsPage")).toEqual({
       message: 'Not on the website yet: set the "Our Products" page.',
       path: "/globals/site-routing",
+      action: "Go to Site routing",
     });
     expect(await noteFor(fake, "careerPage", "1")).toEqual({
       message: "Not on the website yet: set your Career page.",
       path: "/collections/tenant-settings",
+      action: "Set your Career page",
     });
   });
 
@@ -392,6 +450,8 @@ describe("publishing without a base page (FR-PM-17)", () => {
     expect(note?.message).toBe(
       baseUnpublishedMessage("productsPage", "Our Products"),
     );
+    expect(note?.action).toBe('Publish "Our Products" (Our Products)');
+    expect(note?.path).toBe("/collections/shared-pages/1");
   });
 
   it("has no note once the base page is live", async () => {

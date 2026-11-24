@@ -1,3 +1,4 @@
+import type { BaseNote } from "../siteRouting";
 import { joinNames } from "../paths";
 
 export type PublishAction = "publish" | "unpublish" | "trash";
@@ -42,7 +43,7 @@ export type Impact = {
   placements: Placement[];
   refusal: TrashRefusal | null;
   block: PublishBlock | null;
-  note?: { message: string; path: `/${string}` } | null;
+  note?: BaseNote | null;
   template: TemplateChange | null;
   live: boolean;
 };

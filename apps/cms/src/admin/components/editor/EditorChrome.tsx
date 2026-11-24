@@ -1,5 +1,6 @@
 "use client";
 
+import type { BaseNote } from "../../../siteRouting";
 import {
   SaveDraftButton,
   useConfig,
@@ -107,7 +108,7 @@ export function EditorActions({
   readOnlyNotice = true,
 }: {
   label?: string;
-  baseNote?: { message: string; path: `/${string}` };
+  baseNote?: BaseNote;
   readOnlyNotice?: boolean;
   seed: UrlSeed;
   ancestors: { id: string; title: string }[];

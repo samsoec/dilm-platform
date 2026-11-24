@@ -67,11 +67,12 @@ export async function loadJobEditor(
     "careerPage",
     String(tenant),
   );
+  const note = await baseNote(payload, { user }, "careerPage", String(tenant));
   return {
     status,
     domain: company.domain,
     careerPaths:
       state.state === "unset" ? undefined : (state.page.paths as never),
-    baseNote: await baseNote(payload, { user }, "careerPage", String(tenant)),
+    baseNote: note,
   };
 }

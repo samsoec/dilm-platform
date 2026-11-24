@@ -307,7 +307,7 @@ function publishBlock(collection: string, doc: Doc): PublishBlock | null {
   return null;
 }
 
-async function publishNote(
+export async function publishNote(
   payload: Payload,
   req: PayloadRequest,
   collection: string,

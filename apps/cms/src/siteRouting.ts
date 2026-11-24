@@ -118,7 +118,11 @@ export function baseUnpublishedMessage(
   return `Not on the website yet: publish "${title}", set as the "${base.label}" page.`;
 }
 
-export type BaseNote = { message: string; path: `/${string}` };
+export type BaseNote = {
+  message: string;
+  path: `/${string}`;
+  action: string;
+};
 
 export async function baseNote(
   payload: Payload,
@@ -128,16 +132,21 @@ export async function baseNote(
 ): Promise<BaseNote | null> {
   const state = await baseState(payload, req, setting, tenant);
   if (state.state === "live") return null;
-  const path =
-    setting === "careerPage"
-      ? "/collections/tenant-settings"
-      : "/globals/site-routing";
+  const career = setting === "careerPage";
+  if (state.state === "unpublished") {
+    const base = BASE_SETTINGS[setting];
+    return {
+      message: baseUnpublishedMessage(setting, state.page.title),
+      path: `/collections/${career ? "pages" : "shared-pages"}/${state.page.id}`,
+      action: career
+        ? "Publish your Career page"
+        : `Publish "${state.page.title}" (${base.label})`,
+    };
+  }
   return {
-    message:
-      state.state === "unset"
-        ? baseUnsetMessage(setting)
-        : baseUnpublishedMessage(setting, state.page.title),
-    path,
+    message: baseUnsetMessage(setting),
+    path: career ? "/collections/tenant-settings" : "/globals/site-routing",
+    action: career ? "Set your Career page" : "Go to Site routing",
   };
 }
 
