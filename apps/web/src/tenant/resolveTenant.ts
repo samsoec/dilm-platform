@@ -10,9 +10,10 @@ export function parseAliases(raw: string | undefined): Map<string, TenantSlug> {
     if (!host || !slug) continue;
     const tenant = TENANT_SLUGS.find((candidate) => candidate === slug);
     if (tenant === undefined) {
-      throw new Error(
-        `TENANT_HOST_ALIASES maps "${host}" to unknown tenant "${slug}".`,
+      console.error(
+        `TENANT_HOST_ALIASES maps "${host}" to unknown tenant "${slug}"; entry ignored.`,
       );
+      continue;
     }
     aliases.set(host.toLowerCase(), tenant);
   }

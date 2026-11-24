@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { proxy } from "./proxy";
 
@@ -24,5 +24,24 @@ describe("proxy", () => {
     expect(response.status).toBe(404);
     expect(response.headers.get("content-type")).toContain("text/plain");
     expect(await response.text()).toBe("Not Found");
+  });
+
+  it("survives a malformed TENANT_HOST_ALIASES value", async () => {
+    vi.stubEnv(
+      "TENANT_HOST_ALIASES",
+      "typo.test=nobody,junk,=,ok.test=likutelaga",
+    );
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const known = call("indoacid.localhost:3001");
+    expect(known.headers.get("x-middleware-rewrite")).toContain(
+      "/indoacid/en/about",
+    );
+    expect(call("ok.test").headers.get("x-middleware-rewrite")).toContain(
+      "/likutelaga/en/about",
+    );
+    expect(call("typo.test").status).toBe(404);
+    expect(call("unknown.example").status).toBe(404);
+    error.mockRestore();
+    vi.unstubAllEnvs();
   });
 });

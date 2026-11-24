@@ -4,8 +4,20 @@ import type { NextRequest } from "next/server";
 import { internalPath } from "./tenant/rewrite";
 import { parseAliases, resolveTenant } from "./tenant/resolveTenant";
 
+let cachedRaw: string | undefined;
+let cachedAliases = parseAliases(undefined);
+
+function aliasesFromEnv() {
+  const raw = process.env.TENANT_HOST_ALIASES;
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    cachedAliases = parseAliases(raw);
+  }
+  return cachedAliases;
+}
+
 export function proxy(request: NextRequest) {
-  const aliases = parseAliases(process.env.TENANT_HOST_ALIASES);
+  const aliases = aliasesFromEnv();
   const host =
     request.headers.get("x-forwarded-host") ?? request.headers.get("host");
   const tenant = resolveTenant(host, aliases);

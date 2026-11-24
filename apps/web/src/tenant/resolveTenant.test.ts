@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { internalPath } from "./rewrite";
 import { parseAliases, resolveTenant } from "./resolveTenant";
@@ -23,8 +23,13 @@ describe("resolveTenant", () => {
     expect(resolveTenant("x.test", aliases)).toBe("indoacid");
   });
 
-  it("rejects an alias for an unknown tenant", () => {
-    expect(() => parseAliases("a.test=nobody")).toThrow(/unknown tenant/);
+  it("ignores an alias for an unknown tenant and reports it", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const aliases = parseAliases("a.test=nobody,b.test=indoacid");
+    expect(aliases.has("a.test")).toBe(false);
+    expect(aliases.get("b.test")).toBe("indoacid");
+    expect(error).toHaveBeenCalledOnce();
+    error.mockRestore();
   });
 
   it("returns null for unknown or missing hosts", () => {
