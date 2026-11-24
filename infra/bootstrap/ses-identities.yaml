@@ -12,11 +12,11 @@ Description: >-
 Parameters:
   IndoacidDomain:
     Type: String
-    Default: indonesianacids.com
+    Default: indonesianacidsindustry.com
     Description: Sender domain for the indoacid tenant (noreply@<domain>).
   DuniakimiaDomain:
     Type: String
-    Default: duniakimia.com
+    Default: duniakimiautama.com
     Description: Sender domain for the duniakimia tenant (noreply@<domain>).
   LikutelagaDomain:
     Type: String

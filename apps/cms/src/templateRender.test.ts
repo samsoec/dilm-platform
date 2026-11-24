@@ -195,7 +195,7 @@ describe("the highlights leave the post in context out (FR-PM-30, US-PST-5)", ()
     const cards = await highlightCards(picks, 3, {
       viewerTenant: 2,
       locale: "en",
-      domains: { "2": "duniakimia.com" },
+      domains: { "2": "duniakimiautama.com" },
     });
     expect(cards.map((card) => card.id)).toEqual(["1", "2", "4", "5", "6"]);
     expect(cards[0].href).toBe("/category/news/post-1");
@@ -270,7 +270,7 @@ const at = (id: number, day: string, extra: Partial<Stored> = {}): Stored =>
 const CONTEXT = {
   viewerTenant: 2,
   locale: "en",
-  domains: { "2": "duniakimia.com", "3": "likutelaga.com" },
+  domains: { "2": "duniakimiautama.com", "3": "likutelaga.com" },
 };
 
 describe("previous and next posts (PS-11)", () => {

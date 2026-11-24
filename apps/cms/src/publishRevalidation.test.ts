@@ -50,8 +50,8 @@ type RouteRow = {
 };
 
 const TENANTS = [
-  { id: 1, slug: "indoacid", domain: "https://indonesianacids.com/" },
-  { id: 2, slug: "duniakimia", domain: "duniakimia.com" },
+  { id: 1, slug: "indoacid", domain: "https://indonesianacidsindustry.com/" },
+  { id: 2, slug: "duniakimia", domain: "duniakimiautama.com" },
   { id: 3, slug: "likutelaga", domain: "likutelaga.com" },
 ];
 
@@ -261,13 +261,15 @@ describe("revalidateOnLiveChange", () => {
       collection: "pages",
       reason: "publish",
       tags: ["route:duniakimia:en:/about"],
-      purge: [{ host: "duniakimia.com", pathPrefix: "/en/about", exact: true }],
+      purge: [
+        { host: "duniakimiautama.com", pathPrefix: "/en/about", exact: true },
+      ],
     });
     expect(revalidate.mock.calls[0][2]).toEqual({ req });
     expect(statuses).toEqual([
       expect.objectContaining({
         status: "ok",
-        hosts: ["duniakimia.com"],
+        hosts: ["duniakimiautama.com"],
         collection: "pages",
         docId: "9",
       }),
@@ -302,8 +304,8 @@ describe("revalidateOnLiveChange", () => {
       "shared-pages",
     );
     expect(calls[0].purge.map((entry) => entry.host).sort()).toEqual([
-      "duniakimia.com",
-      "indonesianacids.com",
+      "duniakimiautama.com",
+      "indonesianacidsindustry.com",
       "likutelaga.com",
     ]);
     expect(calls[0].tags).toEqual(["route:shared:en:/terms"]);
@@ -387,7 +389,7 @@ describe("revalidateOnLiveChange", () => {
     );
     expect(new Set(calls[0].tags).size).toBe(calls[0].tags.length);
     expect(
-      calls[0].purge.every((entry) => entry.host === "duniakimia.com"),
+      calls[0].purge.every((entry) => entry.host === "duniakimiautama.com"),
     ).toBe(true);
   });
 
@@ -666,7 +668,7 @@ describe("template revalidation", () => {
     );
     expect(calls[0].tags).toEqual(["route:duniakimia:en:/career/chemist"]);
     expect(
-      calls[0].purge.every((entry) => entry.host === "duniakimia.com"),
+      calls[0].purge.every((entry) => entry.host === "duniakimiautama.com"),
     ).toBe(true);
   });
 

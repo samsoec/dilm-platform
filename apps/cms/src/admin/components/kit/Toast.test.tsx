@@ -25,7 +25,7 @@ function renderToast(onDismiss = vi.fn(), onAction = vi.fn()) {
   render(
     <KitToast
       action={{ label: "View site", onClick: onAction }}
-      body="duniakimia.com will show it within minutes."
+      body="duniakimiautama.com will show it within minutes."
       onDismiss={onDismiss}
       title="Header saved · version 13."
       tone="success"

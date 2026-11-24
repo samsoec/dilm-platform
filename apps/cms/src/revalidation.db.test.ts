@@ -20,7 +20,11 @@ import { stubRevalidator, type RevalidationChange } from "./revalidation";
 
 const database = process.env.SEED_TEST_DATABASE;
 
-const HOSTS = ["duniakimia.com", "indonesianacids.com", "likutelaga.com"];
+const HOSTS = [
+  "duniakimiautama.com",
+  "indonesianacidsindustry.com",
+  "likutelaga.com",
+];
 
 type Doc = {
   id: number;
@@ -148,8 +152,16 @@ describe.skipIf(!database)(
           "route:duniakimia:id:/press-kit",
         ],
         purge: [
-          { host: "duniakimia.com", pathPrefix: "/en/press-kit", exact: true },
-          { host: "duniakimia.com", pathPrefix: "/id/press-kit", exact: true },
+          {
+            host: "duniakimiautama.com",
+            pathPrefix: "/en/press-kit",
+            exact: true,
+          },
+          {
+            host: "duniakimiautama.com",
+            pathPrefix: "/id/press-kit",
+            exact: true,
+          },
         ],
       });
       expect(
@@ -159,7 +171,7 @@ describe.skipIf(!database)(
         }),
       ).toMatchObject({
         status: "ok",
-        hosts: ["duniakimia.com"],
+        hosts: ["duniakimiautama.com"],
       });
     });
 
@@ -216,7 +228,7 @@ describe.skipIf(!database)(
       );
       expect(new Set(change.tags).size).toBe(change.tags.length);
       expect(
-        change.purge.every((purge) => purge.host === "duniakimia.com"),
+        change.purge.every((purge) => purge.host === "duniakimiautama.com"),
       ).toBe(true);
     });
 
@@ -338,7 +350,7 @@ describe.skipIf(!database)(
       );
       expect(change.tags).not.toContain("list:likutelaga:jobs");
       expect(
-        change.purge.every((purge) => purge.host === "duniakimia.com"),
+        change.purge.every((purge) => purge.host === "duniakimiautama.com"),
       ).toBe(true);
     });
 
@@ -389,7 +401,9 @@ describe.skipIf(!database)(
         "route:duniakimia:en:/career/chemist",
       );
       expect(
-        changes()[0].purge.every((purge) => purge.host === "duniakimia.com"),
+        changes()[0].purge.every(
+          (purge) => purge.host === "duniakimiautama.com",
+        ),
       ).toBe(true);
     });
 

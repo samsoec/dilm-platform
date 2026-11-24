@@ -593,8 +593,8 @@ describe("the consent gate (US-BLD-9.4)", () => {
 type Tenant = { id: number; domain?: string | null };
 
 const TENANTS: Tenant[] = [
-  { id: 1, domain: "indonesianacids.com" },
-  { id: 2, domain: "duniakimia.com" },
+  { id: 1, domain: "indonesianacidsindustry.com" },
+  { id: 2, domain: "duniakimiautama.com" },
   { id: 3, domain: "" },
   { id: 4, domain: null },
 ];

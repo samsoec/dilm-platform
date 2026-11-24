@@ -335,7 +335,7 @@ describe("users", () => {
     const rani = {
       id: 7,
       name: "Rani Saputra",
-      email: "rani@duniakimia.com",
+      email: "rani@duniakimiautama.com",
       roles: ["tenant-editor"],
       tenants: [{ tenant: 2 }],
     };
@@ -377,10 +377,14 @@ describe("users", () => {
         originalDoc: stored === undefined ? undefined : { email: stored },
       } as Parameters<FieldHook>[0]);
 
-    expect(nameFromEmail("rani.saputra@duniakimia.com")).toBe("rani.saputra");
+    expect(nameFromEmail("rani.saputra@duniakimiautama.com")).toBe(
+      "rani.saputra",
+    );
     expect(nameFromEmail("")).toBeUndefined();
-    expect(hook("  Rani Saputra ", "rani@duniakimia.com")).toBe("Rani Saputra");
-    expect(hook("", "rani@duniakimia.com")).toBe("rani");
+    expect(hook("  Rani Saputra ", "rani@duniakimiautama.com")).toBe(
+      "Rani Saputra",
+    );
+    expect(hook("", "rani@duniakimiautama.com")).toBe("rani");
     expect(hook(undefined, undefined, "hendra@likutelaga.com")).toBe("hendra");
   });
 });

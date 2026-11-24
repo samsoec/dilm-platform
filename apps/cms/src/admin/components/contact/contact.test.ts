@@ -49,8 +49,9 @@ describe("empty states", () => {
   it("covers contact messages", () => {
     expect(isEmptyStateSlug("contact-submissions")).toBe(true);
     expect(
-      emptyCopy("contact-submissions", { domain: "duniakimia.com" }).lines[0],
-    ).toContain("Contact page of duniakimia.com");
+      emptyCopy("contact-submissions", { domain: "duniakimiautama.com" })
+        .lines[0],
+    ).toContain("Contact page of duniakimiautama.com");
     expect(noMatchesTitle("contact-submissions")).toBe(
       "No contact messages match these filters",
     );

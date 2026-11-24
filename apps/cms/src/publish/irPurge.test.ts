@@ -81,13 +81,13 @@ describe("purgeRequest", () => {
           filename: "old.pdf",
         }),
         after: row({ _status: "published", locale: "en", filename: "new.pdf" }),
-        host: "duniakimia.com",
+        host: "duniakimiautama.com",
       }),
     ).toEqual({
       transition: "update",
       documentId: 7,
       tenant: 2,
-      host: "duniakimia.com",
+      host: "duniakimiautama.com",
       paths: ["/id/investor", "/en/investor"],
       files: ["old.pdf", "new.pdf"],
       tags: ["ir-documents", "ir-documents:tenant:2"],
@@ -122,7 +122,7 @@ function fakeReq(
     context,
     payload: {
       db: { findOne, updateOne: vi.fn().mockResolvedValue({}) },
-      findByID: vi.fn().mockResolvedValue({ domain: "duniakimia.com" }),
+      findByID: vi.fn().mockResolvedValue({ domain: "duniakimiautama.com" }),
       logger: { info: vi.fn(), error: vi.fn() },
     },
   };
@@ -159,7 +159,7 @@ describe("purge hooks", () => {
     expect(purger).toHaveBeenCalledTimes(1);
     expect(purger.mock.calls[0]![0]).toMatchObject({
       transition: "unpublish",
-      host: "duniakimia.com",
+      host: "duniakimiautama.com",
       paths: ["/id/investor"],
     });
     expect(Object.keys(req.context)).toEqual([]);

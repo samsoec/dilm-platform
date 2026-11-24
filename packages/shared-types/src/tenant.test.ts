@@ -15,8 +15,8 @@ describe("TENANT_SLUGS", () => {
 describe("tenantSenderAddress", () => {
   it("sends from noreply at each tenant's own root domain", () => {
     expect(TENANT_SLUGS.map(tenantSenderAddress)).toEqual([
-      "noreply@indonesianacids.com",
-      "noreply@duniakimia.com",
+      "noreply@indonesianacidsindustry.com",
+      "noreply@duniakimiautama.com",
       "noreply@likutelaga.com",
     ]);
   });

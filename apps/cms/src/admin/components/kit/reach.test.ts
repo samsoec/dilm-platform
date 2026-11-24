@@ -10,8 +10,8 @@ import {
 } from "./reach";
 
 const tenants = [
-  { id: 1, domain: "indonesianacids.com" },
-  { id: 2, domain: "duniakimia.com" },
+  { id: 1, domain: "indonesianacidsindustry.com" },
+  { id: 2, domain: "duniakimiautama.com" },
   { id: 3, domain: "likutelaga.com" },
 ];
 
@@ -19,8 +19,8 @@ describe("getReach (PR-WC-01)", () => {
   it("names the domain of a populated tenant", () => {
     expect(getReach({ tenant: tenants[1] })).toEqual({
       scope: "tenant",
-      domain: "duniakimia.com",
-      label: "This site only (duniakimia.com)",
+      domain: "duniakimiautama.com",
+      label: "This site only (duniakimiautama.com)",
     });
   });
 
@@ -29,7 +29,7 @@ describe("getReach (PR-WC-01)", () => {
       "This site only (likutelaga.com)",
     );
     expect(getReach({ tenant: "2" }, { tenants }).label).toBe(
-      "This site only (duniakimia.com)",
+      "This site only (duniakimiautama.com)",
     );
   });
 

@@ -16,7 +16,7 @@ function fakePayload() {
       { id: 2, slug: "likutelaga", defaultLocale: "en" },
     ],
     "tenant-settings": [
-      { id: 10, tenant: 1, recruiterEmail: "hr@duniakimia.com" },
+      { id: 10, tenant: 1, recruiterEmail: "hr@duniakimiautama.com" },
       { id: 11, tenant: 2, recruiterEmail: null },
     ],
     "cv-submissions": [],
@@ -134,10 +134,10 @@ describe("processCvMessage", () => {
     });
     expect(payload.sent.map((email) => email.to)).toEqual([
       "siti@example.com",
-      "hr@duniakimia.com",
+      "hr@duniakimiautama.com",
     ]);
     expect(payload.sent[0]).toMatchObject({
-      from: { address: "noreply@duniakimia.com" },
+      from: { address: "noreply@duniakimiautama.com" },
       subject: expect.stringContaining("Lamaran Anda"),
     });
     expect(payload.sent[1]).toMatchObject({ replyTo: "siti@example.com" });
@@ -209,7 +209,7 @@ describe("processCvMessage", () => {
     await run();
 
     expect(payload.sent.map((email) => email.to)).toEqual([
-      "hr@duniakimia.com",
+      "hr@duniakimiautama.com",
       "siti@example.com",
     ]);
   });

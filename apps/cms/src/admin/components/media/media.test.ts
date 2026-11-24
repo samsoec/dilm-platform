@@ -120,8 +120,8 @@ describe("media detail text", () => {
   });
 
   it("introduces the library with the company domain", () => {
-    expect(mediaIntro("duniakimia.com")).toBe(
-      "Images for duniakimia.com. Every upload is public and gets three resized copies.",
+    expect(mediaIntro("duniakimiautama.com")).toBe(
+      "Images for duniakimiautama.com. Every upload is public and gets three resized copies.",
     );
   });
 });

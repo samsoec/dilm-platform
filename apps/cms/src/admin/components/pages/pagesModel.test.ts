@@ -62,7 +62,7 @@ const CONTEXT: RowContext = {
   locale: "en",
   defaultLocale: "en",
   header: NO_HEADER,
-  tenants: [{ id: 2, domain: "duniakimia.com" }],
+  tenants: [{ id: 2, domain: "duniakimiautama.com" }],
   now: new Date("2026-11-05T05:00:00.000Z"),
 };
 
@@ -159,7 +159,7 @@ describe("row badges and tags", () => {
     const [row] = rowsOf([page()]);
     expect(row!.reach).toMatchObject({
       scope: "tenant",
-      label: "This site only (duniakimia.com)",
+      label: "This site only (duniakimiautama.com)",
     });
   });
 

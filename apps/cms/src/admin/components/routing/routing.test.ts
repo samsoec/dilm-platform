@@ -11,7 +11,7 @@ import {
 
 const impact: RoutingImpact = {
   setting: "careerPage",
-  domains: ["duniakimia.com"],
+  domains: ["duniakimiautama.com"],
   locales: ["en", "id"],
   current: { title: "Career", paths: { en: "/career", id: "/karir" } },
   next: { title: "Join us", paths: { en: "/join-us", id: "/gabung" } },
@@ -25,7 +25,7 @@ describe("routing dialog copy (RT-02)", () => {
   it("opens with the verbatim title and summary", () => {
     expect(dialogTitle("careerPage")).toBe("Change the Career page?");
     expect(dialogSummary("careerPage", impact)).toBe(
-      "7 job URLs on duniakimia.com move from /career to /join-us. 14 redirects are created.",
+      "7 job URLs on duniakimiautama.com move from /career to /join-us. 14 redirects are created.",
     );
   });
 
@@ -51,7 +51,7 @@ describe("routing dialog copy (RT-02)", () => {
 
   it("says plainly when nothing moves or the change is too big", () => {
     expect(dialogSummary("careerPage", { ...impact, records: 0 })).toBe(
-      "No job URLs move on duniakimia.com. No redirects are created.",
+      "No job URLs move on duniakimiautama.com. No redirects are created.",
     );
     expect(
       dialogSummary("careerPage", {

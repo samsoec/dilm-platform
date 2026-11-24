@@ -56,7 +56,7 @@ function Harness(props: Partial<ConfirmDialogProps>) {
     <ModalProvider transTime={0}>
       <Trigger />
       <ConfirmDialog
-        body="It becomes public on duniakimia.com/en/investor within minutes."
+        body="It becomes public on duniakimiautama.com/en/investor within minutes."
         confirmLabel="Publish"
         onConfirm={() => undefined}
         slug={SLUG}

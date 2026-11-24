@@ -41,8 +41,8 @@ const body = {
 
 describe("site messages screen", () => {
   it("writes the MS-02 warning with the previous version and domain", () => {
-    expect(policyVersionWarning("2026-03", "duniakimia.com")).toBe(
-      "Was 2026-03. After you save, every visitor to duniakimia.com sees the banner again and analytics pause until they choose.",
+    expect(policyVersionWarning("2026-03", "duniakimiautama.com")).toBe(
+      "Was 2026-03. After you save, every visitor to duniakimiautama.com sees the banner again and analytics pause until they choose.",
     );
   });
 
@@ -85,12 +85,12 @@ describe("site messages screen", () => {
   });
 
   describe("cookie policy check", () => {
-    const here = { siteDomain: "duniakimia.com", locale: "en" };
+    const here = { siteDomain: "duniakimiautama.com", locale: "en" };
     const page = (extra: object) => ({
       id: 7,
       path: "/en/cookie-policy",
       _status: "published",
-      tenant: { id: 1, name: "Dunia", domain: "duniakimia.com" },
+      tenant: { id: 1, name: "Dunia", domain: "duniakimiautama.com" },
       ...extra,
     });
 

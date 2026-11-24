@@ -5,8 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 `dilm-platform` (DIL-WEB-2026): a pnpm monorepo for the corporate web platform
-serving three DIL Group tenants from one deployment — `indonesianacids.com`,
-`duniakimia.com`, `likutelaga.com`.
+serving three DIL Group tenants from one deployment — `indonesianacidsindustry.com`,
+`duniakimiautama.com`, `likutelaga.com`.
 
 The repo is early: `infra/` is a real SST app with only stages and region wired
 up. The workspace skeleton exists — `packages/config` (shared tsconfig/eslint/

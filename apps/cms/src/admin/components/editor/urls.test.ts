@@ -13,7 +13,7 @@ import {
 } from "./urls";
 
 const locales = ["en", "id"];
-const base = { domain: "duniakimia.com", locales, defaultLocale: "en" };
+const base = { domain: "duniakimiautama.com", locales, defaultLocale: "en" };
 
 describe("computeUrls (PR-WC-04)", () => {
   it("builds both URLs from the parent path and each language's slug", () => {
@@ -23,10 +23,12 @@ describe("computeUrls (PR-WC-04)", () => {
       parentPaths: { en: "/about-us", id: "/tentang-kami" },
     });
     expect(rows.map(({ display }) => display)).toEqual([
-      "duniakimia.com/en/about-us/overview",
-      "duniakimia.com/id/tentang-kami/ikhtisar",
+      "duniakimiautama.com/en/about-us/overview",
+      "duniakimiautama.com/id/tentang-kami/ikhtisar",
     ]);
-    expect(rows[0].href).toBe("https://duniakimia.com/en/about-us/overview");
+    expect(rows[0].href).toBe(
+      "https://duniakimiautama.com/en/about-us/overview",
+    );
     expect(rows.every(({ fellBack }) => !fellBack)).toBe(true);
   });
 
@@ -49,7 +51,7 @@ describe("computeUrls (PR-WC-04)", () => {
     expect(rows[1]).toMatchObject({
       path: "/about-us/overview",
       fellBack: true,
-      display: "duniakimia.com/id/about-us/overview",
+      display: "duniakimiautama.com/id/about-us/overview",
     });
   });
 
@@ -113,11 +115,11 @@ describe("computeUrls (PR-WC-04)", () => {
     });
     expect(en).toMatchObject({
       incomplete: true,
-      display: "duniakimia.com/en/about-us/",
+      display: "duniakimiautama.com/en/about-us/",
     });
     expect(
       computeUrls({ ...base, slugs: {}, parentPaths: null })[0].display,
-    ).toBe("duniakimia.com/en");
+    ).toBe("duniakimiautama.com/en");
   });
 
   it("works without a company domain", () => {
@@ -133,7 +135,9 @@ describe("computeUrls (PR-WC-04)", () => {
 
 describe("slug helpers", () => {
   it("strips scheme and trailing slash from the domain", () => {
-    expect(bareDomain(" https://duniakimia.com/ ")).toBe("duniakimia.com");
+    expect(bareDomain(" https://duniakimiautama.com/ ")).toBe(
+      "duniakimiautama.com",
+    );
     expect(bareDomain(undefined)).toBe("");
   });
 

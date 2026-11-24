@@ -89,7 +89,10 @@ function Trigger({
     <button
       onClick={() => {
         report(form);
-        setCompany({ name: "Dunia Kimia Utama", domain: "duniakimia.com" });
+        setCompany({
+          name: "Dunia Kimia Utama",
+          domain: "duniakimiautama.com",
+        });
         guard(trigger, action);
       }}
       type="button"
@@ -152,7 +155,7 @@ describe("UnsavedChangesProvider (G-03, FR-UI-74)", () => {
       expect(action).not.toHaveBeenCalled();
       expect(dialog.textContent).toContain("Save changes to the Header first?");
       expect(dialog.textContent).toContain(
-        "You have 3 unsaved changes for Dunia Kimia Utama. Saving puts them on duniakimia.com.",
+        "You have 3 unsaved changes for Dunia Kimia Utama. Saving puts them on duniakimiautama.com.",
       );
       expect(screen.getByRole("button", { name: verb })).toBeTruthy();
       expect(screen.getByRole("button", { name: "Discard" })).toBeTruthy();

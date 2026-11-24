@@ -463,11 +463,15 @@ describe("resolveLink", () => {
     const doc = {
       id: 9,
       _status: "published",
-      tenant: { id: 1, slug: "indoacid", domain: "indonesianacids.com" },
+      tenant: {
+        id: 1,
+        slug: "indoacid",
+        domain: "indonesianacidsindustry.com",
+      },
       path: "/about",
     };
     expect(await resolveLink(to("pages", doc), { tenant: 2 })).toBe(
-      "https://indonesianacids.com/about",
+      "https://indonesianacidsindustry.com/about",
     );
     expect(await resolveLink(to("pages", doc), { tenant: 1 })).toBe("/about");
     const job = {
@@ -489,7 +493,11 @@ describe("resolveLink", () => {
     const doc = {
       id: 9,
       _status: "published",
-      tenant: { id: 1, slug: "indoacid", domain: "indonesianacids.com" },
+      tenant: {
+        id: 1,
+        slug: "indoacid",
+        domain: "indonesianacidsindustry.com",
+      },
       path: "/products/sulfuric-acid",
     };
     expect(await resolveLink(to("products", doc), { tenant: 2 })).toBe(
@@ -503,7 +511,7 @@ describe("resolveLink", () => {
   it("looks the owner's domain up in the tenants collection when it is not populated", async () => {
     const find = vi.fn().mockResolvedValue({
       docs: [
-        { id: 1, domain: "indonesianacids.com" },
+        { id: 1, domain: "indonesianacidsindustry.com" },
         { id: 3, domain: "https://WWW.likutelaga.com/" },
       ],
     });
@@ -517,7 +525,7 @@ describe("resolveLink", () => {
         tenant: 2,
         payload,
       }),
-    ).toBe("https://indonesianacids.com/careers");
+    ).toBe("https://indonesianacidsindustry.com/careers");
     expect(find).toHaveBeenCalledTimes(1);
     expect(find.mock.calls[0]?.[0]).toMatchObject({
       collection: "tenants",
@@ -559,7 +567,7 @@ describe("resolveLink", () => {
 
   it("normalises stored domains", () => {
     expect(normalizeDomain("https://Example.com/")).toBe("example.com");
-    expect(normalizeDomain("duniakimia.com")).toBe("duniakimia.com");
+    expect(normalizeDomain("duniakimiautama.com")).toBe("duniakimiautama.com");
     expect(normalizeDomain("http://www.x.id/a/b")).toBe("www.x.id");
   });
 

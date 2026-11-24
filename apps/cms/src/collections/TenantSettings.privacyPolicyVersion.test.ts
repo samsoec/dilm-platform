@@ -76,9 +76,9 @@ describe("tenant-settings.privacyPolicyVersion", () => {
   it("warns before a change and stays quiet otherwise", () => {
     expect(policyVersionChanged("2026-11", "2026-11").changed).toBe(false);
     expect(policyVersionChanged("2026-11", "2027-02").changed).toBe(true);
-    expect(privacyPolicyVersionWarning("2026-11", "duniakimia.com")).toContain(
-      "Was 2026-11.",
-    );
+    expect(
+      privacyPolicyVersionWarning("2026-11", "duniakimiautama.com"),
+    ).toContain("Was 2026-11.");
     expect(privacyPolicyVersionWarning(undefined, undefined)).toContain(
       "Was not set.",
     );
