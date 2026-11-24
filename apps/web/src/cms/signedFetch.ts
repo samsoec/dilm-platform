@@ -16,9 +16,12 @@ export async function cmsFetch(
   path: string,
   env: Env = process.env,
   fetcher: typeof fetch = fetch,
+  init?: RequestInit,
 ): Promise<Response> {
   const url = `${cmsUrl(env)}${path}`;
-  if (!cmsRequiresSigning(env)) return fetcher(url);
+  if (!cmsRequiresSigning(env)) {
+    return init === undefined ? fetcher(url) : fetcher(url, init);
+  }
   const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN } = env;
   if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY) {
     throw new Error("CMS_AUTH=iam needs AWS credentials in the environment.");
@@ -30,5 +33,5 @@ export async function cmsFetch(
     service: "lambda",
     region: env.AWS_REGION,
   });
-  return fetcher(await client.sign(url));
+  return fetcher(await client.sign(url, init));
 }
