@@ -17,6 +17,8 @@ import { selectedTenantID, TENANT_COOKIE } from "../../data/sidebar";
 import { MaterialIcon } from "../MaterialIcon";
 import { ActionButton } from "../kit/ActionButton";
 import { Banner } from "../kit/Banner";
+import { BaseNoteBanner } from "../kit/BaseNoteBanner";
+import { baseNote } from "../../../siteRouting";
 import { Skeleton } from "../kit/Loading";
 import { PublishBadge } from "../kit/PublishBadge";
 import { PagesRetry } from "../pages/PagesRetry";
@@ -358,9 +360,11 @@ async function CatalogBody(props: ListViewServerProps & { viewer: Viewer }) {
       selected,
       locale?.code === "id" ? "id" : "en",
     );
+    const note = await baseNote(payload, { user }, "productsPage");
     return (
       <>
         <Heading createHref={createHref} viewer={viewer} />
+        {note && <BaseNoteBanner className="dil-pages__banner" note={note} />}
         <Toolbar
           companies={data.companies}
           pathname={pathname}

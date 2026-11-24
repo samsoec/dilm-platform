@@ -8,6 +8,7 @@ import {
 } from "../../data/productEditor";
 import type { UsedInData } from "../kit/usedIn";
 import { loadUsedIn } from "../../data/usedIn";
+import { baseNote } from "../../../siteRouting";
 import { EditorActions } from "../editor/EditorChrome";
 import {
   ProductHeader,
@@ -70,10 +71,21 @@ export async function ProductHeaderField(props: UIFieldServerProps) {
   );
 }
 
-function actions(collection: "products" | "solutions") {
+async function actions(
+  { payload, req }: Pick<UIFieldServerProps, "payload" | "req">,
+  collection: "products" | "solutions",
+) {
+  const note = req.user
+    ? await baseNote(
+        payload,
+        { user: req.user },
+        collection === "products" ? "productsPage" : "solutionsPage",
+      ).catch(() => null)
+    : null;
   return (
     <EditorActions
       ancestors={[]}
+      baseNote={note ?? undefined}
       initials=""
       readOnlyNotice={false}
       seed={{ collection, parentPaths: {}, slugs: {} }}
@@ -82,12 +94,12 @@ function actions(collection: "products" | "solutions") {
   );
 }
 
-export function ProductActionsField() {
-  return actions("products");
+export function ProductActionsField(props: UIFieldServerProps) {
+  return actions(props, "products");
 }
 
-export function SolutionActionsField() {
-  return actions("solutions");
+export function SolutionActionsField(props: UIFieldServerProps) {
+  return actions(props, "solutions");
 }
 
 export function ProductTabMarksField() {

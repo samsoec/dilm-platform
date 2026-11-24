@@ -106,8 +106,8 @@ function pluralize(count: number, one: string, many: string): string {
 export function baseUnsetMessage(setting: BaseSetting): string {
   const base = BASE_SETTINGS[setting];
   return setting === "careerPage"
-    ? `No "${base.label}" page is set in ${base.where}, so jobs have no URL. Set it there first.`
-    : `No "${base.label}" page is set in ${base.where}, so ${base.plural} have no URL. Ask a Super Admin to set it.`;
+    ? "Not on the website yet: set your Career page."
+    : `Not on the website yet: set the "${base.label}" page.`;
 }
 
 export function baseUnpublishedMessage(
@@ -115,7 +115,30 @@ export function baseUnpublishedMessage(
   title: string,
 ): string {
   const base = BASE_SETTINGS[setting];
-  return `The page "${title}" is set as "${base.label}" in ${base.where} but isn't published, so ${base.plural} have no URL. Publish it first.`;
+  return `Not on the website yet: publish "${title}", set as the "${base.label}" page.`;
+}
+
+export type BaseNote = { message: string; path: `/${string}` };
+
+export async function baseNote(
+  payload: Payload,
+  req: Request,
+  setting: BaseSetting,
+  tenant?: string,
+): Promise<BaseNote | null> {
+  const state = await baseState(payload, req, setting, tenant);
+  if (state.state === "live") return null;
+  const path =
+    setting === "careerPage"
+      ? "/collections/tenant-settings"
+      : "/globals/site-routing";
+  return {
+    message:
+      state.state === "unset"
+        ? baseUnsetMessage(setting)
+        : baseUnpublishedMessage(setting, state.page.title),
+    path,
+  };
 }
 
 export function pageNotPublishedMessage(title: string): string {
@@ -627,30 +650,6 @@ export const cascadeCompanyRouting: CollectionAfterChangeHook = async ({
   });
   return doc;
 };
-
-export function requireBase(
-  collection: GovernedCollection,
-): CollectionBeforeChangeHook {
-  const setting = (Object.keys(BASE_SETTINGS) as BaseSetting[]).find(
-    (key) => BASE_SETTINGS[key].collection === collection,
-  )!;
-  return async ({ data, originalDoc, req }) => {
-    if (data.deletedAt) return data;
-    const original = originalDoc as
-      { _status?: string | null; tenant?: Ref } | undefined;
-    if ((data._status ?? original?._status) !== "published") return data;
-    const tenant =
-      collection === "jobs"
-        ? refId(data.tenant ?? original?.tenant)
-        : undefined;
-    const state = await baseState(req.payload, req, setting, tenant);
-    if (state.state === "unset") fail(baseUnsetMessage(setting));
-    if (state.state === "unpublished") {
-      fail(baseUnpublishedMessage(setting, state.page.title));
-    }
-    return data;
-  };
-}
 
 export type Dependency = {
   setting: SpecialSetting;

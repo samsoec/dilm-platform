@@ -27,10 +27,7 @@ export type TrashRefusal =
   | { kind: "recordBase"; message: string; label: string }
   | { kind: "publication"; message: string };
 
-export type PublishBlock =
-  | { kind: "routing"; message: string }
-  | { kind: "career"; message: string }
-  | { kind: "consent"; message: string };
+export type PublishBlock = { kind: "consent"; message: string };
 
 export type TemplateChange = { type: string; count: number; sites: string[] };
 
@@ -45,6 +42,7 @@ export type Impact = {
   placements: Placement[];
   refusal: TrashRefusal | null;
   block: PublishBlock | null;
+  note?: { message: string; path: `/${string}` } | null;
   template: TemplateChange | null;
   live: boolean;
 };

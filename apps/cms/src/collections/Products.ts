@@ -24,7 +24,6 @@ import {
 } from "../publishRevalidation";
 import { stubRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
-import { requireBase } from "../siteRouting";
 import { CATALOG_SCOPE, withTenantAccess } from "../tenancy";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
 import { EDITOR_TAB_CLASS } from "../admin/components/editor/editor";
@@ -254,7 +253,6 @@ export const Products = withTenantAccess(
         trash: true,
         hooks: {
           beforeChange: [
-            requireBase("products"),
             keepRowStructure,
             ({ data }) => ({
               ...data,

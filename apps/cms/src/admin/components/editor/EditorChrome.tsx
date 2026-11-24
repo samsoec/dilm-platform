@@ -18,6 +18,7 @@ import { createPortal } from "react-dom";
 import { VersionsDrawer } from "../document/VersionsDrawer";
 import { ActionButton } from "../kit/ActionButton";
 import { Banner } from "../kit/Banner";
+import { BaseNoteBanner } from "../kit/BaseNoteBanner";
 import { notify } from "../kit/Toast";
 import { PURGE_NOTICE, refreshingSites } from "../../../publish/confirmations";
 import { refreshStatusOf } from "../publish/refreshStatus";
@@ -102,11 +103,11 @@ export function EditorActions({
   shared = false,
   home = false,
   label,
-  publishBlock,
+  baseNote,
   readOnlyNotice = true,
 }: {
   label?: string;
-  publishBlock?: string;
+  baseNote?: { message: string; path: `/${string}` };
   readOnlyNotice?: boolean;
   seed: UrlSeed;
   ancestors: { id: string; title: string }[];
@@ -283,7 +284,6 @@ export function EditorActions({
             icon="public"
             onClick={() => void startPublish()}
             type="button"
-            unavailableReason={publishBlock}
           >
             {shared && `${allSitesLabel()} · `}Publish…
           </ActionButton>
@@ -299,6 +299,7 @@ export function EditorActions({
       <VersionsDrawer />
       <UrlChangeGuard domain={seed.domain} />
       {host && createPortal(controls, host)}
+      {baseNote && <BaseNoteBanner note={baseNote} />}
       <ValidationSummary problems={problems} />
       <LegalDateConfirm
         onContinue={() => openModal(PUBLISH_SLUG)}
