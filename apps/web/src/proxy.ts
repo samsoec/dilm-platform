@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 
 import { legacyRedirect } from "./tenant/legacy";
 import { DEFAULT_LOCALE, isLocale } from "./tenant/locales";
+import { LOCALE_HEADER, TENANT_HEADER } from "./tenant/headers";
 import { internalPath } from "./tenant/rewrite";
 import { parseAliases, resolveTenant } from "./tenant/resolveTenant";
 
@@ -45,7 +46,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
   url.pathname = internalPath(tenant, pathname);
-  return NextResponse.rewrite(url);
+  const headers = new Headers(request.headers);
+  headers.set(TENANT_HEADER, tenant);
+  headers.set(LOCALE_HEADER, pathname.split("/")[1] ?? DEFAULT_LOCALE);
+  return NextResponse.rewrite(url, { request: { headers } });
 }
 
 export const config = {

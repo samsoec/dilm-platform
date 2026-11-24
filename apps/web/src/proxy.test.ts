@@ -74,3 +74,15 @@ describe("proxy", () => {
     expect(call("indoacid.localhost:3001", "/zh/about").status).toBe(404);
   });
 });
+
+describe("proxy forwarded headers", () => {
+  it("forwards tenant and locale as request headers", () => {
+    const response = call("indoacid.localhost:3001", "/id/about");
+    expect(response.headers.get("x-middleware-request-x-dilm-tenant")).toBe(
+      "indoacid",
+    );
+    expect(response.headers.get("x-middleware-request-x-dilm-locale")).toBe(
+      "id",
+    );
+  });
+});

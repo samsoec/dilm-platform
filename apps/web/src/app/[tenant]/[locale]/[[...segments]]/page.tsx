@@ -2,6 +2,7 @@ import { TENANT_SLUGS } from "@dilm/shared-types";
 import { notFound } from "next/navigation";
 
 import { fetchTenantName } from "@/cms/tenantName";
+import { SiteShell } from "@/components/SiteShell";
 import { isLocale } from "@/tenant/locales";
 
 type Params = { tenant: string; locale: string; segments?: string[] };
@@ -18,5 +19,5 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   const slug = TENANT_SLUGS.find((candidate) => candidate === tenant);
   if (slug === undefined || !isLocale(locale)) notFound();
   const name = await fetchTenantName(slug);
-  return <main data-tenant={slug}>{name}</main>;
+  return <SiteShell>{name}</SiteShell>;
 }
