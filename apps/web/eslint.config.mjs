@@ -10,4 +10,17 @@ export default [
     },
     rules: { "dilm/no-content-in-client": "error" },
   },
+  {
+    files: ["**/*.{ts,tsx}"],
+    ignores: ["src/components/JsonLd.tsx"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
+          message: "dangerouslySetInnerHTML is allowed only in JsonLd.tsx.",
+        },
+      ],
+    },
+  },
 ];

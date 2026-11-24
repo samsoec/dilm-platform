@@ -86,3 +86,17 @@ describe("proxy forwarded headers", () => {
     );
   });
 });
+
+describe("proxy security headers", () => {
+  it("sets them on the redirect and the 404", () => {
+    for (const res of [
+      call("indoacid.localhost:3001", "/"),
+      call("unknown.invalid"),
+    ]) {
+      expect(res.headers.get("x-content-type-options")).toBe("nosniff");
+      expect(res.headers.get("content-security-policy")).toContain(
+        "frame-ancestors 'none'",
+      );
+    }
+  });
+});

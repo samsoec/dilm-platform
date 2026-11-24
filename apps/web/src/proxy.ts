@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+import { withSecurityHeaders } from "./security/headers";
 import { legacyRedirect } from "./tenant/legacy";
 import { DEFAULT_LOCALE, isLocale } from "./tenant/locales";
 import { LOCALE_HEADER, TENANT_HEADER } from "./tenant/headers";
@@ -19,31 +20,34 @@ function aliasesFromEnv() {
   return cachedAliases;
 }
 
+function notFound() {
+  return withSecurityHeaders(
+    new NextResponse("Not Found", {
+      status: 404,
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    }),
+  );
+}
+
 export function proxy(request: NextRequest) {
   const aliases = aliasesFromEnv();
   const tenant = resolveTenant(request.headers.get("host"), aliases);
   if (tenant === null) {
-    return new NextResponse("Not Found", {
-      status: 404,
-      headers: { "content-type": "text/plain; charset=utf-8" },
-    });
+    return notFound();
   }
   const pathname = request.nextUrl.pathname;
   const url = request.nextUrl.clone();
   if (pathname === "/") {
     url.pathname = `/${DEFAULT_LOCALE}`;
-    return NextResponse.redirect(url, 307);
+    return withSecurityHeaders(NextResponse.redirect(url, 307));
   }
   if (!isLocale(pathname.split("/")[1] ?? "")) {
     const target = legacyRedirect(pathname);
     if (target === null) {
-      return new NextResponse("Not Found", {
-        status: 404,
-        headers: { "content-type": "text/plain; charset=utf-8" },
-      });
+      return notFound();
     }
     url.pathname = target;
-    return NextResponse.redirect(url, 301);
+    return withSecurityHeaders(NextResponse.redirect(url, 301));
   }
   url.pathname = internalPath(tenant, pathname);
   const headers = new Headers(request.headers);
