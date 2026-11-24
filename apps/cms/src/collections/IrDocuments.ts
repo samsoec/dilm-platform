@@ -1,4 +1,5 @@
 import {
+  readMembersOrPublishedSite,
   systemManagedField,
   trashByEditorsDeleteBySuperAdmins,
 } from "../access";
@@ -36,7 +37,10 @@ export const IrDocuments = withTenantAccess(
       withUpdatedBy({
         slug: "ir-documents",
         labels: collectionLabels("ir-documents"),
-        access: { delete: trashByEditorsDeleteBySuperAdmins },
+        access: {
+          read: readMembersOrPublishedSite,
+          delete: trashByEditorsDeleteBySuperAdmins,
+        },
         versions: { drafts: true, maxPerDoc: IR_VERSIONS_PER_DOCUMENT },
         trash: true,
         hooks: {

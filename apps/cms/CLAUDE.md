@@ -71,6 +71,7 @@ pnpm --filter cms qa:shots --path /admin/collections/pages --name pages
 | Sidebar groups and nav                                  | `src/admin/navGroups.ts`, `src/admin/components/nav`        |
 | Paths, slugs, routes, redirects                         | `src/paths.ts`, `pathCompute.ts`, `routeIndex.ts`           |
 | Access rules and tenant scoping                         | `src/access.ts`, `src/tenancy.ts`                           |
+| Public `/api/site/*` reads for the web app              | `src/siteApi.ts`, `SITE_READ_CONTEXT` in `src/access.ts`    |
 | Seed data for a realistic site                          | `src/seed` (`seed:tenants`, `seed:layout`, `seed:pages`)    |
 | Styles                                                  | `src/admin/styles`, one sheet per area, tokens only         |
 

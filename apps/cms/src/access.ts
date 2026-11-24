@@ -97,3 +97,16 @@ export const tenantContentAccess = {
 
 export const readPublishedOrMembers: Access = ({ req }) =>
   hasAnyRole(req.user) ? true : { _status: { equals: "published" } };
+
+export const SITE_READ_CONTEXT = { siteRead: true } as const;
+
+export const isSiteRead = (req: { context?: Record<string, unknown> }) =>
+  req.context?.siteRead === true;
+
+export const readMembersOrSite: Access = ({ req }) =>
+  hasAnyRole(req.user) || isSiteRead(req);
+
+export const readMembersOrPublishedSite: Access = ({ req }) => {
+  if (hasAnyRole(req.user)) return true;
+  return isSiteRead(req) ? { _status: { equals: "published" } } : false;
+};

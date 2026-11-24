@@ -5,7 +5,7 @@ import type {
 } from "payload";
 import { email, select } from "payload/shared";
 
-import { superAdmins } from "../access";
+import { readMembersOrSite, superAdmins } from "../access";
 import { settingsTabLabel } from "../admin/data/completeness";
 import {
   SEO_LIMITS,
@@ -81,6 +81,7 @@ export const TenantSettings = withTenantAccess(
     slug: "tenant-settings",
     labels: collectionLabels("tenant-settings"),
     access: {
+      read: readMembersOrSite,
       delete: superAdmins,
     },
     admin: {
