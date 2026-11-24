@@ -2,6 +2,8 @@ import { TENANT_SLUGS } from "@dilm/shared-types";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { readMeasurementId } from "@/analytics/measurementId";
+import { Analytics } from "@/components/Analytics";
 import { JsonLd } from "@/components/JsonLd";
 import { MAIN_ID } from "@/components/SiteShell";
 import { getDictionary } from "@/i18n";
@@ -22,6 +24,7 @@ export default async function LocaleLayout({
   const slug = TENANT_SLUGS.find((candidate) => candidate === tenant);
   if (slug === undefined || !isLocale(locale)) notFound();
   const seo = await readSeoDefaults(slug, locale);
+  const measurementId = await readMeasurementId(slug, locale);
   const dictionary = getDictionary(locale);
   return (
     <html lang={locale} data-tenant={slug}>
@@ -29,6 +32,9 @@ export default async function LocaleLayout({
         <a href={`#${MAIN_ID}`}>{dictionary.nav.skipToContent}</a>
         <JsonLd data={organizationJsonLd(slug, seo)} />
         {children}
+        {measurementId === null ? null : (
+          <Analytics measurementId={measurementId} />
+        )}
       </body>
     </html>
   );
