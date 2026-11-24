@@ -1,3 +1,5 @@
+@use "sheet";
+
 @layer dil {
   .dil-upload-launch {
     display: flex;
@@ -654,21 +656,30 @@
     position: absolute;
     inset: 0;
     border: 0;
-    background: rgb(17 28 42 / 35%);
+    background: var(--dil-sheet-scrim);
     cursor: default;
   }
 
+  body:has(.dil-media-drawer__foot) {
+    @include sheet.sheet-toasts-above-footer;
+  }
+
   .dil-media-drawer__panel {
+    @include sheet.sheet-panel;
+
     position: relative;
-    display: flex;
-    flex-direction: column;
-    width: min(420px, 100%);
-    height: 100vh;
-    height: 100dvh;
-    background: var(--dil-surface);
-    box-shadow: -12px 0 40px rgb(17 28 42 / 20%);
-    color: var(--dil-ink);
-    font-family: var(--dil-font-sans);
+  }
+
+  .dil-media-drawer__panel .dil-upload__head {
+    @include sheet.sheet-head;
+  }
+
+  .dil-media-drawer__panel .dil-upload__title {
+    @include sheet.sheet-title;
+  }
+
+  .dil-media-drawer__panel .dil-upload__close {
+    @include sheet.sheet-close;
   }
 
   .dil-media-drawer__title {
@@ -678,12 +689,11 @@
   }
 
   .dil-media-drawer__body {
+    @include sheet.sheet-body;
+
     display: flex;
-    flex: 1;
     flex-direction: column;
     gap: 16px;
-    padding: 18px;
-    overflow-y: auto;
   }
 
   .dil-media-drawer__preview {
@@ -778,11 +788,8 @@
   }
 
   .dil-media-drawer__foot {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 18px;
-    border-top: 1px solid var(--dil-line);
+    @include sheet.sheet-foot;
+
     white-space: nowrap;
   }
 

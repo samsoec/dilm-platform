@@ -1,3 +1,5 @@
+@use "sheet";
+
 @layer dil {
   .dil-company {
     display: inline-flex;
@@ -75,83 +77,17 @@
     box-shadow: inset 3px 0 0 var(--dil-brand);
   }
 
-  // Payload classes: .doc-drawer, .drawer__content, .collection-edit--tenants, .doc-drawer__header*, .id-label, .doc-controls* (@payloadcms/ui elements/DocumentDrawer, Drawer, DocumentControls); the company drawer is a narrow right panel titled "Edit <name>" with Cancel/Save at the bottom (3d)
+  // Payload classes: .doc-drawer, .collection-edit--tenants, .doc-drawer__header-text (@payloadcms/ui elements/DocumentDrawer); the sheet shape comes from sheet.scss, this adds the "Edit <name>" title (3d)
   .doc-drawer:has(.collection-edit--tenants) {
-    // Payload sets the drawer width inline from JS; max-width still caps it
-    .drawer__content {
-      max-width: 400px;
-      margin-left: auto;
-      background: var(--dil-surface);
-    }
+    @include sheet.doc-drawer-sheet;
 
-    .drawer__content-children {
-      height: 100%;
-      padding: 0;
-    }
-
-    .collection-edit--tenants,
-    .collection-edit__form {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    .doc-drawer__header {
-      padding: 18px 22px;
-      border-bottom: 1px solid var(--dil-line);
-    }
-
-    .doc-drawer__header-content {
-      align-items: center;
-    }
-
-    .doc-drawer__header-text {
-      margin: 0;
-      font-size: 17px;
-      font-weight: 700;
-
-      &::before {
-        content: "Edit ";
-      }
-    }
-
-    .doc-drawer__header .id-label,
-    .doc-drawer__after-header {
-      display: none;
-    }
-
-    .collection-edit__main-wrapper {
-      flex: 1;
-    }
-
-    .document-fields__edit {
-      padding: 18px 22px;
-    }
-
-    .doc-controls {
-      position: sticky;
-      bottom: 0;
-      z-index: 1;
-      order: 99;
-      padding: 14px 22px;
-      border-top: 1px solid var(--dil-line);
-      background: var(--dil-surface);
-    }
-
-    .doc-controls__meta,
-    .doc-controls__divider {
-      display: none;
-    }
-
-    .doc-controls__wrapper {
-      justify-content: flex-end;
+    .doc-drawer__header-text::before {
+      content: "Edit ";
     }
   }
 
-  // Sonner's toaster ([data-sonner-toaster], used by Payload's toast) would cover the drawer's Save button, so it rises above the footer while the company drawer is open
-  body:has(.doc-drawer .collection-edit--tenants)
-    [data-sonner-toaster][data-y-position="bottom"] {
-    translate: 0 -76px;
+  body:has(.doc-drawer .collection-edit--tenants) {
+    @include sheet.sheet-toasts-above-footer;
   }
 
   .dil-company-actions {

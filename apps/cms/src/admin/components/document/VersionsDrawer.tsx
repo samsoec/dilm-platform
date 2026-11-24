@@ -219,7 +219,7 @@ export function VersionsDrawer() {
         <Modal className="dil-drawer" slug={VERSIONS_DRAWER_SLUG}>
           <aside
             aria-labelledby={titleId}
-            className="dil-drawer__panel"
+            className={`dil-drawer__panel${comparing ? " dil-drawer__panel--wide" : ""}`}
             role="dialog"
           >
             <div className="dil-drawer__head">
