@@ -5,7 +5,10 @@
     @include sheet.native-drawer-shell;
   }
 
-  .drawer:not(.doc-drawer):has(> .drawer__content > .drawer__content-children > .drawer__header) .drawer__content-children {
+  .drawer:not(.doc-drawer):has(
+      > .drawer__content > .drawer__content-children > .drawer__header
+    )
+    .drawer__content-children {
     padding-left: 0;
     padding-right: 0;
     overflow: hidden;
@@ -20,7 +23,9 @@
     padding: var(--dil-sheet-pad-y) var(--dil-sheet-pad-x);
   }
 
-  .drawer:has(> .drawer__content > .drawer__content-children > [class*="bulk-upload--"]) {
+  .drawer:has(
+    > .drawer__content > .drawer__content-children > [class*="bulk-upload--"]
+  ) {
     @include sheet.native-drawer-shell(var(--dil-sheet-width-wide));
   }
 
