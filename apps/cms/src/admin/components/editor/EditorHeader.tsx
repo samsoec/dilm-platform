@@ -1,6 +1,10 @@
 "use client";
 
-import { useDocumentInfo, useFormFields } from "@payloadcms/ui";
+import {
+  useDocumentEvents,
+  useDocumentInfo,
+  useFormFields,
+} from "@payloadcms/ui";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
@@ -27,13 +31,22 @@ export function useLiveStatus(initial: PublishStatus): PublishStatus {
 
 export function RefreshAfterSave() {
   const router = useRouter();
-  const { lastUpdateTime } = useDocumentInfo();
-  const first = useRef(lastUpdateTime);
+  const { mostRecentUpdate } = useDocumentEvents();
+  const { id, collectionSlug, globalSlug } = useDocumentInfo();
+  const seen = useRef(mostRecentUpdate);
   useEffect(() => {
-    if (first.current === lastUpdateTime) return;
-    first.current = lastUpdateTime;
+    if (seen.current === mostRecentUpdate) return;
+    seen.current = mostRecentUpdate;
+    const update = mostRecentUpdate as {
+      id?: number | string;
+      entitySlug?: string;
+      drawerSlug?: string;
+    } | null;
+    if (!update || update.drawerSlug) return;
+    if (update.entitySlug !== (collectionSlug ?? globalSlug)) return;
+    if (String(update.id ?? "") !== String(id ?? "")) return;
     router.refresh();
-  }, [lastUpdateTime, router]);
+  }, [mostRecentUpdate, router, id, collectionSlug, globalSlug]);
   return null;
 }
 
