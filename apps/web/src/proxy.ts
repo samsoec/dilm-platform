@@ -41,6 +41,12 @@ export function proxy(request: NextRequest) {
     url.pathname = `/${DEFAULT_LOCALE}`;
     return withSecurityHeaders(NextResponse.redirect(url, 307));
   }
+  if (pathname === "/robots.txt") {
+    url.pathname = internalPath(tenant, pathname);
+    const robotsHeaders = new Headers(request.headers);
+    robotsHeaders.set(TENANT_HEADER, tenant);
+    return NextResponse.rewrite(url, { request: { headers: robotsHeaders } });
+  }
   if (!isLocale(pathname.split("/")[1] ?? "")) {
     const target = legacyRedirect(pathname);
     if (target === null) {

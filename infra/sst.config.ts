@@ -792,6 +792,7 @@ export default $config({
         CMS_URL: payloadFunction.url,
         CMS_AUTH: "iam",
         TENANT_HOST_ALIASES: web.webHostAliases(),
+        SITE_STAGE: $app.stage,
         CACHE_BUCKET_NAME: publicBucket.bucket,
         CACHE_BUCKET_REGION: REGION,
         CACHE_BUCKET_KEY_PREFIX: web.WEB_CACHE_PREFIX.replace(/\/$/, ""),

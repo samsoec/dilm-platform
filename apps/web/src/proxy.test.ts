@@ -10,6 +10,13 @@ function call(host: string, path = "/en/about") {
 }
 
 describe("proxy", () => {
+  it("rewrites /robots.txt to the tenant robots route", () => {
+    const response = call("likutelaga.localhost:3001", "/robots.txt");
+    expect(response.headers.get("x-middleware-rewrite")).toContain(
+      "/likutelaga/robots.txt",
+    );
+  });
+
   it("rewrites the same path to a different internal route per tenant", () => {
     const a = call("indoacid.localhost:3001");
     const b = call("duniakimia.localhost:3001");
