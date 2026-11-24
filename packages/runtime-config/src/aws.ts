@@ -7,6 +7,11 @@ import {
   type QueueConfig,
   type RuntimeConfig,
 } from "./config";
+import {
+  EDGE_PARAMETER_NAMES,
+  edgeConfigFrom,
+  type EdgeConfig,
+} from "./revalidate";
 
 type Env = Record<string, string | undefined>;
 
@@ -15,6 +20,7 @@ export const SSM_PARAMETER_NAMES = [
   "PREVIEW_SECRET",
   "JOB_PLATFORM_WEBHOOK_URL",
   "JOB_PLATFORM_WEBHOOK_SECRET",
+  "REVALIDATE_SECRET",
 ] as const;
 const REQUIRED_SSM_PARAMETER_NAMES: readonly SsmParameterName[] = [
   "PAYLOAD_SECRET",
@@ -24,9 +30,9 @@ export type SsmParameterName = (typeof SSM_PARAMETER_NAMES)[number];
 export interface AwsConfigProviders {
   ssmParameters(
     prefix: string,
-    names: readonly SsmParameterName[],
+    names: readonly string[],
     region: string,
-  ): Promise<Partial<Record<SsmParameterName, string>>>;
+  ): Promise<Partial<Record<string, string>>>;
 }
 
 export const awsConfigProviders: AwsConfigProviders = {
@@ -41,18 +47,19 @@ export const awsConfigProviders: AwsConfigProviders = {
         WithDecryption: true,
       }),
     );
-    const unknown = REQUIRED_SSM_PARAMETER_NAMES.filter((name) =>
-      InvalidParameters.includes(`${prefix}/${name}`),
+    const unknown = REQUIRED_SSM_PARAMETER_NAMES.filter(
+      (name) =>
+        names.includes(name) && InvalidParameters.includes(`${prefix}/${name}`),
     );
     if (unknown.length > 0) {
       throw new Error(
         `SSM does not know the required parameter(s): ${unknown.join(", ")} under ${prefix}.`,
       );
     }
-    const found: Partial<Record<SsmParameterName, string>> = {};
+    const found: Partial<Record<string, string>> = {};
     for (const { Name, Value } of Parameters) {
       if (Name === undefined || Value === undefined) continue;
-      found[Name.slice(prefix.length + 1) as SsmParameterName] = Value;
+      found[Name.slice(prefix.length + 1)] = Value;
     }
     return found;
   },
@@ -204,6 +211,29 @@ function retentionMonths(env: Env): number {
   return months;
 }
 
+export async function loadEdgeConfig(
+  env: Env,
+  providers: AwsConfigProviders = awsConfigProviders,
+): Promise<EdgeConfig> {
+  if (env.RUNTIME_CONFIG_SOURCE === "env") {
+    return edgeConfigFrom({
+      REVALIDATE_SECRET: env.REVALIDATE_SECRET,
+      CLOUDFLARE_API_TOKEN: env.CLOUDFLARE_API_TOKEN,
+      CLOUDFLARE_ZONE_IDS: env.CLOUDFLARE_ZONE_IDS,
+    });
+  }
+  const prefix = env.RUNTIME_CONFIG_SSM_PREFIX?.trim().replace(/\/+$/, "");
+  if (!prefix) {
+    throw new Error("RUNTIME_CONFIG_SSM_PREFIX is not set.");
+  }
+  const found = await providers.ssmParameters(
+    prefix,
+    EDGE_PARAMETER_NAMES,
+    env.AWS_REGION?.trim() || AWS_REGION,
+  );
+  return edgeConfigFrom(found);
+}
+
 export async function readRuntimeConfigFromAws(
   env: Env,
   providers: AwsConfigProviders = awsConfigProviders,
@@ -245,6 +275,7 @@ export async function readRuntimeConfigFromAws(
     cvRetentionMonths: retentionMonths(env),
     payloadSecret,
     previewSecret: parameters.PREVIEW_SECRET || undefined,
+    revalidateSecret: parameters.REVALIDATE_SECRET || undefined,
     storage: {
       region,
       publicBucket: text(

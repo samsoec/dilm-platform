@@ -4,7 +4,7 @@ import { superAdmins, tenantMembers } from "../access";
 import { routingNote } from "../admin/components/routing/fieldConfig";
 import { navGroup } from "../admin/navGroups";
 import { revalidateRoutingMoves } from "../publishRevalidation";
-import { stubRevalidator } from "../revalidation";
+import { siteRevalidator } from "../revalidation";
 import {
   cascadeSiteRouting,
   checkSiteRouting,
@@ -29,7 +29,7 @@ export const SiteRouting: GlobalConfig = {
   custom: { nav: { icon: "route", order: 3 } },
   hooks: {
     beforeChange: [checkSiteRouting],
-    afterChange: [cascadeSiteRouting, revalidateRoutingMoves(stubRevalidator)],
+    afterChange: [cascadeSiteRouting, revalidateRoutingMoves(siteRevalidator)],
   },
   fields: [
     {

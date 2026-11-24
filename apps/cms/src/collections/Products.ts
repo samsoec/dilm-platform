@@ -22,7 +22,7 @@ import {
   revalidateOnDelete,
   revalidateOnLiveChange,
 } from "../publishRevalidation";
-import { stubRevalidator } from "../revalidation";
+import { siteRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import { CATALOG_SCOPE, withTenantAccess } from "../tenancy";
 import { PAGE_VERSIONS_PER_DOCUMENT } from "./Pages";
@@ -260,8 +260,8 @@ export const Products = withTenantAccess(
             }),
             beginLiveChange,
           ],
-          afterChange: [syncRoutes, revalidateOnLiveChange(stubRevalidator)],
-          afterDelete: [revalidateOnDelete(stubRevalidator)],
+          afterChange: [syncRoutes, revalidateOnLiveChange(siteRevalidator)],
+          afterDelete: [revalidateOnDelete(siteRevalidator)],
           beforeDelete: [removeRoutes],
         },
         admin: {

@@ -19,7 +19,7 @@ import {
   revalidateOnDelete,
   revalidateOnLiveChange,
 } from "../publishRevalidation";
-import { stubRevalidator } from "../revalidation";
+import { siteRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 import {
   keepBasePagesOnDelete,
@@ -60,9 +60,9 @@ export const SharedPages = withEditorShell(
           keepBasePagesPublished,
           cascadePathChange,
           syncRoutes,
-          revalidateOnLiveChange(stubRevalidator),
+          revalidateOnLiveChange(siteRevalidator),
         ],
-        afterDelete: [revalidateOnDelete(stubRevalidator)],
+        afterDelete: [revalidateOnDelete(siteRevalidator)],
       },
       admin: {
         group: navGroup("content"),

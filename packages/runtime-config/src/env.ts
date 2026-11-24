@@ -175,6 +175,7 @@ export function readRuntimeConfigFromEnv(env: Env): RuntimeConfig {
     ),
     payloadSecret: read.required("PAYLOAD_SECRET"),
     previewSecret: read.optional("PREVIEW_SECRET"),
+    revalidateSecret: read.optional("REVALIDATE_SECRET"),
     storage: {
       region,
       publicBucket: read.required("S3_PUBLIC_BUCKET"),

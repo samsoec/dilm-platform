@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parameterArns } from "./parameters";
+import { edgeParameterArns, parameterArns } from "./parameters";
 import {
   WEB_PAYLOAD_INVOKE_ACTIONS,
   assertWebAssetsBuilt,
@@ -87,14 +87,20 @@ describe("web role grants", () => {
   });
 
   it("reads only the web's SSM parameters", () => {
-    const all = parameterArns({
+    const scope = {
       partition: "aws",
       region: "ap-southeast-3",
       accountId: "1",
       stage: "staging",
-    });
-    expect(webParameterArns(all)).toEqual([
-      "arn:aws:ssm:ap-southeast-3:1:parameter/dilm/staging/PREVIEW_SECRET",
+    };
+    const prefix = "arn:aws:ssm:ap-southeast-3:1:parameter/dilm/staging";
+    expect(
+      webParameterArns([...parameterArns(scope), ...edgeParameterArns(scope)]),
+    ).toEqual([
+      `${prefix}/PREVIEW_SECRET`,
+      `${prefix}/REVALIDATE_SECRET`,
+      `${prefix}/CLOUDFLARE_API_TOKEN`,
+      `${prefix}/CLOUDFLARE_ZONE_IDS`,
     ]);
   });
 });

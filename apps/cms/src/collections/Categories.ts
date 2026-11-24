@@ -19,7 +19,7 @@ import {
   revalidateOnDelete,
   revalidateOnLiveChange,
 } from "../publishRevalidation";
-import { stubRevalidator } from "../revalidation";
+import { siteRevalidator } from "../revalidation";
 import { removeRoutes, syncRoutes } from "../routeIndex";
 
 export const Categories: CollectionConfig = {
@@ -37,9 +37,9 @@ export const Categories: CollectionConfig = {
       redirectMovedPath,
       syncRoutes,
       cascadePostPaths,
-      revalidateOnLiveChange(stubRevalidator),
+      revalidateOnLiveChange(siteRevalidator),
     ],
-    afterDelete: [revalidateOnDelete(stubRevalidator)],
+    afterDelete: [revalidateOnDelete(siteRevalidator)],
     beforeDelete: [keepCategoriesWithPosts, removeRoutes],
   },
   admin: {

@@ -4,6 +4,7 @@ import { readRuntimeConfigFromEnv } from "./env";
 
 export * from "./config";
 export {
+  loadEdgeConfig,
   readRuntimeConfigFromAws,
   readSstResource,
   SSM_PARAMETER_NAMES,
@@ -12,6 +13,7 @@ export type { AwsConfigProviders } from "./aws";
 export { MissingEnvError, readRuntimeConfigFromEnv } from "./env";
 export * from "./pool";
 export * from "./preview";
+export * from "./revalidate";
 
 export type RuntimeConfigSource = "env" | "aws";
 

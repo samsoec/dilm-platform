@@ -22,7 +22,7 @@ import { POLICY_VERSION_HINT } from "../admin/siteMessages";
 import { buttonStyleField } from "../fields/buttonStyle";
 import { link } from "../fields/link";
 import { withUpdatedBy } from "../fields/updatedBy";
-import { revalidateTenantLayout, stubRevalidator } from "../revalidation";
+import { revalidateTenantLayout, siteRevalidator } from "../revalidation";
 import { withTenantAccess } from "../tenancy";
 
 export const MAX_NOT_FOUND_BUTTONS = 2;
@@ -65,7 +65,7 @@ export const SiteMessages = withTenantAccess(
       drafts: false,
     },
     hooks: {
-      afterChange: [revalidateTenantLayout(stubRevalidator)],
+      afterChange: [revalidateTenantLayout(siteRevalidator)],
     },
     fields: [
       localeBanner,

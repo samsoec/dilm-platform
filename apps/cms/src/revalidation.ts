@@ -4,6 +4,13 @@ import type {
   PayloadRequest,
 } from "payload";
 
+import {
+  REVALIDATE_PATH,
+  getRuntimeConfig,
+  revalidationHeaders,
+  signRevalidation,
+} from "@dilm/runtime-config";
+
 import { normalizeDomain } from "./fields/linkResolve";
 import { localization } from "./localization";
 
@@ -85,20 +92,127 @@ export function layoutChange(
   };
 }
 
-// TODO(DILM-32): replace with the authenticated revalidateTag call to apps/web and the Cloudflare prefix purge.
-export const stubRevalidator: Revalidator = {
-  async revalidate(change, logger) {
-    logger.info(
-      {
-        tags: change.tags,
-        purge: change.purge,
-        collection: change.collection,
-        reason: change.reason,
-      },
-      "Revalidation (stubbed until DILM-32)",
-    );
-  },
+export type SiteRevalidatorOptions = {
+  secret?: () => Promise<string | undefined>;
+  send?: (
+    url: string,
+    init: { method: "POST"; headers: Record<string, string>; body: string },
+  ) => Promise<{ ok: boolean; status: number; json(): Promise<unknown> }>;
+  now?: () => number;
+  timeoutMs?: number;
 };
+
+export const REVALIDATION_REQUESTED = "Revalidation requested";
+export const REVALIDATE_TIMEOUT_MS = 20_000;
+
+export function revalidateUrl(host: string): string {
+  const local = host.endsWith(".localhost") || /:\d+$/.test(host);
+  return `${local ? "http" : "https"}://${host}${REVALIDATE_PATH}`;
+}
+
+export function requestsFor(
+  change: RevalidationChange,
+): { host: string; body: string }[] {
+  const hosts = [...new Set(change.purge.map((purge) => purge.host))].sort();
+  return hosts.map((host) => ({
+    host,
+    body: JSON.stringify({
+      tags: change.tags,
+      purge: change.purge.filter((purge) => purge.host === host),
+    }),
+  }));
+}
+
+export function createSiteRevalidator(
+  options: SiteRevalidatorOptions = {},
+): Revalidator {
+  const secretOf =
+    options.secret ??
+    (async () =>
+      process.env.REVALIDATE_SECRET ||
+      (await getRuntimeConfig().catch(() => undefined))?.revalidateSecret);
+  const send =
+    options.send ??
+    ((url, init) =>
+      fetch(url, {
+        ...init,
+        signal: AbortSignal.timeout(options.timeoutMs ?? REVALIDATE_TIMEOUT_MS),
+      }));
+  return {
+    async revalidate(change, logger) {
+      logger.info(
+        {
+          tags: change.tags,
+          purge: change.purge,
+          collection: change.collection,
+          reason: change.reason,
+        },
+        REVALIDATION_REQUESTED,
+      );
+      const requests = requestsFor(change);
+      if (requests.length === 0) {
+        logger.info(
+          { tags: change.tags, collection: change.collection },
+          "Revalidation has no host to send to; skipped",
+        );
+        return;
+      }
+      const secret = await secretOf();
+      if (!secret) {
+        logger.info(
+          { hosts: requests.map((r) => r.host), tags: change.tags },
+          "Revalidation skipped: REVALIDATE_SECRET is not set",
+        );
+        return;
+      }
+      const failures: string[] = [];
+      for (const { host, body } of requests) {
+        try {
+          const signed = signRevalidation(body, secret, options.now?.());
+          const response = await send(revalidateUrl(host), {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              ...revalidationHeaders(signed),
+            },
+            body,
+          });
+          const answer = (await response.json().catch(() => ({}))) as {
+            ok?: boolean;
+          };
+          if (!response.ok || answer.ok === false) {
+            failures.push(host);
+            logger.error(
+              { host, status: response.status, answer },
+              "The site answered the revalidation with a failure",
+            );
+          } else {
+            logger.info(
+              {
+                host,
+                tags: change.tags.length,
+                collection: change.collection,
+                reason: change.reason,
+              },
+              "Revalidation delivered",
+            );
+          }
+        } catch (error) {
+          failures.push(host);
+          logger.error(
+            { err: error, host },
+            "The site could not be reached for revalidation",
+          );
+        }
+      }
+      if (failures.length > 0) {
+        throw new Error(`Revalidation failed for ${failures.join(", ")}`);
+      }
+    },
+  };
+}
+
+export const siteRevalidator: Revalidator = createSiteRevalidator();
 
 function tenantId(value: TenantRef): number | string | undefined {
   if (value === null || value === undefined || value === "") return undefined;

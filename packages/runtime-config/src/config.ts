@@ -71,6 +71,7 @@ export interface RuntimeConfig {
   cvRetentionMonths: number;
   payloadSecret: string;
   previewSecret?: string;
+  revalidateSecret?: string;
   storage: StorageConfig;
   email: EmailConfig;
   queue?: QueueConfig;
