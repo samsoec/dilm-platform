@@ -43,6 +43,9 @@ jobs:
       - name: Build the Payload Lambda bundle
         run: pnpm --filter @dilm/cms build:open-next
 
+      - name: Build the web Lambda bundle
+        run: pnpm --filter @dilm/web build:open-next
+
       - name: Deploy
         run: pnpm deploy:staging
         env:
