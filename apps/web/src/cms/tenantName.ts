@@ -1,11 +1,27 @@
 import type { TenantSlug } from "@dilm/shared-types";
 
+import { readTenant } from "@/content/client";
+import { fixtureModeEnabled } from "@/content/fixtureMode";
+import type { Locale } from "@/tenant/locales";
+
 import { cmsFetch } from "./signedFetch";
+
+async function fixtureTenantName(
+  slug: TenantSlug,
+  locale: Locale,
+): Promise<string> {
+  const tenant = await readTenant({ tenant: slug, locale });
+  return tenant.seo.title ?? slug;
+}
 
 export async function fetchTenantName(
   slug: TenantSlug,
   fetcher: typeof fetch = fetch,
+  locale: Locale = "en",
 ): Promise<string> {
+  if (fixtureModeEnabled()) {
+    return fixtureTenantName(slug, locale);
+  }
   const response = await cmsFetch(
     `/api/web-tenant/${encodeURIComponent(slug)}`,
     process.env,

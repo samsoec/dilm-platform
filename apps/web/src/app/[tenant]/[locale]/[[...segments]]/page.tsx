@@ -34,9 +34,10 @@ export async function generateMetadata({
 }
 
 export default async function Page({ params }: { params: Promise<Params> }) {
-  const { tenant, locale } = await params;
+  const { tenant, locale, segments } = await params;
   const slug = TENANT_SLUGS.find((candidate) => candidate === tenant);
   if (slug === undefined || !isLocale(locale)) notFound();
-  const name = await fetchTenantName(slug);
+  if (segments !== undefined && segments.length > 0) notFound();
+  const name = await fetchTenantName(slug, fetch, locale);
   return <SiteShell>{name}</SiteShell>;
 }
